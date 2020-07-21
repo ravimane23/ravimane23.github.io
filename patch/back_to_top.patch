@@ -1,0 +1,14 @@
+diff --git a/js/back_to_top.admin.js b/js/back_to_top.admin.js
+index 3a32ffc..caf0f8c 100644
+--- a/js/back_to_top.admin.js
++++ b/js/back_to_top.admin.js
+@@ -1,7 +1,7 @@
+ (function ($) {
+     Drupal.behaviors.backtotop_admin = {
+-        attach: function(context) {
+-            $(document).ready(function() {
++        attach: function (context) {
++            $(document).ready(function () {
+                 $("#back_to_top_bg_color").farbtastic("#edit-back-to-top-bg-color");
+                 $("#back_to_top_border_color").farbtastic("#edit-back-to-top-border-color");
+                 $("#back_to_top_hover_color").farbtastic("#edit-back-to-top-hover-color");

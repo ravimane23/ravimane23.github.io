@@ -1,0 +1,1784 @@
+diff --git a/modules/context_ui/src/ContextListBuilder.php b/modules/context_ui/src/ContextListBuilder.php
+index 65429e8..d557d85 100644
+--- a/modules/context_ui/src/ContextListBuilder.php
++++ b/modules/context_ui/src/ContextListBuilder.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\context_ui;
+ 
+-use Drupal\context\ContextInterface;
+ use Drupal\context\ContextManager;
+ use Drupal\context\Entity\Context;
+ use Drupal\Component\Utility\Html;
+@@ -16,6 +15,9 @@ use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+ use Drupal\Core\Messenger\MessengerInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class ContextListBuilder extends ConfigEntityListBuilder implements FormInterface {
+ 
+   use AjaxFormTrait;
+@@ -23,12 +25,12 @@ class ContextListBuilder extends ConfigEntityListBuilder implements FormInterfac
+   /**
+    * The Context modules context manager.
+    *
+-   * @var ContextManager
++   * @var \Drupal\context\ContextManager
+    */
+   protected $contextManager;
+ 
+   /**
+-   * @var FormBuilderInterface
++   * @var \Drupal\Core\Form\FormBuilderInterface
+    */
+   protected $formBuilder;
+ 
+@@ -168,7 +170,7 @@ class ContextListBuilder extends ConfigEntityListBuilder implements FormInterfac
+         ],
+       ];
+ 
+-      /** @var ContextInterface $context */
++      /** @var \Drupal\context\ContextInterface $context */
+       foreach ($contexts as $context_id => $context) {
+         $operations = [
+           'edit' => [
+@@ -184,7 +186,7 @@ class ContextListBuilder extends ConfigEntityListBuilder implements FormInterfac
+             'title' => $context->disabled() ? $this->t('Enable') : $this->t('Disable'),
+             'url' => $context->toUrl('disable-form'),
+             'attributes' => $this->getAjaxAttributes(),
+-          ]
++          ],
+         ];
+ 
+         $form['contexts'][$context_id] = [
+@@ -254,7 +256,7 @@ class ContextListBuilder extends ConfigEntityListBuilder implements FormInterfac
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+     $contexts = $this->storage->loadMultiple(array_keys($form_state->getValue('contexts')));
+ 
+-    /*** @var ContextInterface $context */
++    /*** @var \Drupal\context\ContextInterface $context */
+     foreach ($contexts as $context_id => $context) {
+       $context_values = $form_state->getValue(['contexts', $context_id]);
+ 
+diff --git a/modules/context_ui/src/Controller/ContextUIController.php b/modules/context_ui/src/Controller/ContextUIController.php
+index b3f151f..b377641 100644
+--- a/modules/context_ui/src/Controller/ContextUIController.php
++++ b/modules/context_ui/src/Controller/ContextUIController.php
+@@ -16,46 +16,48 @@ use Drupal\Core\Ajax\CloseModalDialogCommand;
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\HttpFoundation\JsonResponse;
+ use Drupal\Component\Plugin\Exception\PluginException;
+-use Symfony\Component\HttpFoundation\RedirectResponse;
+ use Symfony\Component\HttpKernel\Exception\HttpException;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class ContextUIController extends ControllerBase {
+ 
+   /**
+    * The context reaction manager.
+    *
+-   * @var ContextReactionManager
++   * @var \Drupal\context\ContextReactionManager
+    */
+   protected $contextReactionManager;
+ 
+   /**
+    * The Context module context manager.
+    *
+-   * @var ContextManager
++   * @var \Drupal\context\ContextManager
+    */
+   protected $contextManager;
+ 
+   /**
+    * The Drupal core condition manager.
+    *
+-   * @var ConditionManager
++   * @var \Drupal\Core\Condition\ConditionManager
+    */
+   protected $conditionManager;
+ 
+   /**
+    * Construct a new context controller.
+    *
+-   * @param ContextManager $contextManager
++   * @param \Drupal\context\ContextManager $contextManager
+    *   The Context module context manager.
+    *
+-   * @param ContextReactionManager $contextReactionManager
++   * @param \Drupal\context\ContextReactionManager $contextReactionManager
+    *   The Context module context reaction plugin manager.
+    *
+-   * @param ConditionManager $conditionManager
++   * @param \Drupal\Core\Condition\ConditionManager $conditionManager
+    *   The Drupal core condition manager.
+    */
+-  function __construct(
++  public function __construct(
+     ContextManager $contextManager,
+     ContextReactionManager $contextReactionManager,
+     ConditionManager $conditionManager
+@@ -79,10 +81,10 @@ class ContextUIController extends ControllerBase {
+   /**
+    * Retrieves group suggestions for a context.
+    *
+-   * @param Request $request
++   * @param \Symfony\Component\HttpFoundation\Request $request
+    *   The current request.
+    *
+-   * @return JsonResponse
++   * @return \Symfony\Component\HttpFoundation\JsonResponse
+    *   A JSON response with groups matching the query.
+    */
+   public function groupsAutocomplete(Request $request) {
+@@ -112,7 +114,7 @@ class ContextUIController extends ControllerBase {
+   /**
+    * Displays a list of conditions that can be added to the context.
+    *
+-   * @param ContextInterface $context
++   * @param \Drupal\context\ContextInterface $context
+    *   The context to display available conditions for.
+    *
+    * @return array
+@@ -123,7 +125,7 @@ class ContextUIController extends ControllerBase {
+     $conditions = $this->conditionManager->getDefinitions();
+ 
+     $header = [
+-      $this->t('Condition')
++      $this->t('Condition'),
+     ];
+ 
+     $build['filter'] = [
+@@ -163,7 +165,7 @@ class ContextUIController extends ControllerBase {
+             ],
+             '#options' => [
+               'html' => TRUE,
+-            ]
++            ],
+           ],
+         ],
+       ];
+@@ -187,8 +189,8 @@ class ContextUIController extends ControllerBase {
+   /**
+    * Displays a list of reactions that can be added to the context.
+    *
+-   * @param ContextInterface $context
+-   *   The context to display available
++   * @param \Drupal\context\ContextInterface $context
++   *   The context to display available.
+    *
+    * @return array
+    */
+@@ -198,7 +200,7 @@ class ContextUIController extends ControllerBase {
+     $reactions = $this->contextReactionManager->getDefinitions();
+ 
+     $header = [
+-      $this->t('Reactions')
++      $this->t('Reactions'),
+     ];
+ 
+     $build['filter'] = [
+@@ -262,16 +264,16 @@ class ContextUIController extends ControllerBase {
+   /**
+    * Add the specified reaction to the context.
+    *
+-   * @param Request $request
++   * @param \Symfony\Component\HttpFoundation\Request $request
+    *   The current request.
+    *
+-   * @param ContextInterface $context
++   * @param \Drupal\context\ContextInterface $context
+    *   The context to add the reaction to.
+    *
+    * @param $reaction_id
+    *   The ID of the reaction to add.
+    *
+-   * @return AjaxResponse|RedirectResponse
++   * @return \Drupal\Core\Ajax\AjaxResponse|RedirectResponse
+    */
+   public function addReaction(Request $request, ContextInterface $context, $reaction_id) {
+ 
+@@ -328,16 +330,16 @@ class ContextUIController extends ControllerBase {
+   /**
+    * Add the specified condition to the context.
+    *
+-   * @param Request $request
++   * @param \Symfony\Component\HttpFoundation\Request $request
+    *   The current request.
+    *
+-   * @param ContextInterface $context
++   * @param \Drupal\context\ContextInterface $context
+    *   The context to add the condition to.
+    *
+    * @param $condition_id
+    *   The ID of the condition to add.
+    *
+-   * @return AjaxResponse|RedirectResponse
++   * @return \Drupal\Core\Ajax\AjaxResponse|RedirectResponse
+    */
+   public function addCondition(Request $request, ContextInterface $context, $condition_id) {
+ 
+@@ -361,7 +363,7 @@ class ContextUIController extends ControllerBase {
+         if ($reaction->getPluginId() == 'theme') {
+           if ($request->isXmlHttpRequest()) {
+             $response = new AjaxResponse();
+-  
++
+             $response->addCommand(new CloseModalDialogCommand());
+             $response->addCommand(new OpenModalDialogCommand($this->t("Current theme condition"), $this->t("You can not set Current theme condition if Theme reaction is set."), ['width' => '700']));
+             return $response;
+diff --git a/modules/context_ui/src/Form/ConditionDeleteForm.php b/modules/context_ui/src/Form/ConditionDeleteForm.php
+index 9af69d1..70c2f0c 100644
+--- a/modules/context_ui/src/Form/ConditionDeleteForm.php
++++ b/modules/context_ui/src/Form/ConditionDeleteForm.php
+@@ -11,6 +11,9 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Ajax\CloseModalDialogCommand;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class ConditionDeleteForm extends ConfirmFormBase {
+ 
+   /**
+@@ -37,7 +40,7 @@ class ConditionDeleteForm extends ConfirmFormBase {
+   /**
+    * Construct a condition delete form.
+    *
+-   * @param ContextManager $contextManager
++   * @param \Drupal\context\ContextManager $contextManager
+    */
+   public function __construct(ContextManager $contextManager) {
+     $this->contextManager = $contextManager;
+@@ -47,7 +50,7 @@ class ConditionDeleteForm extends ConfirmFormBase {
+    * {@inheritdoc}
+    */
+   public static function create(ContainerInterface $container) {
+-    return new static (
++    return new static(
+       $container->get('context.manager')
+     );
+   }
+@@ -100,7 +103,7 @@ class ConditionDeleteForm extends ConfirmFormBase {
+ 
+     // Submit the form with AJAX if possible.
+     $form['actions']['submit']['#ajax'] = [
+-      'callback' => '::submitFormAjax'
++      'callback' => '::submitFormAjax',
+     ];
+ 
+     return $form;
+@@ -116,7 +119,8 @@ class ConditionDeleteForm extends ConfirmFormBase {
+     // If this is not an AJAX request then redirect and show a message.
+     if (!$this->getRequest()->isXmlHttpRequest()) {
+       $this->messenger()->addMessage($this->t('The condition %name has been removed.', [
+-          '%name' => $this->condition->getPluginDefinition()['label']]
++        '%name' => $this->condition->getPluginDefinition()['label'],
++      ]
+       ));
+ 
+       $form_state->setRedirectUrl($this->getCancelUrl());
+@@ -126,7 +130,7 @@ class ConditionDeleteForm extends ConfirmFormBase {
+   /**
+    * Handle when the form is submitted trough AJAX.
+    *
+-   * @return AjaxResponse
++   * @return \Drupal\Core\Ajax\AjaxResponse
+    */
+   public function submitFormAjax() {
+     $contextForm = $this->contextManager->getForm($this->context, 'edit');
+diff --git a/modules/context_ui/src/Form/ContextAddForm.php b/modules/context_ui/src/Form/ContextAddForm.php
+index f2f6f9b..f274c51 100644
+--- a/modules/context_ui/src/Form/ContextAddForm.php
++++ b/modules/context_ui/src/Form/ContextAddForm.php
+@@ -4,6 +4,9 @@ namespace Drupal\context_ui\Form;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ class ContextAddForm extends ContextFormBase {
+ 
+   /**
+@@ -27,4 +30,3 @@ class ContextAddForm extends ContextFormBase {
+   }
+ 
+ }
+-
+diff --git a/modules/context_ui/src/Form/ContextDeleteForm.php b/modules/context_ui/src/Form/ContextDeleteForm.php
+index 1e0485f..8a16267 100644
+--- a/modules/context_ui/src/Form/ContextDeleteForm.php
++++ b/modules/context_ui/src/Form/ContextDeleteForm.php
+@@ -8,17 +8,20 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Entity\EntityConfirmFormBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class ContextDeleteForm extends EntityConfirmFormBase {
+ 
+   /**
+-   * @var ContextManager
++   * @var \Drupal\context\ContextManager
+    */
+   protected $contextManager;
+ 
+   /**
+-   * @param ContextManager $contextManager
++   * @param \Drupal\context\ContextManager $contextManager
+    */
+-  function __construct(ContextManager $contextManager) {
++  public function __construct(ContextManager $contextManager) {
+     $this->contextManager = $contextManager;
+   }
+ 
+@@ -63,7 +66,6 @@ class ContextDeleteForm extends EntityConfirmFormBase {
+     return $form;
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -76,4 +78,5 @@ class ContextDeleteForm extends EntityConfirmFormBase {
+ 
+     $formState->setRedirectUrl($this->getCancelUrl());
+   }
++
+ }
+diff --git a/modules/context_ui/src/Form/ContextDisableForm.php b/modules/context_ui/src/Form/ContextDisableForm.php
+index ec279e9..c381b9d 100644
+--- a/modules/context_ui/src/Form/ContextDisableForm.php
++++ b/modules/context_ui/src/Form/ContextDisableForm.php
+@@ -8,6 +8,9 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Entity\EntityConfirmFormBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class ContextDisableForm extends EntityConfirmFormBase {
+ 
+   /**
+diff --git a/modules/context_ui/src/Form/ContextEditForm.php b/modules/context_ui/src/Form/ContextEditForm.php
+index bb7a749..500eb9f 100644
+--- a/modules/context_ui/src/Form/ContextEditForm.php
++++ b/modules/context_ui/src/Form/ContextEditForm.php
+@@ -8,6 +8,9 @@ use Drupal\context\Form\AjaxFormTrait;
+ use Drupal\Component\Serialization\Json;
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ class ContextEditForm extends ContextFormBase {
+ 
+   use AjaxFormTrait;
+@@ -75,7 +78,7 @@ class ContextEditForm extends ContextFormBase {
+    * @param $element
+    *   The element to process.
+    *
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The current form state.
+    *
+    * @return array
+@@ -91,7 +94,7 @@ class ContextEditForm extends ContextFormBase {
+       ]),
+       '#attributes' => [
+         'class' => [
+-          'use-ajax', 'button', 'button--small'
++          'use-ajax', 'button', 'button--small',
+         ],
+         'data-dialog-type' => 'modal',
+         'data-dialog-options' => Json::encode([
+@@ -131,7 +134,7 @@ class ContextEditForm extends ContextFormBase {
+         ]),
+         '#attributes' => [
+           'class' => [
+-            'use-ajax', 'button', 'button--small'
++            'use-ajax', 'button', 'button--small',
+           ],
+           'data-dialog-type' => 'modal',
+           'data-dialog-options' => Json::encode([
+@@ -150,7 +153,7 @@ class ContextEditForm extends ContextFormBase {
+    * @param $element
+    *   The element to process.
+    *
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The current form state.
+    *
+    * @return array
+@@ -166,7 +169,7 @@ class ContextEditForm extends ContextFormBase {
+       ]),
+       '#attributes' => [
+         'class' => [
+-          'use-ajax', 'button', 'button--small'
++          'use-ajax', 'button', 'button--small',
+         ],
+         'data-dialog-type' => 'modal',
+         'data-dialog-options' => Json::encode([
+@@ -209,7 +212,7 @@ class ContextEditForm extends ContextFormBase {
+         ]),
+         '#attributes' => [
+           'class' => [
+-            'use-ajax', 'button', 'button--small'
++            'use-ajax', 'button', 'button--small',
+           ],
+           'data-dialog-type' => 'modal',
+           'data-dialog-options' => Json::encode([
+diff --git a/modules/context_ui/src/Form/ContextFormBase.php b/modules/context_ui/src/Form/ContextFormBase.php
+index cee3312..3cd7b76 100644
+--- a/modules/context_ui/src/Form/ContextFormBase.php
++++ b/modules/context_ui/src/Form/ContextFormBase.php
+@@ -11,6 +11,9 @@ use Drupal\Core\Plugin\ContextAwarePluginInterface;
+ use Drupal\Core\Plugin\Context\ContextRepositoryInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ abstract class ContextFormBase extends EntityForm {
+ 
+   /**
+@@ -23,24 +26,24 @@ abstract class ContextFormBase extends EntityForm {
+   /**
+    * The Context module context manager.
+    *
+-   * @var ContextManager
++   * @var \Drupal\context\ContextManager
+    */
+   protected $contextManager;
+ 
+   /**
+    * The Drupal context repository.
+    *
+-   * @var ContextRepositoryInterface
++   * @var \Drupal\context\Entity\ContextRepositoryInterface
+    */
+   protected $contextRepository;
+ 
+   /**
+    * Construct a new context form.
+    *
+-   * @param ContextManager $contextManager
+-   * @param ContextRepositoryInterface $contextRepository
++   * @param \Drupal\context\ContextManager $contextManager
++   * @param \Drupal\context\Entity\ContextRepositoryInterface $contextRepository
+    */
+-  function __construct(ContextManager $contextManager, ContextRepositoryInterface $contextRepository) {
++  public function __construct(ContextManager $contextManager, ContextRepositoryInterface $contextRepository) {
+     $this->contextManager = $contextManager;
+     $this->contextRepository = $contextRepository;
+   }
+@@ -143,7 +146,7 @@ abstract class ContextFormBase extends EntityForm {
+    * @param array $form
+    *   The rendered form.
+    *
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The current form state.
+    */
+   private function handleConditions(array &$form, FormStateInterface $form_state) {
+@@ -171,7 +174,7 @@ abstract class ContextFormBase extends EntityForm {
+    * @param array $form
+    *   The rendered form.
+    *
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The current form state.
+    */
+   private function handleReactions(array &$form, FormStateInterface $form_state) {
+@@ -193,7 +196,7 @@ abstract class ContextFormBase extends EntityForm {
+    * @param array $form
+    *   The rendered form.
+    *
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The current form state.
+    */
+   private function validateReactions(array &$form, FormStateInterface $form_state) {
+@@ -243,4 +246,5 @@ abstract class ContextFormBase extends EntityForm {
+   public function contextExists($name) {
+     return $this->contextManager->contextExists($name);
+   }
++
+ }
+diff --git a/modules/context_ui/src/Form/ReactionDeleteForm.php b/modules/context_ui/src/Form/ReactionDeleteForm.php
+index 568d569..4ff125e 100644
+--- a/modules/context_ui/src/Form/ReactionDeleteForm.php
++++ b/modules/context_ui/src/Form/ReactionDeleteForm.php
+@@ -8,36 +8,38 @@ use Drupal\context\ContextInterface;
+ use Drupal\Core\Ajax\ReplaceCommand;
+ use Drupal\Core\Form\ConfirmFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\context\ContextReactionInterface;
+ use Drupal\Core\Ajax\CloseModalDialogCommand;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+ 
++/**
++ *
++ */
+ class ReactionDeleteForm extends ConfirmFormBase implements ContainerInjectionInterface {
+ 
+   /**
+-   * @var ContextInterface
++   * @var \Drupal\context\ContextInterface
+    */
+   protected $context;
+ 
+   /**
+-   * @var ContextReactionInterface
++   * @var \Drupal\context\ContextReactionInterface
+    */
+   protected $reaction;
+ 
+   /**
+    * The Context module context manager.
+    *
+-   * @var ContextManager
++   * @var \Drupal\context\ContextManager
+    */
+   protected $contextManager;
+ 
+   /**
+    * Construct.
+    *
+-   * @param ContextManager $contextManager
++   * @param \Drupal\context\ContextManager $contextManager
+    */
+-  function __construct(ContextManager $contextManager) {
++  public function __construct(ContextManager $contextManager) {
+     $this->contextManager = $contextManager;
+   }
+ 
+@@ -118,7 +120,8 @@ class ReactionDeleteForm extends ConfirmFormBase implements ContainerInjectionIn
+     // If this is not an AJAX request then redirect and show a message.
+     if (!$this->getRequest()->isXmlHttpRequest()) {
+       $this->messenger()->addMessage($this->t('The %label context reaction has been removed.', [
+-          '%label' => $definition['label']]
++        '%label' => $definition['label'],
++      ]
+       ));
+ 
+       $form_state->setRedirectUrl($this->getCancelUrl());
+@@ -128,7 +131,7 @@ class ReactionDeleteForm extends ConfirmFormBase implements ContainerInjectionIn
+   /**
+    * Handle when the form is submitted through AJAX.
+    *
+-   * @return AjaxResponse
++   * @return \Drupal\Core\Ajax\AjaxResponse
+    */
+   public function submitFormAjax() {
+     $response = new AjaxResponse();
+@@ -140,4 +143,5 @@ class ReactionDeleteForm extends ConfirmFormBase implements ContainerInjectionIn
+ 
+     return $response;
+   }
++
+ }
+diff --git a/modules/context_ui/src/MenuBuilder.php b/modules/context_ui/src/MenuBuilder.php
+index 6dd3b6b..31ecb95 100644
+--- a/modules/context_ui/src/MenuBuilder.php
++++ b/modules/context_ui/src/MenuBuilder.php
+@@ -9,14 +9,14 @@ use Drupal\menu_link_content\Entity\MenuLinkContent;
+ 
+ /**
+  * Implements the MenuBuilder class, which configures and updates the submenu
+- * context items
++ * context items.
+  *
+  * @package Drupal\context_ui
+  */
+ class MenuBuilder {
+ 
+   /**
+-   * @var \Drupal\Core\Menu\MenuLinkManagerInterface Stores the menuLinkManager interface.
++   * @var \Drupal\Core\Menu\MenuLinkManagerInterfaceStoresthemenuLinkManagerinterface
+    */
+   protected $menuLinkManager;
+ 
+@@ -30,8 +30,8 @@ class MenuBuilder {
+   }
+ 
+   /**
+-   *
+    * Create function.
++   *
+    * @param \Drupal\context_ui\ContainerInterface $container
+    *
+    * @return static
+@@ -43,10 +43,10 @@ class MenuBuilder {
+   }
+ 
+   /**
+-   *
+    * Adds a submenu item for the $entity item.
+    *
+-   * @param \Drupal\context\Entity\Context $entity The given entity item.
++   * @param \Drupal\context\Entity\Context $entity
++   *   The given entity item.
+    */
+   public function addSubMenuItem(Context $entity) {
+     $menu_link = MenuLinkContent::create([
+@@ -62,10 +62,10 @@ class MenuBuilder {
+   }
+ 
+   /**
+-   *
+    * Updates the submenu item of the $entity item.
+    *
+-   * @param \Drupal\context\Entity\Context $entity The given entity item.
++   * @param \Drupal\context\Entity\Context $entity
++   *   The given entity item.
+    */
+   public function updateSubMenuItem(Context $entity) {
+     $result = $this->menuLinkManager->loadLinksByRoute('entity.context.edit_form', ['context' => $entity->id()]);
+@@ -87,10 +87,10 @@ class MenuBuilder {
+   }
+ 
+   /**
+-   *
+    * Deletes the submenu item of the $entity item.
+    *
+-   * @param \Drupal\context\Entity\Context $entity The given entity item.
++   * @param \Drupal\context\Entity\Context $entity
++   *   The given entity item.
+    */
+   public function deleteSubMenuItem(Context $entity) {
+     $result = $this->menuLinkManager->loadLinksByRoute('entity.context.edit_form', ['context' => $entity->id()]);
+@@ -106,10 +106,10 @@ class MenuBuilder {
+   }
+ 
+   /**
+-   *
+    * Return the URI string of the given context entity.
+    *
+-   * @param \Drupal\context\Entity\Context $entity The context entity.
++   * @param \Drupal\context\Entity\Context $entity
++   *   The context entity.
+    *
+    * @return string The URI string.
+    */
+@@ -118,4 +118,4 @@ class MenuBuilder {
+     return $url->toUriString();
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/ContextInterface.php b/src/ContextInterface.php
+index c0d6cb6..6e69061 100644
+--- a/src/ContextInterface.php
++++ b/src/ContextInterface.php
+@@ -2,12 +2,12 @@
+ 
+ namespace Drupal\context;
+ 
+-use Drupal\Core\Condition\ConditionInterface;
+-use Drupal\Core\Condition\ConditionPluginCollection;
+ use Drupal\Core\Config\Entity\ConfigEntityInterface;
+-use Drupal\context\Plugin\ContextReactionPluginCollection;
+ use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
+ 
++/**
++ *
++ */
+ interface ContextInterface extends ConfigEntityInterface, EntityWithPluginCollectionInterface {
+ 
+   /**
+@@ -106,7 +106,7 @@ interface ContextInterface extends ConfigEntityInterface, EntityWithPluginCollec
+   /**
+    * If the context requires all conditions to validate.
+    *
+-   * @return boolean
++   * @return bool
+    */
+   public function requiresAllConditions();
+ 
+@@ -123,7 +123,7 @@ interface ContextInterface extends ConfigEntityInterface, EntityWithPluginCollec
+   /**
+    * Get a list of all conditions.
+    *
+-   * @return ConditionInterface[]|ConditionPluginCollection
++   * @return \Drupal\Core\Condition\ConditionInterface[]|ConditionPluginCollection
+    */
+   public function getConditions();
+ 
+@@ -131,7 +131,7 @@ interface ContextInterface extends ConfigEntityInterface, EntityWithPluginCollec
+    * Get a condition with the specified ID.
+    *
+    * @param string $condition_id
+-   *  The condition to get.
++   *   The condition to get.
+    *
+    * @return \Drupal\Core\Condition\ConditionInterface
+    */
+@@ -212,4 +212,5 @@ interface ContextInterface extends ConfigEntityInterface, EntityWithPluginCollec
+    * @return bool
+    */
+   public function hasReaction($reaction_id);
++
+ }
+diff --git a/src/ContextManager.php b/src/ContextManager.php
+index b96f33a..7687430 100644
+--- a/src/ContextManager.php
++++ b/src/ContextManager.php
+@@ -59,7 +59,7 @@ class ContextManager {
+   private $entityFormBuilder;
+ 
+   /**
+-   * @var \Drupal\Core\Theme\ThemeManagerInterface;
++   * @var \Drupal\Core\Theme\ThemeManagerInterface
+    */
+   protected $themeManager;
+ 
+@@ -68,13 +68,13 @@ class ContextManager {
+    *
+    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+    *   The Drupal entity manager service.
+-   * @param ContextRepositoryInterface $contextRepository
++   * @param \Drupal\context\Entity\ContextRepositoryInterface $contextRepository
+    *   The drupal context repository service.
+-   * @param ContextHandlerInterface $contextHandler
++   * @param \Drupal\context\Entity\ContextHandlerInterface $contextHandler
+    *   The Drupal context handler service.
+-   * @param ThemeManagerInterface $themeManager
++   * @param \Drupal\Core\Theme\ThemeManagerInterface $themeManager
+    *   The Drupal theme manager service.
+-   * @param EntityFormBuilderInterface $entityFormBuilder
++   * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entityFormBuilder
+    *   The Drupal EntityFormBuilder service.
+    */
+   public function __construct(
+@@ -83,8 +83,7 @@ class ContextManager {
+     ContextHandlerInterface $contextHandler,
+     EntityFormBuilderInterface $entityFormBuilder,
+     ThemeManagerInterface $themeManager
+-  )
+-  {
++  ) {
+     $this->entityTypeManager = $entityTypeManager;
+     $this->contextRepository = $contextRepository;
+     $this->contextHandler = $contextHandler;
+@@ -95,7 +94,7 @@ class ContextManager {
+   /**
+    * Get all contexts.
+    *
+-   * @return Context[]
++   * @return \Drupal\context\Entity\Context[]
+    */
+   public function getContexts() {
+ 
+@@ -191,7 +190,7 @@ class ContextManager {
+    * @param string $reactionType
+    *   Either the reaction class name or the id of the reaction type to get.
+    *
+-   * @return ContextReactionInterface[]
++   * @return \Drupal\context\Entity\ContextReactionInterface[]
+    */
+   public function getActiveReactions($reactionType = NULL) {
+     $reactions = [];
+@@ -243,7 +242,7 @@ class ContextManager {
+   /**
+    * Evaluate a contexts conditions.
+    *
+-   * @param ContextInterface $context
++   * @param \Drupal\context\Entity\ContextInterface $context
+    *   The context to evaluate conditions for.
+    *
+    * @return bool
+@@ -275,7 +274,7 @@ class ContextManager {
+   /**
+    * Apply context to all the context aware conditions in the collection.
+    *
+-   * @param ConditionPluginCollection $conditions
++   * @param \Drupal\Core\Condition\ConditionPluginCollection $conditions
+    *   A collection of conditions to apply context to.
+    *
+    * @return bool
+@@ -299,9 +298,11 @@ class ContextManager {
+ 
+   /**
+    * Get a rendered form for the context.
++   *
+    * @param \Drupal\context\ContextInterface $context
+    * @param string $formType
+    * @param array $form_state_additions
++   *
+    * @return array
+    */
+   public function getForm(ContextInterface $context, $formType = 'edit', array $form_state_additions = []) {
+@@ -313,10 +314,10 @@ class ContextManager {
+    *
+    * Callback for uasort().
+    *
+-   * @param ContextInterface $a
++   * @param \Drupal\context\Entity\ContextInterface $a
+    *   First item for comparison.
+    *
+-   * @param ContextInterface $b
++   * @param \Drupal\context\Entity\ContextInterface $b
+    *   Second item for comparison.
+    *
+    * @return int
+diff --git a/src/ContextMenuActiveTrail.php b/src/ContextMenuActiveTrail.php
+index 0d58d43..065e44b 100644
+--- a/src/ContextMenuActiveTrail.php
++++ b/src/ContextMenuActiveTrail.php
+@@ -7,7 +7,6 @@ use Drupal\Core\Lock\LockBackendInterface;
+ use Drupal\Core\Menu\MenuActiveTrail;
+ use Drupal\Core\Menu\MenuLinkManagerInterface;
+ use Drupal\Core\Routing\RouteMatchInterface;
+-use Drupal\menu_link_content\Entity\MenuLinkContent;
+ 
+ /**
+  * Extend the MenuActiveTrail class.
+@@ -15,7 +14,7 @@ use Drupal\menu_link_content\Entity\MenuLinkContent;
+ class ContextMenuActiveTrail extends MenuActiveTrail {
+ 
+   /**
+-   * @var \Drupal\context\ContextManager.
++   * @var \Drupal\context\ContextManager
+    */
+   protected $contextManager;
+ 
+@@ -27,7 +26,6 @@ class ContextMenuActiveTrail extends MenuActiveTrail {
+     $this->contextManager = $context_manager;
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -35,7 +33,7 @@ class ContextMenuActiveTrail extends MenuActiveTrail {
+     $found = parent::getActiveLink($menu_name);
+ 
+     // Get active reaction of Menu type.
+-    foreach($this->contextManager->getActiveReactions('menu') as $reaction) {
++    foreach ($this->contextManager->getActiveReactions('menu') as $reaction) {
+       $menu_items = $reaction->execute();
+       foreach ($menu_items as $menu_link_content) {
+         $menu = strtok($menu_link_content, ':');
+diff --git a/src/ContextReactionInterface.php b/src/ContextReactionInterface.php
+index 5c50669..f19b98d 100644
+--- a/src/ContextReactionInterface.php
++++ b/src/ContextReactionInterface.php
+@@ -7,6 +7,9 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
+ use Drupal\Component\Plugin\ConfigurableInterface;
+ use Drupal\Core\Plugin\PluginFormInterface;
+ 
++/**
++ *
++ */
+ interface ContextReactionInterface extends ConfigurableInterface, PluginFormInterface, PluginInspectionInterface, ExecutableInterface {
+ 
+   /**
+diff --git a/src/ContextReactionManager.php b/src/ContextReactionManager.php
+index 8163758..d6798eb 100644
+--- a/src/ContextReactionManager.php
++++ b/src/ContextReactionManager.php
+@@ -2,11 +2,13 @@
+ 
+ namespace Drupal\context;
+ 
+-use Traversable;
+ use Drupal\Core\Plugin\DefaultPluginManager;
+ use Drupal\Core\Cache\CacheBackendInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ 
++/**
++ *
++ */
+ class ContextReactionManager extends DefaultPluginManager {
+ 
+   /**
+@@ -18,4 +20,5 @@ class ContextReactionManager extends DefaultPluginManager {
+     $this->alterInfo('context_condition_info');
+     $this->setCacheBackend($cache_backend, 'context_condition_plugins');
+   }
++
+ }
+diff --git a/src/ContextReactionPluginBase.php b/src/ContextReactionPluginBase.php
+index a8488f2..0f3da07 100644
+--- a/src/ContextReactionPluginBase.php
++++ b/src/ContextReactionPluginBase.php
+@@ -5,6 +5,9 @@ namespace Drupal\context;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Plugin\PluginBase;
+ 
++/**
++ *
++ */
+ abstract class ContextReactionPluginBase extends PluginBase implements ContextReactionInterface {
+ 
+   /**
+@@ -65,4 +68,5 @@ abstract class ContextReactionPluginBase extends PluginBase implements ContextRe
+   public function calculateDependencies() {
+     return [];
+   }
++
+ }
+diff --git a/src/Entity/Context.php b/src/Entity/Context.php
+index 15d2d90..ea68cb2 100644
+--- a/src/Entity/Context.php
++++ b/src/Entity/Context.php
+@@ -89,14 +89,14 @@ class Context extends ConfigEntityBase implements ContextInterface {
+   /**
+    * The context conditions as a collection.
+    *
+-   * @var ConditionPluginCollection
++   * @var \Drupal\Core\Condition\ConditionPluginCollection
+    */
+   protected $conditionsCollection;
+ 
+   /**
+    * The context reactions as a collection.
+    *
+-   * @var ContextReactionPluginCollection
++   * @var \Drupal\context\Plugin\ContextReactionPluginCollection
+    */
+   protected $reactionsCollection;
+ 
+@@ -252,7 +252,7 @@ class Context extends ConfigEntityBase implements ContextInterface {
+    */
+   public function getConditions() {
+     if (!$this->conditionsCollection) {
+-      $conditionManager =  Drupal::service('plugin.manager.condition');
++      $conditionManager = Drupal::service('plugin.manager.condition');
+       $this->conditionsCollection = new ConditionPluginCollection($conditionManager, $this->conditions);
+     }
+ 
+@@ -373,4 +373,5 @@ class Context extends ConfigEntityBase implements ContextInterface {
+   public function disabled() {
+     return $this->disabled;
+   }
++
+ }
+diff --git a/src/Entity/ContextAccess.php b/src/Entity/ContextAccess.php
+index 627ab27..094c62c 100644
+--- a/src/Entity/ContextAccess.php
++++ b/src/Entity/ContextAccess.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\context\Entity\ContextAccess.
+- */
+-
+ namespace Drupal\context\Entity;
+ 
+ use Drupal\Core\Entity\EntityAccessControlHandler;
+@@ -42,4 +37,5 @@ class ContextAccess extends EntityAccessControlHandler implements EntityHandlerI
+   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+     return parent::checkAccess($entity, $operation, $account);
+   }
++
+ }
+diff --git a/src/EventSubscriber/BlockPageDisplayVariantSubscriber.php b/src/EventSubscriber/BlockPageDisplayVariantSubscriber.php
+index 6a9fe71..25d3224 100644
+--- a/src/EventSubscriber/BlockPageDisplayVariantSubscriber.php
++++ b/src/EventSubscriber/BlockPageDisplayVariantSubscriber.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\context\EventSubscriber\BlockPageDisplayVariantSubscriber.
+- */
+-
+ namespace Drupal\context\EventSubscriber;
+ 
+ use Drupal\context\ContextManager;
+@@ -28,7 +23,7 @@ class BlockPageDisplayVariantSubscriber implements EventSubscriberInterface {
+   /**
+    * @param \Drupal\context\ContextManager $contextManager
+    */
+-  function __construct(ContextManager $contextManager) {
++  public function __construct(ContextManager $contextManager) {
+     $this->contextManager = $contextManager;
+   }
+ 
+@@ -52,7 +47,7 @@ class BlockPageDisplayVariantSubscriber implements EventSubscriberInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  static function getSubscribedEvents() {
++  public static function getSubscribedEvents() {
+     $events[RenderEvents::SELECT_PAGE_DISPLAY_VARIANT][] = ['onSelectPageDisplayVariant'];
+     return $events;
+   }
+diff --git a/src/Form/AjaxFormTrait.php b/src/Form/AjaxFormTrait.php
+index d61af38..76d7bc6 100644
+--- a/src/Form/AjaxFormTrait.php
++++ b/src/Form/AjaxFormTrait.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\context\Form\AjaxFormTrait.
+- */
+-
+ namespace Drupal\context\Form;
+ 
+ use Drupal\Component\Serialization\Json;
+diff --git a/src/Plugin/Condition/RequestPathExclusion.php b/src/Plugin/Condition/RequestPathExclusion.php
+index e399c6d..f2e358f 100644
+--- a/src/Plugin/Condition/RequestPathExclusion.php
++++ b/src/Plugin/Condition/RequestPathExclusion.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\context\Plugin\Condition;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+@@ -35,4 +36,5 @@ class RequestPathExclusion extends RequestPath implements ContainerFactoryPlugin
+     }
+     return !parent::evaluate();
+   }
++
+ }
+diff --git a/src/Plugin/Condition/ViewInclusion.php b/src/Plugin/Condition/ViewInclusion.php
+index fafbfb6..76e41a3 100644
+--- a/src/Plugin/Condition/ViewInclusion.php
++++ b/src/Plugin/Condition/ViewInclusion.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\context\Plugin\Condition;
+ 
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+@@ -119,4 +120,5 @@ class ViewInclusion extends ConditionPluginBase implements ContainerFactoryPlugi
+ 
+     return FALSE;
+   }
++
+ }
+diff --git a/src/Plugin/ContextReaction/Blocks.php b/src/Plugin/ContextReaction/Blocks.php
+index bd65f1d..f434033 100644
+--- a/src/Plugin/ContextReaction/Blocks.php
++++ b/src/Plugin/ContextReaction/Blocks.php
+@@ -39,7 +39,7 @@ use Drupal\Core\Security\TrustedCallbackInterface;
+  *   label = @Translation("Blocks")
+  * )
+  */
+-class Blocks extends ContextReactionPluginBase implements ContainerFactoryPluginInterface, TrustedCallbackInterface{
++class Blocks extends ContextReactionPluginBase implements ContainerFactoryPluginInterface, TrustedCallbackInterface {
+ 
+   use AjaxFormTrait;
+ 
+@@ -57,7 +57,7 @@ class Blocks extends ContextReactionPluginBase implements ContainerFactoryPlugin
+   /**
+    * Contains a temporary collection of blocks.
+    *
+-   * @var BlockCollection
++   * @var \Drupal\context\Reaction\Blocks\BlockCollection
+    */
+   protected $blocksCollection;
+ 
+@@ -79,7 +79,7 @@ class Blocks extends ContextReactionPluginBase implements ContainerFactoryPlugin
+   protected $themeHandler;
+ 
+   /**
+-   * @var ContextRepositoryInterface
++   * @var \Drupal\Core\Plugin\Context\ContextRepositoryInterface
+    */
+   protected $contextRepository;
+ 
+@@ -89,24 +89,24 @@ class Blocks extends ContextReactionPluginBase implements ContainerFactoryPlugin
+   protected $entityTypeManager;
+ 
+   /**
+-   * @var ContextHandlerInterface
++   * @var \Drupal\Core\Plugin\Context\ContextHandlerInterface
+    */
+   protected $contextHandler;
+ 
+   /**
+-   * @var AccountInterface
++   * @var \Drupal\Core\Session\AccountInterface
+    */
+   protected $account;
+ 
+   /**
+-   * @var BlockManager
++   * @var \Drupal\Core\Block\BlockManager
+    */
+   protected $blockManager;
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  function __construct(
++  public function __construct(
+     array $configuration,
+     $pluginId,
+     $pluginDefinition,
+@@ -299,7 +299,8 @@ class Blocks extends ContextReactionPluginBase implements ContainerFactoryPlugin
+   /**
+    * Renders the content using the provided block plugin.
+    *
+-   * @param  array $build
++   * @param array $build
++   *
+    * @return array
+    */
+   public function preRenderBlock($build) {
+@@ -340,7 +341,7 @@ class Blocks extends ContextReactionPluginBase implements ContainerFactoryPlugin
+    */
+   public function defaultConfiguration() {
+     return [
+-      'blocks' => []
++      'blocks' => [],
+     ] + parent::defaultConfiguration();
+   }
+ 
+@@ -376,7 +377,7 @@ class Blocks extends ContextReactionPluginBase implements ContainerFactoryPlugin
+   /**
+    * Get all blocks as a collection.
+    *
+-   * @return BlockPluginInterface[]|BlockCollection
++   * @return \Drupal\Core\Block\BlockPluginInterface[]|BlockCollection
+    */
+   public function getBlocks() {
+     if (!$this->blocksCollection) {
+@@ -392,7 +393,7 @@ class Blocks extends ContextReactionPluginBase implements ContainerFactoryPlugin
+    * @param string $blockId
+    *   The ID of the block to get.
+    *
+-   * @return BlockPluginInterface
++   * @return \Drupal\Core\Block\BlockPluginInterface
+    */
+   public function getBlock($blockId) {
+     return $this->getBlocks()->get($blockId);
+@@ -491,13 +492,12 @@ class Blocks extends ContextReactionPluginBase implements ContainerFactoryPlugin
+       '#default_value' => isset($this->getConfiguration()['include_default_blocks']) ? $this->getConfiguration()['include_default_blocks'] : FALSE,
+     ];
+ 
+-
+     $form['blocks']['block_add'] = [
+       '#type' => 'link',
+       '#title' => $this->t('Place block'),
+       '#attributes' => [
+-          'id' => 'context-reaction-blocks-region-add',
+-        ] + $this->getAjaxButtonAttributes(),
++        'id' => 'context-reaction-blocks-region-add',
++      ] + $this->getAjaxButtonAttributes(),
+       '#url' => Url::fromRoute('context.reaction.blocks.library', [
+         'context' => $context->id(),
+         'reaction_id' => $this->getPluginId(),
+@@ -584,7 +584,7 @@ class Blocks extends ContextReactionPluginBase implements ContainerFactoryPlugin
+ 
+       // Add each block specified for the region if there are any.
+       if (isset($blocks[$region])) {
+-        /** @var BlockPluginInterface $block */
++        /** @var \Drupal\Core\Block\BlockPluginInterface $block */
+         foreach ($blocks[$region] as $block_id => $block) {
+           $configuration = $block->getConfiguration();
+ 
+@@ -659,7 +659,7 @@ class Blocks extends ContextReactionPluginBase implements ContainerFactoryPlugin
+   /**
+    * Check to see if the block should be uniquely placed.
+    *
+-   * @param BlockPluginInterface $block
++   * @param \Drupal\Core\Block\BlockPluginInterface $block
+    *
+    * @return bool
+    */
+@@ -738,8 +738,7 @@ class Blocks extends ContextReactionPluginBase implements ContainerFactoryPlugin
+   /**
+    * {@inheritdoc}
+    */
+-  public static function trustedCallbacks()
+-  {
++  public static function trustedCallbacks() {
+     return ['preRenderBlock'];
+   }
+ 
+diff --git a/src/Plugin/ContextReaction/Menu.php b/src/Plugin/ContextReaction/Menu.php
+index 44e7b92..726182e 100644
+--- a/src/Plugin/ContextReaction/Menu.php
++++ b/src/Plugin/ContextReaction/Menu.php
+@@ -5,7 +5,6 @@ namespace Drupal\context\Plugin\ContextReaction;
+ use Drupal\context\ContextReactionPluginBase;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Menu\MenuParentFormSelectorInterface;
+-use Drupal\Core\Menu\MenuTreeParameters;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+@@ -17,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  *   label = @Translation("Menu")
+  * )
+  */
+-class Menu extends ContextReactionPluginBase implements ContainerFactoryPluginInterface  {
++class Menu extends ContextReactionPluginBase implements ContainerFactoryPluginInterface {
+ 
+   /**
+    * @var \Drupal\Core\Menu\MenuParentFormSelector
+diff --git a/src/Plugin/ContextReaction/PageTemplateSuggestions.php b/src/Plugin/ContextReaction/PageTemplateSuggestions.php
+index 76e1e8c..994963d 100644
+--- a/src/Plugin/ContextReaction/PageTemplateSuggestions.php
++++ b/src/Plugin/ContextReaction/PageTemplateSuggestions.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\context\Plugin\ContextReaction;
+ 
+ use Drupal\context\ContextReactionPluginBase;
+@@ -52,4 +53,5 @@ class PageTemplateSuggestions extends ContextReactionPluginBase {
+     $config['suggestions'] = str_replace("\r\n", "\n", $form_state->getValue('suggestions'));
+     $this->setConfiguration($config);
+   }
++
+ }
+diff --git a/src/Plugin/ContextReaction/PageTitle.php b/src/Plugin/ContextReaction/PageTitle.php
+index 6f5be90..62ccb1a 100644
+--- a/src/Plugin/ContextReaction/PageTitle.php
++++ b/src/Plugin/ContextReaction/PageTitle.php
+@@ -52,4 +52,5 @@ class PageTitle extends ContextReactionPluginBase {
+     $config['page_title'] = $form_state->getValue('page_title');
+     $this->setConfiguration($config);
+   }
++
+ }
+diff --git a/src/Plugin/ContextReaction/Regions.php b/src/Plugin/ContextReaction/Regions.php
+index c4d4a41..045143e 100644
+--- a/src/Plugin/ContextReaction/Regions.php
++++ b/src/Plugin/ContextReaction/Regions.php
+@@ -1,10 +1,10 @@
+ <?php
++
+ namespace Drupal\context\Plugin\ContextReaction;
+ 
+ use Drupal\block\BlockRepositoryInterface;
+ use Drupal\context\ContextReactionPluginBase;
+ use Drupal\Core\Extension\ThemeHandlerInterface;
+-use Drupal\Core\Form\FormState;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Drupal\Core\Theme\ThemeManagerInterface;
+@@ -40,7 +40,7 @@ class Regions extends ContextReactionPluginBase implements ContainerFactoryPlugi
+   /**
+    * {@inheritdoc}
+    */
+-  function __construct(
++  public function __construct(
+     array $configuration,
+     $pluginId,
+     $pluginDefinition,
+@@ -168,4 +168,5 @@ class Regions extends ContextReactionPluginBase implements ContainerFactoryPlugi
+     $configurations = $this->getConfiguration();
+     return isset($configurations['regions']) ? $configurations['regions'] : [];
+   }
++
+ }
+diff --git a/src/Plugin/ContextReaction/Theme.php b/src/Plugin/ContextReaction/Theme.php
+index 204e295..fa8f77e 100644
+--- a/src/Plugin/ContextReaction/Theme.php
++++ b/src/Plugin/ContextReaction/Theme.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\context\Plugin\ContextReaction;
+ 
+ use Drupal\context\ContextReactionPluginBase;
+@@ -31,7 +32,7 @@ class Theme extends ContextReactionPluginBase implements ContainerFactoryPluginI
+   /**
+    * {@inheritdoc}
+    */
+-  function __construct(
++  public function __construct(
+     array $configuration,
+     $pluginId,
+     $pluginDefinition,
+@@ -102,4 +103,5 @@ class Theme extends ContextReactionPluginBase implements ContainerFactoryPluginI
+     $configuration += $this->getConfiguration();
+     $this->setConfiguration($configuration);
+   }
++
+ }
+diff --git a/src/Plugin/ContextReactionPluginCollection.php b/src/Plugin/ContextReactionPluginCollection.php
+index e464f9a..91758e7 100644
+--- a/src/Plugin/ContextReactionPluginCollection.php
++++ b/src/Plugin/ContextReactionPluginCollection.php
+@@ -4,6 +4,9 @@ namespace Drupal\context\Plugin;
+ 
+ use Drupal\Core\Plugin\DefaultLazyPluginCollection;
+ 
++/**
++ *
++ */
+ class ContextReactionPluginCollection extends DefaultLazyPluginCollection {
+ 
+   /**
+@@ -14,4 +17,5 @@ class ContextReactionPluginCollection extends DefaultLazyPluginCollection {
+   public function &get($instance_id) {
+     return parent::get($instance_id);
+   }
++
+ }
+diff --git a/src/Plugin/DisplayVariant/ContextBlockPageVariant.php b/src/Plugin/DisplayVariant/ContextBlockPageVariant.php
+index 17868f2..03346f1 100644
+--- a/src/Plugin/DisplayVariant/ContextBlockPageVariant.php
++++ b/src/Plugin/DisplayVariant/ContextBlockPageVariant.php
+@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ class ContextBlockPageVariant extends VariantBase implements PageVariantInterface, ContainerFactoryPluginInterface {
+ 
+   /**
+-   * @var ContextManager
++   * @var \Drupal\context\ContextManager
+    */
+   protected $contextManager;
+ 
+@@ -43,7 +43,7 @@ class ContextBlockPageVariant extends VariantBase implements PageVariantInterfac
+   protected $title = '';
+ 
+   /**
+-   * @var VariantManager
++   * @var \Drupal\Core\Display\VariantManager
+    */
+   protected $displayVariant;
+ 
+@@ -59,10 +59,10 @@ class ContextBlockPageVariant extends VariantBase implements PageVariantInterfac
+    * @param mixed $plugin_definition
+    *   The plugin implementation definition.
+    *
+-   * @param ContextManager $contextManager
++   * @param \Drupal\context\ContextManager $contextManager
+    *   The context module manager.
+    *
+-   * @param VariantManager $displayVariant
++   * @param \Drupal\Core\Display\VariantManager $displayVariant
+    *   The variant manager.
+    */
+   public function __construct(array $configuration, $plugin_id, $plugin_definition, ContextManager $contextManager, VariantManager $displayVariant) {
+diff --git a/src/Reaction/Annotation/ContextReaction.php b/src/Reaction/Annotation/ContextReaction.php
+index b270338..3c8d8a5 100644
+--- a/src/Reaction/Annotation/ContextReaction.php
++++ b/src/Reaction/Annotation/ContextReaction.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\context\Reaction\Annotation\ContextReaction.
+- */
+-
+ namespace Drupal\context\Reaction\Annotation;
+ 
+ use Drupal\Component\Annotation\Plugin;
+@@ -12,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
+ /**
+  * Defines an context reaction annotation object.
+  *
+- * Plugin Namespace: Plugin\ContextReaction
++ * Plugin Namespace: Plugin\ContextReaction.
+  *
+  * @Annotation
+  */
+@@ -41,7 +36,7 @@ class ContextReaction extends Plugin {
+    *
+    * @ingroup plugin_translatable
+    *
+-   * @var \Drupal\Core\Annotation\Translation (optional)
++   * @var \Drupal\Core\Annotation\Translationoptional
+    */
+   public $description = '';
+ 
+diff --git a/src/Reaction/Blocks/BlockCollection.php b/src/Reaction/Blocks/BlockCollection.php
+index 31f04a9..1499bb8 100644
+--- a/src/Reaction/Blocks/BlockCollection.php
++++ b/src/Reaction/Blocks/BlockCollection.php
+@@ -5,12 +5,15 @@ namespace Drupal\context\Reaction\Blocks;
+ use Drupal\Core\Block\BlockPluginInterface;
+ use Drupal\Core\Plugin\DefaultLazyPluginCollection;
+ 
++/**
++ *
++ */
+ class BlockCollection extends DefaultLazyPluginCollection {
+ 
+   /**
+    * {@inheritdoc}
+    *
+-   * @return BlockPluginInterface
++   * @return \Drupal\Core\Block\BlockPluginInterface
+    */
+   public function &get($instance_id) {
+     return parent::get($instance_id);
+@@ -23,14 +26,14 @@ class BlockCollection extends DefaultLazyPluginCollection {
+    * @param string $theme
+    *   The theme to get blocks for.
+    *
+-   * @return BlockPluginInterface[]
++   * @return \Drupal\Core\Block\BlockPluginInterface[]
+    *   An associative array keyed by region, containing an associative array of
+    *   block plugins.
+    */
+   public function getAllByRegion($theme) {
+     $region_assignments = [];
+ 
+-    /** @var BlockPluginInterface[] $this */
++    /** @var \Drupal\Core\Block\BlockPluginInterface[] $this */
+     foreach ($this as $block_id => $block) {
+       $configuration = $block->getConfiguration();
+ 
+@@ -66,4 +69,5 @@ class BlockCollection extends DefaultLazyPluginCollection {
+ 
+     return $region_assignments;
+   }
++
+ }
+diff --git a/src/Reaction/Blocks/Controller/ContextReactionBlocksController.php b/src/Reaction/Blocks/Controller/ContextReactionBlocksController.php
+index 3e16250..bebebd4 100644
+--- a/src/Reaction/Blocks/Controller/ContextReactionBlocksController.php
++++ b/src/Reaction/Blocks/Controller/ContextReactionBlocksController.php
+@@ -6,7 +6,6 @@ use Drupal\context\ContextManager;
+ use Drupal\Core\Ajax\AjaxResponse;
+ use Drupal\Core\Ajax\ReplaceCommand;
+ use Drupal\Core\Extension\ThemeHandlerInterface;
+-use Drupal\Core\Form\FormState;
+ use Drupal\Core\Url;
+ use Drupal\context\ContextInterface;
+ use Drupal\Component\Serialization\Json;
+@@ -16,6 +15,9 @@ use Drupal\Core\Plugin\Context\ContextRepositoryInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\HttpFoundation\Request;
+ 
++/**
++ *
++ */
+ class ContextReactionBlocksController extends ControllerBase {
+ 
+   /**
+@@ -46,7 +48,7 @@ class ContextReactionBlocksController extends ControllerBase {
+    * @param \Drupal\Core\Extension\ThemeHandlerInterface $themeHandler
+    * @param \Drupal\context\ContextManager $contextManager
+    */
+-  function __construct(
++  public function __construct(
+     BlockManagerInterface $blockManager,
+     ContextRepositoryInterface $contextRepository,
+     ThemeHandlerInterface $themeHandler,
+@@ -74,7 +76,7 @@ class ContextReactionBlocksController extends ControllerBase {
+    * Display a library of blocks that can be added to the context reaction.
+    *
+    * @param \Symfony\Component\HttpFoundation\Request $request
+-   *  The request object.
++   *   The request object.
+    *
+    * @param \Drupal\context\ContextInterface $context
+    *   The context the blocks reaction belongs to.
+@@ -180,10 +182,10 @@ class ContextReactionBlocksController extends ControllerBase {
+   /**
+    * Callback for the theme select list on the Context blocks reaction form.
+    *
+-   * @param Request $request
++   * @param \Symfony\Component\HttpFoundation\Request $request
+    *   The current request.
+    *
+-   * @param ContextInterface $context
++   * @param \Drupal\context\ContextInterface $context
+    *   The context the block reaction is located on.
+    *
+    * @return \Drupal\Core\Ajax\AjaxResponse
+diff --git a/src/Reaction/Blocks/Form/BlockAddForm.php b/src/Reaction/Blocks/Form/BlockAddForm.php
+index 7dc9a2f..b006ffa 100644
+--- a/src/Reaction/Blocks/Form/BlockAddForm.php
++++ b/src/Reaction/Blocks/Form/BlockAddForm.php
+@@ -2,8 +2,9 @@
+ 
+ namespace Drupal\context\Reaction\Blocks\Form;
+ 
+-use Drupal\Core\StringTranslation\TranslatableMarkup;
+-
++/**
++ *
++ */
+ class BlockAddForm extends BlockFormBase {
+ 
+   /**
+diff --git a/src/Reaction/Blocks/Form/BlockDeleteForm.php b/src/Reaction/Blocks/Form/BlockDeleteForm.php
+index 681f937..30fd7e2 100644
+--- a/src/Reaction/Blocks/Form/BlockDeleteForm.php
++++ b/src/Reaction/Blocks/Form/BlockDeleteForm.php
+@@ -4,35 +4,36 @@ namespace Drupal\context\Reaction\Blocks\Form;
+ 
+ use Drupal\context\ContextInterface;
+ use Drupal\context\ContextManager;
+-use Drupal\context\Plugin\ContextReaction\Blocks;
+ use Drupal\Core\Ajax\AjaxResponse;
+ use Drupal\Core\Ajax\CloseModalDialogCommand;
+ use Drupal\Core\Ajax\ReplaceCommand;
+-use Drupal\Core\Block\BlockPluginInterface;
+ use Drupal\Core\Form\ConfirmFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class BlockDeleteForm extends ConfirmFormBase {
+ 
+   /**
+    * The context that the block is being removed from.
+    *
+-   * @var ContextInterface
++   * @var \Drupal\context\ContextInterface
+    */
+   protected $context;
+ 
+   /**
+    * The blocks reaction.
+    *
+-   * @var Blocks
++   * @var \Drupal\context\Plugin\ContextReaction\Blocks
+    */
+   protected $reaction;
+ 
+   /**
+    * The block that is being removed.
+    *
+-   * @var BlockPluginInterface
++   * @var \Drupal\Core\Block\BlockPluginInterface
+    */
+   protected $block;
+ 
+@@ -46,7 +47,7 @@ class BlockDeleteForm extends ConfirmFormBase {
+   /**
+    * Construct a condition delete form.
+    *
+-   * @param ContextManager $contextManager
++   * @param \Drupal\context\ContextManager $contextManager
+    */
+   public function __construct(ContextManager $contextManager) {
+     $this->contextManager = $contextManager;
+@@ -56,7 +57,7 @@ class BlockDeleteForm extends ConfirmFormBase {
+    * {@inheritdoc}
+    */
+   public static function create(ContainerInterface $container) {
+-    return new static (
++    return new static(
+       $container->get('context.manager')
+     );
+   }
+@@ -105,7 +106,7 @@ class BlockDeleteForm extends ConfirmFormBase {
+       unset($form['actions']['cancel']);
+       // Submit the form with AJAX if possible.
+       $form['actions']['submit']['#ajax'] = [
+-        'callback' => '::submitFormAjax'
++        'callback' => '::submitFormAjax',
+       ];
+     }
+ 
+@@ -125,7 +126,8 @@ class BlockDeleteForm extends ConfirmFormBase {
+     // If this is not an AJAX request then redirect and show a message.
+     if (!$this->getRequest()->isXmlHttpRequest()) {
+       $this->messenger()->addMessage($this->t('The %label block has been removed.', [
+-          '%label' => $configuration['label']]
++        '%label' => $configuration['label'],
++      ]
+       ));
+ 
+       $form_state->setRedirectUrl($this->getCancelUrl());
+@@ -135,7 +137,7 @@ class BlockDeleteForm extends ConfirmFormBase {
+   /**
+    * Handle when the form is submitted trough AJAX.
+    *
+-   * @return AjaxResponse
++   * @return \Drupal\Core\Ajax\AjaxResponse
+    */
+   public function submitFormAjax() {
+     $contextForm = $this->contextManager->getForm($this->context, 'edit');
+@@ -147,4 +149,5 @@ class BlockDeleteForm extends ConfirmFormBase {
+ 
+     return $response;
+   }
++
+ }
+diff --git a/src/Reaction/Blocks/Form/BlockEditForm.php b/src/Reaction/Blocks/Form/BlockEditForm.php
+index deca311..b16de68 100644
+--- a/src/Reaction/Blocks/Form/BlockEditForm.php
++++ b/src/Reaction/Blocks/Form/BlockEditForm.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\context\Reaction\Blocks\Form;
+ 
++/**
++ *
++ */
+ class BlockEditForm extends BlockFormBase {
+ 
+   /**
+diff --git a/src/Reaction/Blocks/Form/BlockFormBase.php b/src/Reaction/Blocks/Form/BlockFormBase.php
+index fcdc2a9..13f398b 100644
+--- a/src/Reaction/Blocks/Form/BlockFormBase.php
++++ b/src/Reaction/Blocks/Form/BlockFormBase.php
+@@ -20,11 +20,13 @@ use Drupal\Component\Plugin\PluginManagerInterface;
+ use Drupal\Core\Plugin\Context\ContextRepositoryInterface;
+ use Drupal\Core\Plugin\ContextAwarePluginInterface;
+ use Drupal\Core\Render\Element\StatusMessages;
+-use Drupal\Core\StringTranslation\TranslatableMarkup;
+ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\HttpFoundation\RequestStack;
+ 
++/**
++ *
++ */
+ abstract class BlockFormBase extends FormBase {
+ 
+   use AjaxFormTrait;
+@@ -39,7 +41,7 @@ abstract class BlockFormBase extends FormBase {
+   /**
+    * The context entity the reaction belongs to.
+    *
+-   * @var ContextInterface
++   * @var \Drupal\context\ContextInterface
+    */
+   protected $context;
+ 
+@@ -109,8 +111,7 @@ abstract class BlockFormBase extends FormBase {
+     ContextReactionManager $contextReactionManager,
+     ContextManager $contextManager,
+     RequestStack $requestStack
+-  )
+-  {
++  ) {
+     $this->blockManager = $block_manager;
+     $this->contextRepository = $contextRepository;
+     $this->themeHandler = $themeHandler;
+@@ -149,7 +150,7 @@ abstract class BlockFormBase extends FormBase {
+   /**
+    * Get the value to use for the submit button.
+    *
+-   * @return TranslatableMarkup
++   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+    */
+   abstract protected function getSubmitValue();
+ 
+@@ -162,7 +163,7 @@ abstract class BlockFormBase extends FormBase {
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The current state of the form.
+    *
+-   * @param ContextInterface $context
++   * @param \Drupal\context\ContextInterface $context
+    *   The context the reaction belongs to.
+    *
+    * @param string|null $reaction_id
+@@ -183,7 +184,7 @@ abstract class BlockFormBase extends FormBase {
+     // otherwise use the default theme.
+     $theme = $this->getRequest()->query->get('theme', $this->themeHandler->getDefault());
+ 
+-    // Some blocks require the theme name in the form state like Site Branding
++    // Some blocks require the theme name in the form state like Site Branding.
+     $form_state->set('block_theme', $theme);
+ 
+     // Some blocks require contexts, set a temporary value with gathered
+@@ -243,7 +244,7 @@ abstract class BlockFormBase extends FormBase {
+       '#value' => $this->getSubmitValue(),
+       '#button_type' => 'primary',
+       '#ajax' => [
+-        'callback' => '::submitFormAjax'
++        'callback' => '::submitFormAjax',
+       ],
+     ];
+ 
+@@ -315,7 +316,8 @@ abstract class BlockFormBase extends FormBase {
+     // Add/Update the block.
+     if (!isset($configuration['uuid'])) {
+       $this->reaction->addBlock($configuration);
+-    } else {
++    }
++    else {
+       $this->reaction->updateBlock($configuration['uuid'], $configuration);
+     }
+ 
+@@ -329,7 +331,7 @@ abstract class BlockFormBase extends FormBase {
+   /**
+    * Handle when the form is submitted trough AJAX.
+    *
+-   * @return AjaxResponse
++   * @return \Drupal\Core\Ajax\AjaxResponse
+    */
+   public function submitFormAjax(array &$form, FormStateInterface $form_state) {
+     $response = new AjaxResponse();
+@@ -338,7 +340,7 @@ abstract class BlockFormBase extends FormBase {
+       $messages = StatusMessages::renderMessages(NULL);
+       $output[] = $messages;
+       $output[] = $form;
+-      $form_class = '.' . str_replace('_', '-', $form_state->getFormObject()->getFormId()) ;
++      $form_class = '.' . str_replace('_', '-', $form_state->getFormObject()->getFormId());
+       // Remove any previously added error messages.
+       $response->addCommand(new RemoveCommand('#drupal-modal .messages--error'));
+       // Replace old form with new one and with error message.
+@@ -375,4 +377,3 @@ abstract class BlockFormBase extends FormBase {
+   }
+ 
+ }
+-
+diff --git a/src/Reaction/ContextReactionFormBase.php b/src/Reaction/ContextReactionFormBase.php
+index 8db2fa9..712c470 100644
+--- a/src/Reaction/ContextReactionFormBase.php
++++ b/src/Reaction/ContextReactionFormBase.php
+@@ -3,19 +3,21 @@
+ namespace Drupal\context\Reaction;
+ 
+ use Drupal\context\ContextInterface;
+-use Drupal\context\ContextReactionInterface;
+ use Drupal\Core\Form\FormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ abstract class ContextReactionFormBase extends FormBase {
+ 
+   /**
+-   * @var ContextInterface
++   * @var \Drupal\context\ContextInterface
+    */
+   protected $context;
+ 
+   /**
+-   * @var ContextReactionInterface
++   * @var \Drupal\context\ContextReactionInterface
+    */
+   protected $reaction;
+ 
+@@ -35,7 +37,7 @@ abstract class ContextReactionFormBase extends FormBase {
+    *   The id of the reaction that is being configured.
+    *
+    * @return array The form structure.
+-   * The form structure.
++   *   The form structure.
+    */
+   public function buildForm(array $form, FormStateInterface $form_state, ContextInterface $context = NULL, $reaction_id = NULL) {
+     $this->context = $context;
+@@ -46,7 +48,7 @@ abstract class ContextReactionFormBase extends FormBase {
+     ];
+ 
+     $form['actions'] = [
+-      '#type' => 'actions'
++      '#type' => 'actions',
+     ];
+ 
+     $form['actions']['submit'] = [
+@@ -64,4 +66,5 @@ abstract class ContextReactionFormBase extends FormBase {
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+     $this->context->save();
+   }
++
+ }

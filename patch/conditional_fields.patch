@@ -1,0 +1,3759 @@
+diff --git a/js/conditional_fields.js b/js/conditional_fields.js
+index e79f40c..b862648 100644
+--- a/js/conditional_fields.js
++++ b/js/conditional_fields.js
+@@ -44,21 +44,21 @@ if (Drupal.autocomplete) {
+  */
+ 
+ //Visible/Invisible.
+-$(document).bind('state:visible-fade', function(e) {
++$(document).bind('state:visible-fade', function (e) {
+   if (e.trigger) {
+     $(e.target).closest('.form-item, .form-submit, .form-wrapper')[e.value ? 'fadeIn' : 'fadeOut'](e.effect.speed);
+   }
+ })
+-.bind('state:visible-slide', function(e) {
++.bind('state:visible-slide', function (e) {
+   if (e.trigger) {
+     $(e.target).closest('.form-item, .form-submit, .form-wrapper')[e.value ? 'slideDown' : 'slideUp'](e.effect.speed);
+   }
+ })
+ // Empty/Filled.
+-.bind('state:empty', function(e) {
++.bind('state:empty', function (e) {
+   if (e.trigger) {
+     var fields = $(e.target).find('input, select, textarea');
+-    fields.each(function() {
++    fields.each(function () {
+       if (typeof $(this).data('conditionalFieldsSavedValue') === 'undefined') {
+         $(this).data('conditionalFieldsSavedValue', $(this).val());
+       }
+@@ -74,7 +74,7 @@ $(document).bind('state:visible-fade', function(e) {
+   }
+ })
+ // On invisible make empty and unrequired.
+-.bind('state:visible', function(e) {
++.bind('state:visible', function (e) {
+   if (e.trigger) {
+     // Save required property.
+     if (typeof $(e.target).data('conditionalFieldsSavedRequired') === 'undefined') {
+@@ -112,7 +112,7 @@ $(document).bind('state:visible-fade', function(e) {
+     }
+ })
+ // Unchanged state. Do nothing.
+-.bind('state:unchanged', function() {});
++.bind('state:unchanged', function () {});
+ 
+ Drupal.behaviors.conditionalFields = {
+   attach: function (context, settings) {
+@@ -123,10 +123,10 @@ Drupal.behaviors.conditionalFields = {
+     }
+     // Override state change handlers for dependents with special effects.
+     var eventsData = $.hasOwnProperty('_data') ? $._data(document, 'events') : $(document).data('events');
+-    $.each(eventsData, function(i, events) {
++    $.each(eventsData, function (i, events) {
+       if (i.substring(0, 6) === 'state:') {
+         var originalHandler = events[0].handler;
+-        events[0].handler = function(e) {
++        events[0].handler = function (e) {
+           var effect = conditionalFields.effects['#' + e.target.id];
+           if (typeof effect !== 'undefined') {
+             var effectEvent = i + '-' + effect.effect;
+@@ -143,7 +143,7 @@ Drupal.behaviors.conditionalFields = {
+ };
+ 
+ Drupal.behaviors.ckeditorTextareaFix = {
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+         if(CKEDITOR) {
+             CKEDITOR.on('instanceReady', function () {
+                 $(context).find('.form-textarea-wrapper textarea').each(function () {
+@@ -173,7 +173,6 @@ Drupal.behaviors.autocompleteChooseTrigger = {
+     }
+ };
+ 
+-
+ Drupal.behaviors.statesModification = {
+   weight: -10,
+   attach: function (context, settings) {
+@@ -247,7 +246,7 @@ Drupal.behaviors.statesModification = {
+         }
+       }
+       //The fix for compare strings wrapped by control symbols
+-      Drupal.states.Dependent.comparisons.String = function( reference, value ) {
++      Drupal.states.Dependent.comparisons.String = function ( reference, value ) {
+         if ( value && value.constructor.name == 'Array' ) {
+          for (var index in value) {
+            if (_compare2(reference, value[index])) {
+diff --git a/src/ConditionalFieldsFormHelper.php b/src/ConditionalFieldsFormHelper.php
+index f284ed8..f3c62d4 100644
+--- a/src/ConditionalFieldsFormHelper.php
++++ b/src/ConditionalFieldsFormHelper.php
+@@ -4,13 +4,10 @@ namespace Drupal\conditional_fields;
+ 
+ use Drupal\Component\Render\MarkupInterface;
+ use Drupal\Component\Utility\NestedArray;
+-use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
+ use Drupal\Core\Field\WidgetBase;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\Core\Render\ElementInfoManager;
+-use Drupal\conditional_fields\ConditionalFieldsHandlersManager;
+-
+ 
+ /**
+  * Helper to interact with forms.
+@@ -22,15 +19,23 @@ class ConditionalFieldsFormHelper {
+   protected $effects;
+   protected $dependent_location;
+   protected $dependent_form_field;
+-  /*  List of all form states. */
++  /**
++   * List of all form states.
++   */
++
+   protected $states;
+ 
+-  /** @var \Drupal\Core\Render\ElementInfoManager */
++  /**
++   * @var \Drupal\Core\Render\ElementInfoManager*/
+   protected $elementInfo;
+ 
+-  /** @var \Drupal\conditional_fields\ConditionalFieldsHandlersManager */
++  /**
++   * @var \Drupal\conditional_fields\ConditionalFieldsHandlersManager*/
+   protected $type;
+ 
++  /**
++   *
++   */
+   public function __construct(ElementInfoManager $element_info, ConditionalFieldsHandlersManager $type) {
+     $this->elementInfo = $element_info;
+     $this->type = $type;
+@@ -129,7 +134,7 @@ class ConditionalFieldsFormHelper {
+         'checked',
+         '!checked',
+       ])) {
+-      self::elementAddProperty($this->dependent_form_field, '#element_validate', [self::class, 'dependentValidate'], 'append');
++        self::elementAddProperty($this->dependent_form_field, '#element_validate', [self::class, 'dependentValidate'], 'append');
+       }
+ 
+       $this->addStateToGroup($state, $options);
+@@ -174,6 +179,7 @@ class ConditionalFieldsFormHelper {
+    *   Nested array of control field.
+    * @param array $options
+    *   Settings of dependency.
++   *
+    * @return array
+    *   List of states.
+    *
+@@ -226,6 +232,9 @@ class ConditionalFieldsFormHelper {
+     return $state;
+   }
+ 
++  /**
++   *
++   */
+   protected function hasConditionalFields() {
+     // Dependencies data is attached in conditional_fields_element_after_build().
+     if (empty($this->form['#conditional_fields'])) {
+@@ -340,9 +349,10 @@ class ConditionalFieldsFormHelper {
+             }
+             $input_state = (is_null($input_state)) ? [] : $input_state;
+             if (isset($dependent['field_parents'][0])) {
+-                $field = FieldStorageConfig::loadByName($form['#entity_type'], $dependent['field_parents'][0]);
+-            } else {
+-                $field = null;
++              $field = FieldStorageConfig::loadByName($form['#entity_type'], $dependent['field_parents'][0]);
++            }
++            else {
++              $field = NULL;
+             }
+             if (empty($input_state)) {
+               if (isset($element['widget']['#title'])) {
+@@ -350,7 +360,8 @@ class ConditionalFieldsFormHelper {
+               }
+               elseif (isset($dependent['field_parents'][0])) {
+                 $title = $dependent['field_parents'][0];
+-              } elseif ($field) {
++              }
++              elseif ($field) {
+                 $title = $field->getName();
+               }
+ 
+@@ -369,7 +380,6 @@ class ConditionalFieldsFormHelper {
+     // have been validated to avoid collision between dependencies.
+     $form_state_addition['parents'] = $dependent['field_parents'];
+ 
+-
+     // Optional behavior: reset the field to its default values.
+     // Default values are always valid, so it's safe to skip validation.
+     if (!empty($element['#conditional_fields_reset_if_untriggered']) && !$triggered) {
+@@ -387,7 +397,7 @@ class ConditionalFieldsFormHelper {
+         // element. This also means that so there can be multiple errors on the
+         // same field (even though Drupal doesn't support multiple errors on the
+         // same element).
+-        if (strpos((string)$name, $error_key) === 0) {
++        if (strpos((string) $name, $error_key) === 0) {
+           $field_errors[$name] = $error;
+         }
+       }
+@@ -410,7 +420,7 @@ class ConditionalFieldsFormHelper {
+    * @param array $dependent
+    *   The field form element in the current language.
+    *
+-   * @return array|bool $evaluated_dependees.
++   * @return array|bool
+    *   Evaluated dependencies array.
+    */
+   protected static function evaluateDependencies($dependent, $form, $form_state, $grouping = TRUE) {
+@@ -542,7 +552,7 @@ class ConditionalFieldsFormHelper {
+       if (!empty($error_messages['error'])) {
+         $error_messages_array = $error_messages['error'] instanceof MarkupInterface ? $error_messages['error']->jsonSerialize() : $error_messages['error'];
+         foreach (array_diff($error_messages_array, $removed_messages) as $message) {
+-          \Drupal::messenger()->addMessage( $message, 'error' );
++          \Drupal::messenger()->addMessage($message, 'error');
+         }
+       }
+     }
+@@ -551,7 +561,7 @@ class ConditionalFieldsFormHelper {
+   /**
+    * Extracts submitted field values during form validation.
+    *
+-   * @return array|NULL
++   * @return array|null
+    *   The requested field values parent. Actual field vales are stored under
+    *   the key $element['#field_name'].
+    */
+@@ -595,7 +605,6 @@ class ConditionalFieldsFormHelper {
+         $dependency_values = (int) ($options['condition'] === 'checked');
+       }
+ 
+-
+       // Simple case: both values are strings or integers. Should never happen in
+       // view context, but does no harm to check anyway.
+       if (!is_array($values) || (is_array($values) && empty($values))) {
+@@ -740,6 +749,7 @@ class ConditionalFieldsFormHelper {
+       case 'append':
+         $element[$property] = array_merge($element[$property], (array) $value);
+         break;
++
+       case 'prepend':
+       default:
+         $element[$property] = array_merge((array) $value, $element[$property]);
+diff --git a/src/ConditionalFieldsHandlerBase.php b/src/ConditionalFieldsHandlerBase.php
+index 5de90be..b630a36 100644
+--- a/src/ConditionalFieldsHandlerBase.php
++++ b/src/ConditionalFieldsHandlerBase.php
+@@ -11,28 +11,32 @@ abstract class ConditionalFieldsHandlerBase implements ConditionalFieldsHandlers
+    * {@inheritdoc}
+    */
+   public function getWidgetValue(array $value_form) {
+-    if ( empty( $value_form ) ) {
+-      return null;
+-    } else {
+-      return $value_form[ 0 ][ 'value' ];
++    if (empty($value_form)) {
++      return NULL;
++    }
++    else {
++      return $value_form[0]['value'];
+     }
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getConditionValues( array $options ) {
++  public function getConditionValues(array $options) {
+ 
+-    if ( isset( $options['values'])) {
++    if (isset($options['values'])) {
+       $value_data = $options['values'];
+-    } else {
++    }
++    else {
+       $value_data = $options;
+     }
+-    if ( is_array( $value_data ) ) {
++    if (is_array($value_data)) {
+       $values = $value_data;
+-    } elseif ( is_string( $value_data ) ) {
++    }
++    elseif (is_string($value_data)) {
+       $values = preg_split("/[\r\n]+/g", $value_data);
+-    } else {
++    }
++    else {
+       $values = [];
+     }
+     return $values;
+diff --git a/src/ConditionalFieldsHandlersManager.php b/src/ConditionalFieldsHandlersManager.php
+index 43c7867..980caae 100644
+--- a/src/ConditionalFieldsHandlersManager.php
++++ b/src/ConditionalFieldsHandlersManager.php
+@@ -11,8 +11,6 @@ use Drupal\Component\Plugin\Discovery\StaticDiscovery;
+ use Drupal\Component\Plugin\Discovery\StaticDiscoveryDecorator;
+ use Drupal\Core\StringTranslation\TranslatableMarkup;
+ 
+-
+-
+ /**
+  * Manages discovery and instantiation of handler plugins.
+  */
+@@ -55,27 +53,27 @@ class ConditionalFieldsHandlersManager extends DefaultPluginManager implements F
+    */
+   public function registerDefinitions() {
+     $discovery = $this->getDiscovery();
+-    if ( $discovery instanceof StaticDiscovery ) {
+-      $discovery->setDefinition( 'states_handler_string_textfield', [
+-        'label' => new TranslatableMarkup( 'String textfield' ),
++    if ($discovery instanceof StaticDiscovery) {
++      $discovery->setDefinition('states_handler_string_textfield', [
++        'label' => new TranslatableMarkup('String textfield'),
+         'class' => '\Drupal\conditional_fields\Plugin\conditional_fields\handler\TextDefault',
+-        'type'  => [ 'string' ],
+-      ] );
+-      $discovery->setDefinition( 'states_handler_string_textarea', [
+-        'label' => new TranslatableMarkup( 'String textarea' ),
++        'type'  => ['string'],
++      ]);
++      $discovery->setDefinition('states_handler_string_textarea', [
++        'label' => new TranslatableMarkup('String textarea'),
+         'class' => '\Drupal\conditional_fields\Plugin\conditional_fields\handler\TextDefault',
+-        'type'  => [ 'string' ],
+-      ] );
+-      $discovery->setDefinition( 'states_handler_text_textfield', [
+-        'label' => new TranslatableMarkup( 'Text textfield' ),
++        'type'  => ['string'],
++      ]);
++      $discovery->setDefinition('states_handler_text_textfield', [
++        'label' => new TranslatableMarkup('Text textfield'),
+         'class' => '\Drupal\conditional_fields\Plugin\conditional_fields\handler\TextDefault',
+-        'type'  => [ 'string' ],
+-      ] );
+-      $discovery->setDefinition( 'states_handler_text_textarea', [
+-        'label' => new TranslatableMarkup( 'Text textarea' ),
++        'type'  => ['string'],
++      ]);
++      $discovery->setDefinition('states_handler_text_textarea', [
++        'label' => new TranslatableMarkup('Text textarea'),
+         'class' => '\Drupal\conditional_fields\Plugin\conditional_fields\handler\TextDefault',
+-        'type'  => [ 'string' ],
+-      ] );
++        'type'  => ['string'],
++      ]);
+     }
+   }
+ 
+diff --git a/src/ConditionalFieldsHandlersPluginInterface.php b/src/ConditionalFieldsHandlersPluginInterface.php
+index d135a5e..1de5648 100644
+--- a/src/ConditionalFieldsHandlersPluginInterface.php
++++ b/src/ConditionalFieldsHandlersPluginInterface.php
+@@ -24,14 +24,14 @@ interface ConditionalFieldsHandlersPluginInterface {
+   public function getWidgetValue(array $value_form);
+ 
+   /**
+-   * Get values form the condition options
++   * Get values form the condition options.
+    *
+    * @param array $options
+-   *   The condition options or the array of values
++   *   The condition options or the array of values.
+    *
+    * @return mixed
+    *   Values for triggering events.
+    */
+-  public function getConditionValues( array $options );
++  public function getConditionValues(array $options);
+ 
+ }
+diff --git a/src/Controller/ConditionalFieldController.php b/src/Controller/ConditionalFieldController.php
+index bf3705b..9267777 100644
+--- a/src/Controller/ConditionalFieldController.php
++++ b/src/Controller/ConditionalFieldController.php
+@@ -5,9 +5,7 @@ namespace Drupal\conditional_fields\Controller;
+ use Drupal\conditional_fields\Form\ConditionalFieldFormTab;
+ use Drupal\Core\Controller\ControllerBase;
+ use Drupal\Core\Entity\ContentEntityType;
+-use Drupal\Core\Entity\ContentEntityTypeInterface;
+ use Drupal\Core\Entity\EntityFieldManagerInterface;
+-use Drupal\Core\Entity\EntityFormBuilder;
+ use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\FormBuilderInterface;
+@@ -44,13 +42,13 @@ class ConditionalFieldController extends ControllerBase {
+   /**
+    * ConditionalFieldController constructor.
+    *
+-   * @param EntityTypeManagerInterface $entityTypeManager
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+    *   Entity type manager.
+-   * @param FormBuilderInterface $formBuilder
++   * @param \Drupal\Core\Form\FormBuilderInterface $formBuilder
+    *   Form builder.
+-   * @param EntityTypeBundleInfoInterface $entityTypeBundleInfo
++   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entityTypeBundleInfo
+    *   Entity type bundle info.
+-   * @param EntityFieldManagerInterface $entityFieldManager
++   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager
+    *   Entity field manager.
+    */
+   public function __construct(EntityTypeManagerInterface $entityTypeManager, FormBuilderInterface $formBuilder, EntityTypeBundleInfoInterface $entityTypeBundleInfo, EntityFieldManagerInterface $entityFieldManager) {
+@@ -172,7 +170,7 @@ class ConditionalFieldController extends ControllerBase {
+   /**
+    * Get list of available EntityTypes.
+    *
+-   * @return ContentEntityTypeInterface[]
++   * @return \Drupal\Core\Entity\ContentEntityTypeInterface[]
+    *   List of content entity types.
+    */
+   public function getEntityTypes() {
+@@ -209,8 +207,7 @@ class ConditionalFieldController extends ControllerBase {
+    * @return array
+    *   Form array.
+    */
+-  public function getMediaEditFormTab($media_type)
+-  {
++  public function getMediaEditFormTab($media_type) {
+     return $this->formBuilder->getForm(ConditionalFieldFormTab::class, 'media', $media_type);
+   }
+ 
+@@ -223,8 +220,7 @@ class ConditionalFieldController extends ControllerBase {
+    * @return array
+    *   Form array.
+    */
+-  public function getBlockEditFormTab($block_content_type)
+-  {
++  public function getBlockEditFormTab($block_content_type) {
+     return $this->formBuilder->getForm(ConditionalFieldFormTab::class, 'block_content', $block_content_type);
+   }
+ 
+@@ -237,8 +233,7 @@ class ConditionalFieldController extends ControllerBase {
+    * @return array
+    *   Form array.
+    */
+-  public function getCommentEditFormTab($comment_type)
+-  {
++  public function getCommentEditFormTab($comment_type) {
+     return $this->formBuilder->getForm(ConditionalFieldFormTab::class, 'comment', $comment_type);
+   }
+ 
+@@ -251,8 +246,7 @@ class ConditionalFieldController extends ControllerBase {
+    * @return array
+    *   Form array.
+    */
+-  public function getUserEditFormTab()
+-  {
++  public function getUserEditFormTab() {
+     $user_type = "user";
+     return $this->formBuilder->getForm(ConditionalFieldFormTab::class, 'user', $user_type);
+   }
+diff --git a/src/Form/ConditionalFieldDeleteForm.php b/src/Form/ConditionalFieldDeleteForm.php
+index 8e49cb4..529b54b 100644
+--- a/src/Form/ConditionalFieldDeleteForm.php
++++ b/src/Form/ConditionalFieldDeleteForm.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\conditional_fields\Form;
+ 
+-use Drupal\Core\Entity\Entity\EntityFormDisplay;
+-use Drupal\Core\Entity\EntityFormBuilder;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Form\ConfirmFormBase;
+ use Drupal\Core\Url;
+@@ -54,7 +52,7 @@ class ConditionalFieldDeleteForm extends ConfirmFormBase {
+       return;
+     }
+     /**
+-     * @var EntityFormDisplay $entity
++     * @var \Drupal\Core\Entity\Entity\EntityFormDisplay $entity
+      */
+     $entity = \Drupal::entityTypeManager()
+       ->getStorage('entity_form_display')
+diff --git a/src/Form/ConditionalFieldDeleteFormTab.php b/src/Form/ConditionalFieldDeleteFormTab.php
+index 9fbe4cf..7587a0e 100644
+--- a/src/Form/ConditionalFieldDeleteFormTab.php
++++ b/src/Form/ConditionalFieldDeleteFormTab.php
+@@ -19,7 +19,7 @@ class ConditionalFieldDeleteFormTab extends ConditionalFieldDeleteForm {
+    * {@inheritdoc}
+    */
+   public function getCancelUrl() {
+-    return Url::fromRoute('conditional_fields.tab'. "." . $this->entity_type, [
++    return Url::fromRoute('conditional_fields.tab' . "." . $this->entity_type, [
+       'node_type' => $this->bundle,
+     ]);
+   }
+diff --git a/src/Form/ConditionalFieldEditForm.php b/src/Form/ConditionalFieldEditForm.php
+index f27874b..338b9a3 100644
+--- a/src/Form/ConditionalFieldEditForm.php
++++ b/src/Form/ConditionalFieldEditForm.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\conditional_fields\Form;
+ 
+ use Drupal\Core\Datetime\DrupalDateTime;
+-use Drupal\Core\Entity\Entity\EntityFormDisplay;
+ use Drupal\Core\Form\FormBase;
+ use Drupal\Core\Form\FormState;
+ use Drupal\Core\Form\FormStateInterface;
+@@ -28,7 +27,7 @@ class ConditionalFieldEditForm extends FormBase {
+   /**
+    * CF lists builder.
+    *
+-   * @var Conditions $list
++   * @var \Drupal\conditional_fields\Conditions
+    */
+   protected $list;
+ 
+@@ -295,7 +294,7 @@ class ConditionalFieldEditForm extends FormBase {
+     $entity_type = $values['entity_type'];
+     $bundle = $values['bundle'];
+ 
+-    /** @var EntityFormDisplay $entity */
++    /** @var \Drupal\Core\Entity\Entity\EntityFormDisplay $entity */
+     $entity = $this->entityTypeManager
+       ->getStorage('entity_form_display')
+       ->load("$entity_type.$bundle.default");
+@@ -331,7 +330,7 @@ class ConditionalFieldEditForm extends FormBase {
+       }
+ 
+       // Set field value.
+-      if ( isset( $settings[ $dependee ] ) && ! empty( $settings[ $dependee ] ) ) {
++      if (isset($settings[$dependee]) && !empty($settings[$dependee])) {
+         // Get and save value as string with timezone.
+         $value = &$settings[$dependee];
+         if (!empty($value[0]['value']) && is_object($value[0]['value']) && $value[0]['value'] instanceof DrupalDateTime) {
+@@ -515,7 +514,8 @@ class ConditionalFieldEditForm extends FormBase {
+       $operation = isset($handlers['form']['edit']) ? 'edit' : 'default';
+       $form_object = $entityTypeManager->getFormObject($entity_type, $operation);
+       $form_object->setEntity($dummy_entity);
+-    } catch (InvalidPluginDefinitionException $e) {
++    }
++    catch (InvalidPluginDefinitionException $e) {
+       watchdog_exception('conditional_fields', $e);
+       // @TODO May be it make sense to return markup?
+       return NULL;
+diff --git a/src/Form/ConditionalFieldForm.php b/src/Form/ConditionalFieldForm.php
+index ae3c334..bb4ea73 100644
+--- a/src/Form/ConditionalFieldForm.php
++++ b/src/Form/ConditionalFieldForm.php
+@@ -25,7 +25,7 @@ class ConditionalFieldForm extends FormBase {
+   /**
+    * Uuid generator.
+    *
+-   * @var UuidInterface
++   * @var \Drupal\Component\Uuid\UuidInterface
+    */
+   protected $uuidGenerator;
+ 
+@@ -46,7 +46,7 @@ class ConditionalFieldForm extends FormBase {
+   /**
+    * CF lists builder.
+    *
+-   * @var Conditions $list
++   * @var \Drupal\conditional_fields\Conditions
+    */
+   protected $list;
+ 
+diff --git a/src/Plugin/conditional_fields/handler/DateDefault.php b/src/Plugin/conditional_fields/handler/DateDefault.php
+index 89618cb..cfa222c 100644
+--- a/src/Plugin/conditional_fields/handler/DateDefault.php
++++ b/src/Plugin/conditional_fields/handler/DateDefault.php
+@@ -22,17 +22,18 @@ class DateDefault extends ConditionalFieldsHandlerBase {
+   public function statesHandler($field, $field_info, $options) {
+ 
+     $state = [];
+-    $value = $this->getWidgetValue( $options['value_form'] );
++    $value = $this->getWidgetValue($options['value_form']);
+     $date_obj = new DrupalDateTime($value);
+-    switch ( $options['values_set'] ){
++    switch ($options['values_set']) {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_WIDGET:
+-      // Just split DATETIME_DATETIME_STORAGE_FORMAT on date and time.
+-      $date = $date_obj->format(DateTimeItemInterface::DATE_STORAGE_FORMAT );
+-      // TODO: Support time.
+-      // Need to check selector and create one more state for it.
+-      // $time = $date_obj->tesformat('H:i:s');.
+-      $state[$options['state']][$options['selector']]['value'] = $date;
++        // Just split DATETIME_DATETIME_STORAGE_FORMAT on date and time.
++        $date = $date_obj->format(DateTimeItemInterface::DATE_STORAGE_FORMAT);
++        // TODO: Support time.
++        // Need to check selector and create one more state for it.
++        // $time = $date_obj->tesformat('H:i:s');.
++        $state[$options['state']][$options['selector']]['value'] = $date;
+         break;
++
+       default:
+         break;
+     }
+diff --git a/src/Plugin/conditional_fields/handler/DateList.php b/src/Plugin/conditional_fields/handler/DateList.php
+index 592f17c..9e62ffd 100644
+--- a/src/Plugin/conditional_fields/handler/DateList.php
++++ b/src/Plugin/conditional_fields/handler/DateList.php
+@@ -5,7 +5,6 @@ namespace Drupal\conditional_fields\Plugin\conditional_fields\handler;
+ use Drupal\conditional_fields\ConditionalFieldsHandlerBase;
+ use Drupal\conditional_fields\ConditionalFieldsInterface;
+ use Drupal\Core\Datetime\DrupalDateTime;
+-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+ 
+ /**
+  * Provides states handler for date lists.
+@@ -21,52 +20,53 @@ class DateList extends ConditionalFieldsHandlerBase {
+    */
+   public function statesHandler($field, $field_info, $options) {
+     $state = [];
+-    switch ( $options['values_set'] ){
++    switch ($options['values_set']) {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_WIDGET:
+-        $value = $this->getWidgetValue( $options['value_form'] );
+-        if ( ! $value ) {
++        $value = $this->getWidgetValue($options['value_form']);
++        if (!$value) {
+           $value = 'now';
+         }
+-        $date_data = $this->getDateArray( $value );
+-        if ( isset( $field['#value']) && is_array( $field['#value'] ) ) {
+-          foreach ( $field['#value'] as $key => $default_value ) {
+-            if ( isset($field[$key]) && isset( $date_data[$key])) {
+-              $selector = conditional_fields_field_selector( $field[$key] );
++        $date_data = $this->getDateArray($value);
++        if (isset($field['#value']) && is_array($field['#value'])) {
++          foreach ($field['#value'] as $key => $default_value) {
++            if (isset($field[$key]) && isset($date_data[$key])) {
++              $selector = conditional_fields_field_selector($field[$key]);
+               $state[$options['state']][$selector]['value'] = $date_data[$key];
+             }
+           }
+         }
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_REGEX:
+         $pattern = "/\\\?[\/]+|[-\.\,\s]+/";
+-        $parts = preg_split( $pattern, $options['regex']);
+-        if ( is_array( $parts ) ) {
++        $parts = preg_split($pattern, $options['regex']);
++        if (is_array($parts)) {
+           $date_patterns = [
+-            'year' => isset( $parts[0] ) ? $parts[0] : '.*',
+-            'month' => isset( $parts[1] ) ? $parts[1] : '.*',
+-            'day' => isset( $parts[2] ) ? $parts[2] : '.*',
+-            'hour' => isset( $parts[3] ) ? $parts[3] : '.*',
+-            'minute' => isset( $parts[4] ) ? $parts[4] : '.*',
+-            'second' => isset( $parts[5] ) ? $parts[5] : '.*',
++            'year' => isset($parts[0]) ? $parts[0] : '.*',
++            'month' => isset($parts[1]) ? $parts[1] : '.*',
++            'day' => isset($parts[2]) ? $parts[2] : '.*',
++            'hour' => isset($parts[3]) ? $parts[3] : '.*',
++            'minute' => isset($parts[4]) ? $parts[4] : '.*',
++            'second' => isset($parts[5]) ? $parts[5] : '.*',
+           ];
+-          if ( isset( $field['#value']) && is_array( $field['#value'] ) ) {
+-            foreach ( $field['#value'] as $key => $default_value ) {
+-              if ( isset($field[$key]) && isset( $date_patterns[$key])) {
+-                $selector = conditional_fields_field_selector( $field[$key] );
++          if (isset($field['#value']) && is_array($field['#value'])) {
++            foreach ($field['#value'] as $key => $default_value) {
++              if (isset($field[$key]) && isset($date_patterns[$key])) {
++                $selector = conditional_fields_field_selector($field[$key]);
+                 $state[$options['state']][$selector]['value'] = ['regex' => $date_patterns[$key]];
+               }
+             }
+           }
+         }
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_AND:
+-        $values_array = $this->getConditionValues( $options );
+-        foreach ( $values_array as $index => $value ) {
++        $values_array = $this->getConditionValues($options);
++        foreach ($values_array as $index => $value) {
+           $values_data = [];
+-          $date_data = $this->getDateArray( $value );
+-          if ( isset( $field['#value']) && is_array( $field['#value'] ) ) {
+-            foreach ( $field['#value'] as $key => $default_value ) {
+-              if ( isset($field[$key]) && isset( $date_data[$key])) {
+-                $selector = conditional_fields_field_selector( $field[$key] );
++          $date_data = $this->getDateArray($value);
++          if (isset($field['#value']) && is_array($field['#value'])) {
++            foreach ($field['#value'] as $key => $default_value) {
++              if (isset($field[$key]) && isset($date_data[$key])) {
++                $selector = conditional_fields_field_selector($field[$key]);
+                 $values_data[$selector]['value'] = $date_data[$key];
+               }
+             }
+@@ -74,25 +74,27 @@ class DateList extends ConditionalFieldsHandlerBase {
+           $state[$options['state']][$index . '_'] = $values_data;
+         }
+         break;
++
+       default:
+-        if ( $options['values_set'] == ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR ) {
++        if ($options['values_set'] == ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR) {
+           $separate_condition = 'xor';
+-        } elseif ( $options['values_set'] == ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT ) {
++        }
++        elseif ($options['values_set'] == ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT) {
+           $options['state'] = '!' . $options['state'];
+         }
+-        $values_array = $this->getConditionValues( $options );
+-        foreach ( $values_array as $index => $value ) {
++        $values_array = $this->getConditionValues($options);
++        foreach ($values_array as $index => $value) {
+           $values_data = [];
+-          $date_data = $this->getDateArray( $value );
+-          if ( isset( $field['#value']) && is_array( $field['#value'] ) ) {
+-            foreach ( $field['#value'] as $key => $default_value ) {
+-              if ( isset($field[$key]) && isset( $date_data[$key])) {
+-                $selector = conditional_fields_field_selector( $field[$key] );
++          $date_data = $this->getDateArray($value);
++          if (isset($field['#value']) && is_array($field['#value'])) {
++            foreach ($field['#value'] as $key => $default_value) {
++              if (isset($field[$key]) && isset($date_data[$key])) {
++                $selector = conditional_fields_field_selector($field[$key]);
+                 $values_data[$selector]['value'] = $date_data[$key];
+               }
+             }
+           }
+-          if ( $index > 0 && isset( $separate_condition ) ) {
++          if ($index > 0 && isset($separate_condition)) {
+             $state[$options['state']][] = $separate_condition;
+           }
+           $state[$options['state']][] = $values_data;
+@@ -104,26 +106,27 @@ class DateList extends ConditionalFieldsHandlerBase {
+   }
+ 
+   /**
+-   * Get the dateTime object form string
++   * Get the dateTime object form string.
+    *
+    * @param $value
+    *
+-   * @return DrupalDateTime
++   * @return \Drupal\Core\Datetime\DrupalDateTime
+    */
+-  public function getDateArray( $value ) {
+-    $date = new DrupalDateTime( $value );
+-    if ( $date->hasErrors() ) {
++  public function getDateArray($value) {
++    $date = new DrupalDateTime($value);
++    if ($date->hasErrors()) {
+       $pattern = "/\\\?[\/]+|[-\.\,\s]+/";
+-      $parts = preg_split( $pattern, $value );
++      $parts = preg_split($pattern, $value);
+       $data_data = [
+-        'year' => isset( $parts[0] ) ? (int) $parts[0] : 1900,
+-        'month' => isset( $parts[1] ) ? (int) $parts[1] : 1,
+-        'day' => isset( $parts[2] ) ? (int) $parts[2] : 1,
+-        'hour' => isset( $parts[3] ) ? (int) $parts[3] : 0,
+-        'minute' => isset( $parts[4] ) ? (int) $parts[4] : 0,
+-        'second' => isset( $parts[5] ) ? (int) $parts[5] : 0,
++        'year' => isset($parts[0]) ? (int) $parts[0] : 1900,
++        'month' => isset($parts[1]) ? (int) $parts[1] : 1,
++        'day' => isset($parts[2]) ? (int) $parts[2] : 1,
++        'hour' => isset($parts[3]) ? (int) $parts[3] : 0,
++        'minute' => isset($parts[4]) ? (int) $parts[4] : 0,
++        'second' => isset($parts[5]) ? (int) $parts[5] : 0,
+       ];
+-    } else {
++    }
++    else {
+       $data_data = [
+         'year' => (int) $date->format("Y"),
+         'month' => (int) $date->format("n"),
+@@ -135,4 +138,5 @@ class DateList extends ConditionalFieldsHandlerBase {
+     }
+     return $data_data;
+   }
++
+ }
+diff --git a/src/Plugin/conditional_fields/handler/DefaultStateHandler.php b/src/Plugin/conditional_fields/handler/DefaultStateHandler.php
+index 5e3570a..a478390 100644
+--- a/src/Plugin/conditional_fields/handler/DefaultStateHandler.php
++++ b/src/Plugin/conditional_fields/handler/DefaultStateHandler.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\conditional_fields\Plugin\conditional_fields\handler;
+ 
+ use Drupal\conditional_fields\ConditionalFieldsHandlerBase;
+-use Drupal\Component\Utility\Unicode;
+ use Drupal\conditional_fields\ConditionalFieldsInterface;
+ 
+ /**
+@@ -21,7 +20,7 @@ class DefaultStateHandler extends ConditionalFieldsHandlerBase {
+   public function statesHandler($field, $field_info, $options) {
+     // Build the values that trigger the dependency.
+     $values = [];
+-    $values_array = $this->getConditionValues( $options );
++    $values_array = $this->getConditionValues($options);
+     $values_set = $options['values_set'];
+ 
+     switch ($values_set) {
+@@ -32,20 +31,21 @@ class DefaultStateHandler extends ConditionalFieldsHandlerBase {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_REGEX:
+         $values[$options['condition']] = ['regex' => $options['regex']];
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR:
+-        $values[$options['condition']] = ['xor'=> $values_array];
++        $values[$options['condition']] = ['xor' => $values_array];
+         break;
+ 
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_AND:
+-        $values[ $options[ 'condition' ] ] = count( $values_array ) == 1 ? $values_array[ 0 ] : $values_array;
++        $values[$options['condition']] = count($values_array) == 1 ? $values_array[0] : $values_array;
+         break;
+ 
+       default:
+-        if ( $options[ 'values_set' ] == ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT ) {
++        if ($options['values_set'] == ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT) {
+           $options['state'] = '!' . $options['state'];
+         }
+         // OR, NOT conditions are obtained with a nested array.
+-        if (! empty($values_array)) {
++        if (!empty($values_array)) {
+           foreach ($values_array as $value) {
+             $values[] = ['value' => $value];
+           }
+diff --git a/src/Plugin/conditional_fields/handler/EmailDefault.php b/src/Plugin/conditional_fields/handler/EmailDefault.php
+index 7353704..93702c4 100644
+--- a/src/Plugin/conditional_fields/handler/EmailDefault.php
++++ b/src/Plugin/conditional_fields/handler/EmailDefault.php
+@@ -19,34 +19,38 @@ class EmailDefault extends ConditionalFieldsHandlerBase {
+    */
+   public function statesHandler($field, $field_info, $options) {
+     $state = [];
+-    $values_array = $this->getConditionValues( $options );
++    $values_array = $this->getConditionValues($options);
+ 
+     // Email fields values are keyed by cardinality, so we have to flatten them.
+     // TODO: support multiple values.
+     switch ($options['values_set']) {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_WIDGET:
+         foreach ($options['value_form'] as $value) {
+-          // fix 0 selector for multiple fields.
++          // Fix 0 selector for multiple fields.
+           if (!empty($value['value'])) {
+             $state[$options['state']][$options['selector']] = ['value' => $value['value']];
+           }
+         }
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_AND:
+         // TODO: support AND condition.
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_REGEX:
+         $values[$options['condition']] = ['regex' => $options['regex']];
+         $state[$options['state']][$options['selector']] = $values;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR:
+         $values[$options['condition']] = ['xor' => $values_array];
+         $state[$options['state']][$options['selector']] = $values;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT:
+         $options['state'] = '!' . $options['state'];
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_OR:
+-        if (! empty($values_array)) {
++        if (!empty($values_array)) {
+           foreach ($values_array as $value) {
+             $input_states[$options['selector']][] = ['value' => $value];
+           }
+@@ -59,9 +63,11 @@ class EmailDefault extends ConditionalFieldsHandlerBase {
+ 
+         $state[$options['state']][] = $input_states;
+         break;
++
+       default:
+         break;
+     }
+     return $state;
+   }
++
+ }
+diff --git a/src/Plugin/conditional_fields/handler/EntityReference.php b/src/Plugin/conditional_fields/handler/EntityReference.php
+index 88214dd..e781869 100644
+--- a/src/Plugin/conditional_fields/handler/EntityReference.php
++++ b/src/Plugin/conditional_fields/handler/EntityReference.php
+@@ -25,7 +25,7 @@ class EntityReference extends ConditionalFieldsHandlerBase {
+     switch ($values_set) {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_WIDGET:
+         $value_form = $this->getWidgetValue($options['value_form']);
+-        if ( empty( $value_form )) {
++        if (empty($value_form)) {
+           break;
+         }
+         if ($options['field_cardinality'] == 1) {
+@@ -59,16 +59,17 @@ class EntityReference extends ConditionalFieldsHandlerBase {
+    *
+    * @param $node
+    *   A node object.
++   *
+    * @return array
+    *   An array with a few relevant suggestions for autocomplete.
+    */
+   private function getAutocompleteSuggestions($node) {
+-    /** @var Node $node */
++    /** @var \Drupal\node\Entity\Node $node */
+     return [
+       // Node title (nid).
+       ['value' => $node->label() . ' (' . $node->id() . ')'],
+       // Node title.
+-      ['value' => $node->label()]
++      ['value' => $node->label()],
+     ];
+   }
+ 
+diff --git a/src/Plugin/conditional_fields/handler/EntityReferenceTags.php b/src/Plugin/conditional_fields/handler/EntityReferenceTags.php
+index a4a6a0c..70ffa56 100644
+--- a/src/Plugin/conditional_fields/handler/EntityReferenceTags.php
++++ b/src/Plugin/conditional_fields/handler/EntityReferenceTags.php
+@@ -30,7 +30,7 @@ class EntityReferenceTags extends ConditionalFieldsHandlerBase {
+           if ($node instanceof Node) {
+             // Create an array of valid formats of title for autocomplete.
+             $state[$options['state']][$options['selector']] = [
+-              'value' => $this->getAutocompleteSuggestions($node)
++              'value' => $this->getAutocompleteSuggestions($node),
+             ];
+           }
+         }
+@@ -59,8 +59,9 @@ class EntityReferenceTags extends ConditionalFieldsHandlerBase {
+   /**
+    * Get a variants of node title for autocomplete.
+    *
+-   * @param Node $node
++   * @param \Drupal\node\Entity\Node $node
+    *   A node object.
++   *
+    * @return string
+    *   An array with a few relevant suggestions for autocomplete.
+    */
+diff --git a/src/Plugin/conditional_fields/handler/LanguageSelect.php b/src/Plugin/conditional_fields/handler/LanguageSelect.php
+index a720e11..d13b08f 100644
+--- a/src/Plugin/conditional_fields/handler/LanguageSelect.php
++++ b/src/Plugin/conditional_fields/handler/LanguageSelect.php
+@@ -17,41 +17,45 @@ class LanguageSelect extends ConditionalFieldsHandlerBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public function statesHandler( $field, $field_info, $options ) {
++  public function statesHandler($field, $field_info, $options) {
+     $state         = [];
+     $select_states = [];
+ 
+-    switch ($options[ 'values_set' ]) {
++    switch ($options['values_set']) {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_WIDGET:
+-        $state[ $options[ 'state' ] ][ $options[ 'selector' ] ] = [
+-          'value' => $this->getWidgetValue( $options[ 'value_form' ] ),
++        $state[$options['state']][$options['selector']] = [
++          'value' => $this->getWidgetValue($options['value_form']),
+         ];
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_AND:
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR:
+-        $select_states[ $options[ 'state' ] ][] = [
+-          $options[ 'selector' ] => [
+-            $options[ 'condition' ] => [ 'xor' => $options['values'] ],
++        $select_states[$options['state']][] = [
++          $options['selector'] => [
++            $options['condition'] => ['xor' => $options['values']],
+           ],
+         ];
+         $state = $select_states;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_REGEX:
+-          $select_states[ $options[ 'state' ] ][] = [
+-            $options[ 'selector' ] => [
+-              $options[ 'condition' ] => [ 'regex' => $options['regex'] ],
+-            ],
+-          ];
++        $select_states[$options['state']][] = [
++          $options['selector'] => [
++            $options['condition'] => ['regex' => $options['regex']],
++          ],
++        ];
+         $state = $select_states;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT:
+         $options['state'] = '!' . $options['state'];
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_OR:
+-        foreach ( $options[ 'values' ] as $value ) {
+-          $select_states[ $options['state'] ][] = [
+-            $options[ 'selector' ] => [
+-              $options[ 'condition' ] => empty( $regex ) ? [ $value ] : $options[ 'value' ],
++        foreach ($options['values'] as $value) {
++          $select_states[$options['state']][] = [
++            $options['selector'] => [
++              $options['condition'] => empty($regex) ? [$value] : $options['value'],
+             ],
+           ];
+         }
+diff --git a/src/Plugin/conditional_fields/handler/Number.php b/src/Plugin/conditional_fields/handler/Number.php
+index 24e5a4d..3c5a601 100644
+--- a/src/Plugin/conditional_fields/handler/Number.php
++++ b/src/Plugin/conditional_fields/handler/Number.php
+@@ -24,7 +24,7 @@ class Number extends ConditionalFieldsHandlerBase {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_WIDGET:
+         if ($options['field_cardinality'] == 1) {
+           $state[$options['state']][$options['selector']] = [
+-            'value' => $this->getWidgetValue($options['value_form'])
++            'value' => $this->getWidgetValue($options['value_form']),
+           ];
+         }
+         else {
+@@ -35,7 +35,7 @@ class Number extends ConditionalFieldsHandlerBase {
+             }
+             $selector = str_replace('[0]', "[{$key}]", $options['selector']);
+             $state[$options['state']][$selector] = [
+-              'value' => $value
++              'value' => $value,
+             ];
+           }
+         }
+diff --git a/src/Plugin/conditional_fields/handler/OptionsButtons.php b/src/Plugin/conditional_fields/handler/OptionsButtons.php
+index fdddda9..3de74c6 100644
+--- a/src/Plugin/conditional_fields/handler/OptionsButtons.php
++++ b/src/Plugin/conditional_fields/handler/OptionsButtons.php
+@@ -34,9 +34,9 @@ class OptionsButtons extends ConditionalFieldsHandlerBase {
+    */
+   protected function radioHandler($field, $field_info, $options) {
+     $select_states = [];
+-    $values_array  = $this->getConditionValues( $options );
++    $values_array  = $this->getConditionValues($options);
+     $state         = [];
+-    switch ($options[ 'values_set' ]) {
++    switch ($options['values_set']) {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_WIDGET:
+         // TODO: Try to get key_column automatically.
+         // like here:
+@@ -76,6 +76,7 @@ class OptionsButtons extends ConditionalFieldsHandlerBase {
+         ];
+         $state = [$options['state'] => $select_states];
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT:
+         $options['state'] = '!' . $options['state'];
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_OR:
+@@ -108,10 +109,10 @@ class OptionsButtons extends ConditionalFieldsHandlerBase {
+     $state                = [];
+     $values_array         = $this->getConditionValues($options);
+     $select               = conditional_fields_field_selector($field);
+-    switch ($options[ 'values_set' ]) {
++    switch ($options['values_set']) {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_WIDGET:
+         $values_array = $this->getWidgetValue($options['value_form']);
+-        //We are placed on the parent field with options
++        // We are placed on the parent field with options.
+         if (isset($field['#options'])) {
+           foreach ($field['#options'] as $id => $label) {
+             if (isset($field[$id]) && is_array($field[$id])) {
+@@ -119,17 +120,19 @@ class OptionsButtons extends ConditionalFieldsHandlerBase {
+               if (!$selector_key) {
+                 $selector_key = sprintf("[name=\"%s\"]", $this->getFieldName($field));
+               }
+-            } else {
++            }
++            else {
+               $selector_key = $select;
+             }
+             $checkboxes_selectors[$selector_key] = ['checked' => in_array($id, $values_array)];
+           }
+-        } elseif (isset($field['#return_value'])) {
+-          //We are placed inside the option of the checkboxes
++        }
++        elseif (isset($field['#return_value'])) {
++          // We are placed inside the option of the checkboxes.
+           $selector = conditional_fields_field_selector($field);
+           foreach ($options['value_form'] as $value) {
+             $selector_key = str_replace($field['#return_value'], current($value), $selector);
+-            $checkboxes_selectors[$selector_key] = ['checked' => true];
++            $checkboxes_selectors[$selector_key] = ['checked' => TRUE];
+           }
+         }
+         $state[$options['state']] = $checkboxes_selectors;
+@@ -139,10 +142,10 @@ class OptionsButtons extends ConditionalFieldsHandlerBase {
+         // We interpret this as: checkboxes whose values match the regular
+         // expression should be checked.
+         if (isset($field['#options'])) {
+-          foreach ($field['#options'] as $key => $label ) {
++          foreach ($field['#options'] as $key => $label) {
+             if (preg_match('/' . $options['regex'] . '/', $key)) {
+               $checkboxes_selectors = [
+-                conditional_fields_field_selector($field[$key]) => ['checked' => true],
++                conditional_fields_field_selector($field[$key]) => ['checked' => TRUE],
+               ];
+               $state[$options['state']][] = $checkboxes_selectors;
+             }
+@@ -154,13 +157,14 @@ class OptionsButtons extends ConditionalFieldsHandlerBase {
+         if (!empty($values_array)) {
+           foreach ($values_array as $value) {
+             if (isset($field[$value])) {
+-              $checkboxes_selectors[conditional_fields_field_selector($field[$value])] = ['checked' => true];
++              $checkboxes_selectors[conditional_fields_field_selector($field[$value])] = ['checked' => TRUE];
+             }
+           }
+-        } else {
+-          $checkboxes_selectors[conditional_fields_field_selector($field[$options['values']])] = ['checked' => true];
+         }
+-        $state[ $options[ 'state' ] ] = $checkboxes_selectors;
++        else {
++          $checkboxes_selectors[conditional_fields_field_selector($field[$options['values']])] = ['checked' => TRUE];
++        }
++        $state[$options['state']] = $checkboxes_selectors;
+         break;
+ 
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR:
+@@ -168,7 +172,7 @@ class OptionsButtons extends ConditionalFieldsHandlerBase {
+           if ($index > 0) {
+             $checkboxes_selectors[] = 'xor';
+           }
+-          $checkboxes_selectors[] = [conditional_fields_field_selector($field[$value]) => ['checked' => true]];
++          $checkboxes_selectors[] = [conditional_fields_field_selector($field[$value]) => ['checked' => TRUE]];
+         }
+         $state[$options['state']] = $checkboxes_selectors;
+         break;
+@@ -176,10 +180,10 @@ class OptionsButtons extends ConditionalFieldsHandlerBase {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT:
+         $options['state'] = '!' . $options['state'];
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_OR:
+-        foreach ( $values_array as $value ) {
+-          $checkboxes_selectors[] = [ conditional_fields_field_selector( $field[ $value ] ) => [ 'checked' => true ] ];
++        foreach ($values_array as $value) {
++          $checkboxes_selectors[] = [conditional_fields_field_selector($field[$value]) => ['checked' => TRUE]];
+         }
+-        $state[ $options['state'] ] = $checkboxes_selectors;
++        $state[$options['state']] = $checkboxes_selectors;
+         break;
+     }
+     return $state;
+@@ -189,20 +193,23 @@ class OptionsButtons extends ConditionalFieldsHandlerBase {
+    * Get field name.
+    *
+    * @param array $field
+-   *   The field object
++   *   The field object.
+    *
+    * @return string|false
+    *   The field name
+    */
+   public function getFieldName(array $field) {
+-    $field_name = false;
++    $field_name = FALSE;
+     if (isset($field['#name'])) {
+       $field_name = $field['#name'];
+-    } elseif (isset($field['#field_name'])) {
++    }
++    elseif (isset($field['#field_name'])) {
+       $field_name = $field['#field_name'];
+-    } elseif (isset($field['#array_parents']) && !empty($field['#array_parents'])) {
++    }
++    elseif (isset($field['#array_parents']) && !empty($field['#array_parents'])) {
+       $field_name = $field['#parents'][0];
+-    } elseif (isset($field['#parents']) && is_array($field['#parents'])) {
++    }
++    elseif (isset($field['#parents']) && is_array($field['#parents'])) {
+       $field_name = $field['#parents'][0];
+     }
+     return $field_name;
+@@ -215,27 +222,36 @@ class OptionsButtons extends ConditionalFieldsHandlerBase {
+     $values = [];
+     if (empty($value_form)) {
+       return $values;
+-    } else {
++    }
++    else {
+       foreach ($value_form as $value) {
+         if (isset($value['value'])) {
+           $values[] = $value['value'];
+-        } elseif ( isset($value['target_id'])) {
++        }
++        elseif (isset($value['target_id'])) {
+           $values[] = $value['target_id'];
+-        } elseif ( isset($value['nid'])) {
++        }
++        elseif (isset($value['nid'])) {
+           $values[] = $value['nid'];
+-        } elseif ( isset($value['vid'])) {
++        }
++        elseif (isset($value['vid'])) {
+           $values[] = $value['vid'];
+-        } elseif ( isset($value['uid'])) {
++        }
++        elseif (isset($value['uid'])) {
+           $values[] = $value['uid'];
+-        } elseif ( isset($value['fid'])) {
++        }
++        elseif (isset($value['fid'])) {
+           $values[] = $value['fid'];
+-        } elseif ( isset($value['id'])) {
++        }
++        elseif (isset($value['id'])) {
+           $values[] = $value['id'];
+-        } else {
++        }
++        else {
+           $values[] = $value;
+         }
+       }
+       return $values;
+     }
+   }
++
+ }
+diff --git a/src/Plugin/conditional_fields/handler/Select.php b/src/Plugin/conditional_fields/handler/Select.php
+index 6e9d8e8..7b16d9a 100644
+--- a/src/Plugin/conditional_fields/handler/Select.php
++++ b/src/Plugin/conditional_fields/handler/Select.php
+@@ -26,7 +26,7 @@ class Select extends ConditionalFieldsHandlerBase {
+     $state = [];
+     $select_states = [];
+ 
+-    $values_array = $this->getConditionValues( $options );
++    $values_array = $this->getConditionValues($options);
+ 
+     switch ($options['values_set']) {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_WIDGET:
+@@ -43,18 +43,20 @@ class Select extends ConditionalFieldsHandlerBase {
+ 
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR:
+         $input_states[$options['selector']] = [
+-          $options['condition'] => [ 'xor' => $values_array],
++          $options['condition'] => ['xor' => $values_array],
+         ];
+         $state[$options['state']] = $input_states;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_REGEX:
+-          $select_states[$options['state']][] = [
+-            $options['selector'] => [
+-              $options['condition'] => [ 'regex' => $options['regex']],
+-            ],
+-          ];
++        $select_states[$options['state']][] = [
++          $options['selector'] => [
++            $options['condition'] => ['regex' => $options['regex']],
++          ],
++        ];
+         $state = $select_states;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT:
+         $options['state'] = '!' . $options['state'];
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_OR:
+diff --git a/src/Plugin/conditional_fields/handler/TextAreaFormated.php b/src/Plugin/conditional_fields/handler/TextAreaFormated.php
+index 21dab4d..ae88ba4 100644
+--- a/src/Plugin/conditional_fields/handler/TextAreaFormated.php
++++ b/src/Plugin/conditional_fields/handler/TextAreaFormated.php
+@@ -30,6 +30,7 @@ class TextAreaFormated extends ConditionalFieldsHandlerBase {
+         }
+         $state[$options['state']] = $input_states;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_AND:
+         if (!empty($selectors)) {
+           foreach ($selectors as $selector) {
+@@ -46,16 +47,19 @@ class TextAreaFormated extends ConditionalFieldsHandlerBase {
+           $state[$options['state']] = $input_states;
+         }
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_REGEX:
+         $values[$options['condition']] = ['regex' => $options['regex']];
+         $state[$options['state']][$options['selector']] = $values;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR:
+         $input_states[$options['selector']] = [
+           $options['condition'] => ['xor' => $values_array],
+         ];
+         $state[$options['state']] = $input_states;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT:
+         $options['state'] = '!' . $options['state'];
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_OR:
+@@ -73,9 +77,11 @@ class TextAreaFormated extends ConditionalFieldsHandlerBase {
+         }
+         $state[$options['state']] = $input_states;
+         break;
++
+       default:
+         break;
+     }
+     return $state;
+   }
++
+ }
+diff --git a/src/Plugin/conditional_fields/handler/TextDefault.php b/src/Plugin/conditional_fields/handler/TextDefault.php
+index aa64570..04ad92f 100644
+--- a/src/Plugin/conditional_fields/handler/TextDefault.php
++++ b/src/Plugin/conditional_fields/handler/TextDefault.php
+@@ -7,7 +7,6 @@ use Drupal\conditional_fields\ConditionalFieldsInterface;
+ 
+ /**
+  * Provides states handler for text fields.
+- *
+  */
+ class TextDefault extends ConditionalFieldsHandlerBase {
+ 
+@@ -16,34 +15,38 @@ class TextDefault extends ConditionalFieldsHandlerBase {
+    */
+   public function statesHandler($field, $field_info, $options) {
+     $state = [];
+-    $values_array = $this->getConditionValues( $options );
++    $values_array = $this->getConditionValues($options);
+     // Text fields values are keyed by cardinality, so we have to flatten them.
+     // TODO: support multiple values.
+     switch ($options['values_set']) {
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_WIDGET:
+         foreach ($options['value_form'] as $value) {
+-          // fix 0 selector for multiple fields.
++          // Fix 0 selector for multiple fields.
+           if (!empty($value['value'])) {
+             $state[$options['state']][$options['selector']] = ['value' => $value['value']];
+           }
+         }
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_AND:
+         $input_states[$options['selector']] = [
+           $options['condition'] => $values_array,
+         ];
+         $state[$options['state']] = $input_states;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_REGEX:
+         $values[$options['condition']] = ['regex' => $options['regex']];
+         $state[$options['state']][$options['selector']] = $values;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR:
+         $input_states[$options['selector']] = [
+-          $options['condition'] => [ 'xor' => $values_array],
++          $options['condition'] => ['xor' => $values_array],
+         ];
+         $state[$options['state']] = $input_states;
+         break;
++
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT:
+         $options['state'] = '!' . $options['state'];
+       case ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_OR:
+@@ -61,10 +64,12 @@ class TextDefault extends ConditionalFieldsHandlerBase {
+         }
+         $state[$options['state']] = $input_states;
+         break;
++
+       default:
+         break;
+     }
+-   // dump( $state )  ;
++    // dump( $state )  ;.
+     return $state;
+   }
++
+ }
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldCheckboxTest.php b/tests/src/FunctionalJavascript/ConditionalFieldCheckboxTest.php
+index 5519853..f7b370a 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldCheckboxTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldCheckboxTest.php
+@@ -31,7 +31,6 @@ class ConditionalFieldCheckboxTest extends ConditionalFieldTestBase implements C
+ 
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+-    
+ 
+     $this->waitUntilVisible('.field--name-body', 10, '01. Article Body field is not visible');
+     $this->changeSelect('#edit-promote-value', FALSE);
+@@ -54,7 +53,6 @@ class ConditionalFieldCheckboxTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     $this->waitUntilHidden('.field--name-body', 10, '01. Article Body field is visible');
+     $this->changeSelect('#edit-promote-value', FALSE);
+     $this->waitUntilVisible('.field--name-body', 0, '02. Article Body field is not visible');
+@@ -76,7 +74,6 @@ class ConditionalFieldCheckboxTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     $this->waitUntilHidden('.field--name-body', 10, '01. Article Body field is visible');
+     $this->changeSelect('#edit-promote-value', FALSE);
+     $this->waitUntilVisible('.field--name-body', 0, '02. Article Body field is not visible');
+@@ -97,7 +94,6 @@ class ConditionalFieldCheckboxTest extends ConditionalFieldTestBase implements C
+ 
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+-    
+ 
+     $this->waitUntilVisible('.field--name-body', 10, '01. Article Body field is not visible');
+     $this->changeSelect('#edit-promote-value', FALSE);
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldCheckboxesTest.php b/tests/src/FunctionalJavascript/ConditionalFieldCheckboxesTest.php
+index b9263bb..e9655d8 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldCheckboxesTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldCheckboxesTest.php
+@@ -94,20 +94,18 @@ class ConditionalFieldCheckboxesTest extends ConditionalFieldTestBase implements
+     $this->getSession()
+       ->executeScript("jQuery('#conditional-field-edit-form').submit();");
+ 
+-
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/types/manage/article/conditionals');
+     $this->assertSession()
+       ->pageTextContains('body field_' . $this->taxonomyName . ' visible value');
+-    $this->clickLink( 'Edit' );
+-    $this->createScreenshot($this->screenshotPath . '01. Checkboxes' . __FUNCTION__ .  '.jpg');
++    $this->clickLink('Edit');
++    $this->createScreenshot($this->screenshotPath . '01. Checkboxes' . __FUNCTION__ . '.jpg');
+ 
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+-    $this->createScreenshot($this->screenshotPath . '02. Checkboxes' . __FUNCTION__ .  '.jpg');
++    $this->createScreenshot($this->screenshotPath . '02. Checkboxes' . __FUNCTION__ . '.jpg');
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is visible');
+     // Change a select value set to show the body.
+     $this->changeSelect('#edit-field-' . $this->taxonomyName . '-' . $term_id_1, $term_id_1);
+@@ -143,7 +141,6 @@ class ConditionalFieldCheckboxesTest extends ConditionalFieldTestBase implements
+     $this->getSession()
+       ->executeScript("jQuery('#conditional-field-edit-form').submit();");
+ 
+-
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/types/manage/article/conditionals');
+     $this->assertSession()
+@@ -152,7 +149,6 @@ class ConditionalFieldCheckboxesTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is visible');
+     // Change a select value set to show the body.
+@@ -190,7 +186,6 @@ class ConditionalFieldCheckboxesTest extends ConditionalFieldTestBase implements
+     $this->getSession()
+       ->executeScript("jQuery('#conditional-field-edit-form').submit();");
+ 
+-
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/types/manage/article/conditionals');
+     $this->assertSession()
+@@ -199,7 +194,6 @@ class ConditionalFieldCheckboxesTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is visible');
+     // Change a select value set to show the body.
+@@ -238,7 +232,6 @@ class ConditionalFieldCheckboxesTest extends ConditionalFieldTestBase implements
+     $this->getSession()
+       ->executeScript("jQuery('#conditional-field-edit-form').submit();");
+ 
+-
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/types/manage/article/conditionals');
+     $this->assertSession()
+@@ -247,7 +240,6 @@ class ConditionalFieldCheckboxesTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is visible');
+     // Change a select value set to show the body.
+@@ -287,7 +279,6 @@ class ConditionalFieldCheckboxesTest extends ConditionalFieldTestBase implements
+     $this->getSession()
+       ->executeScript("jQuery('#conditional-field-edit-form').submit();");
+ 
+-
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/types/manage/article/conditionals');
+     $this->assertSession()
+@@ -296,7 +287,6 @@ class ConditionalFieldCheckboxesTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilVisible('.field--name-body', 0, '01. Article Body field is not visible');
+     // Change a select value set to show the body.
+@@ -336,7 +326,6 @@ class ConditionalFieldCheckboxesTest extends ConditionalFieldTestBase implements
+     $this->getSession()
+       ->executeScript("jQuery('#conditional-field-edit-form').submit();");
+ 
+-
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/types/manage/article/conditionals');
+     $this->assertSession()
+@@ -345,7 +334,6 @@ class ConditionalFieldCheckboxesTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is visible');
+     // Change a select value set to show the body.
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldDateListTest.php b/tests/src/FunctionalJavascript/ConditionalFieldDateListTest.php
+index 6e9e786..914d967 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldDateListTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldDateListTest.php
+@@ -102,7 +102,7 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+@@ -115,7 +115,6 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-' . $this->testName . __FUNCTION__ . '.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -134,7 +133,6 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     $this->waitUntilVisible('.field--name-body', 50, '04. Article Body field is not visible');
+ 
+     // Change a date that should not show the body again.
+-
+     $this->changeField($this->fieldSelectors['day'], $wrong_day);
+     $this->createScreenshot($this->screenshotPath . '06-' . $this->testName . __FUNCTION__ . '.png');
+     $this->waitUntilHidden('.field--name-body', 50, '05. Article Body field is visible');
+@@ -164,7 +162,7 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+@@ -177,7 +175,6 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-' . $this->testName . __FUNCTION__ . '.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -226,15 +223,15 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_AND,
+-      'values' => implode( "\r\n", [
+-        $date->format( DateTimeItemInterface::DATE_STORAGE_FORMAT ),
+-        $date_2->format( DateTimeItemInterface::DATE_STORAGE_FORMAT ),
++      'values' => implode("\r\n", [
++        $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
++        $date_2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
+       ]),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+@@ -247,7 +244,6 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-' . $this->testName . __FUNCTION__ . '.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -298,15 +294,15 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_OR,
+-      'values' => implode( "\r\n", [
+-        $date->format( DateTimeItemInterface::DATE_STORAGE_FORMAT ),
+-        $date_2->format( DateTimeItemInterface::DATE_STORAGE_FORMAT ),
++      'values' => implode("\r\n", [
++        $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
++        $date_2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
+       ]),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+@@ -319,7 +315,6 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-' . $this->testName . __FUNCTION__ . '.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -369,15 +364,15 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT,
+-      'values' => implode( "\r\n", [
+-        $date->format( DateTimeItemInterface::DATE_STORAGE_FORMAT ),
+-        $date_2->format( DateTimeItemInterface::DATE_STORAGE_FORMAT ),
++      'values' => implode("\r\n", [
++        $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
++        $date_2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
+       ]),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+@@ -390,7 +385,6 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-' . $this->testName . __FUNCTION__ . '.png');
+     $this->waitUntilVisible('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -440,15 +434,15 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR,
+-      'values' => implode( "\r\n", [
+-        $date->format( DateTimeItemInterface::DATE_STORAGE_FORMAT ),
+-        $date_2->format( DateTimeItemInterface::DATE_STORAGE_FORMAT ),
++      'values' => implode("\r\n", [
++        $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
++        $date_2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
+       ]),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+@@ -461,7 +455,6 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-' . $this->testName . __FUNCTION__ . '.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -480,7 +473,7 @@ class ConditionalFieldDateListTest extends ConditionalFieldTestBase implements C
+     $this->waitUntilHidden('.field--name-body', 50, '03. Article Body field is visible');
+ 
+     // Check that the field Body is not visible.
+-    $this->changeField($this->fieldSelectors['day'], $wrong_day );
++    $this->changeField($this->fieldSelectors['day'], $wrong_day);
+     $this->createScreenshot($this->screenshotPath . '06-' . $this->testName . __FUNCTION__ . '.png');
+     $this->waitUntilHidden('.field--name-body', 50, '05. Article Body field is visible');
+   }
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldDateTimeTest.php b/tests/src/FunctionalJavascript/ConditionalFieldDateTimeTest.php
+index 154abc7..0d90527 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldDateTimeTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldDateTimeTest.php
+@@ -85,16 +85,16 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+       ->getStorage('entity_view_display')
+       ->load($field->getTargetEntityTypeId() . '.' . $field->getTargetBundle() . '.' . 'full');
+ 
+-    if ( ! $view_display ) {
+-      $view_display = EntityViewDisplay::create( [
+-          'targetEntityType' => $field->getTargetEntityTypeId(),
+-          'bundle' => $field->getTargetBundle(),
+-          'mode' => 'full',
+-          'status' => TRUE,
+-        ] );
++    if (!$view_display) {
++      $view_display = EntityViewDisplay::create([
++        'targetEntityType' => $field->getTargetEntityTypeId(),
++        'bundle' => $field->getTargetBundle(),
++        'mode' => 'full',
++        'status' => TRUE,
++      ]);
+     }
+-    if ( $view_display instanceof EntityDisplayInterface ) {
+-      $view_display->setComponent( $this->fieldName, $this->displayOptions )
++    if ($view_display instanceof EntityDisplayInterface) {
++      $view_display->setComponent($this->fieldName, $this->displayOptions)
+         ->save();
+     }
+   }
+@@ -119,7 +119,7 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testDateTimeVisibleValueWidget.png');
+ 
+@@ -133,7 +133,6 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Change a date that should not show the body.
+     $this->changeField($this->fieldSelector, '');
+     $this->createScreenshot($this->screenshotPath . '04-testDateTimeVisibleValueWidget.png');
+@@ -155,7 +154,7 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+    */
+   public function testVisibleValueRegExp() {
+     $date = new DrupalDateTime();
+-    $date_formatted = $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT );
++    $date_formatted = $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT);
+     $this->baseTestSteps();
+ 
+     // Visit a ConditionalFields configuration page for Content bundles.
+@@ -171,7 +170,7 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testDateTimeVisibleValueWidget.png');
+ 
+@@ -185,7 +184,6 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Change a date that should not show the body.
+     $this->changeField($this->fieldSelector, '');
+     $this->createScreenshot($this->screenshotPath . '04-testDateTimeVisibleValueWidget.png');
+@@ -216,19 +214,19 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+     $this->createScreenshot($this->screenshotPath . '01-testDateTime ' . __FUNCTION__ . '.png');
+ 
+     // Set up conditions.
+-    $dates =  [
+-      $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT ),
+-      $date2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT )
++    $dates = [
++      $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
++      $date2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
+     ];
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_AND,
+-      'values' => implode("\r\n", $dates ),
++      'values' => implode("\r\n", $dates),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testDateTime ' . __FUNCTION__ . '.png');
+ 
+@@ -282,18 +280,18 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+ 
+     // Set up conditions.
+     $dates = [
+-      $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT ),
+-      $date2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT )
++      $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
++      $date2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
+     ];
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_OR,
+-      'values' => implode("\r\n", $dates ),
++      'values' => implode("\r\n", $dates),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testDateTimeVisibleValueOr.png');
+ 
+@@ -307,7 +305,6 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testDateTimeVisibleValueOr.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -348,18 +345,18 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+ 
+     // Set up conditions.
+     $dates = [
+-      $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT ),
+-      $date2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT )
++      $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
++      $date2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
+     ];
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT,
+-      'values' => implode("\r\n", $dates ),
++      'values' => implode("\r\n", $dates),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testDateTime' . __FUNCTION__ . '.png');
+ 
+@@ -373,7 +370,6 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testDateTime' . __FUNCTION__ . '.png');
+     $this->waitUntilVisible('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -414,18 +410,18 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+ 
+     // Set up conditions.
+     $dates = [
+-      $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT ),
+-      $date2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT )
++      $date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
++      $date2->format(DateTimeItemInterface::DATE_STORAGE_FORMAT),
+     ];
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR,
+-      'values' => implode("\r\n", $dates ),
++      'values' => implode("\r\n", $dates),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testDateTime' . __FUNCTION__ . '.png');
+ 
+@@ -439,7 +435,6 @@ class ConditionalFieldDateTimeTest extends ConditionalFieldTestBase implements C
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testDateTime' . __FUNCTION__ . '.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldEmailTest.php b/tests/src/FunctionalJavascript/ConditionalFieldEmailTest.php
+index 77e323f..f3ce9ce 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldEmailTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldEmailTest.php
+@@ -14,7 +14,7 @@ use Drupal\Tests\conditional_fields\FunctionalJavascript\TestCases\ConditionalFi
+  *
+  * @group conditional_fields
+  */
+-class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements ConditionalFieldValueInterface, ConditionalFieldFilledEmptyInterface{
++class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements ConditionalFieldValueInterface, ConditionalFieldFilledEmptyInterface {
+ 
+   /**
+    * Modules to enable.
+@@ -101,7 +101,7 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+         'min' => '',
+         'max' => '',
+         'prefix' => '',
+-      ]
++      ],
+     ])->save();
+ 
+     EntityFormDisplay::load('node.article.default')
+@@ -135,7 +135,7 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-   $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testEmailVisibleValueWidget.png');
+ 
+@@ -148,7 +148,6 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Change a email that should not show the body.
+     $this->changeField($this->fieldSelector, 'wrongmail@drupal.org');
+     $this->createScreenshot($this->screenshotPath . '04-testEmailVisibleValueWidget.png');
+@@ -187,7 +186,7 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testEmailVisibleValueWidget.png');
+ 
+@@ -200,7 +199,6 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Change a email that should not show the body.
+     $this->changeField($this->fieldSelector, $email_wrong);
+     $this->createScreenshot($this->screenshotPath . '04-testEmailVisibleValueWidget.png');
+@@ -211,7 +209,6 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+     $this->createScreenshot($this->screenshotPath . '05-testEmailVisibleValueWidget.png');
+     $this->waitUntilVisible('.field--name-body', 500, '02. Article Body field is not visible');
+ 
+-
+     // Change a email that should not show the body again.
+     $this->changeField($this->fieldSelector, '');
+     $this->createScreenshot($this->screenshotPath . '06-testEmailVisibleValueWidget.png');
+@@ -240,7 +237,7 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testEmailVisibleValueWidget.png');
+ 
+@@ -253,7 +250,6 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Change a email that should not show the body.
+     $this->createScreenshot($this->screenshotPath . '04-testEmailVisibleValueWidget.png');
+     $this->waitUntilHidden('.field--name-body', 500, '01. Article Body field is visible');
+@@ -297,7 +293,7 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testEmailTimeVisibleValueOr.png');
+ 
+@@ -310,7 +306,6 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testEmailTimeVisibleValueOr.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -359,7 +354,7 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testEmailTimeVisibleValueOr.png');
+ 
+@@ -420,7 +415,7 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testEmailTimeVisibleValueOr.png');
+ 
+@@ -433,7 +428,6 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testEmailTimeVisibleValueOr.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -475,7 +469,6 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is not visible');
+     $this->changeField($this->fieldSelector, 'test@drupal.org');
+@@ -498,7 +491,6 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     $this->waitUntilVisible('.field--name-body', 0, '01. Article Body field is visible');
+     $this->changeField($this->fieldSelector, 'test@drupal.org');
+     $this->waitUntilHidden('.field--name-body', 10, '02. Article Body field is not visible');
+@@ -520,7 +512,6 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilVisible('.field--name-body', 0, '01. Article Body field is visible');
+     $this->changeField($this->fieldSelector, 'test@drupal.org');
+@@ -543,7 +534,6 @@ class ConditionalFieldEmailTest extends ConditionalFieldTestBase implements Cond
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is not visible');
+     $this->changeField($this->fieldSelector, 'test@drupal.org');
+     $this->waitUntilVisible('.field--name-body', 10, '02. Article Body field is visible');
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldEntityReferenceTagsTest.php b/tests/src/FunctionalJavascript/ConditionalFieldEntityReferenceTagsTest.php
+index f00ac4a..d499271 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldEntityReferenceTagsTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldEntityReferenceTagsTest.php
+@@ -97,7 +97,7 @@ class ConditionalFieldEntityReferenceTagsTest extends ConditionalFieldTestBase {
+     // Create a node that we will use in reference field.
+     $node = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node'
++      'title' => 'Referenced node',
+     ]);
+     $node->save();
+ 
+@@ -135,7 +135,6 @@ class ConditionalFieldEntityReferenceTagsTest extends ConditionalFieldTestBase {
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-entity-reference-tags-body-invisible-when-controlled-field-has-no-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, 'Article Body field is not visible');
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldEntityReferenceTest.php b/tests/src/FunctionalJavascript/ConditionalFieldEntityReferenceTest.php
+index 6d3ddde..104d437 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldEntityReferenceTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldEntityReferenceTest.php
+@@ -16,8 +16,8 @@ use Drupal\Tests\RandomGeneratorTrait;
+  * @group conditional_fields
+  */
+ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase implements
+-  ConditionalFieldValueInterface,
+-  ConditionalFieldFilledEmptyInterface {
++    ConditionalFieldValueInterface,
++    ConditionalFieldFilledEmptyInterface {
+ 
+   use EntityReferenceTestTrait;
+   use RandomGeneratorTrait;
+@@ -101,7 +101,7 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     // Create a node that we will use in reference field.
+     $node = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node'
++      'title' => 'Referenced node',
+     ]);
+     $node->save();
+ 
+@@ -122,7 +122,7 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-entity-reference-post-add-list-options-filed-conditions.png');
+ 
+@@ -135,7 +135,6 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-entity-reference-body-invisible-when-controlled-field-has-no-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -175,7 +174,7 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     // Create a node that we will use in reference field.
+     $node = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node'
++      'title' => 'Referenced node',
+     ]);
+     $node->save();
+ 
+@@ -196,7 +195,7 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-entity-reference-post-add-list-options-filed-conditions.png');
+ 
+@@ -248,13 +247,13 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     // Create a node that we will use in reference field.
+     $node = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node'
++      'title' => 'Referenced node',
+     ]);
+     $node->save();
+ 
+     $node_2 = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node 2'
++      'title' => 'Referenced node 2',
+     ]);
+     $node_2->save();
+ 
+@@ -275,7 +274,7 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-entity-reference-post-add-list-options-filed-conditions.png');
+ 
+@@ -289,9 +288,8 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     $this->drupalGet('node/add/article');
+ 
+     // Multiple field testing
+-//    $this->assertSession()->buttonExists( 'Add another item' );
+-//    $this->submitForm([], 'Add another item');
+-
++    //    $this->assertSession()->buttonExists( 'Add another item' );
++    //    $this->submitForm([], 'Add another item');
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-entity-reference-body-invisible-when-controlled-field-has-no-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -331,13 +329,13 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     // Create a node that we will use in reference field.
+     $node = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node'
++      'title' => 'Referenced node',
+     ]);
+     $node->save();
+ 
+     $node_2 = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node 2'
++      'title' => 'Referenced node 2',
+     ]);
+     $node_2->save();
+ 
+@@ -358,7 +356,7 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-entity-reference-post-add-list-options-filed-conditions.png');
+ 
+@@ -410,13 +408,13 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     // Create a node that we will use in reference field.
+     $node = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node'
++      'title' => 'Referenced node',
+     ]);
+     $node->save();
+ 
+     $node_2 = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node 2'
++      'title' => 'Referenced node 2',
+     ]);
+     $node_2->save();
+ 
+@@ -437,7 +435,7 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-entity-reference-post-add-list-options-filed-conditions.png');
+ 
+@@ -484,13 +482,13 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     // Create a node that we will use in reference field.
+     $node = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node'
++      'title' => 'Referenced node',
+     ]);
+     $node->save();
+ 
+     $node_2 = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node 2'
++      'title' => 'Referenced node 2',
+     ]);
+     $node_2->save();
+ 
+@@ -511,7 +509,7 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-entity-reference-post-add-list-options-filed-conditions.png');
+ 
+@@ -558,11 +556,10 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     // Create a node that we will use in reference field.
+     $node = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node'
++      'title' => 'Referenced node',
+     ]);
+     $node->save();
+ 
+-
+     $referenced_format_1 = sprintf("%s (%d)", $node->label(), $node->id());
+     $referenced_format_wrong = sprintf("%s ", $node->label());
+ 
+@@ -608,11 +605,10 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     // Create a node that we will use in reference field.
+     $node = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node'
++      'title' => 'Referenced node',
+     ]);
+     $node->save();
+ 
+-
+     $referenced_format_1 = sprintf("%s (%d)", $node->label(), $node->id());
+     $referenced_format_wrong = sprintf("%s ", $node->label());
+ 
+@@ -658,11 +654,10 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     // Create a node that we will use in reference field.
+     $node = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node'
++      'title' => 'Referenced node',
+     ]);
+     $node->save();
+ 
+-
+     $referenced_format_1 = sprintf("%s (%d)", $node->label(), $node->id());
+     $referenced_format_wrong = sprintf("%s ", $node->label());
+ 
+@@ -708,11 +703,10 @@ class ConditionalFieldEntityReferenceTest extends ConditionalFieldTestBase imple
+     // Create a node that we will use in reference field.
+     $node = Node::create([
+       'type' => 'article',
+-      'title' => 'Referenced node'
++      'title' => 'Referenced node',
+     ]);
+     $node->save();
+ 
+-
+     $referenced_format_1 = sprintf("%s (%d)", $node->label(), $node->id());
+     $referenced_format_wrong = sprintf("%s ", $node->label());
+ 
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldLanguageSelectTest.php b/tests/src/FunctionalJavascript/ConditionalFieldLanguageSelectTest.php
+index c6e2a52..e502243 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldLanguageSelectTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldLanguageSelectTest.php
+@@ -102,7 +102,7 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-language-select-post-add-list-options-filed-conditions.png');
+ 
+@@ -114,7 +114,6 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-language-select-body-visible-when-controlled-field-has-default-value.png');
+     $this->waitUntilVisible('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -149,12 +148,12 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_REGEX,
+-      "regex" => '^'. $this->langcodes[0] . '$',
++      "regex" => '^' . $this->langcodes[0] . '$',
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-language-select-post-add-list-options-filed-conditions.png');
+ 
+@@ -166,7 +165,6 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-language-select-body-visible-when-controlled-field-has-default-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -201,12 +199,12 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_AND,
+-      "values" => implode( "\r\n", $this->langcodes ),
++      "values" => implode("\r\n", $this->langcodes),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-language-select-post-add-list-options-filed-conditions.png');
+ 
+@@ -218,7 +216,6 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-language-select-body-visible-when-controlled-field-has-default-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -253,12 +250,12 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_OR,
+-      "values" => implode( "\r\n", $this->langcodes ),
++      "values" => implode("\r\n", $this->langcodes),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-language-select-post-add-list-options-filed-conditions.png');
+ 
+@@ -270,7 +267,6 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-language-select-body-visible-when-controlled-field-has-default-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -305,12 +301,12 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT,
+-      "values" => implode( "\r\n", $this->langcodes ),
++      "values" => implode("\r\n", $this->langcodes),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-language-select-post-add-list-options-filed-conditions.png');
+ 
+@@ -322,7 +318,6 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-language-select-body-visible-when-controlled-field-has-default-value.png');
+     $this->waitUntilVisible('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -357,12 +352,12 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR,
+-      "values" => implode( "\r\n", $this->langcodes ),
++      "values" => implode("\r\n", $this->langcodes),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-language-select-post-add-list-options-filed-conditions.png');
+ 
+@@ -374,7 +369,6 @@ class ConditionalFieldLanguageSelectTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-language-select-body-visible-when-controlled-field-has-default-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldLinkFieldTest.php b/tests/src/FunctionalJavascript/ConditionalFieldLinkFieldTest.php
+index b414f20..29d6e88 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldLinkFieldTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldLinkFieldTest.php
+@@ -16,8 +16,8 @@ use Drupal\Tests\conditional_fields\FunctionalJavascript\TestCases\ConditionalFi
+  * @group conditional_fields
+  */
+ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+-  ConditionalFieldValueInterface,
+-  ConditionalFieldFilledEmptyInterface {
++    ConditionalFieldValueInterface,
++    ConditionalFieldFilledEmptyInterface {
+ 
+   /**
+    * {@inheritdoc}
+@@ -123,7 +123,7 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testFieldLinkVisibleValueWidget.png');
+ 
+@@ -136,7 +136,6 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Change a link that should not show the body.
+     $this->changeField($this->fieldSelector, '');
+     $this->createScreenshot($this->screenshotPath . '04-testFieldLinkVisibleValueWidget.png');
+@@ -178,7 +177,7 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testFieldLinkVisibleValueWidget.png');
+ 
+@@ -227,7 +226,7 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-link-field-post-add-list-options-filed-conditions.png');
+ 
+@@ -240,7 +239,6 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-link-field-body-invisible-when-controlled-field-has-no-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -286,7 +284,7 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-link-field-post-add-list-options-filed-conditions.png');
+ 
+@@ -299,7 +297,6 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-link-field-body-invisible-when-controlled-field-has-no-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -345,7 +342,7 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testFieldLinkVisibleValueNot.png');
+ 
+@@ -358,7 +355,6 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-testFieldLinkVisibleValueNot.png');
+     $this->waitUntilVisible('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -399,7 +395,7 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testFieldLinkVisibleValueNot.png');
+ 
+@@ -412,7 +408,6 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testFieldLinkVisibleValueNot.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -461,7 +456,6 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-testFieldLinkVisibleValueNot.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -500,7 +494,6 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-testFieldLinkVisibleValueNot.png');
+     $this->waitUntilVisible('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -539,7 +532,6 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-testFieldLinkVisibleValueNot.png');
+     $this->waitUntilVisible('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -578,7 +570,6 @@ class ConditionalFieldLinkFieldTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-testFieldLinkVisibleValueNot.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldNumberTest.php b/tests/src/FunctionalJavascript/ConditionalFieldNumberTest.php
+index 9c0118e..3d98eb7 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldNumberTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldNumberTest.php
+@@ -77,7 +77,7 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+         'min' => '',
+         'max' => '',
+         'prefix' => '',
+-      ]
++      ],
+     ])->save();
+ 
+     EntityFormDisplay::load('node.article.default')
+@@ -109,7 +109,7 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testNumberInteger-testVisibleValueWidget.png');
+ 
+@@ -122,7 +122,6 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testNumberInteger-testVisibleValueWidget.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -167,7 +166,7 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testNumberInteger-testVisibleValueWidget.png');
+ 
+@@ -180,7 +179,6 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testNumberInteger-testVisibleValueWidget.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -225,7 +223,7 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testNumberInteger-testVisibleValueWidget.png');
+ 
+@@ -238,7 +236,6 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testNumberInteger-testVisibleValueWidget.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -283,7 +280,7 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testNumberInteger-testVisibleValueWidget.png');
+ 
+@@ -296,7 +293,6 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testNumberInteger-testVisibleValueWidget.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -341,7 +337,7 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testNumberInteger-testVisibleValueWidget.png');
+ 
+@@ -354,7 +350,6 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testNumberInteger-testVisibleValueWidget.png');
+     $this->waitUntilVisible('.field--name-body', 50, '02. Article Body field is not visible');
+@@ -399,7 +394,7 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-testNumberInteger-testVisibleValueWidget.png');
+ 
+@@ -412,7 +407,6 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testNumberInteger-testVisibleValueWidget.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -459,7 +453,6 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testNumberInteger-testVisibleValueWidget.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+@@ -496,7 +489,6 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testNumberInteger-testVisibleValueWidget.png');
+     $this->waitUntilVisible('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -533,7 +525,6 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testNumberInteger-testVisibleValueWidget.png');
+     $this->waitUntilVisible('.field--name-body', 50, '01. Article Body field is not visible');
+@@ -570,7 +561,6 @@ class ConditionalFieldNumberTest extends ConditionalFieldTestBase implements Con
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-testNumberInteger-testVisibleValueWidget.png');
+     $this->waitUntilHidden('.field--name-body', 50, '01. Article Body field is visible');
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldRadiosTest.php b/tests/src/FunctionalJavascript/ConditionalFieldRadiosTest.php
+index f7465ba..136257b 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldRadiosTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldRadiosTest.php
+@@ -16,8 +16,8 @@ use Drupal\Tests\conditional_fields\FunctionalJavascript\TestCases\ConditionalFi
+  * @group conditional_fields
+  */
+ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+-  ConditionalFieldValueInterface,
+-  ConditionalFieldCheckedUncheckedInterface {
++    ConditionalFieldValueInterface,
++    ConditionalFieldCheckedUncheckedInterface {
+ 
+   use EntityReferenceTestTrait;
+ 
+@@ -100,7 +100,6 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+     $this->getSession()
+       ->executeScript("jQuery('#conditional-field-edit-form').submit();");
+ 
+-
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/conditional_fields/node/article');
+     $this->assertSession()
+@@ -109,17 +108,16 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is visible');
+     // Change a select value set to show the body.
+     $this->changeSelect('#edit-field-' . $this->taxonomyName . '-' . $term_id, $term_id);
+     $this->waitUntilVisible('.field--name-body', 50, '02. Article Body field is not visible');
+-//    $this->createScreenshot('sites/simpletest/scr1BodyVisTerm.jpg');
++    // $this->createScreenshot('sites/simpletest/scr1BodyVisTerm.jpg');
+     // Change a select value set to hide the body again.
+     $this->changeSelect('#edit-field-' . $this->taxonomyName . '-' . $term_id);
+     $this->waitUntilHidden('.field--name-body', 50, '03. Article Body field is visible');
+-//    $this->createScreenshot('sites/simpletest/scr2BodyHid.jpg');
++    // $this->createScreenshot('sites/simpletest/scr2BodyHid.jpg');
+   }
+ 
+   /**
+@@ -143,7 +141,7 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/conditional_fields/node/article');
+@@ -153,7 +151,6 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is visible');
+     // Change a select value set to show the body.
+@@ -162,7 +159,7 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+ 
+     $this->changeSelect('#edit-field-' . $this->taxonomyName . '-' . $term_id);
+     $this->waitUntilHidden('.field--name-body', 50, '03. Article Body field is visible');
+-//    $this->createScreenshot('sites/simpletest/scr1BodyVisTerm.jpg');
++    // $this->createScreenshot('sites/simpletest/scr1BodyVisTerm.jpg');
+     // Change a select value set to hide the body again.
+     $this->changeSelect('#edit-field-' . $this->taxonomyName . '-' . $term_id_f, $term_id_f);
+     $this->waitUntilHidden('.field--name-body', 50, '04. Article Body field is visible');
+@@ -182,7 +179,7 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+     } while ($term_id_2 == $term_id);
+     // Visit a ConditionalFields configuration page for `Article` Content type.
+     $this->createCondition('body', 'field_' . $this->taxonomyName, 'visible', 'value');
+-    $this->createScreenshot($this->screenshotPath . '01-' . $this->testName .  __FUNCTION__ . '.png');
++    $this->createScreenshot($this->screenshotPath . '01-' . $this->testName . __FUNCTION__ . '.png');
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_AND,
+@@ -191,7 +188,7 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/conditional_fields/node/article');
+@@ -202,7 +199,6 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '03-' . $this->testName . __FUNCTION__ . '.png');
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is visible');
+@@ -239,8 +235,7 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
+-
++    $this->submitForm($data, 'Save settings');
+ 
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/conditional_fields/node/article');
+@@ -250,7 +245,6 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is visible');
+     // Change a select value set to show the body.
+@@ -288,8 +282,7 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
+-
++    $this->submitForm($data, 'Save settings');
+ 
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/conditional_fields/node/article');
+@@ -299,7 +292,6 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilVisible('.field--name-body', 0, '01. Article Body field is not visible');
+     // Change a select value set to show the body.
+@@ -336,8 +328,7 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
+-
++    $this->submitForm($data, 'Save settings');
+ 
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/conditional_fields/node/article');
+@@ -347,7 +338,6 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden('.field--name-body', 0, '01. Article Body field is visible');
+     // Change a select value set to show the body.
+@@ -385,14 +375,13 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden('.field--name-body', 0, 'Article Body field is visible');
+     for ($term_id = 1; $term_id < $this->termsCount; $term_id++) {
+       // Change a select value set to show the body.
+       $this->changeSelect('#edit-field-' . $this->taxonomyName . '-' . $term_id, $term_id);
+       $this->waitUntilVisible('.field--name-body', 50, $term_id . '. Article Body field is not visible');
+-//      $this->createScreenshot('sites/simpletest/scr1BodyVisTerm'.$term_id.'.jpg');
++      // $this->createScreenshot('sites/simpletest/scr1BodyVisTerm'.$term_id.'.jpg');
+     }
+   }
+ 
+@@ -413,7 +402,6 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->waitUntilVisible('.field--name-body', 50, 'Article Body field is not visible');
+     for ($term_id = 1; $term_id < $this->termsCount; $term_id++) {
+@@ -440,7 +428,6 @@ class ConditionalFieldRadiosTest extends ConditionalFieldTestBase implements
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->waitUntilHidden('.field--name-body', 50, 'Article Body field is visible');
+     for ($term_id = 1; $term_id < $this->termsCount; $term_id++) {
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldSelectMultipleTest.php b/tests/src/FunctionalJavascript/ConditionalFieldSelectMultipleTest.php
+index 63fec20..7c06afb 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldSelectMultipleTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldSelectMultipleTest.php
+@@ -116,7 +116,7 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-post-add-list-options-filed-conditions.png');
+ 
+@@ -128,7 +128,6 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-body-invisible-when-controlled-field-has-no-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, 'Article Body field is visible');
+@@ -168,7 +167,7 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-post-add-list-options-filed-conditions.png');
+ 
+@@ -180,7 +179,6 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-body-invisible-when-controlled-field-has-no-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, 'Article Body field is visible');
+@@ -230,7 +228,7 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-post-add-list-options-filed-conditions.png');
+ 
+@@ -242,7 +240,6 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-body-invisible-when-controlled-field-has-no-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, 'Article Body field is visible');
+@@ -287,7 +284,7 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-post-add-list-options-filed-conditions.png');
+ 
+@@ -299,7 +296,6 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-body-invisible-when-controlled-field-has-no-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, 'Article Body field is visible');
+@@ -349,7 +345,7 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-post-add-list-options-filed-conditions.png');
+ 
+@@ -361,7 +357,6 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-body-invisible-when-controlled-field-has-no-value.png');
+     $this->waitUntilVisible('.field--name-body', 50, 'Article Body field is not visible');
+@@ -411,7 +406,7 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->createScreenshot($this->screenshotPath . '02-post-add-list-options-filed-conditions.png');
+ 
+@@ -423,7 +418,6 @@ class ConditionalFieldSelectMultipleTest extends ConditionalFieldTestBase implem
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is not visible.
+     $this->createScreenshot($this->screenshotPath . '04-body-invisible-when-controlled-field-has-no-value.png');
+     $this->waitUntilHidden('.field--name-body', 50, 'Article Body field is visible');
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldSelectTest.php b/tests/src/FunctionalJavascript/ConditionalFieldSelectTest.php
+index 6200706..8ce161c 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldSelectTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldSelectTest.php
+@@ -305,7 +305,7 @@ class ConditionalFieldSelectTest extends ConditionalFieldTestBase implements Con
+       'select_single_list_float' => "1.5\n2.5",
+       'select_single_list_string' => "one\ntwo",
+     ];
+-     $test_values = [
++    $test_values = [
+       'select_single_entity_reference' => 1,
+       'select_single_list_integer' => 1,
+       'select_single_list_float' => 1.5,
+@@ -327,7 +327,7 @@ class ConditionalFieldSelectTest extends ConditionalFieldTestBase implements Con
+         'state' => 'visible',
+         'effect' => 'show',
+       ];
+-      $this->submitForm( $data, 'Save settings' );
++      $this->submitForm($data, 'Save settings');
+       $this->createScreenshot($this->screenshotPath . '02-' . $fieldName . '_' . __FUNCTION__ . '.png');
+ 
+       // Check if that configuration is saved.
+@@ -335,7 +335,7 @@ class ConditionalFieldSelectTest extends ConditionalFieldTestBase implements Con
+       $this->createScreenshot($this->screenshotPath . '03-' . $fieldName . '_' . __FUNCTION__ . '.png');
+       $this->assertSession()
+         ->pageTextContains('body ' . $fieldName . ' visible value');
+-      $this->clickLink( 'Edit');
++      $this->clickLink('Edit');
+       $this->createScreenshot($this->screenshotPath . '03.5-' . $fieldName . '_' . __FUNCTION__ . '.png');
+ 
+       // Visit Article Add form to check that conditions are applied.
+@@ -405,7 +405,7 @@ class ConditionalFieldSelectTest extends ConditionalFieldTestBase implements Con
+         'state' => 'visible',
+         'effect' => 'show',
+       ];
+-      $this->submitForm( $data, 'Save settings' );
++      $this->submitForm($data, 'Save settings');
+       $this->createScreenshot($this->screenshotPath . '02-' . $fieldName . '_' . __FUNCTION__ . '.png');
+ 
+       // Check if that configuration is saved.
+@@ -486,7 +486,7 @@ class ConditionalFieldSelectTest extends ConditionalFieldTestBase implements Con
+         'state' => 'visible',
+         'effect' => 'show',
+       ];
+-      $this->submitForm( $data, 'Save settings' );
++      $this->submitForm($data, 'Save settings');
+       $this->createScreenshot($this->screenshotPath . '02-' . $fieldName . '_' . __FUNCTION__ . '.png');
+ 
+       // Check if that configuration is saved.
+@@ -567,7 +567,7 @@ class ConditionalFieldSelectTest extends ConditionalFieldTestBase implements Con
+         'state' => 'visible',
+         'effect' => 'show',
+       ];
+-      $this->submitForm( $data, 'Save settings' );
++      $this->submitForm($data, 'Save settings');
+       $this->createScreenshot($this->screenshotPath . '02-' . $fieldName . '_' . __FUNCTION__ . '.png');
+ 
+       // Check if that configuration is saved.
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldTestBase.php b/tests/src/FunctionalJavascript/ConditionalFieldTestBase.php
+index 14fda1f..d6ea7ee 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldTestBase.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldTestBase.php
+@@ -123,7 +123,7 @@ abstract class ConditionalFieldTestBase extends WebDriverTestBase {
+       'table[add_new_dependency][condition]' => $condition,
+     ];
+     $this->submitForm($edit, 'Add dependency');
+-    //the Status code not supported on WebDriverTestBase since 8.4 core. See more information on See https://www.drupal.org/node/2857562
++    // The Status code not supported on WebDriverTestBase since 8.4 core. See more information on See https://www.drupal.org/node/2857562
+   }
+ 
+   /**
+@@ -139,7 +139,7 @@ abstract class ConditionalFieldTestBase extends WebDriverTestBase {
+       'administer content types',
+     ]);
+ 
+-    $this->drupalLogin( $admin_account );
++    $this->drupalLogin($admin_account);
+ 
+     // Visit a ConditionalFields configuration page that requires login.
+     $this->drupalGet('admin/structure/conditional_fields');
+@@ -147,15 +147,15 @@ abstract class ConditionalFieldTestBase extends WebDriverTestBase {
+     // Configuration page contains the `Content` entity type.
+     $this->assertSession()->pageTextContains('Content');
+ 
+-    // Content link exists
+-    $this->assertSession()->linkByHrefExists( '/admin/structure/conditional_fields/node');
++    // Content link exists.
++    $this->assertSession()->linkByHrefExists('/admin/structure/conditional_fields/node');
+ 
+     // Visit a ConditionalFields configuration page for Content bundles.
+     $this->drupalGet('admin/structure/conditional_fields/node');
+ 
+     // Configuration page contains the `Article` bundle of Content entity type.
+     $this->assertSession()->pageTextContains('Article');
+-    $this->assertSession()->linkByHrefExists( 'admin/structure/conditional_fields/node/article');
++    $this->assertSession()->linkByHrefExists('admin/structure/conditional_fields/node/article');
+ 
+     // Visit a ConditionalFields configuration page for Article CT.
+     $this->drupalGet('admin/structure/conditional_fields/node/article');
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldTextTextareaTest.php b/tests/src/FunctionalJavascript/ConditionalFieldTextTextareaTest.php
+index 337f31d..2e9d939 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldTextTextareaTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldTextTextareaTest.php
+@@ -42,14 +42,14 @@ class ConditionalFieldTextTextareaTest extends ConditionalFieldTestBase implemen
+   protected $fieldSelector;
+ 
+   /**
+-   * The target field name
++   * The target field name.
+    *
+    * @var string
+    */
+   protected $targetFieldName = 'body';
+ 
+   /**
+-   * The target field wrapper selector
++   * The target field wrapper selector.
+    *
+    * @var string
+    */
+@@ -83,7 +83,7 @@ class ConditionalFieldTextTextareaTest extends ConditionalFieldTestBase implemen
+     parent::setUp();
+ 
+     $this->fieldSelector = '[name="field_' . $this->fieldName . '[0][value]"]';
+-    $this->targetFieldWrapp = '.field--name-' . str_replace('_', '-', $this->targetFieldName );
++    $this->targetFieldWrapp = '.field--name-' . str_replace('_', '-', $this->targetFieldName);
+ 
+     $this->fieldStorageDefinition = [
+       'field_name' => 'field_' . $this->fieldName,
+@@ -125,7 +125,7 @@ class ConditionalFieldTextTextareaTest extends ConditionalFieldTestBase implemen
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data,  'Save settings' );
++    $this->submitForm($data, 'Save settings');
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Check if that configuration is saved.
+@@ -171,7 +171,7 @@ class ConditionalFieldTextTextareaTest extends ConditionalFieldTestBase implemen
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data,  'Save settings' );
++    $this->submitForm($data, 'Save settings');
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Check if that configuration is saved.
+@@ -227,7 +227,7 @@ class ConditionalFieldTextTextareaTest extends ConditionalFieldTestBase implemen
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data,  'Save settings' );
++    $this->submitForm($data, 'Save settings');
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Check if that configuration is saved.
+@@ -287,7 +287,7 @@ class ConditionalFieldTextTextareaTest extends ConditionalFieldTestBase implemen
+     $text_without_expresion = 'The field in not empty';
+     $text_with_expresion = 'The field has data=2 text';
+ 
+-    $this->submitForm( $data,  'Save settings' );
++    $this->submitForm($data, 'Save settings');
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Check if that configuration is saved.
+@@ -337,7 +337,7 @@ class ConditionalFieldTextTextareaTest extends ConditionalFieldTestBase implemen
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data,  'Save settings' );
++    $this->submitForm($data, 'Save settings');
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Check if that configuration is saved.
+@@ -348,7 +348,6 @@ class ConditionalFieldTextTextareaTest extends ConditionalFieldTestBase implemen
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is visible.
+     $this->createScreenshot($this->screenshotPath . '04-' . $this->testName . __FUNCTION__ . '.png');
+     $this->waitUntilVisible($this->targetFieldWrapp, 50, 'Article \'' . $this->targetFieldName . '\' field is not visible');
+@@ -388,7 +387,7 @@ class ConditionalFieldTextTextareaTest extends ConditionalFieldTestBase implemen
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data,  'Save settings' );
++    $this->submitForm($data, 'Save settings');
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Check if that configuration is saved.
+@@ -399,7 +398,6 @@ class ConditionalFieldTextTextareaTest extends ConditionalFieldTestBase implemen
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+ 
+-
+     // Check that the field Body is invisible.
+     $this->createScreenshot($this->screenshotPath . '04-' . $this->testName . __FUNCTION__ . '.png');
+     $this->waitUntilHidden($this->targetFieldWrapp, 50, 'Article \'' . $this->targetFieldName . '\' field is visible');
+@@ -457,10 +455,10 @@ class ConditionalFieldTextTextareaTest extends ConditionalFieldTestBase implemen
+ 
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+-    //
+ 
+     $this->waitUntilHidden($this->targetFieldWrapp, 0, 'Article \'' . $this->targetFieldName . '\' field is visible');
+     $this->changeField($this->fieldSelector, 'This field is not empty.');
+     $this->waitUntilVisible($this->targetFieldWrapp, 10, 'Article \'' . $this->targetFieldName . '\' field is not visible');
+   }
++
+ }
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldTextWithSummaryTest.php b/tests/src/FunctionalJavascript/ConditionalFieldTextWithSummaryTest.php
+index 01f313c..80d93fc 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldTextWithSummaryTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldTextWithSummaryTest.php
+@@ -122,7 +122,7 @@ class ConditionalFieldTextWithSummaryTest extends ConditionalFieldTestBase imple
+     $this->createScreenshot($this->screenshotPath . '03-' . $this->testName . __FUNCTION__ . '.png');
+     $this->assertSession()->pageTextContains('body ' . 'field_' . $this->fieldName . ' visible value');
+ 
+-    $this->clickLink( 'Edit');
++    $this->clickLink('Edit');
+     $this->createScreenshot($this->screenshotPath . '04-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Visit Article Add form to check that conditions are applied.
+@@ -164,7 +164,7 @@ class ConditionalFieldTextWithSummaryTest extends ConditionalFieldTestBase imple
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Check if that configuration is saved.
+@@ -172,7 +172,7 @@ class ConditionalFieldTextWithSummaryTest extends ConditionalFieldTestBase imple
+     $this->createScreenshot($this->screenshotPath . '03-' . $this->testName . __FUNCTION__ . '.png');
+     $this->assertSession()->pageTextContains('body ' . 'field_' . $this->fieldName . ' visible value');
+ 
+-    $this->clickLink( 'Edit');
++    $this->clickLink('Edit');
+     $this->createScreenshot($this->screenshotPath . '04-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Visit Article Add form to check that conditions are applied.
+@@ -218,7 +218,7 @@ class ConditionalFieldTextWithSummaryTest extends ConditionalFieldTestBase imple
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Check if that configuration is saved.
+@@ -226,7 +226,7 @@ class ConditionalFieldTextWithSummaryTest extends ConditionalFieldTestBase imple
+     $this->createScreenshot($this->screenshotPath . '03-' . $this->testName . __FUNCTION__ . '.png');
+     $this->assertSession()->pageTextContains('body ' . 'field_' . $this->fieldName . ' visible value');
+ 
+-    $this->clickLink( 'Edit');
++    $this->clickLink('Edit');
+     $this->createScreenshot($this->screenshotPath . '04-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Visit Article Add form to check that conditions are applied.
+@@ -277,7 +277,7 @@ class ConditionalFieldTextWithSummaryTest extends ConditionalFieldTestBase imple
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Check if that configuration is saved.
+@@ -324,7 +324,7 @@ class ConditionalFieldTextWithSummaryTest extends ConditionalFieldTestBase imple
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Check if that configuration is saved.
+@@ -375,7 +375,7 @@ class ConditionalFieldTextWithSummaryTest extends ConditionalFieldTestBase imple
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings');
++    $this->submitForm($data, 'Save settings');
+     $this->createScreenshot($this->screenshotPath . '02-' . $this->testName . __FUNCTION__ . '.png');
+ 
+     // Check if that configuration is saved.
+@@ -453,4 +453,5 @@ class ConditionalFieldTextWithSummaryTest extends ConditionalFieldTestBase imple
+     $this->changeField($this->fieldSelector, 'This field is not empty.');
+     $this->waitUntilVisible('.field--name-body', 10, 'Article Body field is not visible');
+   }
++
+ }
+diff --git a/tests/src/FunctionalJavascript/ConditionalFieldTextfieldTest.php b/tests/src/FunctionalJavascript/ConditionalFieldTextfieldTest.php
+index d41e194..aeb52d1 100644
+--- a/tests/src/FunctionalJavascript/ConditionalFieldTextfieldTest.php
++++ b/tests/src/FunctionalJavascript/ConditionalFieldTextfieldTest.php
+@@ -31,14 +31,14 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+   protected $fieldName = 'single_textfield';
+ 
+   /**
+-   * The target field name
++   * The target field name.
+    *
+    * @var string
+    */
+   protected $targetFieldName = 'body';
+ 
+   /**
+-   * The target field wrapper selector
++   * The target field wrapper selector.
+    *
+    * @var string
+    */
+@@ -58,7 +58,7 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+     parent::setUp();
+ 
+     $this->fieldSelector = '[name="field_' . $this->fieldName . '[0][value]"]';
+-    $this->targetFieldWrapp = '.field--name-' . str_replace('_', '-', $this->targetFieldName );
++    $this->targetFieldWrapp = '.field--name-' . str_replace('_', '-', $this->targetFieldName);
+ 
+     $fieldStorageDefinition = [
+       'field_name' => 'field_' . $this->fieldName,
+@@ -101,8 +101,7 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+       'effect' => 'show',
+     ];
+ 
+-    $this->submitForm( $data,  'Save settings' );
+-
++    $this->submitForm($data, 'Save settings');
+ 
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/types/manage/article/conditionals');
+@@ -111,7 +110,6 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+ 
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+-    //
+ 
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden($this->targetFieldWrapp, 0, '01. Article Body field is visible');
+@@ -127,7 +125,7 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+    */
+   public function testVisibleValueRegExp() {
+     $this->baseTestSteps();
+-    $this->createCondition( $this->targetFieldName, 'field_' . $this->fieldName, 'visible', 'value' );
++    $this->createCondition($this->targetFieldName, 'field_' . $this->fieldName, 'visible', 'value');
+ 
+     $data = [
+       'condition' => 'value',
+@@ -141,7 +139,7 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+     $text_without_expresion = 'The field in not empty';
+     $text_with_expresion = 'The field has data=2 text';
+ 
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/types/manage/article/conditionals');
+@@ -149,13 +147,13 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+       ->pageTextContains($this->targetFieldName . ' ' . 'field_' . $this->fieldName . ' visible value');
+ 
+     $this->drupalGet('node/add/article');
+-    $this->assertSession()->elementExists( 'css', $this->targetFieldWrapp);
++    $this->assertSession()->elementExists('css', $this->targetFieldWrapp);
+ 
+-    $this->waitUntilHidden( $this->targetFieldWrapp, 0, '01. Article Body field is visible' );
+-    $this->changeField($this->fieldSelector, $text_without_expresion );
+-    $this->waitUntilHidden( $this->targetFieldWrapp, 50, '02. Article Body field is visible' );
+-    $this->changeField($this->fieldSelector, $text_with_expresion );
+-    $this->waitUntilVisible( $this->targetFieldWrapp, 50, '03. Article Body field is not visible' );
++    $this->waitUntilHidden($this->targetFieldWrapp, 0, '01. Article Body field is visible');
++    $this->changeField($this->fieldSelector, $text_without_expresion);
++    $this->waitUntilHidden($this->targetFieldWrapp, 50, '02. Article Body field is visible');
++    $this->changeField($this->fieldSelector, $text_with_expresion);
++    $this->waitUntilVisible($this->targetFieldWrapp, 50, '03. Article Body field is not visible');
+ 
+   }
+ 
+@@ -164,7 +162,7 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+    */
+   public function testVisibleValueAnd() {
+     $this->baseTestSteps();
+-    $this->createCondition( $this->targetFieldName, 'field_' . $this->fieldName, 'visible', 'value' );
++    $this->createCondition($this->targetFieldName, 'field_' . $this->fieldName, 'visible', 'value');
+ 
+     $text_1 = $this->getRandomGenerator()->word(7);
+     $text_2 = $this->getRandomGenerator()->word(7);
+@@ -172,29 +170,29 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_AND,
+-      'values' => implode( "\r\n", [
++      'values' => implode("\r\n", [
+         $text_1,
+-        $text_2
++        $text_2,
+       ]),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+ 
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     $this->drupalGet('node/add/article');
+-    $this->assertSession()->elementExists( 'css', $this->targetFieldWrapp);
++    $this->assertSession()->elementExists('css', $this->targetFieldWrapp);
+ 
+-    $text_false= implode( ' ', [ $text_1, $text_2 ]);
++    $text_false = implode(' ', [$text_1, $text_2]);
+ 
+-    $this->waitUntilHidden( $this->targetFieldWrapp, 0, '01. Article Body field is visible');
++    $this->waitUntilHidden($this->targetFieldWrapp, 0, '01. Article Body field is visible');
+ 
+-    $this->changeField( $this->fieldSelector,  $text_false);
+-    $this->waitUntilHidden( $this->targetFieldWrapp, 50, '02. Article Body field is visible');
++    $this->changeField($this->fieldSelector, $text_false);
++    $this->waitUntilHidden($this->targetFieldWrapp, 50, '02. Article Body field is visible');
+ 
+-    $this->changeField( $this->fieldSelector,  $text_1);
+-    $this->waitUntilHidden( $this->targetFieldWrapp, 50, '03. Article Body field is visible');
++    $this->changeField($this->fieldSelector, $text_1);
++    $this->waitUntilHidden($this->targetFieldWrapp, 50, '03. Article Body field is visible');
+ 
+     // Change a value value to hide the body again.
+     $this->changeField($this->fieldSelector, '');
+@@ -211,7 +209,7 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+     // Visit a ConditionalFields configuration page for Content bundles.
+     $this->createCondition($this->targetFieldName, 'field_' . $this->fieldName, 'visible', 'value');
+ 
+-     // Random term id to check necessary value.
++    // Random term id to check necessary value.
+     $text1 = $this->getRandomGenerator()->word(8);
+     $text2 = $this->getRandomGenerator()->word(7);
+ 
+@@ -225,11 +223,10 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/types/manage/article/conditionals');
+-    //
+     $this->assertSession()
+       ->pageTextContains($this->targetFieldName . ' ' . 'field_' . $this->fieldName . ' visible value');
+ 
+@@ -261,7 +258,7 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+    */
+   public function testVisibleValueNot() {
+     $this->baseTestSteps();
+-    $this->createCondition( $this->targetFieldName, 'field_' . $this->fieldName, 'visible', 'value' );
++    $this->createCondition($this->targetFieldName, 'field_' . $this->fieldName, 'visible', 'value');
+ 
+     $text_1 = $this->getRandomGenerator()->word(7);
+     $text_2 = $this->getRandomGenerator()->word(7);
+@@ -269,16 +266,16 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT,
+-      'values' => implode( "\r\n", [
++      'values' => implode("\r\n", [
+         $text_1,
+-        $text_2
++        $text_2,
+       ]),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+ 
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/types/manage/article/conditionals');
+@@ -287,20 +284,19 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+ 
+     $this->drupalGet('node/add/article');
+ 
++    $this->waitUntilVisible($this->targetFieldWrapp, 0, '01. Article Body field is not visible');
+ 
+-    $this->waitUntilVisible( $this->targetFieldWrapp, 0, '01. Article Body field is not visible');
+-
+-    $this->changeField( $this->fieldSelector,  'some-unique-text');
+-    $this->waitUntilVisible( $this->targetFieldWrapp, 50, '02. Article Body field is not visible');
++    $this->changeField($this->fieldSelector, 'some-unique-text');
++    $this->waitUntilVisible($this->targetFieldWrapp, 50, '02. Article Body field is not visible');
+ 
+-    $this->changeField( $this->fieldSelector,  $text_1);
+-    $this->waitUntilHidden( $this->targetFieldWrapp, 50, '03. Article Body field is visible');
++    $this->changeField($this->fieldSelector, $text_1);
++    $this->waitUntilHidden($this->targetFieldWrapp, 50, '03. Article Body field is visible');
+ 
+-    $this->changeField( $this->fieldSelector,  $text_2);
+-    $this->waitUntilHidden( $this->targetFieldWrapp, 50, '04. Article Body field is visible');
++    $this->changeField($this->fieldSelector, $text_2);
++    $this->waitUntilHidden($this->targetFieldWrapp, 50, '04. Article Body field is visible');
+ 
+-    $this->changeField( $this->fieldSelector,  "");
+-    $this->waitUntilVisible( $this->targetFieldWrapp, 50, '05. Article Body field is not visible');
++    $this->changeField($this->fieldSelector, "");
++    $this->waitUntilVisible($this->targetFieldWrapp, 50, '05. Article Body field is not visible');
+   }
+ 
+   /**
+@@ -308,7 +304,7 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+    */
+   public function testVisibleValueXor() {
+     $this->baseTestSteps();
+-    $this->createCondition( $this->targetFieldName, 'field_' . $this->fieldName, 'visible', 'value' );
++    $this->createCondition($this->targetFieldName, 'field_' . $this->fieldName, 'visible', 'value');
+ 
+     $text_1 = $this->getRandomGenerator()->word(7);
+     $text_2 = $this->getRandomGenerator()->word(7);
+@@ -316,16 +312,16 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+     $data = [
+       'condition' => 'value',
+       'values_set' => ConditionalFieldsInterface::CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR,
+-      'values' => implode( "\n", [
++      'values' => implode("\n", [
+         $text_1,
+-        $text_2
++        $text_2,
+       ]),
+       'grouping' => 'AND',
+       'state' => 'visible',
+       'effect' => 'show',
+     ];
+ 
+-    $this->submitForm( $data, 'Save settings' );
++    $this->submitForm($data, 'Save settings');
+ 
+     // Check if that configuration is saved.
+     $this->drupalGet('admin/structure/types/manage/article/conditionals');
+@@ -333,21 +329,20 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+       ->pageTextContains($this->targetFieldName . ' ' . 'field_' . $this->fieldName . ' visible value');
+ 
+     $this->drupalGet('node/add/article');
+-    $this->assertSession()->elementExists( 'css', $this->targetFieldWrapp);
++    $this->assertSession()->elementExists('css', $this->targetFieldWrapp);
+ 
+-    $text_false= 'same unique value';
++    $text_false = 'same unique value';
+ 
+-    $this->waitUntilHidden( $this->targetFieldWrapp, 0, '01. Article Body field is visible');
+-
+-    $this->changeField( $this->fieldSelector,  $text_false);
+-    $this->waitUntilHidden( $this->targetFieldWrapp, 50, '02. Article Body field is visible');
++    $this->waitUntilHidden($this->targetFieldWrapp, 0, '01. Article Body field is visible');
+ 
+-    $this->changeField( $this->fieldSelector,  $text_1);
+-    $this->waitUntilVisible( $this->targetFieldWrapp, 50, '03. Article Body field is not visible');
++    $this->changeField($this->fieldSelector, $text_false);
++    $this->waitUntilHidden($this->targetFieldWrapp, 50, '02. Article Body field is visible');
+ 
++    $this->changeField($this->fieldSelector, $text_1);
++    $this->waitUntilVisible($this->targetFieldWrapp, 50, '03. Article Body field is not visible');
+ 
+-    $this->changeField( $this->fieldSelector,  "");
+-    $this->waitUntilHidden( $this->targetFieldWrapp, 50, '04. Article Body field is visible');
++    $this->changeField($this->fieldSelector, "");
++    $this->waitUntilHidden($this->targetFieldWrapp, 50, '04. Article Body field is visible');
+   }
+ 
+   /**
+@@ -366,7 +361,6 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+ 
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+-    //
+ 
+     // Check that the field Body is not visible.
+     $this->waitUntilHidden($this->targetFieldWrapp, 0, '01. Article Body field is visible');
+@@ -383,7 +377,7 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+    */
+   public function testVisibleEmpty() {
+     $this->baseTestSteps();
+-    $this->createCondition( $this->targetFieldName, 'field_' . $this->fieldName, 'visible', 'empty');
++    $this->createCondition($this->targetFieldName, 'field_' . $this->fieldName, 'visible', 'empty');
+     // Check that configuration is saved.
+     $this->drupalGet('admin/structure/conditional_fields/node/article');
+     $this->assertSession()
+@@ -405,7 +399,7 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+    */
+   public function testInvisibleFilled() {
+     $this->baseTestSteps();
+-    $this->createCondition( $this->targetFieldName, 'field_' . $this->fieldName, '!visible', '!empty');
++    $this->createCondition($this->targetFieldName, 'field_' . $this->fieldName, '!visible', '!empty');
+     // Check that configuration is saved.
+     $this->drupalGet('admin/structure/conditional_fields/node/article');
+     $this->assertSession()
+@@ -438,7 +432,6 @@ class ConditionalFieldTextfieldTest extends ConditionalFieldTestBase implements
+ 
+     // Visit Article Add form to check that conditions are applied.
+     $this->drupalGet('node/add/article');
+-   //
+ 
+     $this->waitUntilHidden($this->targetFieldWrapp, 0, '01. Article Body field is visible');
+ 
+diff --git a/tests/src/FunctionalJavascript/Entity/ConditionalFieldsUserTest.php b/tests/src/FunctionalJavascript/Entity/ConditionalFieldsUserTest.php
+index 54eca6c..64ea355 100644
+--- a/tests/src/FunctionalJavascript/Entity/ConditionalFieldsUserTest.php
++++ b/tests/src/FunctionalJavascript/Entity/ConditionalFieldsUserTest.php
+@@ -47,8 +47,8 @@ class ConditionalFieldsUserTest extends ConditionalFieldTestBase {
+    */
+   public function setUp() {
+     parent::setUp();
+-    $this->addField( $this->dependee, 'boolean', 'boolean_checkbox' );
+-    $this->addField( $this->dependent, 'text', 'text_textfield' );
++    $this->addField($this->dependee, 'boolean', 'boolean_checkbox');
++    $this->addField($this->dependent, 'text', 'text_textfield');
+   }
+ 
+   /**
+@@ -61,37 +61,37 @@ class ConditionalFieldsUserTest extends ConditionalFieldTestBase {
+    * @param string $widget
+    *   Field Widget to use.
+    */
+-  protected function addField( $field_name, $type, $widget ) {
++  protected function addField($field_name, $type, $widget) {
+     $fieldStorageDefinition = [
+       'field_name'  => $field_name,
+       'entity_type' => 'user',
+       'type'        => $type,
+       'cardinality' => -1,
+     ];
+-    $fieldStorage           = FieldStorageConfig::create( $fieldStorageDefinition );
++    $fieldStorage           = FieldStorageConfig::create($fieldStorageDefinition);
+     $fieldStorage->save();
+ 
+-    $field = FieldConfig::create( [
++    $field = FieldConfig::create([
+       'field_storage' => $fieldStorage,
+       'bundle'        => 'user',
+-    ] );
++    ]);
+     $field->save();
+ 
+     $entity_form_display = \Drupal::entityTypeManager()
+-      ->getStorage( 'entity_form_display' )
+-      ->load( 'user.user.default' );
+-    if ( ! $entity_form_display ) {
+-      $entity_form_display = EntityFormDisplay::create( [
++      ->getStorage('entity_form_display')
++      ->load('user.user.default');
++    if (!$entity_form_display) {
++      $entity_form_display = EntityFormDisplay::create([
+         'targetEntityType' => 'user',
+         'bundle'           => 'user',
+         'mode'             => 'default',
+-        'status'           => true,
+-      ] );
++        'status'           => TRUE,
++      ]);
+     }
+-    if ( $entity_form_display instanceof EntityDisplayInterface ) {
+-      $entity_form_display->setComponent( $field_name, [
++    if ($entity_form_display instanceof EntityDisplayInterface) {
++      $entity_form_display->setComponent($field_name, [
+         'type' => $widget,
+-      ] )
++      ])
+         ->save();
+     }
+ 
+@@ -102,46 +102,46 @@ class ConditionalFieldsUserTest extends ConditionalFieldTestBase {
+    */
+   public function testUserEntity() {
+     $this->baseTestSteps();
+-    $this->createCondition( $this->dependent, $this->dependee, 'visible', 'checked' );
++    $this->createCondition($this->dependent, $this->dependee, 'visible', 'checked');
+ 
+     // Check that configuration is saved.
+-    $this->drupalGet( 'admin/structure/conditional_fields/user/user' );
+-    $this->createScreenshot( $this->screenshotPath . '01-config-was-added.png' );
+-    $this->assertSession()->pageTextContains( $this->dependent . ' ' . $this->dependee . ' visible checked' );
++    $this->drupalGet('admin/structure/conditional_fields/user/user');
++    $this->createScreenshot($this->screenshotPath . '01-config-was-added.png');
++    $this->assertSession()->pageTextContains($this->dependent . ' ' . $this->dependee . ' visible checked');
+ 
+     // Visit user register form to check that conditions are applied.
+-    $this->drupalGet( 'admin/people/create' );
+-    $this->createScreenshot( $this->screenshotPath . '02-mail-not-visible.png' );
+-    $this->waitUntilHidden( '.field--name-field-dependent', 50, 'Dependent field is not visible' );
+-    $this->changeSelect( '#edit-field-dependee-value', true );
+-    $this->createScreenshot( $this->screenshotPath . '03-mail-visible.png' );
+-    $this->waitUntilVisible( '.field--name-field-dependent', 50, 'Dependent field is visible' );
++    $this->drupalGet('admin/people/create');
++    $this->createScreenshot($this->screenshotPath . '02-mail-not-visible.png');
++    $this->waitUntilHidden('.field--name-field-dependent', 50, 'Dependent field is not visible');
++    $this->changeSelect('#edit-field-dependee-value', TRUE);
++    $this->createScreenshot($this->screenshotPath . '03-mail-visible.png');
++    $this->waitUntilVisible('.field--name-field-dependent', 50, 'Dependent field is visible');
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   protected function baseTestSteps() {
+-    $user = $this->drupalCreateUser( [
++    $user = $this->drupalCreateUser([
+       'administer users',
+       'administer account settings',
+       'view conditional fields',
+       'edit conditional fields',
+       'delete conditional fields',
+-    ] );
+-    $this->drupalLogin( $user );
++    ]);
++    $this->drupalLogin($user);
+ 
+     // Visit a ConditionalFields configuration page that requires login.
+-    $this->drupalGet( 'admin/structure/conditional_fields' );
++    $this->drupalGet('admin/structure/conditional_fields');
+ 
+     // Configuration page contains the `User` entity type.
+-    $this->assertSession()->pageTextContains( 'User' );
++    $this->assertSession()->pageTextContains('User');
+ 
+     // Visit a ConditionalFields configuration page for User bundles.
+-    $this->drupalGet( 'admin/structure/conditional_fields/user' );
++    $this->drupalGet('admin/structure/conditional_fields/user');
+ 
+     // Visit a ConditionalFields configuration page for User.
+-    $this->drupalGet( 'admin/structure/conditional_fields/user/user' );
++    $this->drupalGet('admin/structure/conditional_fields/user/user');
+   }
+ 
+ }
+diff --git a/tests/src/FunctionalJavascript/TestCases/ConditionalFieldCheckedUncheckedInterface.php b/tests/src/FunctionalJavascript/TestCases/ConditionalFieldCheckedUncheckedInterface.php
+index dfb687f..444d90a 100644
+--- a/tests/src/FunctionalJavascript/TestCases/ConditionalFieldCheckedUncheckedInterface.php
++++ b/tests/src/FunctionalJavascript/TestCases/ConditionalFieldCheckedUncheckedInterface.php
+@@ -3,7 +3,8 @@
+ namespace Drupal\Tests\conditional_fields\FunctionalJavascript\TestCases;
+ 
+ /**
+- * Interface ConditionalFieldCheckedUncheckedInterface
++ * Interface ConditionalFieldCheckedUncheckedInterface.
++ *
+  * @package Drupal\Tests\conditional_fields\FunctionalJavascript\TestCases
+  */
+ interface ConditionalFieldCheckedUncheckedInterface {
+diff --git a/tests/src/FunctionalJavascript/TestCases/ConditionalFieldFilledEmptyInterface.php b/tests/src/FunctionalJavascript/TestCases/ConditionalFieldFilledEmptyInterface.php
+index 678f7d7..9b8ae0a 100644
+--- a/tests/src/FunctionalJavascript/TestCases/ConditionalFieldFilledEmptyInterface.php
++++ b/tests/src/FunctionalJavascript/TestCases/ConditionalFieldFilledEmptyInterface.php
+@@ -3,7 +3,8 @@
+ namespace Drupal\Tests\conditional_fields\FunctionalJavascript\TestCases;
+ 
+ /**
+- * Interface ConditionalFieldFilledEmptyInterface
++ * Interface ConditionalFieldFilledEmptyInterface.
++ *
+  * @package Drupal\Tests\conditional_fields\FunctionalJavascript\TestCases
+  */
+ interface ConditionalFieldFilledEmptyInterface {
+diff --git a/tests/src/FunctionalJavascript/TestCases/ConditionalFieldValueInterface.php b/tests/src/FunctionalJavascript/TestCases/ConditionalFieldValueInterface.php
+index 8d3513a..7552803 100644
+--- a/tests/src/FunctionalJavascript/TestCases/ConditionalFieldValueInterface.php
++++ b/tests/src/FunctionalJavascript/TestCases/ConditionalFieldValueInterface.php
+@@ -3,7 +3,8 @@
+ namespace Drupal\Tests\conditional_fields\FunctionalJavascript\TestCases;
+ 
+ /**
+- * Interface ConditionalFieldValueInterface
++ * Interface ConditionalFieldValueInterface.
++ *
+  * @package Drupal\Tests\conditional_fields\FunctionalJavascript\TestCases
+  */
+ interface ConditionalFieldValueInterface {
+diff --git a/tests/src/Unit/ConditionalFieldControllerTest.php b/tests/src/Unit/ConditionalFieldControllerTest.php
+index 34ab603..aba7948 100644
+--- a/tests/src/Unit/ConditionalFieldControllerTest.php
++++ b/tests/src/Unit/ConditionalFieldControllerTest.php
+@@ -23,7 +23,7 @@ class ConditionalFieldControllerTest extends UnitTestCase {
+   /**
+    * CF Controller.
+    *
+-   * @var ConditionalFieldController
++   * @var \Drupal\conditional_fields\Controller\ConditionalFieldController
+    */
+   protected $controller;
+ 

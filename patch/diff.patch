@@ -1,0 +1,1400 @@
+diff --git a/css/diff.double-column.css b/css/diff.double-column.css
+index e6c7170..2c97169 100644
+--- a/css/diff.double-column.css
++++ b/css/diff.double-column.css
+@@ -46,6 +46,6 @@ td.diff-line-number {
+   text-align: center;
+   padding: 0.3em 1em;
+   width: 1%;
+-  color: #AAA;
++  color: #aaa;
+   border-right: 1px #e6e4df solid;
+ }
+diff --git a/css/diff.single-column.css b/css/diff.single-column.css
+index 1df2847..41e7be7 100644
+--- a/css/diff.single-column.css
++++ b/css/diff.single-column.css
+@@ -46,6 +46,6 @@ td.diff-line-number {
+   text-align: center;
+   padding: 0.3em 1em;
+   width: 1%;
+-  color: #AAA;
++  color: #aaa;
+   border-right: 1px #e6e4df solid;
+-}
+\ No newline at end of file
++}
+diff --git a/src/Annotation/FieldDiffBuilder.php b/src/Annotation/FieldDiffBuilder.php
+index c5d7c33..b7b5ad5 100644
+--- a/src/Annotation/FieldDiffBuilder.php
++++ b/src/Annotation/FieldDiffBuilder.php
+@@ -48,4 +48,5 @@ class FieldDiffBuilder extends Plugin {
+    * @var int
+    */
+   public $weight = 0;
++
+ }
+diff --git a/src/Controller/PluginRevisionController.php b/src/Controller/PluginRevisionController.php
+index 6205ae1..d880acc 100644
+--- a/src/Controller/PluginRevisionController.php
++++ b/src/Controller/PluginRevisionController.php
+@@ -195,10 +195,10 @@ class PluginRevisionController extends ControllerBase {
+     $links = [];
+     $layouts = $this->diffLayoutManager->getPluginOptions();
+     foreach ($layouts as $key => $value) {
+-      $links[$key] = array(
++      $links[$key] = [
+         'title' => $value,
+         'url' => $this->diffRoute($entity, $left_revision_id, $right_revision_id, $key),
+-      );
++      ];
+     }
+ 
+     // Set as the first element the current filter.
+diff --git a/src/DiffBuilderManager.php b/src/DiffBuilderManager.php
+index 41bc24a..c88cee1 100644
+--- a/src/DiffBuilderManager.php
++++ b/src/DiffBuilderManager.php
+@@ -170,7 +170,7 @@ class DiffBuilderManager extends DefaultPluginManager {
+    * Determines if a field should be displayed when comparing revisions based on
+    * the entity view display if there is no plugin selected for the field.
+    *
+-   * @param FieldStorageDefinitionInterface $field_storage_definition
++   * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $field_storage_definition
+    *   The field name.
+    *
+    * @return bool
+@@ -200,7 +200,7 @@ class DiffBuilderManager extends DefaultPluginManager {
+    * Loop over the plugins that can be applied to the field and builds an array
+    * of possible plugins based on each plugin weight.
+    *
+-   * @param FieldStorageDefinitionInterface $field_definition
++   * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $field_definition
+    *   The field storage definition.
+    *
+    * @return array
+diff --git a/src/DiffEntityComparison.php b/src/DiffEntityComparison.php
+index 4017402..b2cceba 100644
+--- a/src/DiffEntityComparison.php
++++ b/src/DiffEntityComparison.php
+@@ -99,7 +99,7 @@ class DiffEntityComparison {
+    *   Items ready to be compared by the Diff component.
+    */
+   public function compareRevisions(ContentEntityInterface $left_entity, ContentEntityInterface $right_entity) {
+-    $result = array();
++    $result = [];
+ 
+     $left_values = $this->entityParser->parseEntity($left_entity);
+     $right_values = $this->entityParser->parseEntity($right_entity);
+@@ -154,11 +154,11 @@ class DiffEntityComparison {
+    *   Array resulted after combining the left and right values.
+    */
+   protected function combineFields(array $left_values, array $right_values) {
+-    $result = array(
+-      '#left' => array(),
+-      '#right' => array(),
+-    );
+-    $max = max(array(count($left_values), count($right_values)));
++    $result = [
++      '#left' => [],
++      '#right' => [],
++    ];
++    $max = max([count($left_values), count($right_values)]);
+     for ($delta = 0; $delta < $max; $delta++) {
+       // EXPERIMENTAL: Transform thumbnail from ImageFieldBuilder.
+       // @todo Make thumbnail / rich diff data pluggable.
+@@ -210,10 +210,10 @@ class DiffEntityComparison {
+    */
+   public function getRows($a, $b, $show_header = FALSE, array &$line_stats = NULL) {
+     if (!isset($line_stats)) {
+-      $line_stats = array(
+-        'counter' => array('x' => 0, 'y' => 0),
+-        'offset' => array('x' => 0, 'y' => 0),
+-      );
++      $line_stats = [
++        'counter' => ['x' => 0, 'y' => 0],
++        'offset' => ['x' => 0, 'y' => 0],
++      ];
+     }
+ 
+     // Header is the line counter.
+@@ -273,7 +273,6 @@ class DiffEntityComparison {
+ 
+     // @todo Autogenerate summary again.
+     // @see https://www.drupal.org/project/diff/issues/2880936
+-
+     // Add workflow/content moderation state information.
+     if ($state = $this->getModerationState($revision)) {
+       $revision_summary .= " ($state)";
+diff --git a/src/DiffEntityParser.php b/src/DiffEntityParser.php
+index bc41aa2..3545305 100644
+--- a/src/DiffEntityParser.php
++++ b/src/DiffEntityParser.php
+@@ -60,7 +60,7 @@ class DiffEntityParser {
+    *   Array of strings resulted by parsing the entity.
+    */
+   public function parseEntity(ContentEntityInterface $entity) {
+-    $result = array();
++    $result = [];
+     $langcode = \Drupal::languageManager()->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
+     // Load entity of current language, otherwise fields are always compared by
+     // their default language.
+diff --git a/src/DiffLayoutBase.php b/src/DiffLayoutBase.php
+index d00e30c..7b4225f 100644
+--- a/src/DiffLayoutBase.php
++++ b/src/DiffLayoutBase.php
+@@ -16,7 +16,6 @@ use Drupal\Core\Link;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\Core\Url;
+ use Drupal\diff\Controller\PluginRevisionController;
+-use Drupal\node\NodeInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+diff --git a/src/FieldDiffBuilderBase.php b/src/FieldDiffBuilderBase.php
+index 14c4b51..3d4d647 100644
+--- a/src/FieldDiffBuilderBase.php
++++ b/src/FieldDiffBuilderBase.php
+@@ -74,23 +74,23 @@ abstract class FieldDiffBuilderBase extends PluginBase implements FieldDiffBuild
+    * {@inheritdoc}
+    */
+   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+-    $form['show_header'] = array(
++    $form['show_header'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Show field title'),
+       '#weight' => -5,
+       '#default_value' => $this->configuration['show_header'],
+-    );
+-    $form['markdown'] = array(
++    ];
++    $form['markdown'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Markdown callback'),
+       '#default_value' => $this->configuration['markdown'],
+-      '#options' => array(
++      '#options' => [
+         'drupal_html_to_text' => $this->t('Drupal HTML to Text'),
+         'filter_xss' => $this->t('Filter XSS (some tags)'),
+         'filter_xss_all' => $this->t('Filter XSS (all tags)'),
+-      ),
++      ],
+       '#description' => $this->t('These provide ways to clean markup tags to make comparisons easier to read.'),
+-    );
++    ];
+ 
+     return $form;
+   }
+@@ -114,10 +114,10 @@ abstract class FieldDiffBuilderBase extends PluginBase implements FieldDiffBuild
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    return array(
++    return [
+       'show_header' => 1,
+       'markdown' => 'drupal_html_to_text',
+-    );
++    ];
+   }
+ 
+   /**
+diff --git a/src/FieldDiffBuilderInterface.php b/src/FieldDiffBuilderInterface.php
+index 9f4ff91..5a87330 100644
+--- a/src/FieldDiffBuilderInterface.php
++++ b/src/FieldDiffBuilderInterface.php
+@@ -30,7 +30,7 @@ interface FieldDiffBuilderInterface extends PluginFormInterface, ConfigurableInt
+    *
+    * @see \Drupal\diff\Plugin\diff\Field\TextFieldBuilder
+    *
+-   * @param FieldItemListInterface $field_items
++   * @param \Drupal\Core\Field\FieldItemListInterface $field_items
+    *   Represents an entity field.
+    *
+    * @return mixed
+diff --git a/src/Form/FieldsSettingsForm.php b/src/Form/FieldsSettingsForm.php
+index 96ae9dc..d2a4b20 100644
+--- a/src/Form/FieldsSettingsForm.php
++++ b/src/Form/FieldsSettingsForm.php
+@@ -107,18 +107,18 @@ class FieldsSettingsForm extends ConfigFormBase {
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     $form = parent::buildForm($form, $form_state);
+     // The table containing all the field types discovered in the system.
+-    $form['fields'] = array(
++    $form['fields'] = [
+       '#type' => 'table',
+       '#tree' => TRUE,
+       '#header' => $this->getTableHeader(),
+       '#empty' => $this->t('No field types found.'),
+       '#prefix' => '<div id="field-display-overview-wrapper">',
+       '#suffix' => '</div>',
+-      '#attributes' => array(
+-        'class' => array('field-ui-overview'),
++      '#attributes' => [
++        'class' => ['field-ui-overview'],
+         'id' => 'field-display-overview',
+-      ),
+-    );
++      ],
++    ];
+ 
+     // Build a row in the table for each field of each entity type. Get all the
+     // field plugins.
+@@ -143,12 +143,12 @@ class FieldsSettingsForm extends ConfigFormBase {
+ 
+     $this->diffBuilderManager->clearCachedDefinitions();
+     // Submit button for the form.
+-    $form['actions'] = array('#type' => 'actions');
+-    $form['actions']['submit'] = array(
++    $form['actions'] = ['#type' => 'actions'];
++    $form['actions']['submit'] = [
+       '#type' => 'submit',
+       '#button_type' => 'primary',
+       '#value' => $this->t('Save'),
+-    );
++    ];
+     $form['#attached']['library'][] = 'field_ui/drupal.field_ui';
+     $form['#attached']['library'][] = 'diff/diff.general';
+ 
+@@ -162,7 +162,7 @@ class FieldsSettingsForm extends ConfigFormBase {
+    *   The entity type.
+    * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $field_definition
+    *   Definition the field type.
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   THe form state object.
+    *
+    * @return array
+@@ -227,27 +227,27 @@ class FieldsSettingsForm extends ConfigFormBase {
+       $display_options['settings'] = $plugin_settings[$field_key]['settings'];
+     }
+ 
+-    $field_row['plugin'] = array(
+-      'type' => array(
++    $field_row['plugin'] = [
++      'type' => [
+         '#type' => 'select',
+         '#options' => $plugin_options,
+         '#empty_option' => $this->t("- Don't compare -"),
+         '#empty_value' => 'hidden',
+         '#title_display' => 'invisible',
+-        '#attributes' => array(
+-          'class' => array('field-plugin-type'),
+-        ),
++        '#attributes' => [
++          'class' => ['field-plugin-type'],
++        ],
+         '#default_value' => $display_options,
+-        '#ajax' => array(
++        '#ajax' => [
+           'callback' => [$this, 'multiStepAjax'],
+           'method' => 'replace',
+           'wrapper' => 'field-display-overview-wrapper',
+           'effect' => 'fade',
+-        ),
++        ],
+         '#field_key' => $field_key,
+-      ),
+-      'settings_edit_form' => array(),
+-    );
++      ],
++      'settings_edit_form' => [],
++    ];
+ 
+     // Get a configured instance of the plugin.
+     $plugin = $this->getPlugin($display_options);
+@@ -255,15 +255,15 @@ class FieldsSettingsForm extends ConfigFormBase {
+     // We are currently editing this field's plugin settings. Display the
+     // settings form and submit buttons.
+     if ($form_state->get('plugin_settings_edit') == $field_key) {
+-      $field_row['plugin']['settings_edit_form'] = array(
++      $field_row['plugin']['settings_edit_form'] = [
+         '#type' => 'container',
+-        '#attributes' => array('class' => array('field-plugin-settings-edit-form')),
++        '#attributes' => ['class' => ['field-plugin-settings-edit-form']],
+         '#parents' => ['fields', $field_key, 'settings_edit_form'],
+-        'label' => array(
++        'label' => [
+           '#markup' => $this->t('Plugin settings:' . ' <span class="plugin-name">' . $plugin_options[$display_options['type']] . '</span>'),
+-        ),
+-        'settings' => $plugin->buildConfigurationForm(array(), $form_state),
+-        'actions' => array(
++        ],
++        'settings' => $plugin->buildConfigurationForm([], $form_state),
++        'actions' => [
+           '#type' => 'actions',
+           'save_settings' => $base_button + [
+             '#type' => 'submit',
+@@ -281,16 +281,16 @@ class FieldsSettingsForm extends ConfigFormBase {
+             // get the value of the 'plugin type' select.
+             '#limit_validation_errors' => [['fields', $field_key, 'plugin', 'type']],
+           ],
+-        ),
+-      );
+-      $field_row['settings_edit'] = array();
++        ],
++      ];
++      $field_row['settings_edit'] = [];
+       $field_row['#attributes']['class'][] = 'field-plugin-settings-editing';
+     }
+     else {
+       $field_row['settings_edit'] = [];
+       // Display the configure settings button only if a plugin is selected.
+       if ($plugin) {
+-        $field_row['settings_edit'] = $base_button + array(
++        $field_row['settings_edit'] = $base_button + [
+           '#type' => 'image_button',
+           '#name' => $field_key . '_settings_edit',
+           '#src' => 'core/misc/icons/787878/cog.svg',
+@@ -301,7 +301,7 @@ class FieldsSettingsForm extends ConfigFormBase {
+           '#limit_validation_errors' => [['fields', $field_key, 'plugin', 'type']],
+           '#prefix' => '<div class="field-plugin-settings-edit-wrapper">',
+           '#suffix' => '</div>',
+-        );
++        ];
+       }
+     }
+ 
+@@ -367,13 +367,13 @@ class FieldsSettingsForm extends ConfigFormBase {
+       switch ($op) {
+         case 'edit':
+           $updated_rows = [$trigger['#field_key']];
+-          $updated_columns = array('plugin');
++          $updated_columns = ['plugin'];
+           break;
+ 
+         case 'update':
+         case 'cancel':
+           $updated_rows = [$trigger['#field_key']];
+-          $updated_columns = array('plugin', 'settings_edit');
++          $updated_columns = ['plugin', 'settings_edit'];
+           break;
+       }
+ 
+@@ -400,7 +400,7 @@ class FieldsSettingsForm extends ConfigFormBase {
+     foreach ($fields as $field_key => $field_values) {
+       // Validate only non-null plugins.
+       if ($field_values['plugin']['type'] != 'hidden') {
+-        $settings = array();
++        $settings = [];
+         $key = NULL;
+         // Form submitted without pressing update button on plugin settings form.
+         if (isset($field_values['settings_edit_form']['settings'])) {
+@@ -462,7 +462,6 @@ class FieldsSettingsForm extends ConfigFormBase {
+         // Get plugin settings. They lie either directly in submitted form
+         // values (if the whole form was submitted while some plugin settings
+         // were being edited), or have been persisted in $form_state.
+-
+         $values = NULL;
+         // Form submitted without pressing update button on plugin settings form.
+         if (isset($field_values['settings_edit_form']['settings'])) {
+@@ -503,7 +502,7 @@ class FieldsSettingsForm extends ConfigFormBase {
+   protected function getPlugin(array $configuration) {
+     if ($configuration && isset($configuration['type']) && $configuration['type'] != 'hidden') {
+       if (!isset($configuration['settings'])) {
+-        $configuration['settings'] = array();
++        $configuration['settings'] = [];
+       }
+       return $this->diffBuilderManager->createInstance(
+         $configuration['type'], $configuration['settings']
+@@ -517,13 +516,13 @@ class FieldsSettingsForm extends ConfigFormBase {
+    * Returns the header for the table.
+    */
+   protected function getTableHeader() {
+-    return array(
++    return [
+       'entity_type' => $this->t('Entity Type'),
+       'field_name' => $this->t('Field'),
+       'field_type' => $this->t('Field Type'),
+       'plugin' => $this->t('Plugin'),
+       'settings_edit' => '',
+-    );
++    ];
+   }
+ 
+ }
+diff --git a/src/Form/GeneralSettingsForm.php b/src/Form/GeneralSettingsForm.php
+index 596f5d1..4a307a5 100644
+--- a/src/Form/GeneralSettingsForm.php
++++ b/src/Form/GeneralSettingsForm.php
+@@ -67,17 +67,17 @@ class GeneralSettingsForm extends ConfigFormBase {
+   public function buildForm(array $form, FormStateInterface $form_state, $field_type = NULL) {
+     $config = $this->config('diff.settings');
+ 
+-    $form['radio_behavior'] = array(
++    $form['radio_behavior'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Diff radio behavior'),
+       '#default_value' => $config->get('general_settings' . '.' . 'radio_behavior'),
+-      '#options' => array(
++      '#options' => [
+         'simple' => $this->t('Simple exclusion'),
+         'linear' => $this->t('Linear restrictions'),
+-      ),
++      ],
+       '#empty_option' => $this->t('- None -'),
+       '#description' => $this->t('<em>Simple exclusion</em> means that users will not be able to select the same revision, <em>Linear restrictions</em> means that users can only select older or newer revisions of the current selections.'),
+-    );
++    ];
+ 
+     $layout_plugins = $this->diffLayoutManager->getDefinitions();
+     $weight = count($layout_plugins) + 1;
+@@ -152,22 +152,22 @@ class GeneralSettingsForm extends ConfigFormBase {
+       ],
+     ];
+ 
+-    $context_lines = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
++    $context_lines = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+     $options = array_combine($context_lines, $context_lines);
+-    $form['field_based_settings']['context_lines_leading'] = array(
++    $form['field_based_settings']['context_lines_leading'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Leading'),
+       '#description' => $this->t('This governs the number of unchanged <em>leading context "lines"</em> to preserve.'),
+       '#default_value' => $config->get('general_settings' . '.' . 'context_lines_leading'),
+       '#options' => $options,
+-    );
+-    $form['field_based_settings']['context_lines_trailing'] = array(
++    ];
++    $form['field_based_settings']['context_lines_trailing'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Trailing'),
+       '#description' => $this->t('This governs the number of unchanged <em>trailing context "lines"</em> to preserve.'),
+       '#default_value' => $config->get('general_settings' . '.' . 'context_lines_trailing'),
+       '#options' => $options,
+-    );
++    ];
+ 
+     // Check if Visual inline layout is installed.
+     if ($this->diffLayoutManager->hasDefinition('visual_inline')) {
+@@ -227,13 +227,13 @@ class GeneralSettingsForm extends ConfigFormBase {
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+     $config = $this->config('diff.settings');
+ 
+-    $keys = array(
++    $keys = [
+       'radio_behavior',
+       'context_lines_leading',
+       'context_lines_trailing',
+       'layout_plugins',
+       'visual_inline_theme',
+-    );
++    ];
+     foreach ($keys as $key) {
+       $config->set('general_settings.' . $key, $form_state->getValue($key));
+     }
+diff --git a/src/Form/RevisionOverviewForm.php b/src/Form/RevisionOverviewForm.php
+index 45c2c66..c7bb112 100755
+--- a/src/Form/RevisionOverviewForm.php
++++ b/src/Form/RevisionOverviewForm.php
+@@ -151,7 +151,7 @@ class RevisionOverviewForm extends FormBase {
+       ->sort($node->getEntityType()->getKey('revision'), 'DESC')
+       // Access to the content has already been verified. Disable query-level
+       // access checking so that revisions for unpublished content still
+-      //appear.
++      // appear.
+       ->accessCheck(FALSE)
+       ->execute();
+     $vids = array_keys($query);
+@@ -164,20 +164,20 @@ class RevisionOverviewForm extends FormBase {
+     ]) : $this->t('Revisions for %title', [
+       '%title' => $node->label(),
+     ]);
+-    $build['nid'] = array(
++    $build['nid'] = [
+       '#type' => 'hidden',
+       '#value' => $node->id(),
+-    );
++    ];
+ 
+     $table_header = [];
+     $table_header['revision'] = $this->t('Revision');
+ 
+     // Allow comparisons only if there are 2 or more revisions.
+     if ($revision_count > 1) {
+-      $table_header += array(
++      $table_header += [
+         'select_column_one' => '',
+         'select_column_two' => '',
+-      );
++      ];
+     }
+     $table_header['operations'] = $this->t('Operations');
+ 
+@@ -191,11 +191,11 @@ class RevisionOverviewForm extends FormBase {
+     $delete_permission = $rev_delete_perm && $node->access('delete');
+ 
+     // Contains the table listing the revisions.
+-    $build['node_revisions_table'] = array(
++    $build['node_revisions_table'] = [
+       '#type' => 'table',
+       '#header' => $table_header,
+-      '#attributes' => array('class' => array('diff-revisions')),
+-    );
++      '#attributes' => ['class' => ['diff-revisions']],
++    ];
+ 
+     $build['node_revisions_table']['#attached']['library'][] = 'diff/diff.general';
+     $build['node_revisions_table']['#attached']['drupalSettings']['diffRevisionRadios'] = $this->config->get('general_settings.radio_behavior');
+@@ -210,10 +210,10 @@ class RevisionOverviewForm extends FormBase {
+       /** @var \Drupal\Core\Entity\ContentEntityInterface $revision */
+       if ($revision = $node_storage->loadRevision($vid)) {
+         if ($revision->hasTranslation($langcode) && $revision->getTranslation($langcode)->isRevisionTranslationAffected()) {
+-          $username = array(
++          $username = [
+             '#theme' => 'username',
+             '#account' => $revision->getRevisionUser(),
+-          );
++          ];
+           $revision_date = $this->date->format($revision->getRevisionCreationTime(), 'short');
+           // Use revision link to link to revisions that are not active.
+           if ($vid != $node->getRevisionId()) {
+@@ -235,38 +235,38 @@ class RevisionOverviewForm extends FormBase {
+                 'select_column_two' => $this->buildSelectColumn('radios_right', $vid, $vid),
+               ];
+             }
+-            $row['operations'] = array(
++            $row['operations'] = [
+               '#prefix' => '<em>',
+               '#markup' => $this->t('Current revision'),
+               '#suffix' => '</em>',
+-              '#attributes' => array(
+-                'class' => array('revision-current'),
+-              ),
+-            );
++              '#attributes' => [
++                'class' => ['revision-current'],
++              ],
++            ];
+             $row['#attributes'] = [
+               'class' => ['revision-current'],
+             ];
+           }
+           else {
+-            $route_params = array(
++            $route_params = [
+               'node' => $node->id(),
+               'node_revision' => $vid,
+               'langcode' => $langcode,
+-            );
+-            $links = array();
++            ];
++            $links = [];
+             if ($revert_permission) {
+               $links['revert'] = [
+                 'title' => $vid < $node->getRevisionId() ? $this->t('Revert') : $this->t('Set as current revision'),
+                 'url' => $has_translations ?
+-                  Url::fromRoute('node.revision_revert_translation_confirm', ['node' => $node->id(), 'node_revision' => $vid, 'langcode' => $langcode]) :
+-                  Url::fromRoute('node.revision_revert_confirm', ['node' => $node->id(), 'node_revision' => $vid]),
++                Url::fromRoute('node.revision_revert_translation_confirm', ['node' => $node->id(), 'node_revision' => $vid, 'langcode' => $langcode]) :
++                Url::fromRoute('node.revision_revert_confirm', ['node' => $node->id(), 'node_revision' => $vid]),
+               ];
+             }
+             if ($delete_permission) {
+-              $links['delete'] = array(
++              $links['delete'] = [
+                 'title' => $this->t('Delete'),
+                 'url' => Url::fromRoute('node.revision_delete_confirm', $route_params),
+-              );
++              ];
+             }
+ 
+             // Here we don't have to deal with 'only one revision' case because
+@@ -291,20 +291,20 @@ class RevisionOverviewForm extends FormBase {
+ 
+     // Allow comparisons only if there are 2 or more revisions.
+     if ($revision_count > 1) {
+-      $build['submit'] = array(
++      $build['submit'] = [
+         '#type' => 'submit',
+         '#button_type' => 'primary',
+         '#value' => t('Compare selected revisions'),
+-        '#attributes' => array(
+-          'class' => array(
++        '#attributes' => [
++          'class' => [
+             'diff-button',
+-          ),
+-        ),
+-      );
++          ],
++        ],
++      ];
+     }
+-    $build['pager'] = array(
++    $build['pager'] = [
+       '#type' => 'pager',
+-    );
++    ];
+     $build['#attached']['library'][] = 'node/drupal.node.admin';
+     return $build;
+   }
+@@ -401,12 +401,12 @@ class RevisionOverviewForm extends FormBase {
+     // Builds the redirect Url.
+     $redirect_url = Url::fromRoute(
+       'diff.revisions_diff',
+-      array(
++      [
+         'node' => $nid,
+         'left_revision' => $vid_left,
+         'right_revision' => $vid_right,
+         'filter' => $this->diffLayoutManager->getDefaultLayout(),
+-      )
++      ]
+     );
+     $form_state->setRedirectUrl($redirect_url);
+   }
+diff --git a/src/Plugin/diff/Field/CommentFieldBuilder.php b/src/Plugin/diff/Field/CommentFieldBuilder.php
+index ee3c3c0..65f3dc2 100644
+--- a/src/Plugin/diff/Field/CommentFieldBuilder.php
++++ b/src/Plugin/diff/Field/CommentFieldBuilder.php
+@@ -24,7 +24,7 @@ class CommentFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function build(FieldItemListInterface $field_items) {
+-    $result = array();
++    $result = [];
+ 
+     // Every item from $field_items is of type FieldItemInterface.
+     foreach ($field_items as $field_key => $field_item) {
+@@ -64,16 +64,16 @@ class CommentFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+-    $form['compare_key'] = array(
++    $form['compare_key'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Compare comment status key'),
+       '#default_value' => $this->configuration['compare_key'],
+-    );
+-    $form['compare_string'] = array(
++    ];
++    $form['compare_string'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Compare comment status string'),
+       '#default_value' => $this->configuration['compare_string'],
+-    );
++    ];
+ 
+     return parent::buildConfigurationForm($form, $form_state);
+   }
+@@ -92,10 +92,10 @@ class CommentFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    $default_configuration = array(
++    $default_configuration = [
+       'compare_key' => 0,
+       'compare_string' => 1,
+-    );
++    ];
+     $default_configuration += parent::defaultConfiguration();
+ 
+     return $default_configuration;
+diff --git a/src/Plugin/diff/Field/CoreFieldBuilder.php b/src/Plugin/diff/Field/CoreFieldBuilder.php
+index bba3258..60ab9e2 100644
+--- a/src/Plugin/diff/Field/CoreFieldBuilder.php
++++ b/src/Plugin/diff/Field/CoreFieldBuilder.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\diff\Plugin\diff\Field;
+ 
+-use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Render\RendererInterface;
+ use Drupal\diff\DiffEntityParser;
+@@ -72,7 +71,7 @@ class CoreFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function build(FieldItemListInterface $field_items) {
+-    $result = array();
++    $result = [];
+ 
+     // Every item from $field_items is of type FieldItemInterface.
+     foreach ($field_items as $field_key => $field_item) {
+diff --git a/src/Plugin/diff/Field/EntityReferenceFieldBuilder.php b/src/Plugin/diff/Field/EntityReferenceFieldBuilder.php
+index 3579dcb..b5f655d 100644
+--- a/src/Plugin/diff/Field/EntityReferenceFieldBuilder.php
++++ b/src/Plugin/diff/Field/EntityReferenceFieldBuilder.php
+@@ -27,7 +27,7 @@ class EntityReferenceFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function build(FieldItemListInterface $field_items) {
+-    $result = array();
++    $result = [];
+     // Every item from $field_items is of type FieldItemInterface.
+     foreach ($field_items as $field_key => $field_item) {
+       if (!$field_item->isEmpty()) {
+@@ -55,12 +55,12 @@ class EntityReferenceFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+-    $form['compare_entity_reference'] = array(
++    $form['compare_entity_reference'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Compare'),
+-      '#options' => array(COMPARE_ENTITY_REFERENCE_ID => t('ID'), COMPARE_ENTITY_REFERENCE_LABEL => t('Label')),
++      '#options' => [COMPARE_ENTITY_REFERENCE_ID => t('ID'), COMPARE_ENTITY_REFERENCE_LABEL => t('Label')],
+       '#default_value' => $this->configuration['compare_entity_reference'],
+-    );
++    ];
+ 
+     return parent::buildConfigurationForm($form, $form_state);
+   }
+@@ -78,9 +78,9 @@ class EntityReferenceFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    $default_configuration = array(
++    $default_configuration = [
+       'compare_entity_reference' => COMPARE_ENTITY_REFERENCE_LABEL,
+-    );
++    ];
+     $default_configuration += parent::defaultConfiguration();
+ 
+     return $default_configuration;
+diff --git a/src/Plugin/diff/Field/FileFieldBuilder.php b/src/Plugin/diff/Field/FileFieldBuilder.php
+index e9b16f5..abe85a0 100644
+--- a/src/Plugin/diff/Field/FileFieldBuilder.php
++++ b/src/Plugin/diff/Field/FileFieldBuilder.php
+@@ -23,7 +23,7 @@ class FileFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function build(FieldItemListInterface $field_items) {
+-    $result = array();
++    $result = [];
+     $fileManager = $this->entityTypeManager->getStorage('file');
+ 
+     // Every item from $field_items is of type FieldItemInterface.
+@@ -86,35 +86,35 @@ class FileFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+-    $form['show_id'] = array(
++    $form['show_id'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Show file ID'),
+       '#default_value' => $this->configuration['show_id'],
+-    );
+-    $form['compare_description_field'] = array(
++    ];
++    $form['compare_description_field'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Compare description field'),
+       '#default_value' => $this->configuration['compare_description_field'],
+       '#description' => $this->t('This is only used if the "Enable <em>Description</em> field" is checked in the instance settings.'),
+-    );
+-    $form['compare_display_field'] = array(
++    ];
++    $form['compare_display_field'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Compare display state field'),
+       '#default_value' => $this->configuration['compare_display_field'],
+       '#description' => $this->t('This is only used if the "Enable <em>Display</em> field" is checked in the field settings.'),
+-    );
+-    $form['property_separator'] = array(
++    ];
++    $form['property_separator'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Property separator'),
+       '#default_value' => $this->configuration['property_separator'],
+       '#description' => $this->t('Provides the ability to show properties inline or across multiple lines.'),
+-      '#options' => array(
++      '#options' => [
+         ', ' => $this->t('Comma (,)'),
+         '; ' => $this->t('Semicolon (;)'),
+         ' ' => $this->t('Space'),
+         'nl' => $this->t('New line'),
+-      ),
+-    );
++      ],
++    ];
+ 
+     return parent::buildConfigurationForm($form, $form_state);
+   }
+@@ -135,12 +135,12 @@ class FileFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    $default_configuration = array(
++    $default_configuration = [
+       'show_id' => 1,
+       'compare_description_field' => 0,
+       'compare_display_field' => 0,
+       'property_separator' => 'nl',
+-    );
++    ];
+     $default_configuration += parent::defaultConfiguration();
+ 
+     return $default_configuration;
+diff --git a/src/Plugin/diff/Field/ImageFieldBuilder.php b/src/Plugin/diff/Field/ImageFieldBuilder.php
+index 72a049f..7e282f6 100644
+--- a/src/Plugin/diff/Field/ImageFieldBuilder.php
++++ b/src/Plugin/diff/Field/ImageFieldBuilder.php
+@@ -23,7 +23,7 @@ class ImageFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function build(FieldItemListInterface $field_items) {
+-    $result = array();
++    $result = [];
+     $fileManager = $this->entityTypeManager->getStorage('file');
+     // Every item from $field_items is of type FieldItemInterface.
+     foreach ($field_items as $field_key => $field_item) {
+@@ -77,11 +77,11 @@ class ImageFieldBuilder extends FieldDiffBuilderBase {
+             if ($image_field = $display->getComponent($field_item->getFieldDefinition()->getName())) {
+               $image = $fileManager->load($values['target_id']);
+ 
+-              $image_style[$field_key]['#thumbnail'] = array(
++              $image_style[$field_key]['#thumbnail'] = [
+                 '#theme' => 'image_style',
+                 '#uri' => $image->getFileUri(),
+                 '#style_name' => $image_field['settings']['preview_image_style'],
+-              );
++              ];
+               $result = array_merge($result, $image_style);
+             }
+           }
+@@ -96,35 +96,35 @@ class ImageFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+-    $form['show_id'] = array(
++    $form['show_id'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Show image ID'),
+       '#default_value' => $this->configuration['show_id'],
+-    );
+-    $form['compare_alt_field'] = array(
++    ];
++    $form['compare_alt_field'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Compare <em>Alt</em> field'),
+       '#default_value' => $this->configuration['compare_alt_field'],
+       '#description' => $this->t('This is only used if the "Enable <em>Alt</em> field" is checked in the instance settings.'),
+-    );
+-    $form['compare_title_field'] = array(
++    ];
++    $form['compare_title_field'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Compare <em>Title</em> field'),
+       '#default_value' => $this->configuration['compare_title_field'],
+       '#description' => $this->t('This is only used if the "Enable <em>Title</em> field" is checked in the instance settings.'),
+-    );
+-    $form['property_separator'] = array(
++    ];
++    $form['property_separator'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Property separator'),
+       '#default_value' => $this->configuration['property_separator'],
+       '#description' => $this->t('Provides the ability to show properties inline or across multiple lines.'),
+-      '#options' => array(
++      '#options' => [
+         ', ' => $this->t('Comma (,)'),
+         '; ' => $this->t('Semicolon (;)'),
+         ' ' => $this->t('Space'),
+         'nl' => $this->t('New line'),
+-      ),
+-    );
++      ],
++    ];
+     $form['show_thumbnail'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Show image thumbnail'),
+@@ -152,13 +152,13 @@ class ImageFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    $default_configuration = array(
++    $default_configuration = [
+       'show_id' => 0,
+       'compare_alt_field' => 1,
+       'compare_title_field' => 1,
+       'property_separator' => 'nl',
+       'show_thumbnail' => 1,
+-    );
++    ];
+     $default_configuration += parent::defaultConfiguration();
+ 
+     return $default_configuration;
+diff --git a/src/Plugin/diff/Field/LinkFieldBuilder.php b/src/Plugin/diff/Field/LinkFieldBuilder.php
+index 373bd84..9ea9004 100644
+--- a/src/Plugin/diff/Field/LinkFieldBuilder.php
++++ b/src/Plugin/diff/Field/LinkFieldBuilder.php
+@@ -23,7 +23,7 @@ class LinkFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function build(FieldItemListInterface $field_items) {
+-    $result = array();
++    $result = [];
+ 
+     // Every item from $field_items is of type FieldItemInterface.
+     foreach ($field_items as $field_key => $field_item) {
+@@ -51,16 +51,16 @@ class LinkFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+-    $form['compare_title'] = array(
++    $form['compare_title'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Compare link title'),
+       '#default_value' => $this->configuration['compare_title'],
+-    );
+-    $form['compare_uri'] = array(
++    ];
++    $form['compare_uri'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Compare URI'),
+       '#default_value' => $this->configuration['compare_uri'],
+-    );
++    ];
+ 
+     return parent::buildConfigurationForm($form, $form_state);
+   }
+@@ -79,10 +79,10 @@ class LinkFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    $default_configuration = array(
++    $default_configuration = [
+       'compare_title' => 0,
+       'compare_uri' => 1,
+-    );
++    ];
+     $default_configuration += parent::defaultConfiguration();
+ 
+     return $default_configuration;
+diff --git a/src/Plugin/diff/Field/ListFieldBuilder.php b/src/Plugin/diff/Field/ListFieldBuilder.php
+index 6ff07b8..676fc9b 100644
+--- a/src/Plugin/diff/Field/ListFieldBuilder.php
++++ b/src/Plugin/diff/Field/ListFieldBuilder.php
+@@ -25,7 +25,7 @@ class ListFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function build(FieldItemListInterface $field_items) {
+-    $result = array();
++    $result = [];
+ 
+     // Every item from $field_items is of type FieldItemInterface.
+     foreach ($field_items as $field_key => $field_item) {
+@@ -58,16 +58,16 @@ class ListFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+-    $form['compare'] = array(
++    $form['compare'] = [
+       '#type' => 'radios',
+       '#title' => $this->t('Comparison method'),
+-      '#options' => array(
++      '#options' => [
+         'label' => $this->t('Label'),
+         'key' => $this->t('Key'),
+         'both' => $this->t('Label (key)'),
+-      ),
++      ],
+       '#default_value' => $this->configuration['compare'],
+-    );
++    ];
+ 
+     return parent::buildConfigurationForm($form, $form_state);
+   }
+@@ -85,9 +85,9 @@ class ListFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    $default_configuration = array(
++    $default_configuration = [
+       'compare' => 'key',
+-    );
++    ];
+     $default_configuration += parent::defaultConfiguration();
+ 
+     return $default_configuration;
+diff --git a/src/Plugin/diff/Field/TextFieldBuilder.php b/src/Plugin/diff/Field/TextFieldBuilder.php
+index aed3efb..e4eed48 100644
+--- a/src/Plugin/diff/Field/TextFieldBuilder.php
++++ b/src/Plugin/diff/Field/TextFieldBuilder.php
+@@ -25,7 +25,7 @@ class TextFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function build(FieldItemListInterface $field_items) {
+-    $result = array();
++    $result = [];
+     // Every item from $field_items is of type FieldItemInterface.
+     foreach ($field_items as $field_key => $field_item) {
+       $values = $field_item->getValue();
+@@ -40,7 +40,7 @@ class TextFieldBuilder extends FieldDiffBuilderBase {
+             $result[$field_key][] = $label . ": " . $format->label();
+           }
+           else {
+-            $result[$field_key][] = $label . ": " . $this->t('Missing format @format', array('@format' => $values[$field_key]));
++            $result[$field_key][] = $label . ": " . $this->t('Missing format @format', ['@format' => $values[$field_key]]);
+           }
+         }
+       }
+@@ -69,12 +69,12 @@ class TextFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+-    $form['compare_format'] = array(
++    $form['compare_format'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Compare format'),
+       '#default_value' => $this->configuration['compare_format'],
+       '#description' => $this->t('This is only used if the "Text processing" instance settings are set to <em>Filtered text (user selects text format)</em>.'),
+-    );
++    ];
+ 
+     return parent::buildConfigurationForm($form, $form_state);
+   }
+@@ -92,9 +92,9 @@ class TextFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    $default_configuration = array(
++    $default_configuration = [
+       'compare_format' => 0,
+-    );
++    ];
+     $default_configuration += parent::defaultConfiguration();
+ 
+     return $default_configuration;
+diff --git a/src/Plugin/diff/Field/TextWithSummaryFieldBuilder.php b/src/Plugin/diff/Field/TextWithSummaryFieldBuilder.php
+index 8b357f0..29eba87 100644
+--- a/src/Plugin/diff/Field/TextWithSummaryFieldBuilder.php
++++ b/src/Plugin/diff/Field/TextWithSummaryFieldBuilder.php
+@@ -23,7 +23,7 @@ class TextWithSummaryFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function build(FieldItemListInterface $field_items) {
+-    $result = array();
++    $result = [];
+     // Every item from $field_items is of type FieldItemInterface.
+     foreach ($field_items as $field_key => $field_item) {
+       $values = $field_item->getValue();
+@@ -38,7 +38,7 @@ class TextWithSummaryFieldBuilder extends FieldDiffBuilderBase {
+             $result[$field_key][] = $label . ": " . $format->name;
+           }
+           else {
+-            $result[$field_key][] = $label . ": " . $this->t('Missing format @format', array('@format' => $values[$field_key]));
++            $result[$field_key][] = $label . ": " . $this->t('Missing format @format', ['@format' => $values[$field_key]]);
+           }
+         }
+       }
+@@ -79,18 +79,18 @@ class TextWithSummaryFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+-    $form['compare_format'] = array(
++    $form['compare_format'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Compare format'),
+       '#default_value' => $this->configuration['compare_format'],
+       '#description' => $this->t('This is only used if the "Text processing" instance settings are set to <em>Filtered text (user selects text format)</em>.'),
+-    );
+-    $form['compare_summary'] = array(
++    ];
++    $form['compare_summary'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Compare summary separately'),
+       '#default_value' => $this->configuration['compare_summary'],
+       '#description' => $this->t('This is only used if the "Summary input" option is checked in the instance settings.'),
+-    );
++    ];
+ 
+     return parent::buildConfigurationForm($form, $form_state);
+   }
+@@ -109,10 +109,10 @@ class TextWithSummaryFieldBuilder extends FieldDiffBuilderBase {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    $default_configuration = array(
++    $default_configuration = [
+       'compare_format' => 0,
+       'compare_summary' => 0,
+-    );
++    ];
+     $default_configuration += parent::defaultConfiguration();
+ 
+     return $default_configuration;
+diff --git a/src/Plugin/views/field/DiffFrom.php b/src/Plugin/views/field/DiffFrom.php
+index 8af0ecc..6b0eff4 100644
+--- a/src/Plugin/views/field/DiffFrom.php
++++ b/src/Plugin/views/field/DiffFrom.php
+@@ -68,9 +68,9 @@ class DiffFrom extends DiffPluginBase {
+       $diff_to = $form_state->getValue($this->getToFieldId());
+       $diff_to_entity = $this->loadEntityFromDiffFormKey($diff_to);
+ 
+-      $options = array(
++      $options = [
+         'query' => $this->getDestinationArray(),
+-      );
++      ];
+       $entity_type_id = $diff_from_entity->getEntityTypeId();
+ 
+       $filter = \Drupal::service('plugin.manager.diff.layout')->getDefaultLayout();
+diff --git a/src/Routing/RouteSubscriber.php b/src/Routing/RouteSubscriber.php
+index 16e6287..ca8a18d 100755
+--- a/src/Routing/RouteSubscriber.php
++++ b/src/Routing/RouteSubscriber.php
+@@ -19,9 +19,9 @@ class RouteSubscriber extends RouteSubscriberBase {
+     $route = $collection->get('entity.node.version_history');
+     if ($route) {
+       $route->addDefaults(
+-        array(
++        [
+           '_controller' => '\Drupal\diff\Controller\NodeRevisionController::revisionOverview',
+-        )
++        ]
+       );
+     }
+   }
+diff --git a/tests/src/Functional/CoreVersionUiTestTrait.php b/tests/src/Functional/CoreVersionUiTestTrait.php
+index 07e0ab1..1378b41 100644
+--- a/tests/src/Functional/CoreVersionUiTestTrait.php
++++ b/tests/src/Functional/CoreVersionUiTestTrait.php
+@@ -36,4 +36,4 @@ trait CoreVersionUiTestTrait {
+     $this->drupalPostForm($path, $edit, $submit);
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/tests/src/Functional/DiffPluginEntityTest.php b/tests/src/Functional/DiffPluginEntityTest.php
+index 9fbf63c..580db62 100644
+--- a/tests/src/Functional/DiffPluginEntityTest.php
++++ b/tests/src/Functional/DiffPluginEntityTest.php
+@@ -52,7 +52,7 @@ class DiffPluginEntityTest extends DiffPluginTestBase {
+     // Add an entity reference field to the article content type.
+     $bundle_path = 'admin/structure/types/manage/article';
+     $field_name = 'reference';
+-    $storage_edit = $field_edit = array();
++    $storage_edit = $field_edit = [];
+     $storage_edit['settings[target_type]'] = 'node';
+     $field_edit['settings[handler_settings][target_bundles][article]'] = TRUE;
+     $this->fieldUIAddNewField($bundle_path, $field_name, 'Reference', 'entity_reference', $storage_edit, $field_edit);
+@@ -72,17 +72,17 @@ class DiffPluginEntityTest extends DiffPluginTestBase {
+     ]);
+ 
+     // Reference article B in article A.
+-    $edit = array(
++    $edit = [
+       'field_reference[0][target_id]' => 'Article B (' . $node2->id() . ')',
+       'revision' => TRUE,
+-    );
++    ];
+     $this->drupalPostNodeForm('node/' . $node1->id() . '/edit', $edit, t('Save and keep published'));
+ 
+     // Update article A so it points to article C instead of B.
+-    $edit = array(
++    $edit = [
+       'field_reference[0][target_id]' => 'Article C (' . $node3->id() . ')',
+       'revision' => TRUE,
+-    );
++    ];
+     $this->drupalPostNodeForm('node/' . $node1->id() . '/edit', $edit, t('Save and keep published'));
+ 
+     // Check differences between revisions.
+diff --git a/tests/src/Functional/DiffPluginFileTest.php b/tests/src/Functional/DiffPluginFileTest.php
+index ed45f7e..1a77973 100644
+--- a/tests/src/Functional/DiffPluginFileTest.php
++++ b/tests/src/Functional/DiffPluginFileTest.php
+@@ -53,11 +53,11 @@ class DiffPluginFileTest extends DiffPluginTestBase {
+   public function testFilePlugin() {
+     // Add file field to the article content type.
+     $file_field_name = 'field_file';
+-    $field_storage = FieldStorageConfig::create(array(
++    $field_storage = FieldStorageConfig::create([
+       'field_name' => $file_field_name,
+       'entity_type' => 'node',
+       'type' => 'file',
+-    ));
++    ]);
+     $field_storage->save();
+     FieldConfig::create([
+       'entity_type' => 'node',
+@@ -219,7 +219,6 @@ class DiffPluginFileTest extends DiffPluginTestBase {
+     $this->drupalPostNodeForm('node/' . $node->id() . '/edit', $edit, t('Save and keep published'));
+     $this->drupalPostForm('node/' . $node->id() . '/revisions', [], t('Compare selected revisions'));
+ 
+-
+     // Image title and alternative text must be shown.
+     $assert_session = $this->assertSession();
+     $assert_session->elementContains('css', 'tr:nth-child(3) td:nth-child(3)', 'Alt: Image alt updated');
+diff --git a/tests/src/Functional/DiffPluginVariousTest.php b/tests/src/Functional/DiffPluginVariousTest.php
+index d93d588..94d58bc 100644
+--- a/tests/src/Functional/DiffPluginVariousTest.php
++++ b/tests/src/Functional/DiffPluginVariousTest.php
+@@ -69,19 +69,19 @@ class DiffPluginVariousTest extends DiffPluginTestBase {
+ 
+     // Create an article with comments enabled..
+     $title = 'Sample article';
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $title,
+       'body[0][value]' => '<p>Revision 1</p>',
+       'comment[0][status]' => CommentItemInterface::OPEN,
+-    );
++    ];
+     $this->drupalPostNodeForm('node/add/article', $edit, t('Save and publish'));
+     $node = $this->drupalGetNodeByTitle($title);
+ 
+     // Edit the article and close its comments.
+-    $edit = array(
++    $edit = [
+       'comment[0][status]' => CommentItemInterface::CLOSED,
+       'revision' => TRUE,
+-    );
++    ];
+     $this->drupalPostNodeForm('node/' . $node->id() . '/edit', $edit, t('Save and keep published'));
+ 
+     // Check the difference between the last two revisions.
+@@ -130,10 +130,10 @@ class DiffPluginVariousTest extends DiffPluginTestBase {
+     ]);
+ 
+     // Edit the article and change the email.
+-    $edit = array(
++    $edit = [
+       'field_email[0][value]' => 'bar@example.com',
+       'revision' => TRUE,
+-    );
++    ];
+     $this->drupalPostNodeForm('node/' . $node->id() . '/edit', $edit, t('Save and keep published'));
+ 
+     // Check the difference between the last two revisions.
+@@ -220,10 +220,10 @@ class DiffPluginVariousTest extends DiffPluginTestBase {
+       'field_storage' => $field_storage,
+       'bundle' => 'article',
+       'label' => 'Link',
+-      'settings' => array(
++      'settings' => [
+         'title' => DRUPAL_OPTIONAL,
+         'link_type' => LinkItemInterface::LINK_GENERIC,
+-      ),
++      ],
+     ])->save();
+     $this->formDisplay->load('node.article.default')
+       ->setComponent($field_name, [
+diff --git a/tests/src/Functional/DiffRevisionTest.php b/tests/src/Functional/DiffRevisionTest.php
+index 2933917..4694ff3 100644
+--- a/tests/src/Functional/DiffRevisionTest.php
++++ b/tests/src/Functional/DiffRevisionTest.php
+@@ -39,12 +39,12 @@ class DiffRevisionTest extends DiffTestBase {
+ 
+     // Create an article.
+     $title = 'test_title_a';
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $title,
+       'body[0][value]' => '<p>Revision 1</p>
+       <p>first_unique_text</p>
+       <p>second_unique_text</p>',
+-    );
++    ];
+     // Set to published if content moderation is enabled.
+     if (\Drupal::moduleHandler()->moduleExists('content_moderation')) {
+       $edit['moderation_state[0][state]'] = 'published';
+@@ -55,13 +55,13 @@ class DiffRevisionTest extends DiffTestBase {
+ 
+     // Create a second revision, with a revision comment.
+     $this->drupalGet('node/add/article');
+-    $edit = array(
++    $edit = [
+       'body[0][value]' => '<p>Revision 2</p>
+       <p>first_unique_text</p>
+       <p>second_unique_text</p>',
+       'revision' => TRUE,
+       'revision_log[0][value]' => 'Revision 2 comment',
+-    );
++    ];
+     // Set to published if content moderation is enabled.
+     if (\Drupal::moduleHandler()->moduleExists('content_moderation')) {
+       $edit['moderation_state[0][state]'] = 'published';
+diff --git a/tests/src/Functional/DiffViewModeTest.php b/tests/src/Functional/DiffViewModeTest.php
+index 5a5cfed..4bdd47f 100644
+--- a/tests/src/Functional/DiffViewModeTest.php
++++ b/tests/src/Functional/DiffViewModeTest.php
+@@ -32,10 +32,10 @@ class DiffViewModeTest extends DiffTestBase {
+     ]);
+ 
+     // Edit the article and change the email.
+-    $edit = array(
++    $edit = [
+       'body[0][value]' => 'Fighters',
+       'revision' => TRUE,
+-    );
++    ];
+     $this->drupalPostNodeForm('node/' . $node->id() . '/edit', $edit, t('Save and keep published'));
+ 
+     // Set the Body field to hidden in the diff view mode.
+diff --git a/tests/src/Functional/NodeAccessTest.php b/tests/src/Functional/NodeAccessTest.php
+index 9044dcc..e9430a3 100644
+--- a/tests/src/Functional/NodeAccessTest.php
++++ b/tests/src/Functional/NodeAccessTest.php
+@@ -68,7 +68,7 @@ class NodeAccessTest extends BrowserTestBase {
+     $this->assertCount(3, $rows, 'Did not find 3 diff rows.');
+ 
+     // Compare selected revisions should not time out.
+-    $this->drupalGet('/node/' . $node->id(). '/revisions');
++    $this->drupalGet('/node/' . $node->id() . '/revisions');
+     $this->drupalPostForm(NULL, NULL, t('Compare selected revisions'));
+     $this->assertSession()->statusCodeEquals(200);
+   }
+diff --git a/tests/src/FunctionalJavascript/DiffLocaleTest.php b/tests/src/FunctionalJavascript/DiffLocaleTest.php
+index f0fdd42..c40d44c 100644
+--- a/tests/src/FunctionalJavascript/DiffLocaleTest.php
++++ b/tests/src/FunctionalJavascript/DiffLocaleTest.php
+@@ -32,18 +32,18 @@ class DiffLocaleTest extends DiffTestBase {
+     $this->drupalLogin($this->rootUser);
+ 
+     // Add French language.
+-    $edit = array(
++    $edit = [
+       'predefined_langcode' => 'fr',
+-    );
++    ];
+     $this->drupalPostForm('admin/config/regional/language/add', $edit, t('Add language'));
+ 
+     // Enable content translation on articles.
+     $this->drupalGet('admin/config/regional/content-language');
+-    $edit = array(
++    $edit = [
+       'entity_types[node]' => TRUE,
+       'settings[node][article][translatable]' => TRUE,
+       'settings[node][article][settings][language][language_alterable]' => TRUE,
+-    );
++    ];
+     $this->drupalPostForm(NULL, $edit, t('Save configuration'));
+   }
+ 
+@@ -64,10 +64,10 @@ class DiffLocaleTest extends DiffTestBase {
+     $page = $this->getSession()->getPage();
+ 
+     // Create an article and its translation. Assert aliases.
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => 'English node',
+       'langcode[0][value]' => 'en',
+-    );
++    ];
+     $this->drupalPostNodeForm('node/add/article', $edit, t('Save and publish'));
+     $english_node = $this->drupalGetNodeByTitle('English node');
+ 
+@@ -82,15 +82,15 @@ class DiffLocaleTest extends DiffTestBase {
+     $french_node = $english_node->getTranslation('fr');
+ 
+     // Create a new revision on both languages.
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => 'Updated title',
+       'revision' => TRUE,
+-    );
++    ];
+     $this->drupalPostNodeForm('node/' . $english_node->id() . '/edit', $edit, t('Save and keep published (this translation)'));
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => 'Le titre',
+       'revision' => TRUE,
+-    );
++    ];
+     $this->drupalPostNodeForm('fr/node/' . $english_node->id() . '/edit', $edit, t('Save and keep published (this translation)'));
+ 
+     // View differences between revisions. Check that they don't mix up.

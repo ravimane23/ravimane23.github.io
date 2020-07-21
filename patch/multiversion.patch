@@ -1,0 +1,2881 @@
+diff --git a/multiversion.drush.inc b/multiversion.drush.inc
+index 0616ea2..df538cb 100644
+--- a/multiversion.drush.inc
++++ b/multiversion.drush.inc
+@@ -1,5 +1,9 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
+ use Drupal\Core\Entity\ContentEntityTypeInterface;
+ use Psr\Log\LogLevel;
+ 
+@@ -58,7 +62,7 @@ function drush_multiversion_uninstall() {
+   $required = drush_drupal_required_modules($extension_info);
+   if (in_array($extension, $required)) {
+     $info = $extension_info[$extension]->info;
+-    $explanation = !empty($info['explanation']) ? ' ' . dt('Reason: !explanation.', ['!explanation' => strip_tags($info['explanation'])])  : '';
++    $explanation = !empty($info['explanation']) ? ' ' . dt('Reason: !explanation.', ['!explanation' => strip_tags($info['explanation'])]) : '';
+     drush_log(dt('!extension is a required extension and can\'t be uninstalled.', ['!extension' => $extension]) . $explanation, LogLevel::INFO);
+     $uninstall = FALSE;
+   }
+@@ -81,7 +85,7 @@ function drush_multiversion_uninstall() {
+ 
+   if ($uninstall) {
+     drush_print(dt('Multiversion will be uninstalled.'));
+-    if(!drush_confirm(dt('Do you really want to continue?'))) {
++    if (!drush_confirm(dt('Do you really want to continue?'))) {
+       return drush_user_abort();
+     }
+ 
+@@ -114,7 +118,7 @@ function drush_multiversion_enable_entity_types() {
+     drush_log(dt('Entity types list argument is missing.'), LogLevel::ERROR);
+   }
+   elseif ($entity_types = _drush_multiversion_get_entity_types($args)) {
+-    if(!drush_confirm(dt('Do you really want to continue?'))) {
++    if (!drush_confirm(dt('Do you really want to continue?'))) {
+       return drush_user_abort();
+     }
+     try {
+@@ -165,6 +169,9 @@ function drush_multiversion_disable_entity_types() {
+   }
+ }
+ 
++/**
++ *
++ */
+ function _drush_multiversion_get_entity_types($entity_type_ids) {
+   $entity_types = [];
+   $manager = \Drupal::entityTypeManager();
+diff --git a/src/Access/NodeRevisionAccessCheck.php b/src/Access/NodeRevisionAccessCheck.php
+index a0bd77a..f4141b2 100644
+--- a/src/Access/NodeRevisionAccessCheck.php
++++ b/src/Access/NodeRevisionAccessCheck.php
+@@ -6,8 +6,14 @@ use Drupal\Core\Session\AccountInterface;
+ use Drupal\node\Access\NodeRevisionAccessCheck as CoreNodeRevisionAccessCheck;
+ use Drupal\node\NodeInterface;
+ 
++/**
++ *
++ */
+ class NodeRevisionAccessCheck extends CoreNodeRevisionAccessCheck {
+ 
++  /**
++   *
++   */
+   public function checkAccess(NodeInterface $node, AccountInterface $account, $op = 'view') {
+     if ($op == 'view' || $op == 'update') {
+       return parent::checkAccess($node, $account, $op);
+diff --git a/src/Block/BlockManager.php b/src/Block/BlockManager.php
+index 953b7b0..8ff753f 100644
+--- a/src/Block/BlockManager.php
++++ b/src/Block/BlockManager.php
+@@ -32,6 +32,7 @@ class BlockManager extends CoreBlockManager {
+ 
+   /**
+    * The string to prefix the workspace ID for the cache key.
++   *
+    * @var string
+    */
+   protected $workspaceCacheKeyPrefix = 'block_plugins:workspace';
+diff --git a/src/CacheBackendDecorator.php b/src/CacheBackendDecorator.php
+index 3b7c011..8b71c48 100644
+--- a/src/CacheBackendDecorator.php
++++ b/src/CacheBackendDecorator.php
+@@ -5,6 +5,9 @@ namespace Drupal\multiversion;
+ use Drupal\Core\Cache\CacheBackendInterface;
+ use Drupal\multiversion\Workspace\WorkspaceManagerInterface;
+ 
++/**
++ *
++ */
+ class CacheBackendDecorator implements CacheBackendInterface {
+ 
+   /**
+@@ -18,7 +21,7 @@ class CacheBackendDecorator implements CacheBackendInterface {
+   protected $workspaceManager;
+ 
+   /**
+-   * Constructor
++   * Constructor.
+    *
+    * @param \Drupal\Core\Cache\CacheBackendInterface $decorated
+    * @param \Drupal\multiversion\Workspace\WorkspaceManagerInterface $workspace_manager
+@@ -32,6 +35,7 @@ class CacheBackendDecorator implements CacheBackendInterface {
+    * Helper method to decorate a cache ID.
+    *
+    * @param string $cid
++   *
+    * @return string
+    */
+   protected function decorate($cid) {
+diff --git a/src/Controller/MultiversionNodeController.php b/src/Controller/MultiversionNodeController.php
+index d1b992d..43b2337 100644
+--- a/src/Controller/MultiversionNodeController.php
++++ b/src/Controller/MultiversionNodeController.php
+@@ -96,8 +96,8 @@ class MultiversionNodeController extends NodeController {
+             $links['revert'] = [
+               'title' => $vid < $node->getRevisionId() ? $this->t('Revert') : $this->t('Set as current revision'),
+               'url' => $has_translations ?
+-                Url::fromRoute('node.revision_revert_translation_confirm', ['node' => $node->id(), 'node_revision' => $vid, 'langcode' => $langcode]) :
+-                Url::fromRoute('node.revision_revert_confirm', ['node' => $node->id(), 'node_revision' => $vid]),
++              Url::fromRoute('node.revision_revert_translation_confirm', ['node' => $node->id(), 'node_revision' => $vid, 'langcode' => $langcode]) :
++              Url::fromRoute('node.revision_revert_confirm', ['node' => $node->id(), 'node_revision' => $vid]),
+             ];
+           }
+ 
+diff --git a/src/Entity/Exception/ConflictException.php b/src/Entity/Exception/ConflictException.php
+index de8a40f..729c738 100644
+--- a/src/Entity/Exception/ConflictException.php
++++ b/src/Entity/Exception/ConflictException.php
+@@ -2,4 +2,7 @@
+ 
+ namespace Drupal\multiversion\Entity\Exception;
+ 
+-class ConflictException extends MultiversionException { }
++/**
++ *
++ */
++class ConflictException extends MultiversionException {}
+diff --git a/src/Entity/Exception/MultiversionException.php b/src/Entity/Exception/MultiversionException.php
+index 459a550..5cd3032 100644
+--- a/src/Entity/Exception/MultiversionException.php
++++ b/src/Entity/Exception/MultiversionException.php
+@@ -4,6 +4,9 @@ namespace Drupal\multiversion\Entity\Exception;
+ 
+ use Drupal\Core\Entity\EntityInterface;
+ 
++/**
++ *
++ */
+ class MultiversionException extends \Exception implements MultiversionExceptionInterface {
+ 
+   /**
+@@ -12,7 +15,7 @@ class MultiversionException extends \Exception implements MultiversionExceptionI
+   protected $entity;
+ 
+   /**
+-   * @param EntityInterface $entity
++   * @param \Drupal\Core\Entity\EntityInterface $entity
+    * @param null|string $message
+    * @param int $code
+    * @param \Exception $previous
+@@ -23,6 +26,9 @@ class MultiversionException extends \Exception implements MultiversionExceptionI
+     parent::__construct($message, $code, $previous);
+   }
+ 
++  /**
++   *
++   */
+   public function getEntity() {
+     return $this->entity;
+   }
+diff --git a/src/Entity/Exception/MultiversionExceptionInterface.php b/src/Entity/Exception/MultiversionExceptionInterface.php
+index d1f2421..c9c8f6d 100644
+--- a/src/Entity/Exception/MultiversionExceptionInterface.php
++++ b/src/Entity/Exception/MultiversionExceptionInterface.php
+@@ -2,8 +2,14 @@
+ 
+ namespace Drupal\multiversion\Entity\Exception;
+ 
++/**
++ *
++ */
+ interface MultiversionExceptionInterface {
+ 
++  /**
++   *
++   */
+   public function getEntity();
+ 
+ }
+diff --git a/src/Entity/Index/ComplexLcaResolver.php b/src/Entity/Index/ComplexLcaResolver.php
+index baa44c6..c284bd4 100644
+--- a/src/Entity/Index/ComplexLcaResolver.php
++++ b/src/Entity/Index/ComplexLcaResolver.php
+@@ -7,6 +7,9 @@ use Drupal\Core\Entity\RevisionableInterface;
+ use Relaxed\LCA\LowestCommonAncestor;
+ use Fhaculty\Graph\Graph;
+ 
++/**
++ *
++ */
+ class ComplexLcaResolver implements ConflictAncestorResolverInterface {
+ 
+   /**
+@@ -15,13 +18,13 @@ class ComplexLcaResolver implements ConflictAncestorResolverInterface {
+   public function applies() {
+     return TRUE;
+   }
+-  
++
+   /**
+    * Find the lowest common parent of two revisions from given graph.
+    *
+-   * @param RevisionableInterface $revision1
+-   * @param RevisionableInterface $revision2
+-   * @param Graph $graph
++   * @param \Drupal\Core\Entity\RevisionableInterface $revision1
++   * @param \Drupal\Core\Entity\RevisionableInterface $revision2
++   * @param \Fhaculty\Graph\Graph $graph
+    *
+    * @return array
+    *   Returns an array of vertices or an empty array.
+diff --git a/src/Entity/Index/EntityIndex.php b/src/Entity/Index/EntityIndex.php
+index 2f62ace..c2425d8 100644
+--- a/src/Entity/Index/EntityIndex.php
++++ b/src/Entity/Index/EntityIndex.php
+@@ -2,11 +2,13 @@
+ 
+ namespace Drupal\multiversion\Entity\Index;
+ 
+-use Drupal\Core\Entity\ContentEntityInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
+ use Drupal\multiversion\Workspace\WorkspaceManagerInterface;
+ 
++/**
++ *
++ */
+ class EntityIndex implements EntityIndexInterface {
+ 
+   /**
+@@ -84,7 +86,7 @@ class EntityIndex implements EntityIndexInterface {
+   public function addMultiple(array $entities) {
+     $workspace_id = $this->getWorkspaceId();
+     $values = [];
+-    /** @var ContentEntityInterface $entity */
++    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+     foreach ($entities as $entity) {
+       $key = $this->buildKey($entity);
+       $value = $this->buildValue($entity);
+@@ -113,6 +115,7 @@ class EntityIndex implements EntityIndexInterface {
+    * Helper method for building the key to be indexed.
+    *
+    * @param \Drupal\Core\Entity\EntityInterface $entity
++   *
+    * @return string
+    */
+   protected function buildKey(EntityInterface $entity) {
+@@ -123,6 +126,7 @@ class EntityIndex implements EntityIndexInterface {
+    * Helper method for building the value to be indexed.
+    *
+    * @param \Drupal\Core\Entity\EntityInterface $entity
++   *
+    * @return array
+    */
+   protected function buildValue(EntityInterface $entity) {
+diff --git a/src/Entity/Index/EntityIndexInterface.php b/src/Entity/Index/EntityIndexInterface.php
+index c71f6d5..cda41e3 100644
+--- a/src/Entity/Index/EntityIndexInterface.php
++++ b/src/Entity/Index/EntityIndexInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\multiversion\Entity\Index;
+ 
+ use Drupal\Core\Entity\EntityInterface;
+ 
++/**
++ *
++ */
+ interface EntityIndexInterface extends IndexInterface {
+ 
+   /**
+diff --git a/src/Entity/Index/IndexInterface.php b/src/Entity/Index/IndexInterface.php
+index 65ba1da..702bec3 100644
+--- a/src/Entity/Index/IndexInterface.php
++++ b/src/Entity/Index/IndexInterface.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\multiversion\Entity\Index;
+ 
++/**
++ *
++ */
+ interface IndexInterface {
+ 
+   /**
+diff --git a/src/Entity/Index/MultiversionIndexFactory.php b/src/Entity/Index/MultiversionIndexFactory.php
+index f0439db..6c80dd1 100644
+--- a/src/Entity/Index/MultiversionIndexFactory.php
++++ b/src/Entity/Index/MultiversionIndexFactory.php
+@@ -6,23 +6,35 @@ use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Drupal\multiversion\Workspace\WorkspaceManagerInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class MultiversionIndexFactory {
+ 
+-  /** @var  ContainerInterface */
++  /**
++   * @var  \Symfony\Component\DependencyInjection\ContainerInterface*/
+   protected $container;
+ 
+-  /** @var  WorkspaceManagerInterface */
++  /**
++   * @var  \Drupal\multiversion\Workspace\WorkspaceManagerInterface*/
+   protected $workspaceManager;
+ 
+-  /** @var EntityIndexInterface[]  */
++  /**
++   * @var EntityIndexInterface[]*/
+   protected $indexes = [];
+ 
++  /**
++   *
++   */
+   public function __construct(ContainerInterface $container, WorkspaceManagerInterface $workspace_manager) {
+     $this->container = $container;
+     $this->workspaceManager = $workspace_manager;
+   }
+ 
+-  public function get($service, WorkspaceInterface $workspace = null) {
++  /**
++   *
++   */
++  public function get($service, WorkspaceInterface $workspace = NULL) {
+     $index = $this->container->get($service . '.scope');
+     if ($index instanceof IndexInterface) {
+       $workspace_id = $workspace ? $workspace->id() : $this->workspaceManager->getActiveWorkspaceId();
+@@ -32,4 +44,5 @@ class MultiversionIndexFactory {
+       throw new \InvalidArgumentException("Service $service is not an instance of IndexInterface.");
+     }
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/Entity/Index/RevisionIndex.php b/src/Entity/Index/RevisionIndex.php
+index 1d6d92c..cf3f12d 100644
+--- a/src/Entity/Index/RevisionIndex.php
++++ b/src/Entity/Index/RevisionIndex.php
+@@ -4,6 +4,9 @@ namespace Drupal\multiversion\Entity\Index;
+ 
+ use Drupal\Core\Entity\EntityInterface;
+ 
++/**
++ *
++ */
+ class RevisionIndex extends EntityIndex implements RevisionIndexInterface {
+ 
+   /**
+diff --git a/src/Entity/Index/RevisionIndexInterface.php b/src/Entity/Index/RevisionIndexInterface.php
+index 86b9053..1b2b441 100644
+--- a/src/Entity/Index/RevisionIndexInterface.php
++++ b/src/Entity/Index/RevisionIndexInterface.php
+@@ -2,4 +2,7 @@
+ 
+ namespace Drupal\multiversion\Entity\Index;
+ 
+-interface RevisionIndexInterface extends EntityIndexInterface { }
++/**
++ *
++ */
++interface RevisionIndexInterface extends EntityIndexInterface {}
+diff --git a/src/Entity/Index/RevisionTreeIndex.php b/src/Entity/Index/RevisionTreeIndex.php
+index 175567c..73dcc00 100644
+--- a/src/Entity/Index/RevisionTreeIndex.php
++++ b/src/Entity/Index/RevisionTreeIndex.php
+@@ -132,7 +132,7 @@ class RevisionTreeIndex implements RevisionTreeIndexInterface {
+   /**
+    * Generates vertices for Graph.
+    *
+-   * @param Graph $graph
++   * @param \Fhaculty\Graph\Graph $graph
+    *   A graph object.
+    * @param array $revision_ids
+    *   The revision ids to generate vertices for.
+diff --git a/src/Entity/Index/RevisionTreeIndexInterface.php b/src/Entity/Index/RevisionTreeIndexInterface.php
+index 6c51fb3..d67eb3f 100644
+--- a/src/Entity/Index/RevisionTreeIndexInterface.php
++++ b/src/Entity/Index/RevisionTreeIndexInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\multiversion\Entity\Index;
+ 
+ use Drupal\Core\Entity\ContentEntityInterface;
+ 
++/**
++ *
++ */
+ interface RevisionTreeIndexInterface extends IndexInterface {
+ 
+   /**
+@@ -16,7 +19,7 @@ interface RevisionTreeIndexInterface extends IndexInterface {
+   /**
+    * @param string $uuid
+    *
+-   * @return object of graph type 
++   * @return object of graph type
+    */
+   public function getGraph($uuid);
+ 
+@@ -58,7 +61,7 @@ interface RevisionTreeIndexInterface extends IndexInterface {
+   /**
+    * @param array $a
+    * @param array $b
+-   * @return integer
++   * @return int
+    */
+   public static function sortRevisions(array $a, array $b);
+ 
+diff --git a/src/Entity/Index/SequenceIndex.php b/src/Entity/Index/SequenceIndex.php
+index bb81293..ddbcf2a 100644
+--- a/src/Entity/Index/SequenceIndex.php
++++ b/src/Entity/Index/SequenceIndex.php
+@@ -7,6 +7,9 @@ use Drupal\key_value\KeyValueStore\KeyValueSortedSetFactoryInterface;
+ use Drupal\multiversion\MultiversionManagerInterface;
+ use Drupal\multiversion\Workspace\WorkspaceManagerInterface;
+ 
++/**
++ *
++ */
+ class SequenceIndex implements SequenceIndexInterface {
+ 
+   /**
+@@ -57,7 +60,7 @@ class SequenceIndex implements SequenceIndexInterface {
+    * {@inheritdoc}
+    */
+   public function add(ContentEntityInterface $entity) {
+-    $workspace_id = null;
++    $workspace_id = NULL;
+     $record = $this->buildRecord($entity);
+     if ($entity->getEntityType()->get('workspace') === FALSE) {
+       $workspace_id = 0;
+@@ -91,7 +94,7 @@ class SequenceIndex implements SequenceIndexInterface {
+    * @param $workspace_id
+    * @return \Drupal\key_value\KeyValueStore\KeyValueStoreSortedSetInterface
+    */
+-  protected function sortedSetStore($workspace_id = null) {
++  protected function sortedSetStore($workspace_id = NULL) {
+     if (!$workspace_id) {
+       $workspace_id = $this->workspaceId ?: $this->workspaceManager->getActiveWorkspaceId();
+     }
+diff --git a/src/Entity/Index/SequenceIndexInterface.php b/src/Entity/Index/SequenceIndexInterface.php
+index 4adbdbc..e0625ef 100644
+--- a/src/Entity/Index/SequenceIndexInterface.php
++++ b/src/Entity/Index/SequenceIndexInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\multiversion\Entity\Index;
+ 
+ use Drupal\Core\Entity\ContentEntityInterface;
+ 
++/**
++ *
++ */
+ interface SequenceIndexInterface extends IndexInterface {
+ 
+   /**
+@@ -14,7 +17,7 @@ interface SequenceIndexInterface extends IndexInterface {
+   /**
+    * @param float $start
+    * @param float $stop
+-   * @param boolean $inclusive
++   * @param bool $inclusive
+    *
+    * @return array
+    */
+diff --git a/src/Entity/Index/UuidIndex.php b/src/Entity/Index/UuidIndex.php
+index eda2dae..8da58ad 100644
+--- a/src/Entity/Index/UuidIndex.php
++++ b/src/Entity/Index/UuidIndex.php
+@@ -4,6 +4,9 @@ namespace Drupal\multiversion\Entity\Index;
+ 
+ use Drupal\Core\Entity\EntityInterface;
+ 
++/**
++ *
++ */
+ class UuidIndex extends EntityIndex implements UuidIndexInterface {
+ 
+   /**
+diff --git a/src/Entity/Index/UuidIndexInterface.php b/src/Entity/Index/UuidIndexInterface.php
+index 6808ea9..eea0e02 100644
+--- a/src/Entity/Index/UuidIndexInterface.php
++++ b/src/Entity/Index/UuidIndexInterface.php
+@@ -2,4 +2,7 @@
+ 
+ namespace Drupal\multiversion\Entity\Index;
+ 
+-interface UuidIndexInterface extends EntityIndexInterface { }
++/**
++ *
++ */
++interface UuidIndexInterface extends EntityIndexInterface {}
+diff --git a/src/Entity/MenuLinkContent.php b/src/Entity/MenuLinkContent.php
+index 88f6f4d..89b2623 100644
+--- a/src/Entity/MenuLinkContent.php
++++ b/src/Entity/MenuLinkContent.php
+@@ -5,6 +5,9 @@ namespace Drupal\multiversion\Entity;
+ use Drupal\Core\Entity\EntityStorageInterface;
+ use Drupal\menu_link_content\Entity\MenuLinkContent as CoreMenuLinkContent;
+ 
++/**
++ *
++ */
+ class MenuLinkContent extends CoreMenuLinkContent {
+ 
+   /**
+diff --git a/src/Entity/Query/QueryInterface.php b/src/Entity/Query/QueryInterface.php
+index cb64129..7de7c00 100644
+--- a/src/Entity/Query/QueryInterface.php
++++ b/src/Entity/Query/QueryInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\multiversion\Entity\Query;
+ 
+ use Drupal\Core\Entity\Query\QueryInterface as CoreQueryInterface;
+ 
++/**
++ *
++ */
+ interface QueryInterface extends CoreQueryInterface {
+ 
+   /**
+diff --git a/src/Entity/Query/QueryTrait.php b/src/Entity/Query/QueryTrait.php
+index 341616b..33adc97 100644
+--- a/src/Entity/Query/QueryTrait.php
++++ b/src/Entity/Query/QueryTrait.php
+@@ -17,7 +17,7 @@ trait QueryTrait {
+   protected $workspaceId = NULL;
+ 
+   /**
+-   * @var boolean
++   * @var bool
+    */
+   protected $isDeleted = FALSE;
+ 
+@@ -47,6 +47,9 @@ trait QueryTrait {
+     return $this;
+   }
+ 
++  /**
++   *
++   */
+   public function prepare() {
+     parent::prepare();
+     $entity_type = $this->entityTypeManager->getDefinition($this->entityTypeId);
+diff --git a/src/Entity/Query/Sql/Query.php b/src/Entity/Query/Sql/Query.php
+index 831c69f..64e05fc 100644
+--- a/src/Entity/Query/Sql/Query.php
++++ b/src/Entity/Query/Sql/Query.php
+@@ -8,6 +8,9 @@ use Drupal\Core\Entity\Query\Sql\Query as CoreQuery;
+ use Drupal\multiversion\Entity\Query\QueryInterface;
+ use Drupal\multiversion\Entity\Query\QueryTrait;
+ 
++/**
++ *
++ */
+ class Query extends CoreQuery implements QueryInterface {
+ 
+   use QueryTrait;
+diff --git a/src/Entity/Query/Sql/QueryFactory.php b/src/Entity/Query/Sql/QueryFactory.php
+index 933da54..fb674d7 100644
+--- a/src/Entity/Query/Sql/QueryFactory.php
++++ b/src/Entity/Query/Sql/QueryFactory.php
+@@ -4,4 +4,7 @@ namespace Drupal\multiversion\Entity\Query\Sql;
+ 
+ use Drupal\Core\Entity\Query\Sql\QueryFactory as CoreQueryFactory;
+ 
+-class QueryFactory extends CoreQueryFactory { }
++/**
++ *
++ */
++class QueryFactory extends CoreQueryFactory {}
+diff --git a/src/Entity/Storage/ContentEntityStorageInterface.php b/src/Entity/Storage/ContentEntityStorageInterface.php
+index 8c615f3..46c0184 100644
+--- a/src/Entity/Storage/ContentEntityStorageInterface.php
++++ b/src/Entity/Storage/ContentEntityStorageInterface.php
+@@ -5,18 +5,22 @@ namespace Drupal\multiversion\Entity\Storage;
+ use Drupal\Core\Entity\EntityStorageInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ 
++/**
++ *
++ */
+ interface ContentEntityStorageInterface extends EntityStorageInterface {
+ 
+   /**
+    * What workspace to query.
+    *
+-   * @param integer $id
++   * @param int $id
++   *
+    * @return \Drupal\multiversion\Entity\Storage\ContentEntityStorageInterface
+    */
+   public function useWorkspace($id);
+ 
+   /**
+-   * @param integer $id
++   * @param int $id
+    * @return \Drupal\Core\Entity\ContentEntityInterface|null
+    */
+   public function loadDeleted($id);
+@@ -53,4 +57,5 @@ interface ContentEntityStorageInterface extends EntityStorageInterface {
+    *   In case of failures, an exception is thrown.
+    */
+   public function saveWithoutForcingNewRevision(EntityInterface $entity);
++
+ }
+diff --git a/src/Entity/Storage/ContentEntityStorageTrait.php b/src/Entity/Storage/ContentEntityStorageTrait.php
+index 7ba19a8..a141a6a 100644
+--- a/src/Entity/Storage/ContentEntityStorageTrait.php
++++ b/src/Entity/Storage/ContentEntityStorageTrait.php
+@@ -10,10 +10,13 @@ use Drupal\path\Plugin\Field\FieldType\PathFieldItemList;
+ use Drupal\pathauto\PathautoState;
+ use Drupal\user\UserStorageInterface;
+ 
++/**
++ *
++ */
+ trait ContentEntityStorageTrait {
+ 
+   /**
+-   * @var boolean
++   * @var bool
+    */
+   protected $isDeleted = FALSE;
+ 
+@@ -316,7 +319,7 @@ trait ContentEntityStorageTrait {
+    * @param \Drupal\Core\Entity\EntityInterface $entity
+    */
+   protected function indexEntity(EntityInterface $entity) {
+-    $workspace = isset($entity->workspace) ? $entity->workspace->entity : null;
++    $workspace = isset($entity->workspace) ? $entity->workspace->entity : NULL;
+     $index_factory = \Drupal::service('multiversion.entity_index.factory');
+ 
+     $index_factory->get('multiversion.entity_index.id', $workspace)
+@@ -332,7 +335,7 @@ trait ContentEntityStorageTrait {
+    * @param \Drupal\Core\Entity\EntityInterface $entity
+    */
+   protected function indexEntitySequence(EntityInterface $entity) {
+-    $workspace = isset($entity->workspace) ? $entity->workspace->entity : null;
++    $workspace = isset($entity->workspace) ? $entity->workspace->entity : NULL;
+     \Drupal::service('multiversion.entity_index.factory')
+       ->get('multiversion.entity_index.sequence', $workspace)
+       ->add($entity);
+@@ -344,7 +347,7 @@ trait ContentEntityStorageTrait {
+    * @param \Drupal\Core\Entity\EntityInterface $entity
+    */
+   protected function indexEntityRevision(EntityInterface $entity) {
+-    $workspace = isset($entity->workspace) ? $entity->workspace->entity : null;
++    $workspace = isset($entity->workspace) ? $entity->workspace->entity : NULL;
+     \Drupal::service('multiversion.entity_index.factory')
+       ->get('multiversion.entity_index.rev', $workspace)
+       ->add($entity);
+@@ -357,7 +360,7 @@ trait ContentEntityStorageTrait {
+    * @param array $branch
+    */
+   protected function indexEntityRevisionTree(EntityInterface $entity, $branch) {
+-    $workspace = isset($entity->workspace) ? $entity->workspace->entity : null;
++    $workspace = isset($entity->workspace) ? $entity->workspace->entity : NULL;
+     \Drupal::service('multiversion.entity_index.factory')
+       ->get('multiversion.entity_index.rev.tree', $workspace)
+       ->updateTree($entity, $branch);
+@@ -367,6 +370,7 @@ trait ContentEntityStorageTrait {
+    * Builds the revision branch.
+    *
+    * @param \Drupal\Core\Entity\EntityInterface $entity
++   *
+    * @return array
+    */
+   protected function buildRevisionBranch(EntityInterface $entity) {
+@@ -448,7 +452,7 @@ trait ContentEntityStorageTrait {
+ 
+       // Decide whether or not this is the default revision.
+       if (!$entity->isNew()) {
+-        $workspace = isset($entity->workspace) ? $entity->workspace->entity : null;
++        $workspace = isset($entity->workspace) ? $entity->workspace->entity : NULL;
+         $index_factory = \Drupal::service('multiversion.entity_index.factory');
+         /** @var \Drupal\multiversion\Entity\Index\RevisionTreeIndexInterface $tree */
+         $tree = $index_factory->get('multiversion.entity_index.rev.tree', $workspace);
+@@ -602,7 +606,7 @@ trait ContentEntityStorageTrait {
+    *   The entity to track for which to track conflicts.
+    */
+   protected function trackConflicts(EntityInterface $entity) {
+-    $workspace = isset($entity->workspace) ? $entity->workspace->entity : null;
++    $workspace = isset($entity->workspace) ? $entity->workspace->entity : NULL;
+     /** @var \Drupal\multiversion\Workspace\ConflictTrackerInterface $conflictTracker */
+     $conflictTracker = \Drupal::service('workspace.conflict_tracker')
+       ->useWorkspace($workspace);
+diff --git a/src/Entity/Storage/Sql/ContentEntityStorage.php b/src/Entity/Storage/Sql/ContentEntityStorage.php
+index b905ab2..884f465 100644
+--- a/src/Entity/Storage/Sql/ContentEntityStorage.php
++++ b/src/Entity/Storage/Sql/ContentEntityStorage.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
+ use Drupal\multiversion\Entity\Storage\ContentEntityStorageInterface;
+ use Drupal\multiversion\Entity\Storage\ContentEntityStorageTrait;
+ 
++/**
++ *
++ */
+ class ContentEntityStorage extends SqlContentEntityStorage implements ContentEntityStorageInterface {
+ 
+   use ContentEntityStorageTrait;
+diff --git a/src/Entity/Workspace.php b/src/Entity/Workspace.php
+index 70b0bee..e1a3637 100644
+--- a/src/Entity/Workspace.php
++++ b/src/Entity/Workspace.php
+@@ -9,8 +9,6 @@ use Drupal\Core\Entity\EntityPublishedTrait;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Field\BaseFieldDefinition;
+ use Drupal\user\UserInterface;
+-use Drupal\workspace\Entity\Replication;
+-use Drupal\workspace\Entity\WorkspacePointer;
+ 
+ /**
+  * The workspace entity class.
+diff --git a/src/Entity/WorkspaceInterface.php b/src/Entity/WorkspaceInterface.php
+index 6a344f6..c82d97d 100644
+--- a/src/Entity/WorkspaceInterface.php
++++ b/src/Entity/WorkspaceInterface.php
+@@ -7,6 +7,9 @@ use Drupal\Core\Entity\EntityChangedInterface;
+ use Drupal\Core\Entity\EntityPublishedInterface;
+ use Drupal\user\EntityOwnerInterface;
+ 
++/**
++ *
++ */
+ interface WorkspaceInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface, EntityPublishedInterface {
+ 
+   /**
+diff --git a/src/EntityReference.php b/src/EntityReference.php
+index 6cab4fd..076778d 100644
+--- a/src/EntityReference.php
++++ b/src/EntityReference.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\multiversion;
+ 
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Entity\Plugin\DataType\EntityReference as CoreEntityReference;
+ 
+ /**
+@@ -27,7 +26,7 @@ class EntityReference extends CoreEntityReference {
+     parent::getTarget();
+ 
+     if (!isset($this->target) && isset($this->id)) {
+-      /** @var EntityTypeManagerInterface $entity_type_manager */
++      /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
+       $entity_type_manager = \Drupal::service('entity_type.manager');
+       /** @var \Drupal\multiversion\MultiversionManagerInterface $multiversion_manager */
+       $multiversion_manager = \Drupal::service('multiversion.manager');
+@@ -45,4 +44,5 @@ class EntityReference extends CoreEntityReference {
+     }
+     return $this->target;
+   }
++
+ }
+diff --git a/src/EntityReferenceFieldTrait.php b/src/EntityReferenceFieldTrait.php
+index 726dc46..f66585e 100644
+--- a/src/EntityReferenceFieldTrait.php
++++ b/src/EntityReferenceFieldTrait.php
+@@ -3,13 +3,16 @@
+ namespace Drupal\multiversion;
+ 
+ /**
+- * Alterations for entity reference field types
++ * Alterations for entity reference field types.
+  *
+  * We use this to replace core entity reference field types to change the
+  * logic around saving auto-created entities.
+  */
+ trait EntityReferenceFieldTrait {
+ 
++  /**
++   *
++   */
+   public function preSave() {
+     if ($this->hasNewEntity()) {
+       // As part of a bulk or replication operation there might be multiple
+@@ -47,7 +50,7 @@ trait EntityReferenceFieldTrait {
+           }
+         }
+         // Just save the entity if no previous record exists.
+-        else{
++        else {
+           $this->entity->save();
+         }
+       }
+@@ -65,5 +68,5 @@ trait EntityReferenceFieldTrait {
+       $this->target_id = $this->entity->id();
+     }
+   }
+-  
++
+ }
+diff --git a/src/EntityReferenceItem.php b/src/EntityReferenceItem.php
+index 0a03ed2..b464614 100644
+--- a/src/EntityReferenceItem.php
++++ b/src/EntityReferenceItem.php
+@@ -12,4 +12,5 @@ use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem as CoreEntityRe
+  */
+ class EntityReferenceItem extends CoreEntityReferenceItem {
+   use EntityReferenceFieldTrait;
++
+ }
+diff --git a/src/Event/MultiversionManagerEvent.php b/src/Event/MultiversionManagerEvent.php
+index 2538165..1d46ee9 100644
+--- a/src/Event/MultiversionManagerEvent.php
++++ b/src/Event/MultiversionManagerEvent.php
+@@ -64,7 +64,7 @@ class MultiversionManagerEvent extends Event {
+    *
+    * @param string $entity_type_id
+    *
+-   * @return \Drupal\Core\Entity\ContentEntityTypeInterface|NULL
++   * @return \Drupal\Core\Entity\ContentEntityTypeInterface|null
+    */
+   public function getEntityType($entity_type_id) {
+     if (isset($this->entityTypes[$entity_type_id]) && $this->entityTypes[$entity_type_id] instanceof ContentEntityTypeInterface) {
+diff --git a/src/EventSubscriber/FileUsageMigrateSubscriber.php b/src/EventSubscriber/FileUsageMigrateSubscriber.php
+index c5b7597..5fcd2a7 100644
+--- a/src/EventSubscriber/FileUsageMigrateSubscriber.php
++++ b/src/EventSubscriber/FileUsageMigrateSubscriber.php
+@@ -44,7 +44,7 @@ class FileUsageMigrateSubscriber implements EventSubscriberInterface {
+    * @param \Drupal\multiversion\Event\MultiversionManagerEvent $event
+    */
+   public function onPreMigrateFileUsage(MultiversionManagerEvent $event) {
+-    if ($this->moduleHandler->moduleExists('file')){
++    if ($this->moduleHandler->moduleExists('file')) {
+       foreach ($event->getEntityTypes() as $entity_type) {
+         $type = $entity_type->id();
+         $this->connection->delete('file_usage')
+diff --git a/src/EventSubscriber/NodeRevisionRouteSubscriber.php b/src/EventSubscriber/NodeRevisionRouteSubscriber.php
+index 224e4e5..37bf98e 100644
+--- a/src/EventSubscriber/NodeRevisionRouteSubscriber.php
++++ b/src/EventSubscriber/NodeRevisionRouteSubscriber.php
+@@ -44,7 +44,7 @@ class NodeRevisionRouteSubscriber extends RouteSubscriberBase {
+    */
+   public static function getSubscribedEvents() {
+     $events = parent::getSubscribedEvents();
+-    $events[RoutingEvents::ALTER] = array('onAlterRoutes', -500);
++    $events[RoutingEvents::ALTER] = ['onAlterRoutes', -500];
+     return $events;
+   }
+ 
+diff --git a/src/EventSubscriber/PathAutoAliasSubscriber.php b/src/EventSubscriber/PathAutoAliasSubscriber.php
+index 48221be..60799a7 100644
+--- a/src/EventSubscriber/PathAutoAliasSubscriber.php
++++ b/src/EventSubscriber/PathAutoAliasSubscriber.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\multiversion\EventSubscriber;
+ 
+-use Drupal\Core\Extension\ModuleHandler;
+ use Drupal\Core\State\StateInterface;
+ use Drupal\multiversion\Event\MultiversionManagerEvent;
+ use Drupal\multiversion\Event\MultiversionManagerEvents;
+@@ -51,7 +50,7 @@ class PathAutoAliasSubscriber implements EventSubscriberInterface {
+   public static function getSubscribedEvents() {
+     return [
+       MultiversionManagerEvents::PRE_MIGRATE => ['onPreMigrate'],
+-      MultiversionManagerEvents::POST_MIGRATE => ['onPostMigrate']
++      MultiversionManagerEvents::POST_MIGRATE => ['onPostMigrate'],
+     ];
+   }
+ 
+diff --git a/src/EventSubscriber/SearchApiMigrateSubscriber.php b/src/EventSubscriber/SearchApiMigrateSubscriber.php
+index 384ce2f..c8e231a 100644
+--- a/src/EventSubscriber/SearchApiMigrateSubscriber.php
++++ b/src/EventSubscriber/SearchApiMigrateSubscriber.php
+@@ -19,7 +19,7 @@ class SearchApiMigrateSubscriber implements EventSubscriberInterface {
+   /**
+    * An array of Search API Index entities.
+    *
+-   * @var array $indexes
++   * @var array
+    */
+   protected $indexes = [];
+ 
+@@ -30,6 +30,7 @@ class SearchApiMigrateSubscriber implements EventSubscriberInterface {
+    *   The module handler.
+    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+    *   The entity type manager.
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    *   The invalid plugin definition exception.
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+@@ -71,7 +72,7 @@ class SearchApiMigrateSubscriber implements EventSubscriberInterface {
+    * Set the index read only property state.
+    *
+    * @param bool $state
+-   *  The read only state.
++   *   The read only state.
+    */
+   private function indexSetReadOnly($state) {
+     foreach ($this->indexes as $index_key => $index) {
+diff --git a/src/Field/RevisionsProperty.php b/src/Field/RevisionsProperty.php
+index 339e9df..16f53d3 100644
+--- a/src/Field/RevisionsProperty.php
++++ b/src/Field/RevisionsProperty.php
+@@ -21,7 +21,7 @@ class RevisionsProperty extends TypedData {
+     /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+     $entity = $this->getRoot()->getValue();
+ 
+-    $workspace = isset($entity->workspace) ? $entity->workspace->entity : null;
++    $workspace = isset($entity->workspace) ? $entity->workspace->entity : NULL;
+     $branch = \Drupal::service('multiversion.entity_index.factory')
+       ->get('multiversion.entity_index.rev.tree', $workspace)
+       ->getDefaultBranch($entity->uuid());
+diff --git a/src/Field/UuidItem.php b/src/Field/UuidItem.php
+index a1d1d75..ae256bd 100644
+--- a/src/Field/UuidItem.php
++++ b/src/Field/UuidItem.php
+@@ -5,6 +5,9 @@ namespace Drupal\multiversion\Field;
+ use Drupal\Core\Field\FieldStorageDefinitionInterface;
+ use Drupal\Core\Field\Plugin\Field\FieldType\UuidItem as CoreUuidItem;
+ 
++/**
++ *
++ */
+ class UuidItem extends CoreUuidItem {
+ 
+   /**
+@@ -18,4 +21,5 @@ class UuidItem extends CoreUuidItem {
+     unset($schema['unique keys']['value']);
+     return $schema;
+   }
++
+ }
+diff --git a/src/FileItem.php b/src/FileItem.php
+index 10d97c8..207d27f 100644
+--- a/src/FileItem.php
++++ b/src/FileItem.php
+@@ -12,4 +12,5 @@ use Drupal\file\Plugin\Field\FieldType\FileItem as CoreFileItem;
+  */
+ class FileItem extends CoreFileItem {
+   use EntityReferenceFieldTrait;
++
+ }
+diff --git a/src/ImageItem.php b/src/ImageItem.php
+index b021e5e..1d82ae9 100644
+--- a/src/ImageItem.php
++++ b/src/ImageItem.php
+@@ -12,4 +12,5 @@ use Drupal\image\Plugin\Field\FieldType\ImageItem as CoreImageItem;
+  */
+ class ImageItem extends CoreImageItem {
+   use EntityReferenceFieldTrait;
++
+ }
+diff --git a/src/MenuTreeStorage.php b/src/MenuTreeStorage.php
+index 7227fd5..2c9c519 100644
+--- a/src/MenuTreeStorage.php
++++ b/src/MenuTreeStorage.php
+@@ -8,6 +8,9 @@ use Drupal\Core\Database\Connection;
+ use Drupal\Core\Menu\MenuTreeParameters;
+ use Drupal\Core\Menu\MenuTreeStorage as CoreMenuTreeStorage;
+ 
++/**
++ *
++ */
+ class MenuTreeStorage extends CoreMenuTreeStorage {
+ 
+   /**
+diff --git a/src/MultiversionFieldItemList.php b/src/MultiversionFieldItemList.php
+index 467f467..12c3978 100644
+--- a/src/MultiversionFieldItemList.php
++++ b/src/MultiversionFieldItemList.php
+@@ -4,6 +4,9 @@ namespace Drupal\multiversion;
+ 
+ use Drupal\pathauto\PathautoFieldItemList;
+ 
++/**
++ *
++ */
+ class MultiversionFieldItemList extends PathautoFieldItemList {
+ 
+   /**
+diff --git a/src/MultiversionManager.php b/src/MultiversionManager.php
+index 7dbc7b3..02dec22 100644
+--- a/src/MultiversionManager.php
++++ b/src/MultiversionManager.php
+@@ -20,6 +20,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+ use Symfony\Component\Serializer\Serializer;
+ 
++/**
++ *
++ */
+ class MultiversionManager implements MultiversionManagerInterface, ContainerAwareInterface {
+ 
+   use ContainerAwareTrait;
+@@ -115,8 +118,9 @@ class MultiversionManager implements MultiversionManagerInterface, ContainerAwar
+    * might create multiple instances of this manager. Is this only an issue
+    * during tests perhaps?
+    *
+-   * @param boolean|array $status
+-   * @return boolean|array
++   * @param bool|array $status
++   *
++   * @return bool|array
+    */
+   public static function enableMigrationIsActive($status = NULL) {
+     static $cache = FALSE;
+@@ -129,8 +133,9 @@ class MultiversionManager implements MultiversionManagerInterface, ContainerAwar
+   /**
+    * Static method maintaining the disable migration status.
+    *
+-   * @param boolean|array $status
+-   * @return boolean|array
++   * @param bool|array $status
++   *
++   * @return bool|array
+    */
+   public static function disableMigrationIsActive($status = NULL) {
+     static $cache = FALSE;
+@@ -482,7 +487,7 @@ class MultiversionManager implements MultiversionManagerInterface, ContainerAwar
+   /**
+    * @param array $normalized_entity
+    */
+-  protected function filterNormalizedEntity(&$normalized_entity){
++  protected function filterNormalizedEntity(&$normalized_entity) {
+     foreach ($normalized_entity as $key => &$value) {
+       if ($key{0} == '_') {
+         unset($normalized_entity[$key]);
+@@ -493,6 +498,9 @@ class MultiversionManager implements MultiversionManagerInterface, ContainerAwar
+     }
+   }
+ 
++  /**
++   *
++   */
+   protected function termToBinary(array $term) {
+     // @todo: {@link https://www.drupal.org/node/2597478 Switch to BERT
+     // serialization format instead of JSON.}
+@@ -508,6 +516,9 @@ class MultiversionManager implements MultiversionManagerInterface, ContainerAwar
+     return MultiversionMigration::create($this->container, $this->entityTypeManager, $this->entityFieldManager);
+   }
+ 
++  /**
++   *
++   */
+   protected function prepareContentForMigration($entity_types, MultiversionMigrationInterface $migration, $op) {
+     $has_data = [];
+     // Walk through and verify that the original storage is in good order.
+diff --git a/src/MultiversionManagerInterface.php b/src/MultiversionManagerInterface.php
+index d72af5f..f2b24c5 100644
+--- a/src/MultiversionManagerInterface.php
++++ b/src/MultiversionManagerInterface.php
+@@ -5,6 +5,9 @@ namespace Drupal\multiversion;
+ use Drupal\Core\Entity\ContentEntityInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ 
++/**
++ *
++ */
+ interface MultiversionManagerInterface {
+ 
+   /**
+@@ -23,7 +26,7 @@ interface MultiversionManagerInterface {
+ 
+   /**
+    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+-   * @return boolean
++   * @return bool
+    */
+   public function isSupportedEntityType(EntityTypeInterface $entity_type);
+ 
+@@ -34,13 +37,13 @@ interface MultiversionManagerInterface {
+ 
+   /**
+    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+-   * @return boolean
++   * @return bool
+    */
+   public function isEnabledEntityType(EntityTypeInterface $entity_type);
+ 
+   /**
+    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+-   * @return boolean
++   * @return bool
+    */
+   public function allowToAlter(EntityTypeInterface $entity_type);
+ 
+@@ -60,12 +63,12 @@ interface MultiversionManagerInterface {
+   public function disableEntityTypes();
+ 
+   /**
+-   * @return integer
++   * @return int
+    */
+   public function newSequenceId();
+ 
+   /**
+-   * @return integer
++   * @return int
+    */
+   public function lastSequenceId();
+ 
+diff --git a/src/MultiversionMigration.php b/src/MultiversionMigration.php
+index 769a59d..5037a08 100644
+--- a/src/MultiversionMigration.php
++++ b/src/MultiversionMigration.php
+@@ -16,6 +16,9 @@ use Drupal\migrate\Plugin\MigrationInterface;
+ use Drupal\multiversion\Entity\Storage\ContentEntityStorageInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class MultiversionMigration implements MultiversionMigrationInterface {
+ 
+   /**
+@@ -171,7 +174,7 @@ class MultiversionMigration implements MultiversionMigrationInterface {
+       'source' => [
+         'plugin' => 'tempstore',
+         'translations' => (bool) $entity_type->getKey('langcode'),
+-        ],
++      ],
+       'destination' => [
+         'plugin' => 'multiversion',
+         'translations' => (bool) $entity_type->getKey('langcode'),
+@@ -203,7 +206,7 @@ class MultiversionMigration implements MultiversionMigrationInterface {
+   /**
+    * Helper method to fetch the field map for an entity type.
+    *
+-   * @param EntityTypeInterface $entity_type
++   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+    * @param string $op
+    * @param string $action
+    *
+@@ -253,6 +256,7 @@ class MultiversionMigration implements MultiversionMigrationInterface {
+    * Helper method for running a migration.
+    *
+    * @param \Drupal\migrate\Plugin\MigrationInterface $migration
++   *
+    * @return \Drupal\migrate\MigrateExecutableInterface
+    */
+   protected function executeMigration(MigrationInterface $migration) {
+diff --git a/src/MultiversionMigrationInterface.php b/src/MultiversionMigrationInterface.php
+index ab1c46d..e047cc0 100644
+--- a/src/MultiversionMigrationInterface.php
++++ b/src/MultiversionMigrationInterface.php
+@@ -7,6 +7,9 @@ use Drupal\Core\Entity\EntityStorageInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ interface MultiversionMigrationInterface {
+ 
+   /**
+@@ -14,6 +17,7 @@ interface MultiversionMigrationInterface {
+    *
+    * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager
++   *
+    * @return \Drupal\multiversion\MultiversionMigrationInterface
+    */
+   public static function create(ContainerInterface $container, EntityTypeManagerInterface $entity_manager);
+@@ -71,11 +75,12 @@ interface MultiversionMigrationInterface {
+   /**
+    * Helper method to fetch the field map for an entity type.
+    *
+-   * @param EntityTypeInterface $entity_type
++   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+    * @param string $op
+    * @param string $action
+    *
+    * @return array
+    */
+   public function getFieldMap(EntityTypeInterface $entity_type, $op, $action);
++
+ }
+diff --git a/src/MultiversionServiceProvider.php b/src/MultiversionServiceProvider.php
+index 5696ed7..6c23510 100644
+--- a/src/MultiversionServiceProvider.php
++++ b/src/MultiversionServiceProvider.php
+@@ -12,6 +12,9 @@ use Symfony\Component\DependencyInjection\Reference;
+  */
+ class MultiversionServiceProvider extends ServiceProviderBase {
+ 
++  /**
++   *
++   */
+   public function alter(ContainerBuilder $container) {
+     $renderer_config = $container->getParameter('renderer.config');
+     $renderer_config['required_cache_contexts'][] = 'workspace';
+diff --git a/src/Plugin/Field/FieldType/WorkspaceReferenceItem.php b/src/Plugin/Field/FieldType/WorkspaceReferenceItem.php
+index 0f0b1fb..1d6329e 100644
+--- a/src/Plugin/Field/FieldType/WorkspaceReferenceItem.php
++++ b/src/Plugin/Field/FieldType/WorkspaceReferenceItem.php
+@@ -23,4 +23,5 @@ class WorkspaceReferenceItem extends EntityReferenceItem {
+     $this->setValue(['target_id' => $workspace->id()], $notify);
+     return $this;
+   }
++
+ }
+diff --git a/src/Plugin/Menu/MenuLinkContent.php b/src/Plugin/Menu/MenuLinkContent.php
+index 95feb1b..756ed77 100644
+--- a/src/Plugin/Menu/MenuLinkContent.php
++++ b/src/Plugin/Menu/MenuLinkContent.php
+@@ -4,6 +4,9 @@ namespace Drupal\multiversion\Plugin\Menu;
+ 
+ use Drupal\menu_link_content\Plugin\Menu\MenuLinkContent as CoreMenuLinkContent;
+ 
++/**
++ *
++ */
+ class MenuLinkContent extends CoreMenuLinkContent {
+ 
+   /**
+diff --git a/src/Plugin/QueueWorker/DeletedWorkspaceQueue.php b/src/Plugin/QueueWorker/DeletedWorkspaceQueue.php
+index c84299b..88f1ebb 100644
+--- a/src/Plugin/QueueWorker/DeletedWorkspaceQueue.php
++++ b/src/Plugin/QueueWorker/DeletedWorkspaceQueue.php
+@@ -13,7 +13,7 @@ use Exception;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Class DeletedWorkspaceQueue
++ * Class DeletedWorkspaceQueue.
+  *
+  * @QueueWorker(
+  *   id = "deleted_workspace_queue",
+@@ -122,4 +122,5 @@ class DeletedWorkspaceQueue extends QueueWorkerBase implements ContainerFactoryP
+       watchdog_exception('Multiversion', $e, $message);
+     }
+   }
++
+ }
+diff --git a/src/Plugin/Validation/Constraint/UnpublishWorkspaceConstraint.php b/src/Plugin/Validation/Constraint/UnpublishWorkspaceConstraint.php
+index 17f95fc..87ef0b6 100644
+--- a/src/Plugin/Validation/Constraint/UnpublishWorkspaceConstraint.php
++++ b/src/Plugin/Validation/Constraint/UnpublishWorkspaceConstraint.php
+@@ -15,10 +15,10 @@ use Symfony\Component\Validator\Constraint;
+ class UnpublishWorkspaceConstraint extends Constraint {
+ 
+   /**
+-  +   * The default violation message.
+-  +   *
+-  +   * @var string
+-  +   */
++   * +   * The default violation message.
++   * +   *
++   * +   * @var string
++   * +   .*/
+   public $message = 'The default workspace cannot be unpublished or archived.';
+ 
+ }
+diff --git a/src/Plugin/Validation/Constraint/UnpublishWorkspaceConstraintValidator.php b/src/Plugin/Validation/Constraint/UnpublishWorkspaceConstraintValidator.php
+index a160bee..6e30996 100644
+--- a/src/Plugin/Validation/Constraint/UnpublishWorkspaceConstraintValidator.php
++++ b/src/Plugin/Validation/Constraint/UnpublishWorkspaceConstraintValidator.php
+@@ -2,15 +2,12 @@
+ 
+ namespace Drupal\multiversion\Plugin\Validation\Constraint;
+ 
+-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+-use Drupal\workspace\WorkspaceAssociationStorageInterface;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\Validator\Constraint;
+ use Symfony\Component\Validator\ConstraintValidator;
+ 
+ /**
+-* Checks if data still exists for a deleted workspace ID.
+-*/
++ * Checks if data still exists for a deleted workspace ID.
++ */
+ class UnpublishWorkspaceConstraintValidator extends ConstraintValidator {
+ 
+   /**
+@@ -19,7 +16,7 @@ class UnpublishWorkspaceConstraintValidator extends ConstraintValidator {
+   public function validate($value, Constraint $constraint) {
+     /** @var \Drupal\Core\Field\FieldItemListInterface $value */
+     if (!isset($value)) {
+-       return;
++      return;
+     }
+ 
+     if ($value->getEntity()->isDefaultWorkspace() && !$value->value) {
+diff --git a/src/Plugin/migrate/destination/EntityContentBase.php b/src/Plugin/migrate/destination/EntityContentBase.php
+index 1ac2106..b78a8f4 100644
+--- a/src/Plugin/migrate/destination/EntityContentBase.php
++++ b/src/Plugin/migrate/destination/EntityContentBase.php
+@@ -59,9 +59,9 @@ class EntityContentBase extends CoreEntityContentBase {
+    *   The plugin_id for the plugin instance.
+    * @param mixed $plugin_definition
+    *   The plugin implementation definition.
+-   * @param MigrationInterface $migration
++   * @param \Drupal\migrate\Plugin\MigrationInterface $migration
+    *   The migration.
+-   * @param EntityStorageInterface $storage
++   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+    *   The storage for this entity type.
+    * @param array $bundles
+    *   The list of bundles this entity type has.
+diff --git a/src/Plugin/migrate/destination/TempStore.php b/src/Plugin/migrate/destination/TempStore.php
+index 504ba29..56581eb 100644
+--- a/src/Plugin/migrate/destination/TempStore.php
++++ b/src/Plugin/migrate/destination/TempStore.php
+@@ -4,7 +4,6 @@ namespace Drupal\multiversion\Plugin\migrate\destination;
+ 
+ use Drupal\Core\Entity\EntityManagerInterface;
+ use Drupal\Core\KeyValueStore\KeyValueExpirableFactoryInterface;
+-use Drupal\Core\KeyValueStore\KeyValueStoreExpirableInterface;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Drupal\migrate\Plugin\migrate\destination\DestinationBase;
+ use Drupal\migrate\Plugin\MigrationInterface;
+@@ -26,7 +25,7 @@ class TempStore extends DestinationBase implements ContainerFactoryPluginInterfa
+   protected $expire = 604800;
+ 
+   /**
+-   * @var KeyValueStoreExpirableInterface
++   * @var \Drupal\Core\KeyValueStore\KeyValueStoreExpirableInterface
+    */
+   protected $tempStore;
+ 
+@@ -45,7 +44,8 @@ class TempStore extends DestinationBase implements ContainerFactoryPluginInterfa
+    */
+   private $entityLanguageKey;
+ 
+-  /** @var \Drupal\Core\Entity\EntityManagerInterface  */
++  /**
++   * @var \Drupal\Core\Entity\EntityManagerInterface*/
+   private $entityManager;
+ 
+   /**
+@@ -71,11 +71,11 @@ class TempStore extends DestinationBase implements ContainerFactoryPluginInterfa
+    *   The plugin_id for the plugin instance.
+    * @param mixed $plugin_definition
+    *   The plugin implementation definition.
+-   * @param MigrationInterface $migration
++   * @param \Drupal\migrate\Plugin\MigrationInterface $migration
+    *   The migration.
+-   * @param EntityManagerInterface $entity_manager
++   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+    *   The entity manager.
+-   * @param KeyValueExpirableFactoryInterface $temp_store_factory
++   * @param \Drupal\Core\KeyValueStore\KeyValueExpirableFactoryInterface $temp_store_factory
+    *   The temp store factory.
+    */
+   public function __construct(array $configuration, $plugin_id, $plugin_definition, MigrationInterface $migration, EntityManagerInterface $entity_manager, KeyValueExpirableFactoryInterface $temp_store_factory) {
+@@ -159,8 +159,8 @@ class TempStore extends DestinationBase implements ContainerFactoryPluginInterfa
+     $field_definition = $definitions[$key];
+ 
+     return [
+-        'type' => $field_definition->getType(),
+-      ] + $field_definition->getSettings();
++      'type' => $field_definition->getType(),
++    ] + $field_definition->getSettings();
+   }
+ 
+ }
+diff --git a/src/Plugin/migrate/source/EntityContentBase.php b/src/Plugin/migrate/source/EntityContentBase.php
+index 3e11ce1..e193141 100644
+--- a/src/Plugin/migrate/source/EntityContentBase.php
++++ b/src/Plugin/migrate/source/EntityContentBase.php
+@@ -30,7 +30,7 @@ class EntityContentBase extends SourcePluginBase {
+       if (isset($entity->_deleted->value) && $entity->_deleted->value) {
+         continue;
+       }
+-      foreach($entity->getTranslationLanguages(TRUE) as $language) {
++      foreach ($entity->getTranslationLanguages(TRUE) as $language) {
+         $result = [];
+         foreach ($entity->getTranslation($language->getId()) as $field_name => $field) {
+           if (!$field->isEmpty()) {
+diff --git a/src/Plugin/migrate/source/SourcePluginBase.php b/src/Plugin/migrate/source/SourcePluginBase.php
+index 292f09e..63c0171 100644
+--- a/src/Plugin/migrate/source/SourcePluginBase.php
++++ b/src/Plugin/migrate/source/SourcePluginBase.php
+@@ -8,10 +8,13 @@ use Drupal\migrate\Plugin\migrate\source\SourcePluginBase as CoreSourcePluginBas
+ use Drupal\migrate\Plugin\MigrationInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ abstract class SourcePluginBase extends CoreSourcePluginBase implements ContainerFactoryPluginInterface {
+ 
+   /**
+-   * @var EntityManagerInterface
++   * @var \Drupal\Core\Entity\EntityManagerInterface
+    */
+   protected $entityManager;
+ 
+@@ -52,9 +55,9 @@ abstract class SourcePluginBase extends CoreSourcePluginBase implements Containe
+    *   The plugin_id for the plugin instance.
+    * @param mixed $plugin_definition
+    *   The plugin implementation definition.
+-   * @param MigrationInterface $migration
++   * @param \Drupal\migrate\Plugin\MigrationInterface $migration
+    *   The migration.
+-   * @param EntityManagerInterface $entity_manager
++   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+    *   The entity manager.
+    */
+   public function __construct(array $configuration, $plugin_id, $plugin_definition, MigrationInterface $migration, EntityManagerInterface $entity_manager) {
+@@ -105,8 +108,8 @@ abstract class SourcePluginBase extends CoreSourcePluginBase implements Containe
+     $field_definition = $definitions[$key];
+ 
+     return [
+-        'type' => $field_definition->getType(),
+-      ] + $field_definition->getSettings();
++      'type' => $field_definition->getType(),
++    ] + $field_definition->getSettings();
+   }
+ 
+   /**
+diff --git a/src/Plugin/migrate/source/TempStore.php b/src/Plugin/migrate/source/TempStore.php
+index aadd171..1c610b0 100644
+--- a/src/Plugin/migrate/source/TempStore.php
++++ b/src/Plugin/migrate/source/TempStore.php
+@@ -4,7 +4,6 @@ namespace Drupal\multiversion\Plugin\migrate\source;
+ 
+ use Drupal\Core\Entity\EntityManagerInterface;
+ use Drupal\Core\KeyValueStore\KeyValueExpirableFactoryInterface;
+-use Drupal\Core\KeyValueStore\KeyValueStoreExpirableInterface;
+ use Drupal\migrate\Plugin\MigrationInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+@@ -18,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ class TempStore extends SourcePluginBase {
+ 
+   /**
+-   * @var KeyValueStoreExpirableInterface
++   * @var \Drupal\Core\KeyValueStore\KeyValueStoreExpirableInterface
+    */
+   protected $tempStore;
+ 
+@@ -45,11 +44,11 @@ class TempStore extends SourcePluginBase {
+    *   The plugin_id for the plugin instance.
+    * @param mixed $plugin_definition
+    *   The plugin implementation definition.
+-   * @param MigrationInterface $migration
++   * @param \Drupal\migrate\Plugin\MigrationInterface $migration
+    *   The migration.
+-   * @param EntityManagerInterface $entity_manager
++   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+    *   The entity manager.
+-   * @param KeyValueExpirableFactoryInterface $temp_store_factory
++   * @param \Drupal\Core\KeyValueStore\KeyValueExpirableFactoryInterface $temp_store_factory
+    *   The temp store factory.
+    */
+   public function __construct(array $configuration, $plugin_id, $plugin_definition, MigrationInterface $migration, EntityManagerInterface $entity_manager, KeyValueExpirableFactoryInterface $temp_store_factory) {
+diff --git a/src/Plugin/views/filter/CurrentWorkspace.php b/src/Plugin/views/filter/CurrentWorkspace.php
+index 56e727f..5800f8c 100644
+--- a/src/Plugin/views/filter/CurrentWorkspace.php
++++ b/src/Plugin/views/filter/CurrentWorkspace.php
+@@ -14,12 +14,26 @@ use Drupal\views\Plugin\views\filter\FilterPluginBase;
+  */
+ class CurrentWorkspace extends FilterPluginBase {
+ 
+-  public function adminSummary() { }
+-
+-  protected function operatorForm(&$form, FormStateInterface $form_state) { }
+-
+-  public function canExpose() { return FALSE; }
++  /**
++   *
++   */
++  public function adminSummary() {}
++
++  /**
++   *
++   */
++  protected function operatorForm(&$form, FormStateInterface $form_state) {}
++
++  /**
++   *
++   */
++  public function canExpose() {
++    return FALSE;
++  }
+ 
++  /**
++   *
++   */
+   public function query() {
+     $table = $this->ensureMyTable();
+     $active_workspace = \Drupal::service('workspace.manager')->getActiveWorkspaceId();
+diff --git a/src/Redirect/RedirectRepository.php b/src/Redirect/RedirectRepository.php
+index 831628e..b08d62c 100644
+--- a/src/Redirect/RedirectRepository.php
++++ b/src/Redirect/RedirectRepository.php
+@@ -12,6 +12,9 @@ use Drupal\redirect\Entity\Redirect;
+ use Drupal\redirect\Exception\RedirectLoopException;
+ use Drupal\redirect\RedirectRepository as ContribRedirectRepository;
+ 
++/**
++ *
++ */
+ class RedirectRepository extends ContribRedirectRepository {
+ 
+   /**
+diff --git a/src/Workspace/ConflictTracker.php b/src/Workspace/ConflictTracker.php
+index 37ba0c7..92ba520 100644
+--- a/src/Workspace/ConflictTracker.php
++++ b/src/Workspace/ConflictTracker.php
+@@ -38,7 +38,6 @@ class ConflictTracker implements ConflictTrackerInterface {
+    */
+   protected $collectionPrefix = 'workspace.conflicts.';
+ 
+-
+   /**
+    * @param \Drupal\Core\KeyValueStore\KeyValueFactoryInterface $key_value_factory
+    * @param \Drupal\multiversion\Workspace\WorkspaceManagerInterface $workspace_manager
+@@ -53,7 +52,7 @@ class ConflictTracker implements ConflictTrackerInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  public function useWorkspace(WorkspaceInterface $workspace = null) {
++  public function useWorkspace(WorkspaceInterface $workspace = NULL) {
+     $this->workspaceId = 0;
+     if ($workspace) {
+       $this->workspaceId = $workspace->id();
+diff --git a/src/Workspace/ConflictTrackerInterface.php b/src/Workspace/ConflictTrackerInterface.php
+index 8fced44..b4e039a 100644
+--- a/src/Workspace/ConflictTrackerInterface.php
++++ b/src/Workspace/ConflictTrackerInterface.php
+@@ -1,6 +1,7 @@
+ <?php
+ 
+ namespace Drupal\multiversion\Workspace;
++
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ 
+ /**
+@@ -12,10 +13,12 @@ interface ConflictTrackerInterface {
+    * Sets the workspace to be used in subsequent queries.
+    *
+    * If no workspace is set the default workspace will be used.
+-   * @see \Drupal\multiversion\Workspace\WorkspaceManagerInterface::getActiveWorkspace().
++   *
++   * @see \Drupal\multiversion\Workspace\WorkspaceManagerInterface::getActiveWorkspace()
+    *
+    * @param \Drupal\multiversion\Entity\WorkspaceInterface $workspace
+    *   The id of the workspace.
++   *
+    * @return \Drupal\multiversion\Workspace\ConflictTrackerInterface
+    */
+   public function useWorkspace(WorkspaceInterface $workspace);
+@@ -28,13 +31,12 @@ interface ConflictTrackerInterface {
+    * @param array $revision_conflicts
+    *   The revision conflicts to add.
+    *      keys - revision uuids
+-   *      values - revision statuses
++   *      values - revision statuses.
+    * @param bool $replace
+    *   Whether to replace all existing conflicts.
+    */
+   public function add($uuid, array $revision_conflicts, $replace = FALSE);
+ 
+-
+   /**
+    * Removes a conflict from the tracker.
+    *
+diff --git a/src/Workspace/CronWorkspaceNegotiator.php b/src/Workspace/CronWorkspaceNegotiator.php
+index eb8dd27..2487e44 100644
+--- a/src/Workspace/CronWorkspaceNegotiator.php
++++ b/src/Workspace/CronWorkspaceNegotiator.php
+@@ -6,6 +6,9 @@ use Drupal\Core\State\StateInterface;
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Symfony\Component\HttpFoundation\Request;
+ 
++/**
++ *
++ */
+ class CronWorkspaceNegotiator extends WorkspaceNegotiatorBase {
+ 
+   /**
+@@ -27,7 +30,7 @@ class CronWorkspaceNegotiator extends WorkspaceNegotiatorBase {
+    */
+   public function applies(Request $request) {
+     // This negotiator only applies if the current route is 'system.cron',
+-    // 'system.run_cron' or '<none>';
++    // 'system.run_cron' or '<none>';.
+     $route = $request->attributes->get('_route');
+     return in_array($route, ['system.cron', 'system.run_cron', '<none>']);
+   }
+diff --git a/src/Workspace/DefaultWorkspaceNegotiator.php b/src/Workspace/DefaultWorkspaceNegotiator.php
+index 939ed25..4a0940d 100644
+--- a/src/Workspace/DefaultWorkspaceNegotiator.php
++++ b/src/Workspace/DefaultWorkspaceNegotiator.php
+@@ -4,6 +4,9 @@ namespace Drupal\multiversion\Workspace;
+ 
+ use Symfony\Component\HttpFoundation\Request;
+ 
++/**
++ *
++ */
+ class DefaultWorkspaceNegotiator extends WorkspaceNegotiatorBase {
+ 
+   /**
+diff --git a/src/Workspace/SessionWorkspaceNegotiator.php b/src/Workspace/SessionWorkspaceNegotiator.php
+index 1b4b627..ac29159 100644
+--- a/src/Workspace/SessionWorkspaceNegotiator.php
++++ b/src/Workspace/SessionWorkspaceNegotiator.php
+@@ -6,6 +6,9 @@ use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Drupal\user\PrivateTempStoreFactory;
+ use Symfony\Component\HttpFoundation\Request;
+ 
++/**
++ *
++ */
+ class SessionWorkspaceNegotiator extends WorkspaceNegotiatorBase {
+ 
+   /**
+diff --git a/src/Workspace/WorkspaceAccessException.php b/src/Workspace/WorkspaceAccessException.php
+index 19e2565..1e694d5 100644
+--- a/src/Workspace/WorkspaceAccessException.php
++++ b/src/Workspace/WorkspaceAccessException.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\multiversion\Workspace;
+ 
+-
+ use Drupal\Core\Access\AccessException;
+ 
+ /**
+diff --git a/src/Workspace/WorkspaceManager.php b/src/Workspace/WorkspaceManager.php
+index 0165b28..a91d744 100644
+--- a/src/Workspace/WorkspaceManager.php
++++ b/src/Workspace/WorkspaceManager.php
+@@ -13,6 +13,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+ use Symfony\Component\HttpFoundation\RequestStack;
+ use Symfony\Component\Routing\Exception\InvalidParameterException;
+ 
++/**
++ *
++ */
+ class WorkspaceManager implements WorkspaceManagerInterface, ContainerAwareInterface {
+   use StringTranslationTrait;
+   use ContainerAwareTrait;
+@@ -148,7 +151,7 @@ class WorkspaceManager implements WorkspaceManagerInterface, ContainerAwareInter
+       }
+     }
+ 
+-    // Clear cached entity storage handlers
++    // Clear cached entity storage handlers.
+     $this->entityTypeManager->clearCachedDefinitions();
+ 
+     return $this;
+diff --git a/src/Workspace/WorkspaceManagerInterface.php b/src/Workspace/WorkspaceManagerInterface.php
+index b03b27a..9427797 100644
+--- a/src/Workspace/WorkspaceManagerInterface.php
++++ b/src/Workspace/WorkspaceManagerInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\multiversion\Workspace;
+ 
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ interface WorkspaceManagerInterface {
+ 
+   /**
+diff --git a/src/Workspace/WorkspaceNegotiatorBase.php b/src/Workspace/WorkspaceNegotiatorBase.php
+index 6302157..a380e8c 100644
+--- a/src/Workspace/WorkspaceNegotiatorBase.php
++++ b/src/Workspace/WorkspaceNegotiatorBase.php
+@@ -7,6 +7,9 @@ use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+ 
++/**
++ *
++ */
+ abstract class WorkspaceNegotiatorBase implements WorkspaceNegotiatorInterface, ContainerAwareInterface {
+ 
+   use ContainerAwareTrait;
+diff --git a/src/Workspace/WorkspaceNegotiatorInterface.php b/src/Workspace/WorkspaceNegotiatorInterface.php
+index 9bd91f3..cf7429a 100644
+--- a/src/Workspace/WorkspaceNegotiatorInterface.php
++++ b/src/Workspace/WorkspaceNegotiatorInterface.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Session\AccountInterface;
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Symfony\Component\HttpFoundation\Request;
+ 
++/**
++ *
++ */
+ interface WorkspaceNegotiatorInterface {
+ 
+   /**
+@@ -20,7 +23,7 @@ interface WorkspaceNegotiatorInterface {
+ 
+   /**
+    * @param \Symfony\Component\HttpFoundation\Request $request
+-   * @return boolean
++   * @return bool
+    */
+   public function applies(Request $request);
+ 
+@@ -32,7 +35,7 @@ interface WorkspaceNegotiatorInterface {
+ 
+   /**
+    * @param \Drupal\multiversion\Entity\WorkspaceInterface $workspace
+-   * @return boolean
++   * @return bool
+    */
+   public function persist(WorkspaceInterface $workspace);
+ 
+diff --git a/tests/src/Functional/CommentStatisticsTest.php b/tests/src/Functional/CommentStatisticsTest.php
+index e908afa..e933954 100644
+--- a/tests/src/Functional/CommentStatisticsTest.php
++++ b/tests/src/Functional/CommentStatisticsTest.php
+@@ -57,7 +57,7 @@ class CommentStatisticsTest extends MultiversionFunctionalTestBase {
+       'type' => 'article',
+       'title' => 'New node',
+       'promote' => 1,
+-      'uid' => $this->adminUser->id()
++      'uid' => $this->adminUser->id(),
+     ]);
+     $this->node->save();
+   }
+@@ -65,7 +65,7 @@ class CommentStatisticsTest extends MultiversionFunctionalTestBase {
+   /**
+    * Tests the node comment statistics.
+    */
+-  function testCommentNodeCommentStatistics() {
++  public function testCommentNodeCommentStatistics() {
+     $node_storage = $this->container->get('entity.manager')->getStorage('node');
+     $this->drupalGet('<front>');
+     $this->assertNoLink(t('1 comment'));
+diff --git a/tests/src/Functional/ComplexLcaResolverTest.php b/tests/src/Functional/ComplexLcaResolverTest.php
+index 0fbd2c2..9a09c42 100644
+--- a/tests/src/Functional/ComplexLcaResolverTest.php
++++ b/tests/src/Functional/ComplexLcaResolverTest.php
+@@ -22,7 +22,7 @@ class ComplexLcaResolverTest extends MultiversionFunctionalTestBase {
+   protected $tree;
+ 
+   /**
+-   * @var \Drupal\conflict\LcaManager.
++   * @var \Drupal\conflict\LcaManager
+    */
+   protected $conflictLcaManager;
+ 
+@@ -43,7 +43,7 @@ class ComplexLcaResolverTest extends MultiversionFunctionalTestBase {
+    *         /   \
+    *        3     4
+    *             /
+-   *            5
++   *            5.
+    */
+   public function testLcaFinder() {
+     $storage = $this->entityTypeManager->getStorage('entity_test');
+@@ -84,29 +84,28 @@ class ComplexLcaResolverTest extends MultiversionFunctionalTestBase {
+     // Creating a graph of revision IDs from revision tree.
+     $graph = $this->tree->getGraph($uuid);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[1],$revision[2], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[1], $revision[2], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[0]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[3],$revision[4], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[3], $revision[4], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[1]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[3],$revision[6], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[3], $revision[6], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[0]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[2],$revision[6], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[2], $revision[6], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[0]);
+   }
+ 
+   /**
+-   *  Shape of tree is:
++   * Shape of tree is:
+    *            1
+    *          /   \
+    *         2     6
+    *        / \   / \
+    *       3   5 7   8
+    *      / \       /
+-   *     4   9    10
+-   *
++   *     4   9    10.
+    */
+   public function testLcaFinder2() {
+     $storage = $this->entityTypeManager->getStorage('entity_test');
+@@ -163,44 +162,46 @@ class ComplexLcaResolverTest extends MultiversionFunctionalTestBase {
+ 
+     $graph = $this->tree->getGraph($uuid);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[1],$revision[2], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[1], $revision[2], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[0]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[2],$revision[6], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[2], $revision[6], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[0]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[3],$revision[5], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[3], $revision[5], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[1]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[2],$revision[3], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[2], $revision[3], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[1]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[4],$revision[5], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[4], $revision[5], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[1]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[4],$revision[9], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[4], $revision[9], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[2]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[7],$revision[10], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[7], $revision[10], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[5]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[6],$revision[7], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[6], $revision[7], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[5]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[7],$revision[8], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[7], $revision[8], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[5]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[8],$revision[9], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[8], $revision[9], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[0]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[6],$revision[8], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[6], $revision[8], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[5]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[3],$revision[9], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[3], $revision[9], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[2]);
+   }
+ 
+-  // Graph structure in multiversion/vendor/relaxedws/lca/pictures/simple_graph.png
++  /**
++   * Graph structure in multiversion/vendor/relaxedws/lca/pictures/simple_graph.png.
++   */
+   public function testLcaFinder3() {
+     $storage = $this->entityTypeManager->getStorage('entity_test');
+     $entity = $storage->create();
+@@ -243,7 +244,6 @@ class ComplexLcaResolverTest extends MultiversionFunctionalTestBase {
+     $entity->save();
+     $revs[] = $entity->_rev->value;
+ 
+-
+     $entity = $storage->loadRevision(3);
+     $entity->name = 'Revision3';
+     $entity->save();
+@@ -287,56 +287,56 @@ class ComplexLcaResolverTest extends MultiversionFunctionalTestBase {
+       $revision[$i] = $storage->loadRevision($i);
+     }
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[1],$revision[2], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[1], $revision[2], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[0]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[2],$revision[3], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[2], $revision[3], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[1]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[7],$revision[8], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[7], $revision[8], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[6]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[5],$revision[9], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[5], $revision[9], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[3]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[10],$revision[11], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[10], $revision[11], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[2]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[16],$revision[17], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[16], $revision[17], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[15]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[17],$revision[20], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[17], $revision[20], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[13]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[6],$revision[21], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[6], $revision[21], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[0]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[6],$revision[11], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[6], $revision[11], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[2]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[17],$revision[21], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[17], $revision[21], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[15]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[15],$revision[18], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[15], $revision[18], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[13]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[5],$revision[9], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[5], $revision[9], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[3]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[6],$revision[10], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[6], $revision[10], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[4]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[7],$revision[11], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[7], $revision[11], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[2]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[13],$revision[14], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[13], $revision[14], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[12]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[8],$revision[12], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[8], $revision[12], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[2]);
+ 
+-    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[4],$revision[8], $graph);
++    $lca_id = $this->conflictLcaManager->resolveLowestCommonAncestor($revision[4], $revision[8], $graph);
+     $this->assertEqual($lca_id->getId(), $revs[2]);
+   }
+-  
++
+ }
+diff --git a/tests/src/Functional/ConflictTrackerTest.php b/tests/src/Functional/ConflictTrackerTest.php
+index c8be8bd..b968933 100644
+--- a/tests/src/Functional/ConflictTrackerTest.php
++++ b/tests/src/Functional/ConflictTrackerTest.php
+@@ -10,12 +10,12 @@ namespace Drupal\Tests\multiversion\Functional;
+ class ConflictTrackerTest extends MultiversionFunctionalTestBase {
+ 
+   /**
+-   * @var \Drupal\multiversion\Workspace\ConflictTracker;
++   * @var \Drupal\multiversion\Workspace\ConflictTracker
+    */
+   protected $conflictTracker;
+ 
+   /**
+-   * @var \Drupal\Core\Entity\EntityStorageInterface;
++   * @var \Drupal\Core\Entity\EntityStorageInterface
+    */
+   protected $storage;
+ 
+@@ -59,7 +59,6 @@ class ConflictTrackerTest extends MultiversionFunctionalTestBase {
+     $uuid = $entity->uuid();
+ 
+     // Create a conflict scenario to fully test the parsing.
+-
+     // Initial revision.
+     $entity->save();
+     $revs[] = $entity->_rev->value;
+@@ -75,7 +74,6 @@ class ConflictTrackerTest extends MultiversionFunctionalTestBase {
+     $entity->save();
+     $revs[] = $entity->_rev->value;
+ 
+-
+     // Continue the last branch.
+     $entity = $this->storage->loadRevision($revision_start + 4);
+     $entity->save();
+@@ -107,7 +105,7 @@ class ConflictTrackerTest extends MultiversionFunctionalTestBase {
+     $expected_conflicts = $this->conflictTracker->get($uuid);
+     $revs = array_keys($expected_conflicts);
+     foreach ($revs as $rev) {
+-      // Load and delete one of the revisions in conflict
++      // Load and delete one of the revisions in conflict.
+       $record = \Drupal::service('multiversion.entity_index.rev')->get("$uuid:$rev");
+       $revision = $this->storage->loadRevision($record['revision_id']);
+       $revision->delete();
+@@ -118,4 +116,5 @@ class ConflictTrackerTest extends MultiversionFunctionalTestBase {
+     }
+     $this->assertEqual($tracker_conflicts, [], 'All conflicts resolved for entity.');
+   }
++
+ }
+diff --git a/tests/src/Functional/EntityQueryTest.php b/tests/src/Functional/EntityQueryTest.php
+index 7d6ddb2..5b3b6a6 100644
+--- a/tests/src/Functional/EntityQueryTest.php
++++ b/tests/src/Functional/EntityQueryTest.php
+@@ -61,6 +61,9 @@ class EntityQueryTest extends MultiversionFunctionalTestBase {
+     $this->factory = \Drupal::service('entity.query');
+   }
+ 
++  /**
++   *
++   */
+   public function testQuery() {
+ 
+     foreach ($this->entityTypes as $entity_type_id => $info) {
+diff --git a/tests/src/Functional/EntityStorageTest.php b/tests/src/Functional/EntityStorageTest.php
+index 616a9d0..cde93d5 100644
+--- a/tests/src/Functional/EntityStorageTest.php
++++ b/tests/src/Functional/EntityStorageTest.php
+@@ -31,7 +31,7 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+       'revision_table' => 'entity_test_rev_revision',
+       'id' => 'id',
+     ],
+-    'entity_test_mul' =>[
++    'entity_test_mul' => [
+       'info' => [],
+       'data_table' => 'entity_test_mul_property_data',
+       'revision_table' => 'entity_test_mul_field_revision',
+@@ -72,7 +72,7 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+       'revision_table' => 'comment_field_revision',
+       'id' => 'cid',
+     ],
+-    'block_content' =>  [
++    'block_content' => [
+       'info' => [
+         'info' => 'New block',
+         'type' => 'basic',
+@@ -141,9 +141,11 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function testEntityStorage() {
+     // Test save and load.
+-
+     foreach ($this->entityTypes as $entity_type_id => $info) {
+       $storage = $this->entityTypeManager->getStorage($entity_type_id);
+       $message = "$entity_type_id has the correct storage handler.";
+@@ -188,7 +190,6 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+       $this->assertEqual(count($entities), 2, "Multiple $entity_type_id was loaded.");
+ 
+       // Test delete.
+-
+       $entity = $storage->create($info['info']);
+       $entity->save();
+       $id = $entity->id();
+@@ -216,7 +217,6 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+       $this->assertTrue(!empty($entities), "Deleted $entity_type_id loaded with loadMultipleDeleted() method.");
+ 
+       // Test revisions.
+-
+       $entity = $storage->create($info['info']);
+       $entity->save();
+       $id = $entity->id();
+@@ -232,7 +232,6 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+       $this->assertTrue(($revision->_deleted->value == TRUE && $revision->getRevisionId() == $new_revision_id), "Deleted $entity_type_id was loaded.");
+ 
+       // Test exceptions.
+-
+       $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
+       $id_key = $entity_type->getKey('id');
+       // Test with exception upon first save.
+@@ -244,7 +243,7 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+         $entity->save();
+         $this->fail('Exception was not generated.');
+       }
+-      catch(\Exception $e) {
++      catch (\Exception $e) {
+         $first_rev = $entity->_rev->value;
+         $rev_info = $this->revIndex->get("$uuid:$first_rev");
+         $this->assertEqual($rev_info['status'], 'indexed', 'First revision was indexed after exception on first save.');
+@@ -275,7 +274,7 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+         $entity->save();
+         $this->fail('Exception was not generated.');
+       }
+-      catch(\Exception $e) {
++      catch (\Exception $e) {
+         $second_rev = $entity->_rev->value;
+         $rev_info = $this->revIndex->get("$uuid:$second_rev");
+         $this->assertEqual($rev_info['status'], 'indexed', 'Second revision was indexed after exception on second save.');
+@@ -296,7 +295,6 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+       $this->assertEqual($default_branch, $expected_default_branch, 'Default branch was built after exception on second save followed by re-save.');
+ 
+       // Test workspace.
+-
+       if ($entity_type->get('workspace') !== FALSE) {
+         $entity = $storage->create($info['info']);
+         $entity->save();
+@@ -325,20 +323,19 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+     }
+ 
+     // Test saving entities in a different workspace.
+-
+     // Create a new workspace and switch to it.
+     $workspace = Workspace::create([
+       'machine_name' => $this->randomMachineName(),
+       'label' => $this->randomMachineName(),
+-      'type' => 'basic'
++      'type' => 'basic',
+     ]);
+     $workspace->save();
+     $this->workspaceManager->setActiveWorkspace($workspace);
+ 
+     foreach ($this->entityTypes as $entity_type_id => $info) {
+-        $storage = $this->entityTypeManager->getStorage($entity_type_id);
+-        $entity = $storage->create($info['info']);
+-        $entity->save();
++      $storage = $this->entityTypeManager->getStorage($entity_type_id);
++      $entity = $storage->create($info['info']);
++      $entity->save();
+       if ($entity->getEntityType()->get('workspace') !== FALSE) {
+         $this->assertEqual($entity->workspace->target_id, $workspace->id(), "$entity_type_id was saved in new workspace.");
+       }
+@@ -372,13 +369,13 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+     $source = Workspace::create([
+       'machine_name' => $this->randomMachineName(),
+       'label' => $this->randomMachineName(),
+-      'type' => 'basic'
++      'type' => 'basic',
+     ]);
+     $source->save();
+     $target = Workspace::create([
+       'machine_name' => $this->randomMachineName(),
+       'label' => $this->randomMachineName(),
+-      'type' => 'basic'
++      'type' => 'basic',
+     ]);
+     $target->save();
+ 
+@@ -407,7 +404,7 @@ class EntityStorageTest extends MultiversionFunctionalTestBase {
+           $target_entity->enforceIsNew(TRUE);
+           $target_entity->workspace->target_id = $target->id();
+ 
+-          // Save the new entity
++          // Save the new entity.
+           $target_entity->save();
+ 
+           $this->assertTrue(!empty($target_entity->id()), "$entity_type_id in the target workspace got a new entity ID");
+diff --git a/tests/src/Functional/FieldTestBase.php b/tests/src/Functional/FieldTestBase.php
+index 05eb16b..2ae93c9 100644
+--- a/tests/src/Functional/FieldTestBase.php
++++ b/tests/src/Functional/FieldTestBase.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\Tests\multiversion\Functional;
+ 
++/**
++ *
++ */
+ abstract class FieldTestBase extends MultiversionFunctionalTestBase {
+ 
+   /**
+@@ -14,7 +17,7 @@ abstract class FieldTestBase extends MultiversionFunctionalTestBase {
+     'entity_test_rev' => [],
+     'entity_test_mul' => [],
+     'entity_test_mulrev' => [],
+-    'node' =>[
++    'node' => [
+       'type' => 'article',
+       'title' => 'New article',
+     ],
+@@ -87,6 +90,9 @@ abstract class FieldTestBase extends MultiversionFunctionalTestBase {
+     $this->assertTrue($this->entityTypes['file']['uri'], t('The test file has been created.'));
+   }
+ 
++  /**
++   *
++   */
+   public function testFieldBasics() {
+     foreach ($this->entityTypes as $entity_type_id => $info) {
+       $storage = $this->entityTypeManager->getStorage($entity_type_id);
+@@ -97,7 +103,7 @@ abstract class FieldTestBase extends MultiversionFunctionalTestBase {
+ 
+       $entity->save();
+       $entity_id = $entity->id();
+-      $entity =  $storage->load($entity_id);
++      $entity = $storage->load($entity_id);
+ 
+       $this->assertFalse($entity->{$this->fieldName}->isEmpty(), "Field was attached on loaded $entity_type_id.");
+ 
+diff --git a/tests/src/Functional/GraphCreationTest.php b/tests/src/Functional/GraphCreationTest.php
+index 4dd0f33..e71ade2 100644
+--- a/tests/src/Functional/GraphCreationTest.php
++++ b/tests/src/Functional/GraphCreationTest.php
+@@ -37,7 +37,7 @@ class GraphCreationTest extends MultiversionFunctionalTestBase {
+    *         /   \
+    *        3     4
+    *             /
+-   *            5
++   *            5.
+    */
+   public function testGraphCreation() {
+     $storage = $this->entityTypeManager->getStorage('entity_test_rev');
+@@ -45,7 +45,6 @@ class GraphCreationTest extends MultiversionFunctionalTestBase {
+     $uuid = $entity->uuid();
+ 
+     // Create a conflict scenario to fully test the parsing.
+-
+     // Initial revision.
+     $entity->save();
+     $revs[] = $entity->_rev->value;
+@@ -89,18 +88,18 @@ class GraphCreationTest extends MultiversionFunctionalTestBase {
+ 
+     // Creating graph from the revision tree.
+     $graph = $this->tree->getGraph($uuid);
+-    
++
+     // Storing the graph's vertices in $vertices array.
+     $vertices = $graph->getVertices()->getMap();
+ 
+     foreach ($vertices[$revs[1]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[0],'node 2\'s parent is 1');
++      $this->assertEqual($parent->getId(), $revs[0], 'node 2\'s parent is 1');
+     }
+     foreach ($vertices[$revs[2]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[1],'node 3\'s parent is 2');
++      $this->assertEqual($parent->getId(), $revs[1], 'node 3\'s parent is 2');
+     }
+     foreach ($vertices[$revs[3]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(),  $revs[1],'node 4\'s parent is 2');
++      $this->assertEqual($parent->getId(), $revs[1], 'node 4\'s parent is 2');
+     }
+     foreach ($vertices[$revs[4]]->getVerticesEdgeFrom() as $parent) {
+       $this->assertEqual($parent->getId(), $revs[3], 'node 5\'s parent is 4');
+@@ -111,15 +110,14 @@ class GraphCreationTest extends MultiversionFunctionalTestBase {
+   }
+ 
+   /**
+-   *  Shape of tree is:
++   * Shape of tree is:
+    *            1
+    *          /   \
+    *         2     6
+    *        / \   / \
+    *       3   5 7   8
+    *      / \       /
+-   *     4   9    10
+-   *
++   *     4   9    10.
+    */
+   public function testGraphCreation2() {
+     $storage = $this->entityTypeManager->getStorage('entity_test_rev');
+@@ -127,7 +125,6 @@ class GraphCreationTest extends MultiversionFunctionalTestBase {
+     $uuid = $entity->uuid();
+ 
+     // Create a conflict scenario to fully test the parsing.
+-
+     // Initial revision.
+     $entity->save();
+     $revs[] = $entity->_rev->value;
+@@ -171,13 +168,13 @@ class GraphCreationTest extends MultiversionFunctionalTestBase {
+     $vertices = $graph->getVertices()->getMap();
+ 
+     foreach ($vertices[$revs[1]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[0],'node 2\'s parent is 1');
++      $this->assertEqual($parent->getId(), $revs[0], 'node 2\'s parent is 1');
+     }
+     foreach ($vertices[$revs[2]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[1],'node 3\'s parent is 2');
++      $this->assertEqual($parent->getId(), $revs[1], 'node 3\'s parent is 2');
+     }
+     foreach ($vertices[$revs[3]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(),  $revs[2],'node 4\'s parent is 3');
++      $this->assertEqual($parent->getId(), $revs[2], 'node 4\'s parent is 3');
+     }
+     foreach ($vertices[$revs[4]]->getVerticesEdgeFrom() as $parent) {
+       $this->assertEqual($parent->getId(), $revs[1], 'node 5\'s parent is 2');
+@@ -186,13 +183,13 @@ class GraphCreationTest extends MultiversionFunctionalTestBase {
+       $this->assertEqual($parent->getId(), $revs[0], 'node 6\'s parent is 1');
+     }
+     foreach ($vertices[$revs[6]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[5],'node 7\'s parent is 6');
++      $this->assertEqual($parent->getId(), $revs[5], 'node 7\'s parent is 6');
+     }
+     foreach ($vertices[$revs[7]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[5],'node 8\'s parent is 6');
++      $this->assertEqual($parent->getId(), $revs[5], 'node 8\'s parent is 6');
+     }
+     foreach ($vertices[$revs[8]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(),  $revs[2],'node 9\'s parent is 3');
++      $this->assertEqual($parent->getId(), $revs[2], 'node 9\'s parent is 3');
+     }
+     foreach ($vertices[$revs[9]]->getVerticesEdgeFrom() as $parent) {
+       $this->assertEqual($parent->getId(), $revs[7], 'node 10\'s parent is 8');
+@@ -200,7 +197,7 @@ class GraphCreationTest extends MultiversionFunctionalTestBase {
+   }
+ 
+   /**
+-   * Graph structure defined in /vendor/relaxedws/lca/pictures/simple_graph.png
++   * Graph structure defined in /vendor/relaxedws/lca/pictures/simple_graph.png.
+    */
+   public function testGraphCreation3() {
+     $storage = $this->entityTypeManager->getStorage('entity_test_rev');
+@@ -289,13 +286,13 @@ class GraphCreationTest extends MultiversionFunctionalTestBase {
+     $vertices = $graph->getVertices()->getMap();
+ 
+     foreach ($vertices[$revs[1]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[0],'node 2\'s parent is 1');
++      $this->assertEqual($parent->getId(), $revs[0], 'node 2\'s parent is 1');
+     }
+     foreach ($vertices[$revs[2]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[1],'node 3\'s parent is 2');
++      $this->assertEqual($parent->getId(), $revs[1], 'node 3\'s parent is 2');
+     }
+     foreach ($vertices[$revs[3]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(),  $revs[2],'node 4\'s parent is 3');
++      $this->assertEqual($parent->getId(), $revs[2], 'node 4\'s parent is 3');
+     }
+     foreach ($vertices[$revs[4]]->getVerticesEdgeFrom() as $parent) {
+       $this->assertEqual($parent->getId(), $revs[3], 'node 5\'s parent is 4');
+@@ -304,25 +301,25 @@ class GraphCreationTest extends MultiversionFunctionalTestBase {
+       $this->assertEqual($parent->getId(), $revs[4], 'node 6\'s parent is 5');
+     }
+     foreach ($vertices[$revs[6]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[2],'node 7\'s parent is 3');
++      $this->assertEqual($parent->getId(), $revs[2], 'node 7\'s parent is 3');
+     }
+     foreach ($vertices[$revs[7]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[2],'node 8\'s parent is 3');
++      $this->assertEqual($parent->getId(), $revs[2], 'node 8\'s parent is 3');
+     }
+     foreach ($vertices[$revs[8]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(),  $revs[3],'node 9\'s parent is 4');
++      $this->assertEqual($parent->getId(), $revs[3], 'node 9\'s parent is 4');
+     }
+     foreach ($vertices[$revs[9]]->getVerticesEdgeFrom() as $parent) {
+       $this->assertEqual($parent->getId(), $revs[6], 'node 10\'s parent is 7');
+     }
+     foreach ($vertices[$revs[10]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[7],'node 11\'s parent is 8');
++      $this->assertEqual($parent->getId(), $revs[7], 'node 11\'s parent is 8');
+     }
+     foreach ($vertices[$revs[11]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[0],'node 12\'s parent is 1');
++      $this->assertEqual($parent->getId(), $revs[0], 'node 12\'s parent is 1');
+     }
+     foreach ($vertices[$revs[12]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(),  $revs[11],'node 13\'s parent is 12');
++      $this->assertEqual($parent->getId(), $revs[11], 'node 13\'s parent is 12');
+     }
+     foreach ($vertices[$revs[13]]->getVerticesEdgeFrom() as $parent) {
+       $this->assertEqual($parent->getId(), $revs[12], 'node 14\'s parent is 13');
+@@ -331,19 +328,19 @@ class GraphCreationTest extends MultiversionFunctionalTestBase {
+       $this->assertEqual($parent->getId(), $revs[12], 'node 15\'s parent is 13');
+     }
+     foreach ($vertices[$revs[15]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[13],'node 16\'s parent is 14');
++      $this->assertEqual($parent->getId(), $revs[13], 'node 16\'s parent is 14');
+     }
+     foreach ($vertices[$revs[16]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(), $revs[14],'node 17\'s parent is 15');
++      $this->assertEqual($parent->getId(), $revs[14], 'node 17\'s parent is 15');
+     }
+     foreach ($vertices[$revs[17]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(),  $revs[15],'node 18\'s parent is 16');
++      $this->assertEqual($parent->getId(), $revs[15], 'node 18\'s parent is 16');
+     }
+     foreach ($vertices[$revs[18]]->getVerticesEdgeFrom() as $parent) {
+       $this->assertEqual($parent->getId(), $revs[15], 'node 19\'s parent is 16');
+     }
+     foreach ($vertices[$revs[19]]->getVerticesEdgeFrom() as $parent) {
+-      $this->assertEqual($parent->getId(),  $revs[16],'node 20\'s parent is 17');
++      $this->assertEqual($parent->getId(), $revs[16], 'node 20\'s parent is 17');
+     }
+     foreach ($vertices[$revs[20]]->getVerticesEdgeFrom() as $parent) {
+       $this->assertEqual($parent->getId(), $revs[4], 'node 21\'s parent is 5');
+diff --git a/tests/src/Functional/MenuLinkTest.php b/tests/src/Functional/MenuLinkTest.php
+index 20bdd35..a08bc5d 100644
+--- a/tests/src/Functional/MenuLinkTest.php
++++ b/tests/src/Functional/MenuLinkTest.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\Tests\multiversion\Functional;
+ 
+ use Drupal\menu_link_content\Entity\MenuLinkContent;
+-use Drupal\menu_link_content\MenuLinkContentInterface;
+ use Drupal\multiversion\Entity\Workspace;
+ use Drupal\Tests\BrowserTestBase;
+ 
+@@ -57,12 +56,15 @@ class MenuLinkTest extends BrowserTestBase {
+     $this->newWorkspace->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testMenuLinksInDifferentWorkspaces() {
+-    /** @var MenuLinkContentInterface $pineapple */
++    /** @var \Drupal\menu_link_content\Entity\MenuLinkContentInterface $pineapple */
+     $pineapple = MenuLinkContent::create([
+       'menu_name' => 'main',
+       'link' => 'route:user.page',
+-      'title' => 'Pineapple'
++      'title' => 'Pineapple',
+     ]);
+     $pineapple->save();
+ 
+@@ -81,7 +83,7 @@ class MenuLinkTest extends BrowserTestBase {
+     $this->workspaceManager->setActiveWorkspace($this->newWorkspace);
+ 
+     // Save another menu link.
+-    /** @var MenuLinkContentInterface $pear */
++    /** @var \Drupal\menu_link_content\Entity\MenuLinkContentInterface $pear */
+     $pear = MenuLinkContent::create([
+       'menu_name' => 'main',
+       'link' => 'route:user.page',
+diff --git a/tests/src/Functional/MigrationTest.php b/tests/src/Functional/MigrationTest.php
+index 078ada7..fae6f48 100644
+--- a/tests/src/Functional/MigrationTest.php
++++ b/tests/src/Functional/MigrationTest.php
+@@ -36,7 +36,7 @@ class MigrationTest extends BrowserTestBase {
+    * @var array
+    */
+   protected $entityTypes = [
+-//    'entity_test' => [],
++  // 'entity_test' => [],
+     'entity_test_rev' => [],
+     'entity_test_mul' => [],
+     'entity_test_mulrev' => [],
+@@ -70,6 +70,9 @@ class MigrationTest extends BrowserTestBase {
+     $this->drupalCreateContentType(['type' => 'article', 'name' => 'Article']);
+   }
+ 
++  /**
++   *
++   */
+   public function testEnableWithExistingContent() {
+     foreach ($this->entityTypes as $entity_type_id => $values) {
+       $storage = \Drupal::entityTypeManager()->getStorage($entity_type_id);
+@@ -98,7 +101,6 @@ class MigrationTest extends BrowserTestBase {
+     $update_manager = \Drupal::service('entity.definition_update_manager');
+     $this->assertFalse($update_manager->needsUpdates(), 'All compatible entity types have been updated.');
+ 
+-
+     $ids_after = [];
+     // Now check that the previously created entities still exist, have the
+     // right IDs and are multiversion enabled. That means profit. Big profit.
+diff --git a/tests/src/Functional/MultiversionFunctionalTestBase.php b/tests/src/Functional/MultiversionFunctionalTestBase.php
+index f08721c..0e3770b 100644
+--- a/tests/src/Functional/MultiversionFunctionalTestBase.php
++++ b/tests/src/Functional/MultiversionFunctionalTestBase.php
+@@ -15,17 +15,17 @@ abstract class MultiversionFunctionalTestBase extends BrowserTestBase {
+   protected $strictConfigSchema = FALSE;
+ 
+   /**
+-   * @var \Drupal\multiversion\Entity\Index\UuidIndexInterface;
++   * @var \Drupal\multiversion\Entity\Index\UuidIndexInterface
+    */
+   protected $uuidIndex;
+ 
+   /**
+-   * @var \Drupal\multiversion\Entity\Index\RevisionIndexInterface;
++   * @var \Drupal\multiversion\Entity\Index\RevisionIndexInterface
+    */
+   protected $revIndex;
+ 
+   /**
+-   * @var \Drupal\multiversion\Entity\Index\RevisionTreeIndexInterface;
++   * @var \Drupal\multiversion\Entity\Index\RevisionTreeIndexInterface
+    */
+   protected $revTree;
+ 
+diff --git a/tests/src/Functional/MultiversionManagerTest.php b/tests/src/Functional/MultiversionManagerTest.php
+index b015eff..8de483b 100644
+--- a/tests/src/Functional/MultiversionManagerTest.php
++++ b/tests/src/Functional/MultiversionManagerTest.php
+@@ -24,20 +24,32 @@ class MultiversionManagerTest extends BrowserTestBase {
+    */
+   protected $multiversionManager;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->multiversionManager = \Drupal::service('multiversion.manager');
+   }
+ 
++  /**
++   *
++   */
+   protected function extractRevisionHash($rev) {
+     preg_match('/\d\-(' . self::REVISION_HASH_REGEX . ')/', $rev, $matches);
+     return isset($matches[1]) ? $matches[1] : FALSE;
+   }
+ 
++  /**
++   *
++   */
+   public function assertRevisionId($index, $value, $message) {
+     $this->assertTrue(preg_match('/' . $index . '\-' . self::REVISION_HASH_REGEX . '/', $value), $message);
+   }
+ 
++  /**
++   *
++   */
+   public function testRevisionIdGeneration() {
+     $entity = EntityTestRev::create();
+     $first_rev = $this->multiversionManager->newRevisionId($entity, 0);
+@@ -68,7 +80,10 @@ class MultiversionManagerTest extends BrowserTestBase {
+     $revs[] = $this->multiversionManager->newRevisionId($test_entity, 0);
+     $this->assertTrue(count($revs) == count(array_unique($revs)), 'Revision ID varies on deleted flag.');
+   }
+-  
++
++  /**
++   *
++   */
+   public function testGetSupportedEntityTypes() {
+     foreach ($this->multiversionManager->getSupportedEntityTypes() as $entity_type_id => $entity_type) {
+       $label = $entity_type->get('label');
+diff --git a/tests/src/Functional/NodeSearchTest.php b/tests/src/Functional/NodeSearchTest.php
+index 35c82a7..db533ab 100644
+--- a/tests/src/Functional/NodeSearchTest.php
++++ b/tests/src/Functional/NodeSearchTest.php
+@@ -43,7 +43,7 @@ class NodeSearchTest extends \CoreSearchNodeUpdateAndDeletionTest {
+     $node_search_plugin->updateIndex();
+     search_update_totals();
+ 
+-    // Search the node to verify it appears in search results
++    // Search the node to verify it appears in search results.
+     $edit = ['keys' => 'dragons'];
+     $this->drupalPostForm('search/node', $edit, t('Search'));
+     $this->assertText($node->label());
+diff --git a/tests/src/Functional/PathAliasTest.php b/tests/src/Functional/PathAliasTest.php
+index bae7fb2..50a63f9 100644
+--- a/tests/src/Functional/PathAliasTest.php
++++ b/tests/src/Functional/PathAliasTest.php
+@@ -136,7 +136,7 @@ class PathAliasTest extends BrowserTestBase {
+     $web_assert->pageTextNotContains('/node/' . $node1->id());
+     $web_assert->pageTextContains('/node/' . $node2->id());
+ 
+-    //Set a new alias for node2.
++    // Set a new alias for node2.
+     $alias2 = '/bar';
+     $node2->get('path')->alias = $alias2;
+     $node2->save();
+@@ -180,7 +180,6 @@ class PathAliasTest extends BrowserTestBase {
+     $web_assert->statusCodeEquals(200);
+     $web_assert->pageTextContains($alias3);
+ 
+-
+     // Set stage as the active workspace.
+     \Drupal::service('workspace.manager')->setActiveWorkspace($stage);
+ 
+diff --git a/tests/src/Functional/RevisionFieldTest.php b/tests/src/Functional/RevisionFieldTest.php
+index ed29eb6..12cc608 100644
+--- a/tests/src/Functional/RevisionFieldTest.php
++++ b/tests/src/Functional/RevisionFieldTest.php
+@@ -27,13 +27,15 @@ class RevisionFieldTest extends FieldTestBase {
+    */
+   protected $itemClass = '\Drupal\multiversion\Plugin\Field\FieldType\RevisionItem';
+ 
++  /**
++   *
++   */
+   public function testFieldOperations() {
+     foreach ($this->entityTypes as $entity_type_id => $values) {
+       $storage = $this->entityTypeManager->getStorage($entity_type_id);
+       $entity = $this->createTestEntity($storage, $values);
+ 
+       // Test normal save operations.
+-
+       $this->assertTrue($entity->_rev->new_edit, 'New edit flag is TRUE after creation.');
+ 
+       $revisions = $entity->_rev->revisions;
+@@ -45,7 +47,6 @@ class RevisionFieldTest extends FieldTestBase {
+       $this->assertTrue((strpos($first_rev, '1') === 0), 'Revision index was 1 after first save.');
+ 
+       // Simulate the input from a replication.
+-
+       $entity = $this->createTestEntity($storage, $values);
+       $sample_rev = RevisionItem::generateSampleValue($entity->_rev->getFieldDefinition());
+ 
+@@ -57,7 +58,6 @@ class RevisionFieldTest extends FieldTestBase {
+       $this->assertEqual($entity->_rev->value, $sample_rev['value']);
+ 
+       // Test the is_stub property.
+-
+       $entity = $this->createTestEntity($storage, $values);
+       $entity->save();
+       $entity = $storage->load($entity->id());
+@@ -80,6 +80,9 @@ class RevisionFieldTest extends FieldTestBase {
+     }
+   }
+ 
++  /**
++   *
++   */
+   protected function createTestEntity(EntityStorageInterface $storage, array $values) {
+     switch ($storage->getEntityTypeId()) {
+       case 'block_content':
+diff --git a/tests/src/Functional/RevisionTreeIndexTest.php b/tests/src/Functional/RevisionTreeIndexTest.php
+index 54b2e34..4b86e5c 100644
+--- a/tests/src/Functional/RevisionTreeIndexTest.php
++++ b/tests/src/Functional/RevisionTreeIndexTest.php
+@@ -37,13 +37,15 @@ class RevisionTreeIndexTest extends BrowserTestBase {
+     $this->revTree = $this->container->get('multiversion.entity_index.rev.tree');
+   }
+ 
++  /**
++   *
++   */
+   public function testWithoutDelete() {
+     $storage = $this->entityTypeManager->getStorage('entity_test');
+     $entity = $storage->create();
+     $uuid = $entity->uuid();
+ 
+     // Create a conflict scenario to fully test the parsing.
+-
+     // Initial revision.
+     $entity->save();
+     $revs[] = $entity->_rev->value;
+@@ -69,7 +71,7 @@ class RevisionTreeIndexTest extends BrowserTestBase {
+     $entity = $storage->load(1);
+     $this->assertEqual($entity->_rev->value, $expected_leaf, 'The correct revision won while having two open revisions.');
+ 
+-      // Continue the last branch.
++    // Continue the last branch.
+     $entity = $storage->loadRevision(4);
+     $entity->save();
+     $revs[] = $entity->_rev->value;
+@@ -359,13 +361,15 @@ class RevisionTreeIndexTest extends BrowserTestBase {
+     $this->assertEqual($conflicts, $expected_conflicts, 'Conflicts are correct');
+   }
+ 
++  /**
++   *
++   */
+   public function testWithDelete() {
+     $storage = $this->entityTypeManager->getStorage('entity_test');
+     $entity = $storage->create();
+     $uuid = $entity->uuid();
+ 
+     // Create a conflict scenario to fully test the parsing.
+-
+     // Initial revision.
+     $entity->save();
+     $revs[] = $entity->_rev->value;
+@@ -481,10 +485,10 @@ class RevisionTreeIndexTest extends BrowserTestBase {
+                       'conflict' => FALSE,
+                     ],
+                     'children' => [],
+-                  ]
+-                ]
+-              ]
+-            ]
++                  ],
++                ],
++              ],
++            ],
+           ],
+           [
+             '#type' => 'rev',
+@@ -497,9 +501,9 @@ class RevisionTreeIndexTest extends BrowserTestBase {
+               'conflict' => TRUE,
+             ],
+             'children' => [],
+-          ]
+-        ]
+-      ]
++          ],
++        ],
++      ],
+     ];
+     // Sort the expected tree according to the algorithm.
+     RevisionTreeIndex::sortTree($expected_tree);
+diff --git a/tests/src/Functional/SequenceIndexTest.php b/tests/src/Functional/SequenceIndexTest.php
+index 7a04b5e..9d99b20 100644
+--- a/tests/src/Functional/SequenceIndexTest.php
++++ b/tests/src/Functional/SequenceIndexTest.php
+@@ -16,11 +16,17 @@ class SequenceIndexTest extends MultiversionFunctionalTestBase {
+    */
+   protected $sequenceIndex;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->sequenceIndex = \Drupal::service('multiversion.entity_index.sequence');
+   }
+ 
++  /**
++   *
++   */
+   public function testRecord() {
+     $entity = EntityTestRev::create();
+     // We don't want to save the entity and trigger the hooks in the storage
+diff --git a/tests/src/Functional/UninstallTest.php b/tests/src/Functional/UninstallTest.php
+index ee870ca..10675a0 100644
+--- a/tests/src/Functional/UninstallTest.php
++++ b/tests/src/Functional/UninstallTest.php
+@@ -23,7 +23,7 @@ class UninstallTest extends BrowserTestBase {
+    */
+   protected $entityTypes = [
+     'node' => ['type' => 'article', 'title' => 'foo'],
+-    //    'taxonomy_term' => ['name' => 'A term', 'vid' => 123],
++    // 'taxonomy_term' => ['name' => 'A term', 'vid' => 123],
+     //    'comment' => [
+     //      'entity_type' => 'node',
+     //      'field_name' => 'comment',
+diff --git a/tests/src/Functional/UuidIndexHooksTest.php b/tests/src/Functional/UuidIndexHooksTest.php
+index ea69f86..43049f4 100644
+--- a/tests/src/Functional/UuidIndexHooksTest.php
++++ b/tests/src/Functional/UuidIndexHooksTest.php
+@@ -9,6 +9,9 @@ namespace Drupal\Tests\multiversion\Functional;
+  */
+ class UuidIndexHooksTest extends MultiversionFunctionalTestBase {
+ 
++  /**
++   *
++   */
+   public function testEntityHooks() {
+     $keys = $this->uuidIndex->get('foo');
+     $this->assertTrue(empty($keys), 'Empty array was returned when fetching non-existing UUID.');
+diff --git a/tests/src/Functional/UuidIndexTest.php b/tests/src/Functional/UuidIndexTest.php
+index c7c4a79..b664157 100644
+--- a/tests/src/Functional/UuidIndexTest.php
++++ b/tests/src/Functional/UuidIndexTest.php
+@@ -11,6 +11,9 @@ use Drupal\entity_test\Entity\EntityTest;
+  */
+ class UuidIndexTest extends MultiversionFunctionalTestBase {
+ 
++  /**
++   *
++   */
+   public function testMethods() {
+     $entity = EntityTest::create();
+     $uuid = $entity->uuid();
+diff --git a/tests/src/Functional/Views/MultiversionTestBase.php b/tests/src/Functional/Views/MultiversionTestBase.php
+index 790f82d..24b51a2 100644
+--- a/tests/src/Functional/Views/MultiversionTestBase.php
++++ b/tests/src/Functional/Views/MultiversionTestBase.php
+@@ -17,6 +17,9 @@ abstract class MultiversionTestBase extends ViewTestBase {
+    */
+   public static $modules = ['multiversion_test_views'];
+ 
++  /**
++   *
++   */
+   protected function setUp($import_test_views = TRUE) {
+     parent::setUp($import_test_views);
+ 
+diff --git a/tests/src/Functional/Views/WorkspaceTest.php b/tests/src/Functional/Views/WorkspaceTest.php
+index 5505673..208882e 100644
+--- a/tests/src/Functional/Views/WorkspaceTest.php
++++ b/tests/src/Functional/Views/WorkspaceTest.php
+@@ -67,4 +67,4 @@ class WorkspaceTest extends MultiversionTestBase {
+     $this->assertNoText($node4->label());
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/tests/src/Functional/WorkspaceTest.php b/tests/src/Functional/WorkspaceTest.php
+index 438ac94..069a9a3 100644
+--- a/tests/src/Functional/WorkspaceTest.php
++++ b/tests/src/Functional/WorkspaceTest.php
+@@ -16,6 +16,9 @@ class WorkspaceTest extends MultiversionFunctionalTestBase {
+ 
+   protected static $modules = ['multiversion', 'key_value'];
+ 
++  /**
++   *
++   */
+   public function testOperations() {
+     $default = Workspace::load(1);
+     $this->assertTrue(!empty($default), 'Default workspace was created when installing Multiversion module.');
+@@ -38,7 +41,7 @@ class WorkspaceTest extends MultiversionFunctionalTestBase {
+     $entity->setCreatedTime((int) $new_created_time);
+     $this->assertEqual($new_created_time, $entity->getStartTime(), "Correct value for 'created' field.");
+ 
+-    //  Note that only lowercase characters (a-z), digits (0-9),
++    // Note that only lowercase characters (a-z), digits (0-9),
+     // or any of the characters _, $, (, ), +, -, and / are allowed.
+     $workspace1 = Workspace::create(['label' => 'Workspace 1', 'machine_name' => 'a0_$()+-/', 'type' => 'basic']);
+     $violations1 = $workspace1->validate();
+@@ -49,6 +52,9 @@ class WorkspaceTest extends MultiversionFunctionalTestBase {
+     $this->assertEqual($violations2->count(), 1, 'One violation');
+   }
+ 
++  /**
++   *
++   */
+   public function testActiveWorkspace() {
+     $live = $this->workspaceManager->getActiveWorkspace();
+     $this->assertEqual('live', $live->getMachineName());
+@@ -89,6 +95,9 @@ class WorkspaceTest extends MultiversionFunctionalTestBase {
+     $this->assertEqual('test1', $this->workspaceManager->getActiveWorkspace()->getMachineName());
+   }
+ 
++  /**
++   *
++   */
+   public function testDeleteWorkspaceActiveForUser() {
+     $cats = Workspace::create(['label' => 'Cats', 'machine_name' => 'cats', 'type' => 'basic']);
+     $cats->save();
+diff --git a/tests/src/Kernel/EntityLoadingTest.php b/tests/src/Kernel/EntityLoadingTest.php
+index f0c7d7e..49e9cef 100644
+--- a/tests/src/Kernel/EntityLoadingTest.php
++++ b/tests/src/Kernel/EntityLoadingTest.php
+@@ -7,7 +7,6 @@ use Drupal\multiversion\Entity\Workspace;
+ use Drupal\node\Entity\Node;
+ use Drupal\node\Entity\NodeType;
+ 
+-
+ /**
+  * @group multiversion
+  */
+diff --git a/tests/src/Kernel/MultiversionIndexFactoryTest.php b/tests/src/Kernel/MultiversionIndexFactoryTest.php
+index 23c1be7..fdfc212 100644
+--- a/tests/src/Kernel/MultiversionIndexFactoryTest.php
++++ b/tests/src/Kernel/MultiversionIndexFactoryTest.php
+@@ -10,7 +10,6 @@ use Drupal\multiversion\Entity\Index\SequenceIndexInterface;
+ use Drupal\multiversion\Entity\Index\UuidIndexInterface;
+ use Drupal\multiversion\Entity\Workspace;
+ 
+-
+ /**
+  * @group multiversion
+  */
+@@ -21,10 +20,12 @@ class MultiversionIndexFactoryTest extends KernelTestBase {
+    */
+   public static $modules = ['multiversion', 'key_value', 'serialization', 'user', 'system'];
+ 
+-  /** @var  \Drupal\multiversion\Entity\Index\MultiversionIndexFactory */
++  /**
++   * @var  \Drupal\multiversion\Entity\Index\MultiversionIndexFactory*/
+   protected $multiversionIndexFactory;
+ 
+-  /** @var  \Drupal\multiversion\Entity\WorkspaceInterface */
++  /**
++   * @var  \Drupal\multiversion\Entity\WorkspaceInterface*/
+   protected $workspace;
+ 
+   /**
+@@ -49,7 +50,7 @@ class MultiversionIndexFactoryTest extends KernelTestBase {
+    * Tests the factory.
+    */
+   public function testFactory() {
+-    // With workspace
++    // With workspace.
+     $sequence_index = $this->multiversionIndexFactory->get('multiversion.entity_index.sequence', $this->workspace);
+     $this->assertTrue(($sequence_index instanceof SequenceIndexInterface));
+ 
+@@ -65,7 +66,7 @@ class MultiversionIndexFactoryTest extends KernelTestBase {
+     $rev_tree_index = $this->multiversionIndexFactory->get('multiversion.entity_index.rev.tree', $this->workspace);
+     $this->assertTrue(($rev_tree_index instanceof RevisionTreeIndexInterface));
+ 
+-    // Without a workspace
++    // Without a workspace.
+     $sequence_index = $this->multiversionIndexFactory->get('multiversion.entity_index.sequence');
+     $this->assertTrue(($sequence_index instanceof SequenceIndexInterface));
+ 
+@@ -81,7 +82,7 @@ class MultiversionIndexFactoryTest extends KernelTestBase {
+     $rev_tree_index = $this->multiversionIndexFactory->get('multiversion.entity_index.rev.tree');
+     $this->assertTrue(($rev_tree_index instanceof RevisionTreeIndexInterface));
+ 
+-    // Expecting an exception
++    // Expecting an exception.
+     $this->setExpectedException(\InvalidArgumentException::class);
+     $this->multiversionIndexFactory->get('non.existant.service.name');
+   }
+diff --git a/tests/src/Unit/WorkspaceManagerTest.php b/tests/src/Unit/WorkspaceManagerTest.php
+index 0a1d33a..315d511 100644
+--- a/tests/src/Unit/WorkspaceManagerTest.php
++++ b/tests/src/Unit/WorkspaceManagerTest.php
+@@ -177,7 +177,7 @@ class WorkspaceManagerTest extends UnitTestCase {
+    * Tests the loadMultiple() method.
+    */
+   public function testLoadMultiple() {
+-    $ids = [1,2];
++    $ids = [1, 2];
+     $storage = $this->getMock('Drupal\Core\Entity\EntityStorageInterface');
+     $storage->expects($this->once())
+       ->method('loadMultiple')
+@@ -213,7 +213,9 @@ class WorkspaceManagerTest extends UnitTestCase {
+     // Spy on the negotiator and stub the applies and persist methods.
+     $negotiator = $this->prophesize('Drupal\multiversion\Workspace\DefaultWorkspaceNegotiator');
+     $negotiator->applies(Argument::any())->willReturn(TRUE);
+-    $negotiator->persist(Argument::any())->will(function(){ return $this; });
++    $negotiator->persist(Argument::any())->will(function () {
++      return $this;
++    });
+ 
+     // Create the workspace manager.
+     $workspace_manager = new WorkspaceManager($this->requestStack, $this->entityTypeManager, $this->currentUser, $this->logger);

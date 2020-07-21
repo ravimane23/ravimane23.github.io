@@ -1,0 +1,275 @@
+diff --git a/src/Controller/Oauth2Token.php b/src/Controller/Oauth2Token.php
+index 3749956..71fbfd3 100644
+--- a/src/Controller/Oauth2Token.php
++++ b/src/Controller/Oauth2Token.php
+@@ -10,6 +10,9 @@ use League\OAuth2\Server\Exception\OAuthServerException;
+ use Psr\Http\Message\ServerRequestInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class Oauth2Token extends ControllerBase {
+ 
+   /**
+diff --git a/src/Entities/AccessTokenEntity.php b/src/Entities/AccessTokenEntity.php
+index 9c077fe..de62b81 100644
+--- a/src/Entities/AccessTokenEntity.php
++++ b/src/Entities/AccessTokenEntity.php
+@@ -11,6 +11,9 @@ use League\OAuth2\Server\Entities\Traits\AccessTokenTrait;
+ use League\OAuth2\Server\Entities\Traits\EntityTrait;
+ use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
+ 
++/**
++ *
++ */
+ class AccessTokenEntity implements AccessTokenEntityInterface {
+ 
+   use AccessTokenTrait, TokenEntityTrait, EntityTrait;
+diff --git a/src/Entities/ClientEntity.php b/src/Entities/ClientEntity.php
+index 19dfb7c..d173b28 100644
+--- a/src/Entities/ClientEntity.php
++++ b/src/Entities/ClientEntity.php
+@@ -6,6 +6,9 @@ use Drupal\consumers\Entity\Consumer;
+ use League\OAuth2\Server\Entities\Traits\ClientTrait;
+ use League\OAuth2\Server\Entities\Traits\EntityTrait;
+ 
++/**
++ *
++ */
+ class ClientEntity implements ClientEntityInterface {
+ 
+   use EntityTrait, ClientTrait;
+diff --git a/src/Entities/ClientEntityInterface.php b/src/Entities/ClientEntityInterface.php
+index d579461..772313b 100644
+--- a/src/Entities/ClientEntityInterface.php
++++ b/src/Entities/ClientEntityInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\simple_oauth\Entities;
+ 
+ use League\OAuth2\Server\Entities\ClientEntityInterface as LeagueClientEntityInterface;
+ 
++/**
++ *
++ */
+ interface ClientEntityInterface extends LeagueClientEntityInterface {
+ 
+   /**
+diff --git a/src/Entities/RefreshTokenEntity.php b/src/Entities/RefreshTokenEntity.php
+index 528e70d..6fe4104 100644
+--- a/src/Entities/RefreshTokenEntity.php
++++ b/src/Entities/RefreshTokenEntity.php
+@@ -6,6 +6,9 @@ use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
+ use League\OAuth2\Server\Entities\Traits\EntityTrait;
+ use League\OAuth2\Server\Entities\Traits\RefreshTokenTrait;
+ 
++/**
++ *
++ */
+ class RefreshTokenEntity implements RefreshTokenEntityInterface {
+ 
+   use RefreshTokenTrait, EntityTrait;
+diff --git a/src/Entities/ScopeEntity.php b/src/Entities/ScopeEntity.php
+index bcd8c52..903671c 100644
+--- a/src/Entities/ScopeEntity.php
++++ b/src/Entities/ScopeEntity.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
+ use Drupal\user\RoleInterface;
+ use League\OAuth2\Server\Entities\Traits\EntityTrait;
+ 
++/**
++ *
++ */
+ class ScopeEntity implements ScopeEntityNameInterface {
+ 
+   use EntityTrait, RefinableCacheableDependencyTrait;
+diff --git a/src/Entities/UserEntity.php b/src/Entities/UserEntity.php
+index 1f8ef19..4a8088b 100644
+--- a/src/Entities/UserEntity.php
++++ b/src/Entities/UserEntity.php
+@@ -5,6 +5,9 @@ namespace Drupal\simple_oauth\Entities;
+ use League\OAuth2\Server\Entities\Traits\EntityTrait;
+ use League\OAuth2\Server\Entities\UserEntityInterface;
+ 
++/**
++ *
++ */
+ class UserEntity implements UserEntityInterface {
+ 
+   use EntityTrait;
+diff --git a/src/Entity/ConfigEntityLockableInterface.php b/src/Entity/ConfigEntityLockableInterface.php
+index 3c64c45..d4b580e 100644
+--- a/src/Entity/ConfigEntityLockableInterface.php
++++ b/src/Entity/ConfigEntityLockableInterface.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\simple_oauth\Entity;
+ 
++/**
++ *
++ */
+ interface ConfigEntityLockableInterface {
+ 
+   /**
+diff --git a/src/Entity/ConfigEntityLockableTrait.php b/src/Entity/ConfigEntityLockableTrait.php
+index ba12eb6..cab180e 100644
+--- a/src/Entity/ConfigEntityLockableTrait.php
++++ b/src/Entity/ConfigEntityLockableTrait.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\simple_oauth\Entity;
+ 
++/**
++ *
++ */
+ trait ConfigEntityLockableTrait {
+ 
+   /**
+diff --git a/src/KnownClientsRepositoryInterface.php b/src/KnownClientsRepositoryInterface.php
+index df495f8..406d86b 100644
+--- a/src/KnownClientsRepositoryInterface.php
++++ b/src/KnownClientsRepositoryInterface.php
+@@ -19,7 +19,6 @@ interface KnownClientsRepositoryInterface {
+    *
+    * @return bool
+    *   TRUE if the client is authorized, FALSE otherwise.
+-   *
+    */
+   public function isAuthorized($uid, $client_id, array $scopes);
+ 
+diff --git a/src/LockableConfigEntityAccessControlHandler.php b/src/LockableConfigEntityAccessControlHandler.php
+index 97bb054..6d7b913 100644
+--- a/src/LockableConfigEntityAccessControlHandler.php
++++ b/src/LockableConfigEntityAccessControlHandler.php
+@@ -7,6 +7,9 @@ use Drupal\Core\Entity\EntityAccessControlHandler;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Session\AccountInterface;
+ 
++/**
++ *
++ */
+ class LockableConfigEntityAccessControlHandler extends EntityAccessControlHandler {
+ 
+   /**
+diff --git a/src/Normalizer/RefreshTokenEntityNormalizer.php b/src/Normalizer/RefreshTokenEntityNormalizer.php
+index 54d7693..84612c9 100644
+--- a/src/Normalizer/RefreshTokenEntityNormalizer.php
++++ b/src/Normalizer/RefreshTokenEntityNormalizer.php
+@@ -4,6 +4,9 @@ namespace Drupal\simple_oauth\Normalizer;
+ 
+ use Drupal\serialization\Normalizer\NormalizerBase;
+ 
++/**
++ *
++ */
+ class RefreshTokenEntityNormalizer extends NormalizerBase implements TokenEntityNormalizerInterface {
+ 
+   /**
+diff --git a/src/Normalizer/TokenEntityNormalizer.php b/src/Normalizer/TokenEntityNormalizer.php
+index 29d7b86..816625d 100644
+--- a/src/Normalizer/TokenEntityNormalizer.php
++++ b/src/Normalizer/TokenEntityNormalizer.php
+@@ -5,6 +5,9 @@ namespace Drupal\simple_oauth\Normalizer;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\serialization\Normalizer\NormalizerBase;
+ 
++/**
++ *
++ */
+ class TokenEntityNormalizer extends NormalizerBase implements TokenEntityNormalizerInterface {
+ 
+   /**
+diff --git a/src/Normalizer/TokenEntityNormalizerInterface.php b/src/Normalizer/TokenEntityNormalizerInterface.php
+index 41ac9e6..304f910 100644
+--- a/src/Normalizer/TokenEntityNormalizerInterface.php
++++ b/src/Normalizer/TokenEntityNormalizerInterface.php
+@@ -4,4 +4,7 @@ namespace Drupal\simple_oauth\Normalizer;
+ 
+ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+ 
++/**
++ *
++ */
+ interface TokenEntityNormalizerInterface extends NormalizerInterface {}
+diff --git a/src/Plugin/Oauth2GrantManager.php b/src/Plugin/Oauth2GrantManager.php
+index e42bff0..22ac7c1 100644
+--- a/src/Plugin/Oauth2GrantManager.php
++++ b/src/Plugin/Oauth2GrantManager.php
+@@ -156,7 +156,7 @@ class Oauth2GrantManager extends DefaultPluginManager implements Oauth2GrantMana
+     if ($client && ($grant instanceof AuthCodeGrant)) {
+       $client_has_pkce_enabled = $client->hasField('pkce')
+         && $client->get('pkce')->first()->value;
+-      if($client_has_pkce_enabled){
++      if ($client_has_pkce_enabled) {
+         $grant->enableCodeExchangeProof();
+       }
+     }
+diff --git a/src/Plugin/Oauth2GrantManagerInterface.php b/src/Plugin/Oauth2GrantManagerInterface.php
+index 14e2026..c56e4a0 100644
+--- a/src/Plugin/Oauth2GrantManagerInterface.php
++++ b/src/Plugin/Oauth2GrantManagerInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\simple_oauth\Plugin;
+ 
+ use Drupal\consumers\Entity\Consumer;
+ 
++/**
++ *
++ */
+ interface Oauth2GrantManagerInterface {
+ 
+   /**
+diff --git a/src/Repositories/ClientRepository.php b/src/Repositories/ClientRepository.php
+index 570ccdb..ea31ed5 100644
+--- a/src/Repositories/ClientRepository.php
++++ b/src/Repositories/ClientRepository.php
+@@ -7,6 +7,9 @@ use Drupal\Core\Password\PasswordInterface;
+ use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
+ use Drupal\simple_oauth\Entities\ClientEntity;
+ 
++/**
++ *
++ */
+ class ClientRepository implements ClientRepositoryInterface {
+ 
+   /**
+diff --git a/src/Repositories/UserRepository.php b/src/Repositories/UserRepository.php
+index f3ebddf..3402ae4 100644
+--- a/src/Repositories/UserRepository.php
++++ b/src/Repositories/UserRepository.php
+@@ -8,6 +8,9 @@ use League\OAuth2\Server\Exception\OAuthServerException;
+ use League\OAuth2\Server\Repositories\UserRepositoryInterface;
+ use Drupal\simple_oauth\Entities\UserEntity;
+ 
++/**
++ *
++ */
+ class UserRepository implements UserRepositoryInterface {
+ 
+   /**
+diff --git a/src/Server/ResourceServerInterface.php b/src/Server/ResourceServerInterface.php
+index 42eae9f..87e0b6a 100644
+--- a/src/Server/ResourceServerInterface.php
++++ b/src/Server/ResourceServerInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\simple_oauth\Server;
+ 
+ use Symfony\Component\HttpFoundation\Request;
+ 
++/**
++ *
++ */
+ interface ResourceServerInterface {
+ 
+   /**
+diff --git a/tests/src/Unit/Authentication/Provider/SimpleOauthAuthenticationTest.php b/tests/src/Unit/Authentication/Provider/SimpleOauthAuthenticationTest.php
+index 9b29eb7..caec571 100644
+--- a/tests/src/Unit/Authentication/Provider/SimpleOauthAuthenticationTest.php
++++ b/tests/src/Unit/Authentication/Provider/SimpleOauthAuthenticationTest.php
+@@ -64,6 +64,9 @@ class SimpleOauthAuthenticationTest extends UnitTestCase {
+     );
+   }
+ 
++  /**
++   *
++   */
+   public function hasTokenValueProvider() {
+     $token = $this->getRandomGenerator()->name();
+     $data = [];

@@ -1,0 +1,66 @@
+diff --git a/js/audiojs.builder.js b/js/audiojs.builder.js
+index 61552f2..1b9da49 100644
+--- a/js/audiojs.builder.js
++++ b/js/audiojs.builder.js
+@@ -59,4 +59,4 @@
+       });
+     }
+   };
+-})(jQuery, Drupal);
+\ No newline at end of file
++})(jQuery, Drupal);
+diff --git a/js/jplayer.circleplayer.fix.js b/js/jplayer.circleplayer.fix.js
+index 6697e60..3f37601 100644
+--- a/js/jplayer.circleplayer.fix.js
++++ b/js/jplayer.circleplayer.fix.js
+@@ -5,4 +5,4 @@
+ * @preserve
+ **/
+ 
+-var $ = jQuery;
+\ No newline at end of file
++var $ = jQuery;
+diff --git a/js/mediaelement.builder.js b/js/mediaelement.builder.js
+index e2fa318..775777f 100644
+--- a/js/mediaelement.builder.js
++++ b/js/mediaelement.builder.js
+@@ -28,4 +28,4 @@
+       });
+     }
+   };
+-})(jQuery, Drupal);
+\ No newline at end of file
++})(jQuery, Drupal);
+diff --git a/js/projekktor.builder.js b/js/projekktor.builder.js
+index e20db33..001d774 100644
+--- a/js/projekktor.builder.js
++++ b/js/projekktor.builder.js
+@@ -38,4 +38,4 @@
+       });
+     }
+   };
+-})(jQuery, Drupal);
+\ No newline at end of file
++})(jQuery, Drupal);
+diff --git a/js/soundmanager.builder.js b/js/soundmanager.builder.js
+index fe6f38c..4f663f0 100644
+--- a/js/soundmanager.builder.js
++++ b/js/soundmanager.builder.js
+@@ -19,4 +19,4 @@
+       });
+     }
+   };
+-})(jQuery, Drupal);
+\ No newline at end of file
++})(jQuery, Drupal);
+diff --git a/js/wordpress.builder.js b/js/wordpress.builder.js
+index 79450fd..1948f8d 100644
+--- a/js/wordpress.builder.js
++++ b/js/wordpress.builder.js
+@@ -43,4 +43,4 @@
+       });
+     }
+   };
+-})(jQuery, Drupal);
+\ No newline at end of file
++})(jQuery, Drupal);

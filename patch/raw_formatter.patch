@@ -1,0 +1,35 @@
+diff --git a/src/Plugin/Field/FieldFormatter/RawValueFormatter.php b/src/Plugin/Field/FieldFormatter/RawValueFormatter.php
+index e85f6da..4f44f23 100644
+--- a/src/Plugin/Field/FieldFormatter/RawValueFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/RawValueFormatter.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains RawValueFormatter Class.
+- */
+-
+ namespace Drupal\raw_formatter\Plugin\Field\FieldFormatter;
+ 
+ use Drupal\Core\Field\FormatterBase;
+@@ -29,15 +24,15 @@ class RawValueFormatter extends FormatterBase {
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+     $entity = $items->getEntity();
+ 
+-    $elements = array();
++    $elements = [];
+     foreach ($items as $delta => $item) {
+       $value = $item->getValue();
+ 
+       // Replace the tokens with their respective values.
+-      $data = array();
+-      foreach(unserialize($value['value']) as $key => $key_value) {
++      $data = [];
++      foreach (unserialize($value['value']) as $key => $key_value) {
+         $data[$key] = \Drupal::token()->replace($key_value, [$entity->getEntityTypeId() => $entity]);
+-        $data[$key] = preg_replace ('/<[^>]*>/', '', $data[$key]);
++        $data[$key] = preg_replace('/<[^>]*>/', '', $data[$key]);
+       }
+ 
+       $elements[$delta] = [

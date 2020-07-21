@@ -1,0 +1,90 @@
+diff --git a/src/Form/FlagSearchApiConfigForm.php b/src/Form/FlagSearchApiConfigForm.php
+index 6c4d713..bc90d88 100644
+--- a/src/Form/FlagSearchApiConfigForm.php
++++ b/src/Form/FlagSearchApiConfigForm.php
+@@ -32,22 +32,22 @@ class FlagSearchApiConfigForm extends ConfigFormBase {
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     // Flag Search Api settings:
+     $chosen_conf = $this->configFactory->get('flag_search_api.settings');
+-    $form['options'] = array(
++    $form['options'] = [
+       '#type' => 'fieldset',
+       '#title' => t('Flag Search API Reindexing'),
+-    );
++    ];
+ 
+-    $form['options']['reindex_on_flagging'] = array(
++    $form['options']['reindex_on_flagging'] = [
+       '#type' => 'checkbox',
+       '#title' => t('Reindex Item on Flagged action'),
+       '#default_value' => $chosen_conf->get('reindex_on_flagging'),
+       '#description' => t('Enable or disable reindexing items on flagging action.'),
+-    );
++    ];
+ 
+-    $form['submit'] = array(
++    $form['submit'] = [
+       '#type' => 'submit',
+       '#value' => t('Save'),
+-    );
++    ];
+ 
+     return $form;
+   }
+diff --git a/src/Plugin/search_api/processor/FlagIndexer.php b/src/Plugin/search_api/processor/FlagIndexer.php
+index 3b3aa42..21d9d90 100644
+--- a/src/Plugin/search_api/processor/FlagIndexer.php
++++ b/src/Plugin/search_api/processor/FlagIndexer.php
+@@ -69,9 +69,9 @@ class FlagIndexer extends ProcessorPluginBase implements PluginFormInterface, Co
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    return array(
+-      'flag_index' => array(),
+-    );
++    return [
++      'flag_index' => [],
++    ];
+   }
+ 
+   /**
+@@ -85,13 +85,13 @@ class FlagIndexer extends ProcessorPluginBase implements PluginFormInterface, Co
+       $options[$flag->get('id')] = $flag->get('label');
+     }
+ 
+-    $form['flag_index'] = array(
++    $form['flag_index'] = [
+       '#type' => 'checkboxes',
+       '#title' => $this->t('Enable these flags on this index'),
+       '#description' => $this->t('This will index IDs from users that flagged this content'),
+       '#options' => $options,
+       '#default_value' => isset($this->configuration['flag_index']) ? $this->configuration['flag_index'] : [],
+-    );
++    ];
+ 
+     return $form;
+   }
+@@ -118,7 +118,7 @@ class FlagIndexer extends ProcessorPluginBase implements PluginFormInterface, Co
+    * {@inheritdoc}
+    */
+   public function getPropertyDefinitions(DatasourceInterface $datasource = NULL) {
+-    $properties = array();
++    $properties = [];
+ 
+     if (!$datasource) {
+       // Ensure that our fields are defined.
+@@ -139,12 +139,12 @@ class FlagIndexer extends ProcessorPluginBase implements PluginFormInterface, Co
+     $fields = [];
+     foreach ($config as $flag) {
+       $label = $this->flagService->getFlagById($flag)->get('label');
+-      $fields['flag_' . $flag] = array(
++      $fields['flag_' . $flag] = [
+         'label' => $label,
+         'description' => $label,
+         'type' => 'integer',
+         'processor_id' => $this->getPluginId(),
+-      );
++      ];
+     }
+     return $fields;
+   }

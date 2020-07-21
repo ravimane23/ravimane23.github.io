@@ -1,0 +1,40 @@
+diff --git a/src/Plugin/CKEditorPlugin/TokenBrowser.php b/src/Plugin/CKEditorPlugin/TokenBrowser.php
+index b939b2c..3c42d5b 100644
+--- a/src/Plugin/CKEditorPlugin/TokenBrowser.php
++++ b/src/Plugin/CKEditorPlugin/TokenBrowser.php
+@@ -53,6 +53,9 @@ class TokenBrowser extends CKEditorPluginBase implements ContainerFactoryPluginI
+     $this->tokenService = $token_service;
+   }
+ 
++  /**
++   *
++   */
+   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+     return new static(
+       $configuration,
+@@ -87,7 +90,7 @@ class TokenBrowser extends CKEditorPluginBase implements ContainerFactoryPluginI
+    * @return Drupal\Core\Url
+    *   The URL.
+    *
+-   * @see TokenTreeController::outputTree().
++   * @see TokenTreeController::outputTree()
+    */
+   protected function getUrl($token_types = NULL) {
+     $url = Url::fromRoute('token.tree');
+@@ -181,8 +184,8 @@ class TokenBrowser extends CKEditorPluginBase implements ContainerFactoryPluginI
+     // Get parent token type names, keyed by machine name.
+     $parent_token_types = array_filter($this->tokenService
+       ->getInfo()['types'], function ($v) {
+-      return empty($v['nested']);
+-    });
++        return empty($v['nested']);
++      });
+     $parent_token_types = array_map(function ($v) {
+       return $v['name'];
+     }, $parent_token_types);
+@@ -199,4 +202,5 @@ class TokenBrowser extends CKEditorPluginBase implements ContainerFactoryPluginI
+ 
+     return $form;
+   }
++
+ }

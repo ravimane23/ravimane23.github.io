@@ -1,0 +1,89 @@
+diff --git a/src/Form/MobileJsRedirectAdminForm.php b/src/Form/MobileJsRedirectAdminForm.php
+index 75f9e0c..c3072e5 100755
+--- a/src/Form/MobileJsRedirectAdminForm.php
++++ b/src/Form/MobileJsRedirectAdminForm.php
+@@ -29,35 +29,35 @@ class MobileJsRedirectAdminForm extends ConfigFormBase {
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     $config = $this->config('mobile_js_redirect.settings');
+-    $form['site_urls'] = array(
++    $form['site_urls'] = [
+       '#type' => 'fieldset',
+       '#title' => t('Site URLs'),
+-    );
++    ];
+ 
+-    $form['site_urls']['mobile_js_redirect_instructions'] = array(
++    $form['site_urls']['mobile_js_redirect_instructions'] = [
+       '#markup' => t('Mobile and Desktop sites URLs - Please read the instructions below the textarea.'),
+-    );
++    ];
+ 
+-    $form['site_urls']['mobile_js_redirect_urls'] = array(
++    $form['site_urls']['mobile_js_redirect_urls'] = [
+       '#type' => 'textarea',
+       '#description' => t('- Put each group of urls on a line separated by | character (pipe) without spaces like: TARGET URL|DESKTOP URL|MOBILE URL.<br>- You can use the * character (asterisk) as a wildcard on target url.<br>- If you wont redirect one of these (desktop or mobile) leave blank.<br>- The redirect occurrs on the first "true" match.'),
+       '#default_value' => $config->get('mobile_js_redirect_urls'),
+-      '#attributes' => array('placeholder' => array('Target URL|Desktop URL|Mobile URL')),
++      '#attributes' => ['placeholder' => ['Target URL|Desktop URL|Mobile URL']],
+       '#size' => 10,
+       '#resizable' => FALSE,
+-    );
++    ];
+ 
+-    $form['devices_list'] = array(
++    $form['devices_list'] = [
+       '#type' => 'fieldset',
+       '#title' => t('Devices List'),
+       '#description' => t('Enter list of User Agent device names which should be recognized as mobile devices.<br>The default list Devices List is: iphone|ipad|ipod|android|blackberry|mini|windowssce|iemobile|palm'),
+-    );
++    ];
+ 
+-    $form['devices_list']['mobile_js_redirect_regexp_devices_list'] = array(
++    $form['devices_list']['mobile_js_redirect_regexp_devices_list'] = [
+       '#type' => 'textfield',
+       '#description' => t('Use | for separation.'),
+       '#default_value' => (!empty($config->get('mobile_js_redirect_regexp_devices_list'))) ? $config->get('mobile_js_redirect_regexp_devices_list') : MOBILE_JS_REDIRECT_REGEXP_DEVICES_LIST,
+-    );
++    ];
+ 
+     return parent::buildForm($form, $form_state);
+   }
+diff --git a/src/Tests/MobileJsRedirectTests.php b/src/Tests/MobileJsRedirectTests.php
+index 8082d0e..d294a5e 100644
+--- a/src/Tests/MobileJsRedirectTests.php
++++ b/src/Tests/MobileJsRedirectTests.php
+@@ -16,7 +16,7 @@ class MobileJsRedirectTests extends WebTestBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public static $modules = array('mobile_js_redirect');
++  public static $modules = ['mobile_js_redirect'];
+ 
+   /**
+    * {@inheritdoc}
+@@ -29,9 +29,9 @@ class MobileJsRedirectTests extends WebTestBase {
+   public function setUp() {
+ 
+     parent::setUp();
+-    $this->user = $this->DrupalCreateUser(array(
++    $this->user = $this->DrupalCreateUser([
+       'administer site configuration',
+-    ));
++    ]);
+   }
+ 
+   /**
+@@ -67,10 +67,10 @@ class MobileJsRedirectTests extends WebTestBase {
+       'Page title field has the default value'
+     );
+ 
+-    $this->drupalPostForm(NULL, array(
++    $this->drupalPostForm(NULL, [
+       'mobile_js_redirect_urls' => 'targetexample|desktopredirect|mobileredirect',
+       'mobile_js_redirect_regexp_devices_list' => 'iphone|ipad|ipod|android|blackberry|mini|windowssce|iemobile|palm',
+-    ), t('Save configuration'));
++    ], t('Save configuration'));
+ 
+     $this->drupalGet('admin/config/system/mobile_js_redirect');
+     $this->assertResponse(200);

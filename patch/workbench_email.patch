@@ -1,0 +1,175 @@
+diff --git a/src/EventSubscriber/ContentModerationStateChangedEvent.php b/src/EventSubscriber/ContentModerationStateChangedEvent.php
+index 06e9f12..f090faf 100644
+--- a/src/EventSubscriber/ContentModerationStateChangedEvent.php
++++ b/src/EventSubscriber/ContentModerationStateChangedEvent.php
+@@ -29,7 +29,7 @@ class ContentModerationStateChangedEvent extends Event {
+   /**
+    * The state the content was before, or FALSE if none existed.
+    *
+-   * @var string|FALSE
++   * @var string|false
+    */
+   protected $originalState;
+ 
+diff --git a/src/EventSubscriber/WorkbenchTransitionEventSubscriber.php b/src/EventSubscriber/WorkbenchTransitionEventSubscriber.php
+index e00b2ee..4933d5b 100644
+--- a/src/EventSubscriber/WorkbenchTransitionEventSubscriber.php
++++ b/src/EventSubscriber/WorkbenchTransitionEventSubscriber.php
+@@ -73,7 +73,7 @@ class WorkbenchTransitionEventSubscriber implements EventSubscriberInterface {
+     ])) {
+       // Filter out any that the user doesn't have access to or that don't have
+       // any email templates.
+-      $transitions = array_filter($transitions, function($transition) {
++      $transitions = array_filter($transitions, function ($transition) {
+         /** @var \Drupal\workbench_moderation\ModerationStateTransitionInterface $transition */
+         return $this->currentUser->hasPermission(sprintf('use %s transition', $transition->id())) && $transition->getThirdPartySetting('workbench_email', 'workbench_email_templates', []);
+       });
+@@ -129,7 +129,7 @@ class WorkbenchTransitionEventSubscriber implements EventSubscriberInterface {
+       return;
+     }
+ 
+-    // Check the transition has a template
++    // Check the transition has a template.
+     if (!isset($templates[$transition->id()])) {
+       return;
+     }
+diff --git a/src/Plugin/Derivative/WorkbenchEmailDeriver.php b/src/Plugin/Derivative/WorkbenchEmailDeriver.php
+index 9bcfaa5..a636af2 100644
+--- a/src/Plugin/Derivative/WorkbenchEmailDeriver.php
++++ b/src/Plugin/Derivative/WorkbenchEmailDeriver.php
+@@ -6,7 +6,6 @@ use Drupal\Component\Plugin\Derivative\DeriverBase;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+-use Drupal\workbench_moderation\ModerationInformationInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+@@ -26,7 +25,7 @@ class WorkbenchEmailDeriver extends DeriverBase implements ContainerDeriverInter
+   /**
+    * Moderation info service.
+    *
+-   * @var \Drupal\workbench_moderation\ModerationInformationInterface|\Drupal\content_moderation\ModerationInformationInterface $moderation_information
++   * @var \Drupal\workbench_moderation\ModerationInformationInterface|\Drupal\content_moderation\ModerationInformationInterface
+    */
+   protected $moderationInfo;
+ 
+diff --git a/src/Plugin/RecipientType/EmailField.php b/src/Plugin/RecipientType/EmailField.php
+index 7fb828e..77582bf 100644
+--- a/src/Plugin/RecipientType/EmailField.php
++++ b/src/Plugin/RecipientType/EmailField.php
+@@ -13,7 +13,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Drupal\field\FieldStorageConfigInterface;
+ use Drupal\workbench_email\Plugin\RecipientTypeBase;
+ use Drupal\workbench_email\TemplateInterface;
+-use Drupal\workbench_moderation\ModerationInformationInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+diff --git a/src/Plugin/RecipientType/FixedEmail.php b/src/Plugin/RecipientType/FixedEmail.php
+index 365488e..742b292 100644
+--- a/src/Plugin/RecipientType/FixedEmail.php
++++ b/src/Plugin/RecipientType/FixedEmail.php
+@@ -2,18 +2,13 @@
+ 
+ namespace Drupal\workbench_email\Plugin\RecipientType;
+ 
+-use Drupal\Component\Utility\NestedArray;
+ use Drupal\Core\Entity\ContentEntityInterface;
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+-use Drupal\user\RoleInterface;
+ use Drupal\workbench_email\Plugin\RecipientTypeBase;
+ use Drupal\workbench_email\TemplateInterface;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Provides a recipient type of fixed email field
++ * Provides a recipient type of fixed email field.
+  *
+  * @RecipientType(
+  *   id = "fixed_email",
+diff --git a/src/Plugin/RecipientType/RolesWithAccess.php b/src/Plugin/RecipientType/RolesWithAccess.php
+index f03b701..60d8979 100644
+--- a/src/Plugin/RecipientType/RolesWithAccess.php
++++ b/src/Plugin/RecipientType/RolesWithAccess.php
+@@ -3,13 +3,9 @@
+ namespace Drupal\workbench_email\Plugin\RecipientType;
+ 
+ use Drupal\Core\Entity\ContentEntityInterface;
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\StringTranslation\TranslatableMarkup;
+-use Drupal\user\RoleInterface;
+ use Drupal\workbench_email\TemplateInterface;
+ 
+-
+ /**
+  * Provides a recipient type for Workbench Access Sections.
+  *
+@@ -22,7 +18,6 @@ use Drupal\workbench_email\TemplateInterface;
+  *   },
+  * )
+  */
+-
+ class RolesWithAccess extends Role {
+ 
+   /**
+@@ -51,4 +46,5 @@ class RolesWithAccess extends Role {
+     }
+     return $recipients;
+   }
++
+ }
+diff --git a/tests/src/Functional/WorkbenchEmailTestBase.php b/tests/src/Functional/WorkbenchEmailTestBase.php
+index 6562359..e4caae4 100644
+--- a/tests/src/Functional/WorkbenchEmailTestBase.php
++++ b/tests/src/Functional/WorkbenchEmailTestBase.php
+@@ -310,9 +310,9 @@ abstract class WorkbenchEmailTestBase extends BrowserTestBase {
+     $this->drupalLogin($this->editor);
+     $this->drupalGet('node/add/test');
+     $this->submitForm([
+-        'title[0][value]' => 'Test node',
+-        'field_email[0][value]' => 'foo@example.com',
+-      ] + $this->getAdditionalFieldsForTransition('draft', 'draft'), $this->getSubmitButtonTitleForTransition('draft', 'draft'));
++      'title[0][value]' => 'Test node',
++      'field_email[0][value]' => 'foo@example.com',
++    ] + $this->getAdditionalFieldsForTransition('draft', 'draft'), $this->getSubmitButtonTitleForTransition('draft', 'draft'));
+     $node = $this->getNodeByTitle('Test node');
+     // Transition to needs review.
+     $this->drupalGet('node/' . $node->id() . '/edit');
+@@ -327,8 +327,8 @@ abstract class WorkbenchEmailTestBase extends BrowserTestBase {
+     // Create a node and add to the notifier field.
+     $this->drupalGet('node/add/test');
+     $this->submitForm([
+-        'title[0][value]' => 'Test node 2',
+-      ] + $this->getAdditionalFieldsForTransition('draft', 'needs_review'), $this->getSubmitButtonTitleForTransition('draft', 'needs_review'));
++      'title[0][value]' => 'Test node 2',
++    ] + $this->getAdditionalFieldsForTransition('draft', 'needs_review'), $this->getSubmitButtonTitleForTransition('draft', 'needs_review'));
+     $node2 = $this->getNodeByTitle('Test node 2');
+     $this->assertNeedsReviewNotifications($node2);
+ 
+@@ -369,8 +369,8 @@ abstract class WorkbenchEmailTestBase extends BrowserTestBase {
+     $this->container->get('state')->set('system.test_mail_collector', []);
+     $this->drupalGet('node/add/another');
+     $this->submitForm([
+-        'title[0][value]' => 'Another test node',
+-      ]+ $this->getAdditionalFieldsForTransition('draft', 'draft'), $this->getSubmitButtonTitleForTransition('draft', 'draft'));
++      'title[0][value]' => 'Another test node',
++    ] + $this->getAdditionalFieldsForTransition('draft', 'draft'), $this->getSubmitButtonTitleForTransition('draft', 'draft'));
+     $node = $this->getNodeByTitle('Another test node');
+     // Transition to needs review.
+     $this->drupalGet('node/' . $node->id() . '/edit');
+diff --git a/workbench_email.post_update.php b/workbench_email.post_update.php
+index 1a91a84..2511854 100644
+--- a/workbench_email.post_update.php
++++ b/workbench_email.post_update.php
+@@ -6,7 +6,6 @@
+  */
+ 
+ use Drupal\Core\Config\Entity\ConfigEntityUpdater;
+-use Drupal\workbench_email\TemplateInterface;
+ use Drupal\workbench_email\Update\UpdateHelper;
+ 
+ /**

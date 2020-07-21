@@ -1,0 +1,375 @@
+diff --git a/src/Menu/MenuHelperInterface.php b/src/Menu/MenuHelperInterface.php
+index 997f4b9..246a2da 100644
+--- a/src/Menu/MenuHelperInterface.php
++++ b/src/Menu/MenuHelperInterface.php
+@@ -2,10 +2,15 @@
+ 
+ namespace Drupal\menu_trail_by_path\Menu;
+ 
++/**
++ *
++ */
+ interface MenuHelperInterface {
++
+   /**
+    * @param $menu_name
+    * @return \Drupal\Core\Menu\MenuLinkInterface[]
+    */
+   public function getMenuLinks($menu_name);
++
+ }
+diff --git a/src/Menu/MenuTreeStorage.php b/src/Menu/MenuTreeStorage.php
+index 4540b59..5e35f2d 100644
+--- a/src/Menu/MenuTreeStorage.php
++++ b/src/Menu/MenuTreeStorage.php
+@@ -2,12 +2,16 @@
+ 
+ namespace Drupal\menu_trail_by_path\Menu;
+ 
+-use Drupal\Core\Menu\MenuTreeStorage AS CoreMenuTreeStorage;
++use Drupal\Core\Menu\MenuTreeStorage as CoreMenuTreeStorage;
+ use Drupal\Core\Menu\MenuTreeStorageInterface;
+ 
++/**
++ *
++ */
+ class MenuTreeStorage extends CoreMenuTreeStorage implements MenuTreeStorageInterface {
++
+   /**
+-   * Same as parent, but with ordering
++   * Same as parent, but with ordering.
+    *
+    * {@inheritdoc}
+    */
+@@ -31,4 +35,5 @@ class MenuTreeStorage extends CoreMenuTreeStorage implements MenuTreeStorageInte
+     }
+     return $loaded;
+   }
++
+ }
+diff --git a/src/Menu/MenuTreeStorageMenuHelper.php b/src/Menu/MenuTreeStorageMenuHelper.php
+index 03f3d66..081d55f 100644
+--- a/src/Menu/MenuTreeStorageMenuHelper.php
++++ b/src/Menu/MenuTreeStorageMenuHelper.php
+@@ -5,19 +5,23 @@ namespace Drupal\menu_trail_by_path\Menu;
+ use Drupal\Core\Menu\MenuLinkManagerInterface;
+ use Drupal\Core\Menu\MenuTreeStorageInterface;
+ 
++/**
++ *
++ */
+ class MenuTreeStorageMenuHelper implements MenuHelperInterface {
+   /**
+-   * @var MenuLinkManagerInterface
++   * @var \Drupal\Core\Menu\MenuLinkManagerInterface
+    */
+   protected $menuLinkManager;
+ 
+   /**
+-   * @var MenuTreeStorageInterface
++   * @var \Drupal\Core\Menu\MenuTreeStorageInterface
+    */
+   protected $menuTreeStorage;
+ 
+   /**
+    * MenuTreeStorageMenuHelper constructor.
++   *
+    * @param \Drupal\Core\Menu\MenuLinkManagerInterface $menu_link_manager
+    * @param \Drupal\Core\Menu\MenuTreeStorageInterface $menu_tree_storage
+    */
+@@ -30,12 +34,13 @@ class MenuTreeStorageMenuHelper implements MenuHelperInterface {
+    * {@inheritdoc}
+    */
+   public function getMenuLinks($menu_name) {
+-    // nice to have: implement filtering like public/core/lib/Drupal/Core/Menu/MenuLinkTree.php:153
+-    $menu_links    = [];
++    // Nice to have: implement filtering like public/core/lib/Drupal/Core/Menu/MenuLinkTree.php:153.
++    $menu_links   = [];
+     $menu_plugins = $this->menuTreeStorage->loadByProperties(['menu_name' => $menu_name]);
+     foreach ($menu_plugins as $plugin_id => $definition) {
+       $menu_links[$plugin_id] = $this->menuLinkManager->createInstance($plugin_id);
+     }
+     return $menu_links;
+   }
++
+ }
+diff --git a/src/MenuTrailByPathActiveTrail.php b/src/MenuTrailByPathActiveTrail.php
+index dab24a8..3b1b6f6 100644
+--- a/src/MenuTrailByPathActiveTrail.php
++++ b/src/MenuTrailByPathActiveTrail.php
+@@ -63,6 +63,7 @@ class MenuTrailByPathActiveTrail extends MenuActiveTrail {
+ 
+   /**
+    * MenuTrailByPathActiveTrail constructor.
++   *
+    * @param \Drupal\Core\Menu\MenuLinkManagerInterface $menu_link_manager
+    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+    * @param \Drupal\Core\Cache\CacheBackendInterface $cache
+@@ -79,7 +80,7 @@ class MenuTrailByPathActiveTrail extends MenuActiveTrail {
+     $this->menuHelper      = $menu_helper;
+     $this->context         = $context;
+     $this->languageManager = $languageManager;
+-    $this->config = $config_factory->get('menu_trail_by_path.settings');
++    $this->config          = $config_factory->get('menu_trail_by_path.settings');
+   }
+ 
+   /**
+@@ -101,7 +102,7 @@ class MenuTrailByPathActiveTrail extends MenuActiveTrail {
+   protected function doGetActiveTrailIds($menu_name) {
+     // Parent ids; used both as key and value to ensure uniqueness.
+     // We always want all the top-level links with parent == ''.
+-    $active_trail = array('' => '');
++    $active_trail = ['' => ''];
+ 
+     $entity = Menu::load($menu_name);
+     if (!$entity) {
+@@ -134,7 +135,7 @@ class MenuTrailByPathActiveTrail extends MenuActiveTrail {
+    * @param string $menu_name
+    *   The menu within which to find the active trail link.
+    *
+-   * @return \Drupal\Core\Menu\MenuLinkInterface|NULL
++   * @return \Drupal\Core\Menu\MenuLinkInterface|null
+    *   The menu link for the given menu, or NULL if there is no matching menu link.
+    */
+   public function getActiveTrailLink($menu_name) {
+@@ -153,4 +154,5 @@ class MenuTrailByPathActiveTrail extends MenuActiveTrail {
+ 
+     return NULL;
+   }
++
+ }
+diff --git a/src/MenuTrailByPathServiceProvider.php b/src/MenuTrailByPathServiceProvider.php
+index 2054932..a030f7a 100644
+--- a/src/MenuTrailByPathServiceProvider.php
++++ b/src/MenuTrailByPathServiceProvider.php
+@@ -2,14 +2,15 @@
+ 
+ namespace Drupal\menu_trail_by_path;
+ 
+-use \Drupal\Core\DependencyInjection\ServiceProviderBase;
+-use \Drupal\Core\DependencyInjection\ContainerBuilder;
++use Drupal\Core\DependencyInjection\ServiceProviderBase;
++use Drupal\Core\DependencyInjection\ContainerBuilder;
+ use Symfony\Component\DependencyInjection\Reference;
+ 
+ /**
+  * Overrides the class for the menu link tree.
+  */
+ class MenuTrailByPathServiceProvider extends ServiceProviderBase {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -22,4 +23,5 @@ class MenuTrailByPathServiceProvider extends ServiceProviderBase {
+     $definition->addArgument(new Reference('language_manager'));
+     $definition->addArgument(new Reference('config.factory'));
+   }
++
+ }
+diff --git a/src/Path/CurrentPathHelper.php b/src/Path/CurrentPathHelper.php
+index 5110568..1329a0c 100644
+--- a/src/Path/CurrentPathHelper.php
++++ b/src/Path/CurrentPathHelper.php
+@@ -8,6 +8,9 @@ use Drupal\Core\Routing\RequestContext;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\Core\Url;
+ 
++/**
++ *
++ */
+ class CurrentPathHelper implements PathHelperInterface {
+   /**
+    * @var \Drupal\Core\Routing\RouteMatchInterface
+@@ -26,10 +29,13 @@ class CurrentPathHelper implements PathHelperInterface {
+    */
+   private $context;
+ 
++  /**
++   *
++   */
+   public function __construct(RouteMatchInterface $route_match, RequestContext $context, ConfigFactoryInterface $config_factory) {
+     $this->routeMatch = $route_match;
+     $this->context    = $context;
+-    $this->config = $config_factory->get('menu_trail_by_path.settings');
++    $this->config     = $config_factory->get('menu_trail_by_path.settings');
+   }
+ 
+   /**
+@@ -45,7 +51,7 @@ class CurrentPathHelper implements PathHelperInterface {
+   }
+ 
+   /**
+-   * Returns the current request Url
++   * Returns the current request Url.
+    *
+    * NOTE: There is a difference between $this->routeMatch->getRouteName and $this->context->getPathInfo()
+    * for now it seems more logical to prefer the latter, because that's the "real" url that visitors enter in their browser..
+@@ -102,7 +108,8 @@ class CurrentPathHelper implements PathHelperInterface {
+    * Create a Url Object from a relative uri (e.g. /news/drupal8-release-party)
+    *
+    * @param $relativeUri
+-   * @return Url
++   *
++   * @return \Drupal\Core\Url
+    */
+   protected function createUrlFromRelativeUri($relativeUri) {
+     // @see https://www.drupal.org/node/2810961
+@@ -113,4 +120,5 @@ class CurrentPathHelper implements PathHelperInterface {
+     $relativeUri = str_replace('//', '/', $relativeUri);
+     return Url::fromUserInput($relativeUri);
+   }
++
+ }
+diff --git a/src/Path/PathHelperInterface.php b/src/Path/PathHelperInterface.php
+index ca84b97..9070f6d 100644
+--- a/src/Path/PathHelperInterface.php
++++ b/src/Path/PathHelperInterface.php
+@@ -2,7 +2,11 @@
+ 
+ namespace Drupal\menu_trail_by_path\Path;
+ 
++/**
++ *
++ */
+ interface PathHelperInterface {
++
+   /**
+    * @return \Drupal\Core\Url[]
+    */
+diff --git a/tests/src/Functional/MenuTrailByPathActiveTrailHtmlClassTest.php b/tests/src/Functional/MenuTrailByPathActiveTrailHtmlClassTest.php
+index c435098..2a2c5a2 100644
+--- a/tests/src/Functional/MenuTrailByPathActiveTrailHtmlClassTest.php
++++ b/tests/src/Functional/MenuTrailByPathActiveTrailHtmlClassTest.php
+@@ -40,7 +40,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+   /**
+    * Array key's should be the menu title's, if multi-level than separated by ' » '.
+    *
+-   * @var Url[]
++   * @var \Drupal\Core\Url[]
+    */
+   protected $menuUrls = [];
+ 
+@@ -55,20 +55,20 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+   protected function setUp() {
+     parent::setUp();
+ 
+-    // Create user
++    // Create user.
+     $this->authenticatedUser = $this->drupalCreateUser();
+ 
+-    // Create content type
+-    $this->drupalCreateContentType(array('type' => 'page', 'name' => 'Basic page'));
++    // Create content type.
++    $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);
+ 
+-    // Create nodes
++    // Create nodes.
+     $node1 = $this->drupalCreateNode();
+     $this->createPathAlias('/node/' . $node1->id(), '/news');
+ 
+     $node2 = $this->drupalCreateNode();
+     $this->createPathAlias('/node/' . $node2->id(), '/news/category-a');
+ 
+-    // Set menuUrls
++    // Set menuUrls.
+     $this->menuUrls = [
+       'Home'                 => Url::fromUri('route:<front>'),
+       'User password'        => Url::fromUri('route:user.pass'),
+@@ -91,7 +91,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+   }
+ 
+   /**
+-   * Test url: Home
++   * Test url: Home.
+    */
+   public function testUrlHome() {
+     $this->drupalGet(clone $this->menuUrls['Home']);
+@@ -103,7 +103,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+   }
+ 
+   /**
+-   * Test url: User password
++   * Test url: User password.
+    */
+   public function testUrlUserPassword() {
+     $this->drupalGet(clone $this->menuUrls['User password']);
+@@ -148,7 +148,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+   }
+ 
+   /**
+-   * Test url: User login
++   * Test url: User login.
+    */
+   public function testUrlUserLogin() {
+     $this->drupalGet(clone $this->menuUrls['User login']);
+@@ -160,7 +160,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+   }
+ 
+   /**
+-   * Test url: User
++   * Test url: User.
+    */
+   public function testUrlUser() {
+     $this->drupalLogin($this->authenticatedUser);
+@@ -173,7 +173,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+   }
+ 
+   /**
+-   * Test url: News
++   * Test url: News.
+    */
+   public function testUrlNews() {
+     $this->drupalGet(clone $this->menuUrls['News']);
+@@ -185,7 +185,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+   }
+ 
+   /**
+-   * Test url: News » News overview
++   * Test url: News » News overview.
+    */
+   public function testUrlNewsNewsOverview() {
+     $this->drupalGet(clone $this->menuUrls['News » News overview']);
+@@ -195,7 +195,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+       ], TRUE
+     );
+ 
+-    // Also test the parent item, due to the tree url key construction of assertMenuActiveTrail we need two separate calls
++    // Also test the parent item, due to the tree url key construction of assertMenuActiveTrail we need two separate calls.
+     $this->assertMenuActiveTrail(
+       [
+         $this->menuUrlBasePath('News') => 'News',
+@@ -204,7 +204,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+   }
+ 
+   /**
+-   * Test url: News » Category A
++   * Test url: News » Category A.
+    */
+   public function testUrlNewsCategorya() {
+     $this->drupalGet(clone $this->menuUrls['News » Category A']);
+@@ -217,7 +217,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+   }
+ 
+   /**
+-   * Test url: News » Category A » Item A
++   * Test url: News » Category A » Item A.
+    */
+   public function testUrlNewsCategoryaItema() {
+     $node3 = $this->drupalCreateNode();
+@@ -242,7 +242,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+   }
+ 
+   /**
+-   * Build a menu with the data of $this->menuUrls
++   * Build a menu with the data of $this->menuUrls.
+    *
+    * @param string $menu_name
+    */
+@@ -276,6 +276,7 @@ class MenuTrailByPathActiveTrailHtmlClassTest extends BrowserTestBase {
+    * Helper for getting the base: "link_path" that assertMenuActiveTrail expects.
+    *
+    * @param $name
++   *
+    * @return string
+    */
+   protected function menuUrlBasePath($name) {

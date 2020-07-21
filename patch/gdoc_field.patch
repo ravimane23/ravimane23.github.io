@@ -1,0 +1,113 @@
+diff --git a/css/gdoc_field.css b/css/gdoc_field.css
+index 975ac6a..54d2265 100644
+--- a/css/gdoc_field.css
++++ b/css/gdoc_field.css
+@@ -6,10 +6,10 @@
+   border: 1px solid black;
+ }
+ .gdoc-filename {
+-    margin-top: 0;
+-    margin-bottom: 1.5em;
+-    font-style: italic;
+-    font-family: serif;
+-    font-size:  80%;
+-    text-align: center;
++  margin-top: 0;
++  margin-bottom: 1.5em;
++  font-style: italic;
++  font-family: serif;
++  font-size: 80%;
++  text-align: center;
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/GdocFieldFormatter.php b/src/Plugin/Field/FieldFormatter/GdocFieldFormatter.php
+index 7bff111..ef856ce 100644
+--- a/src/Plugin/Field/FieldFormatter/GdocFieldFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/GdocFieldFormatter.php
+@@ -1,16 +1,10 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains Drupal\gdoc_field\Plugin\Field\FieldFormatter\GdocFieldFormatter.
+- */
+-
+ namespace Drupal\gdoc_field\Plugin\Field\FieldFormatter;
+ 
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\file\Plugin\Field\FieldFormatter\FileFormatterBase;
+-use Drupal\Core\File;
+ 
+ /**
+  * Plugin implementation of the 'gdoc_field' formatter.
+@@ -24,22 +18,23 @@ use Drupal\Core\File;
+  * )
+  */
+ class GdocFieldFormatter extends FileFormatterBase {
++
+   /**
+    * {@inheritdoc}
+    */
+   public static function defaultSettings() {
+-    return array(
++    return [
+       // Implement default settings.
+-    ) + parent::defaultSettings();
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+-    return array(
++    return [
+       // Implement settings form.
+-    ) + parent::settingsForm($form, $form_state);
++    ] + parent::settingsForm($form, $form_state);
+   }
+ 
+   /**
+@@ -55,7 +50,7 @@ class GdocFieldFormatter extends FileFormatterBase {
+    * {@inheritdoc}
+    */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+-    $elements = array();
++    $elements = [];
+ 
+     foreach ($this->getEntitiesToView($items, $langcode) as $delta => $file) {
+       $entity = $this->fieldDefinition->getTargetEntityTypeId();
+@@ -68,7 +63,7 @@ class GdocFieldFormatter extends FileFormatterBase {
+ 
+       if ($uri_scheme == 'public') {
+         $url = file_create_url($file->getFileUri());
+-        $elements[$delta] = array(
++        $elements[$delta] = [
+           '#theme' => 'gdoc_field',
+           '#url' => $url,
+           '#filename' => $filename,
+@@ -77,18 +72,18 @@ class GdocFieldFormatter extends FileFormatterBase {
+           '#bundle' => $bundle,
+           '#field_name' => $field_name,
+           '#field_type' => $field_type,
+-          '#attached' => array(
+-            'library' => array(
++          '#attached' => [
++            'library' => [
+               'gdoc_field/gdoc-field',
+-            ),
+-          ),
+-        );
++            ],
++          ],
++        ];
+ 
+       }
+       else {
+         drupal_set_message(
+           t('The file (%file) is not publicly accessible. It must be publicly available in order for the Google Docs viewer to be able to access it.',
+-          array('%file' => $filename)
++          ['%file' => $filename]
+           ),
+           'error',
+           FALSE

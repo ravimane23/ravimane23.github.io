@@ -1,0 +1,141 @@
+diff --git a/flysystem_s3.js b/flysystem_s3.js
+index dfebbae..7818670 100644
+--- a/flysystem_s3.js
++++ b/flysystem_s3.js
+@@ -97,7 +97,7 @@
+     /**
+      * Adds a progress bar.
+      */
+-    addProgressBar: function($fileElement, file_obj) {
++    addProgressBar: function ($fileElement, file_obj) {
+       // Hide the upload field and the description.
+       $fileElement.hide();
+       $fileElement.siblings('.description').hide();
+@@ -122,7 +122,7 @@
+      * @param event
+      *   And XMLHttpRequestProgressEvent object.
+      */
+-    processCorsUploadProgress: function($progressBar, event) {
++    processCorsUploadProgress: function ($progressBar, event) {
+       if (event.lengthComputable) {
+         // This is copied mostly from Drupal.ProgressBar.setProgress.
+         var percentage = Math.floor((event.loaded / event.total) * 100);
+@@ -133,7 +133,7 @@
+       }
+     },
+ 
+-    requestSignature: function($fileElement, file) {
++    requestSignature: function ($fileElement, file) {
+       // Use the file object and ask Drupal to generate the appropriate signed
+       // request for us.
+       var signingPostData = {
+@@ -165,7 +165,7 @@
+      * @param {string} [label]
+      *   An optional label
+      */
+-    setCorsUploadProgress: function($progressBar, percentage, label) {
++    setCorsUploadProgress: function ($progressBar, percentage, label) {
+       $progressBar.find('div.progress__bar').css('width', percentage + '%');
+       $progressBar.find('div.progress__percentage').html(percentage + '%');
+       if (label) {
+@@ -173,10 +173,10 @@
+       }
+     },
+ 
+-    uploadToAws: function(file, signedFormData, $progressBar) {
++    uploadToAws: function (file, signedFormData, $progressBar) {
+       // Take the signed data and construct a form out of it.
+       var uploadFormData = new FormData();
+-      $.each(signedFormData.inputs, function(key, value) {
++      $.each(signedFormData.inputs, function (key, value) {
+         uploadFormData.append(key, value);
+       });
+ 
+@@ -209,7 +209,7 @@
+     /**
+      * Adds client side validation for the input[type=file].
+      */
+-    validateFileExtension: function($fileElement) {
++    validateFileExtension: function ($fileElement) {
+       // @todo Figure out why Drupal.file.validateFileExtension is not getting triggered.
+       // @todo Figure out what additional validation should be run.
+       // @see https://www.drupal.org/node/2235977
+@@ -283,4 +283,3 @@
+   };
+ 
+ })(jQuery, Drupal, drupalSettings);
+-
+diff --git a/tests/src/Unit/Flysystem/S3Test.php b/tests/src/Unit/Flysystem/S3Test.php
+index b6491bb..dcf6d0e 100644
+--- a/tests/src/Unit/Flysystem/S3Test.php
++++ b/tests/src/Unit/Flysystem/S3Test.php
+@@ -23,6 +23,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
+  */
+ class S3Test extends UnitTestCase {
+ 
++  /**
++   *
++   */
+   public function test() {
+     $configuration = [
+       'bucket' => 'example-bucket',
+@@ -72,6 +75,9 @@ class S3Test extends UnitTestCase {
+     $this->assertInstanceOf(Credentials::class, $client_config['credentials']);
+   }
+ 
++  /**
++   *
++   */
+   public function testCreate() {
+     $container = new ContainerBuilder();
+     $container->set('request_stack', new RequestStack());
+@@ -88,6 +94,9 @@ class S3Test extends UnitTestCase {
+     $this->assertInstanceOf(S3::class, $plugin);
+   }
+ 
++  /**
++   *
++   */
+   public function testCreateUsingNonAwsConfiguration() {
+     $container = new ContainerBuilder();
+     $container->set('request_stack', new RequestStack());
+@@ -106,6 +115,9 @@ class S3Test extends UnitTestCase {
+     $this->assertSame('https://api.somewhere.tld', (string) $plugin->getAdapter()->getClient()->getEndpoint());
+   }
+ 
++  /**
++   *
++   */
+   public function testCreateUsingNonAwsConfigurationWithBucket() {
+     $container = new ContainerBuilder();
+     $container->set('request_stack', new RequestStack());
+@@ -125,6 +137,9 @@ class S3Test extends UnitTestCase {
+     $this->assertSame('https://api.somewhere.tld', (string) $plugin->getAdapter()->getClient()->getEndpoint());
+   }
+ 
++  /**
++   *
++   */
+   public function testEmptyCnameDoesNotBreakConfiguration() {
+     $configuration = [
+       'cname'    => NULL,
+@@ -135,6 +150,9 @@ class S3Test extends UnitTestCase {
+     $this->assertSame('http://s3.amazonaws.com/my-bucket/foo.html', $plugin->getExternalUrl('s3://foo.html'));
+   }
+ 
++  /**
++   *
++   */
+   public function testEnsure() {
+     $client = $this->prophesize(S3ClientInterface::class);
+     $client->doesBucketExist(Argument::type('string'))->willReturn(TRUE);
+@@ -150,6 +168,9 @@ class S3Test extends UnitTestCase {
+     $this->assertSame(RfcLogLevel::ERROR, $result[0]['severity']);
+   }
+ 
++  /**
++   *
++   */
+   public function testIamAuth() {
+     $container = new ContainerBuilder();
+     $container->set('request_stack', new RequestStack());

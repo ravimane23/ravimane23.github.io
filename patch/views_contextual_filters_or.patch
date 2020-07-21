@@ -1,0 +1,154 @@
+diff --git a/src/Plugin/views/display/ExtendedEntityReference.php b/src/Plugin/views/display/ExtendedEntityReference.php
+index 0e8c05e..b51144d 100644
+--- a/src/Plugin/views/display/ExtendedEntityReference.php
++++ b/src/Plugin/views/display/ExtendedEntityReference.php
+@@ -11,6 +11,7 @@ use Drupal\views\Plugin\views\display\EntityReference;
+  * @ingroup views_display_plugins
+  */
+ class ExtendedEntityReference extends EntityReference {
++
+   /**
+    * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::optionsSummary().
+    */
+@@ -18,4 +19,5 @@ class ExtendedEntityReference extends EntityReference {
+     DisplayPluginBase::optionsSummary($categories, $options);
+     unset($options['title']);
+   }
++
+ }
+diff --git a/src/Plugin/views/query/ExtendedSearchApiQuery.php b/src/Plugin/views/query/ExtendedSearchApiQuery.php
+index fb44a7b..46f34e4 100644
+--- a/src/Plugin/views/query/ExtendedSearchApiQuery.php
++++ b/src/Plugin/views/query/ExtendedSearchApiQuery.php
+@@ -5,7 +5,6 @@ namespace Drupal\views_contextual_filters_or\Plugin\views\query;
+ use Drupal\search_api\Plugin\views\query\SearchApiQuery;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\views\ViewExecutable;
+-use Drupal\Core\Url;
+ 
+ /**
+  * Object used to create a SELECT query.
+@@ -18,9 +17,9 @@ class ExtendedSearchApiQuery extends SearchApiQuery {
+   public function defineOptions() {
+     $options = parent::defineOptions();
+ 
+-    $options['contextual_filters_or'] = array(
++    $options['contextual_filters_or'] = [
+       'default' => FALSE,
+-    );
++    ];
+ 
+     return $options;
+   }
+@@ -31,12 +30,12 @@ class ExtendedSearchApiQuery extends SearchApiQuery {
+   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
+     parent::buildOptionsForm($form, $form_state);
+ 
+-    $form['contextual_filters_or'] = array(
++    $form['contextual_filters_or'] = [
+       '#title' => t('Contextual filters OR'),
+       '#description' => t('Contextual filters applied to OR logic.'),
+       '#type' => 'checkbox',
+       '#default_value' => !empty($this->options['contextual_filters_or']),
+-    );
++    ];
+   }
+ 
+   /**
+diff --git a/src/Plugin/views/query/ExtendedSql.php b/src/Plugin/views/query/ExtendedSql.php
+index 55f461c..a3c4506 100644
+--- a/src/Plugin/views/query/ExtendedSql.php
++++ b/src/Plugin/views/query/ExtendedSql.php
+@@ -10,12 +10,15 @@ use Drupal\Core\Form\FormStateInterface;
+  */
+ class ExtendedSql extends Sql {
+ 
++  /**
++   *
++   */
+   protected function defineOptions() {
+     $options = parent::defineOptions();
+ 
+-    $options['contextual_filters_or'] = array(
++    $options['contextual_filters_or'] = [
+       'default' => FALSE,
+-    );
++    ];
+ 
+     return $options;
+   }
+@@ -26,12 +29,12 @@ class ExtendedSql extends Sql {
+   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
+     parent::buildOptionsForm($form, $form_state);
+ 
+-    $form['contextual_filters_or'] = array(
++    $form['contextual_filters_or'] = [
+       '#title' => t('Contextual filters OR'),
+       '#description' => t('Contextual filters applied to OR logic.'),
+       '#type' => 'checkbox',
+       '#default_value' => !empty($this->options['contextual_filters_or']),
+-    );
++    ];
+   }
+ 
+   /**
+@@ -81,11 +84,11 @@ class ExtendedSql extends Sql {
+       $this->setWhereGroup($op, $group);
+     }
+ 
+-    $this->where[$group]['conditions'][] = array(
++    $this->where[$group]['conditions'][] = [
+       'field' => $field,
+       'value' => $value,
+       'operator' => $operator,
+-    );
++    ];
+   }
+ 
+   /**
+@@ -107,7 +110,7 @@ class ExtendedSql extends Sql {
+    *
+    * @see QueryConditionInterface::where()
+    */
+-  public function addWhereExpression($group, $snippet, $args = array()) {
++  public function addWhereExpression($group, $snippet, $args = []) {
+     // Ensure all variants of 0 are actually 0. Thus '', 0 and NULL are all
+     // the default group.
+     if (empty($group)) {
+@@ -120,11 +123,11 @@ class ExtendedSql extends Sql {
+       $this->setWhereGroup($op, $group);
+     }
+ 
+-    $this->where[$group]['conditions'][] = array(
++    $this->where[$group]['conditions'][] = [
+       'field' => $snippet,
+       'value' => $args,
+       'operator' => 'formula',
+-    );
++    ];
+   }
+ 
+   /**
+@@ -145,7 +148,7 @@ class ExtendedSql extends Sql {
+    *
+    * @see QueryConditionInterface::having()
+    */
+-  public function addHavingExpression($group, $snippet, $args = array()) {
++  public function addHavingExpression($group, $snippet, $args = []) {
+     // Ensure all variants of 0 are actually 0. Thus '', 0 and NULL are all
+     // the default group.
+     if (empty($group)) {
+@@ -159,10 +162,11 @@ class ExtendedSql extends Sql {
+     }
+ 
+     // Add the clause and the args.
+-    $this->having[$group]['conditions'][] = array(
++    $this->having[$group]['conditions'][] = [
+       'field' => $snippet,
+       'value' => $args,
+       'operator' => 'formula',
+-    );
++    ];
+   }
++
+ }

@@ -1,0 +1,101 @@
+diff --git a/src/Plugin/Field/FieldFormatter/PlainStringFormatter.php b/src/Plugin/Field/FieldFormatter/PlainStringFormatter.php
+index 31cf2a4..717da86 100644
+--- a/src/Plugin/Field/FieldFormatter/PlainStringFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/PlainStringFormatter.php
+@@ -40,7 +40,7 @@ class PlainStringFormatter extends FormatterBase {
+    * {@inheritdoc}
+    */
+   public static function defaultWrapTagOptions() {
+-    return array(
++    return [
+       '_none' => t('- None -'),
+       'div' => t('DIV'),
+       'h1' => t('H1'),
+@@ -50,28 +50,28 @@ class PlainStringFormatter extends FormatterBase {
+       'h5' => t('H5'),
+       'h6' => t('H6'),
+       'span' => t('SPAN'),
+-    );
++    ];
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+-    $element = array();
+-    $element['wrap_tag'] = array(
++    $element = [];
++    $element['wrap_tag'] = [
+       '#title' => t('Field wrapper tag'),
+       '#type' => 'select',
+       '#default_value' => $this->getSetting('wrap_tag'),
+       '#options' => $this->defaultWrapTagOptions(),
+-    );
++    ];
+ 
+-    $element['wrap_class'] = array(
++    $element['wrap_class'] = [
+       '#title' => t('Field class'),
+       '#type' => 'textfield',
+       '#maxlength' => 128,
+       '#default_value' => $this->getSetting('wrap_class'),
+       '#description' => t('Separate multiple classes with space or comma.'),
+-    );
++    ];
+ 
+     return $element;
+   }
+@@ -80,21 +80,21 @@ class PlainStringFormatter extends FormatterBase {
+    * {@inheritdoc}
+    */
+   public function settingsSummary() {
+-    $summary = array();
++    $summary = [];
+     $wrap_tag = $this->getSetting('wrap_tag');
+     if ('_none' == $wrap_tag) {
+       $summary[] = t('No wrap tag defined.');
+     }
+     else {
+-      $summary[] = t('Wrap text with tag: @tag', array('@tag' => $wrap_tag));
++      $summary[] = t('Wrap text with tag: @tag', ['@tag' => $wrap_tag]);
+     }
+ 
+     $class = $this->getSetting('wrap_class');
+     $class = $this->prepareClasses($class);
+     if ($class) {
+       $summary[] = $this->formatPlural(count($class),
+-        t('Wrapper additional CSS class: @class.', array('@class' => implode('', $class))),
+-        t('Wrapper additional CSS classes: @class.', array('@class' => implode(' ', $class)))
++        t('Wrapper additional CSS class: @class.', ['@class' => implode('', $class)]),
++        t('Wrapper additional CSS classes: @class.', ['@class' => implode(' ', $class)])
+       );
+     }
+     else {
+@@ -124,7 +124,7 @@ class PlainStringFormatter extends FormatterBase {
+    * {@inheritdoc}
+    */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+-    $elements = array();
++    $elements = [];
+ 
+     $wrap_tag = $this->getSetting('wrap_tag');
+     if ('_none' == $wrap_tag) {
+@@ -134,14 +134,14 @@ class PlainStringFormatter extends FormatterBase {
+     $class = $this->prepareClasses($class);
+ 
+     foreach ($items as $delta => $item) {
+-      $elements[$delta] = array(
++      $elements[$delta] = [
+         '#type' => 'html_tag',
+         '#tag' => $wrap_tag,
+         '#value' => $item->value,
+         '#attributes' => [
+           'class' => $class,
+-        ]
+-      );
++        ],
++      ];
+     }
+ 
+     return $elements;

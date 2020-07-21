@@ -1,0 +1,91 @@
+diff --git a/js/autocomplete.js b/js/autocomplete.js
+index a521f624..8e97f08d 100644
+--- a/js/autocomplete.js
++++ b/js/autocomplete.js
+@@ -113,20 +113,20 @@
+         var closing = false;
+ 
+         $.extend(autocomplete.options, {
+-          close: function() {
++          close: function () {
+             // Avoid double-pop-up issue.
+             closing = true;
+-            setTimeout(function() {
++            setTimeout(function () {
+               closing = false;
+             }, 300);
+           }
+         });
+         // Use jQuery UI Autocomplete on the textfield.
+         $autocomplete.autocomplete(autocomplete.options)
+-          .each(function() {
++          .each(function () {
+             $(this).data('ui-autocomplete')._renderItem = autocomplete.options.renderItem;
+             // Immediately pop out the autocomplete when the field gets focus.
+-            $(this).focus(function() {
++            $(this).focus(function () {
+               if (!closing) {
+                 $(this).autocomplete('search');
+               }
+diff --git a/js/debug.js b/js/debug.js
+index ca208d0a..c3d3ebd0 100644
+--- a/js/debug.js
++++ b/js/debug.js
+@@ -13,7 +13,7 @@
+    * @type {Drupal~behavior}
+    */
+   Drupal.behaviors.rules_debug_log = {
+-    attach: function(context) {
++    attach: function (context) {
+       // Handle clicks on Open/Close text.
+       $(context).find('.rules-debug-open-all').once('rules-open-all-details').click(function (event) {
+         // Don't let the parent details element handle this event.
+diff --git a/src/Commands/RulesCommands.php b/src/Commands/RulesCommands.php
+index a427604f..969c14da 100644
+--- a/src/Commands/RulesCommands.php
++++ b/src/Commands/RulesCommands.php
+@@ -283,7 +283,6 @@ class RulesCommands extends DrushCommands {
+    */
+   public function revert($rule) {
+     // @todo Implement this function.
+-
+     // The $rule argument could refer to a Reaction Rule or a Rules Component.
+     $config = $this->configStorage->read('rules.reaction.' . $rule);
+     if (empty($config)) {
+diff --git a/src/Core/ExecutablePluginTrait.php b/src/Core/ExecutablePluginTrait.php
+index ee51a1db..bb7ffb81 100644
+--- a/src/Core/ExecutablePluginTrait.php
++++ b/src/Core/ExecutablePluginTrait.php
+@@ -21,7 +21,7 @@ trait ExecutablePluginTrait {
+   protected function getLabelValue() {
+     $definition = $this->getPluginDefinition();
+     if (empty($definition['label'])) {
+-      throw new InvalidPluginDefinitionException('The label is not defined for plugin ' . $this->getPluginId() . ' (' . __CLASS__ . ').');
++      throw new InvalidPluginDefinitionException('The label is not defined for plugin ' . $this->getPluginId() . ' (' . self::class . ').');
+     }
+     // The label can be an instance of
+     // \Drupal\Core\StringTranslation\TranslatableMarkup here, so make sure to
+diff --git a/src/Form/EditExpressionForm.php b/src/Form/EditExpressionForm.php
+index 8d9c9978..afc624e9 100644
+--- a/src/Form/EditExpressionForm.php
++++ b/src/Form/EditExpressionForm.php
+@@ -114,7 +114,6 @@ class EditExpressionForm extends FormBase {
+     $this->rulesUiHandler->validateLock($form, $form_state);
+ 
+     // @todo This ignores ExpressionFormInterface::validateForm().
+-
+     $component = $this->buildComponent($form, $form_state);
+     $violations = $component->checkIntegrity();
+ 
+diff --git a/src/Logger/RulesDebugLoggerChannel.php b/src/Logger/RulesDebugLoggerChannel.php
+index fb2a3e3d..87aae2f7 100644
+--- a/src/Logger/RulesDebugLoggerChannel.php
++++ b/src/Logger/RulesDebugLoggerChannel.php
+@@ -112,7 +112,6 @@ class RulesDebugLoggerChannel extends LoggerChannel {
+     // so we don't have to re-write the theming functions and JavaScript too
+     // much. We added keys for D8 so we don't have to guess the contents of the
+     // array elemens from their order index.
+-
+     $rfc_level = $level;
+     if (is_string($level)) {
+       // Convert to integer equivalent for consistency with RFC 5424.

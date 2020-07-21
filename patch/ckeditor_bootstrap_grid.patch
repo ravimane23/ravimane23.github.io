@@ -1,0 +1,24 @@
+diff --git a/js/plugins/widgetbootstrap/plugin.es6.js b/js/plugins/widgetbootstrap/plugin.es6.js
+index d69154e..1bfb907 100644
+--- a/js/plugins/widgetbootstrap/plugin.es6.js
++++ b/js/plugins/widgetbootstrap/plugin.es6.js
+@@ -135,6 +135,5 @@
+       }
+     }
+ 
+-
+   });
+ }());
+diff --git a/js/plugins/widgettemplatemenu/plugin.es6.js b/js/plugins/widgettemplatemenu/plugin.es6.js
+index e3eeff1..8c58e17 100644
+--- a/js/plugins/widgettemplatemenu/plugin.es6.js
++++ b/js/plugins/widgettemplatemenu/plugin.es6.js
+@@ -40,7 +40,7 @@
+ 
+       editor.ui.add('WidgetTemplateMenu', CKEDITOR.UI_MENUBUTTON, {
+         label: 'Insert Template',
+-        icon: `${this.path}icons/widgettemplatemenu.png`,
++        icon: `${this.path}icons / widgettemplatemenu.png`,
+         onMenu() {
+           // You can control the state of your commands live, every time
+           // the menu is opened.

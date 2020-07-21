@@ -1,0 +1,118 @@
+diff --git a/src/ContainerAccessControlHandler.php b/src/ContainerAccessControlHandler.php
+index db5c2db..4221146 100644
+--- a/src/ContainerAccessControlHandler.php
++++ b/src/ContainerAccessControlHandler.php
+@@ -7,7 +7,7 @@ use Drupal\Component\Plugin\Exception\MissingValueContextException;
+ use Drupal\Core\Access\AccessResult;
+ use Drupal\Core\Cache\Cache;
+ use Drupal\Core\Cache\CacheableDependencyInterface;
+-// use Drupal\Core\Condition\ConditionAccessResolverTrait;
++// Use Drupal\Core\Condition\ConditionAccessResolverTrait;.
+ use Drupal\Core\Entity\EntityAccessControlHandler;
+ use Drupal\Core\Entity\EntityHandlerInterface;
+ use Drupal\Core\Entity\EntityInterface;
+@@ -26,7 +26,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ class ContainerAccessControlHandler extends EntityAccessControlHandler implements EntityHandlerInterface {
+ 
+   // Comment next to declare resolveConditions() here.
+-  // use ConditionAccessResolverTrait;
++  // use ConditionAccessResolverTrait;.
+ 
+   /**
+    * The plugin context handler.
+@@ -90,7 +90,6 @@ class ContainerAccessControlHandler extends EntityAccessControlHandler implement
+ 
+     // @todo Why is this not default code for an entity that uses the condition
+     // plugin interface? Most of it applies generally.
+-
+     // Store entity to have access in resolveConditions().
+     /** @var \Drupal\google_tag\Entity\Container $entity */
+     $this->entity = $entity;
+@@ -118,17 +117,17 @@ class ContainerAccessControlHandler extends EntityAccessControlHandler implement
+       // Because cacheable metadata might be missing, forbid cache write.
+       $access = AccessResult::forbidden()->setCacheMaxAge(0);
+     }
+-/*
++    /*
+     elseif ($missing_value) {
+-      // The context exists but has no value. For example, the node type
+-      // condition will have a missing context value on any non-node route like
+-      // the frontpage.
+-      // @todo Checking this state here prevents the evaluation of other
+-      // conditions. If this condition does not apply, then that should NOT
+-      // preclude further evaluation NOR result in automatic access.
+-      $access = AccessResult::allowed();
++    // The context exists but has no value. For example, the node type
++    // condition will have a missing context value on any non-node route like
++    // the frontpage.
++    // @todo Checking this state here prevents the evaluation of other
++    // conditions. If this condition does not apply, then that should NOT
++    // preclude further evaluation NOR result in automatic access.
++    $access = AccessResult::allowed();
+     }
+-*/
++     */
+     elseif ($this->resolveConditions($conditions, 'and') !== FALSE) {
+       $access = AccessResult::allowed();
+     }
+diff --git a/src/Entity/Container.php b/src/Entity/Container.php
+index e2d5d60..bc77b5e 100644
+--- a/src/Entity/Container.php
++++ b/src/Entity/Container.php
+@@ -609,14 +609,12 @@ EOS;
+   public function noscriptTag($type = 'noscript', $weight = -10) {
+     // Note: depending on the theme, this may not place the snippet immediately
+     // after the body tag but should be close and it can be altered.
+-
+     // @see https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Render!theme.api.php/group/theme_render/8.2.x
+     // The markup is passed through \Drupal\Component\Utility\Xss::filterAdmin()
+     // which strips known vectors while allowing a permissive list of HTML tags
+     // that are not XSS vectors. (e.g., <script> and <style> are not allowed.)
+     // As markup, core removes the 'style' attribute from the noscript snippet.
+     // With the inline template type, core does not alter the noscript snippet.
+-
+     $contents = $this->getSnippetContents($type);
+     $attachment = $contents ? [
+       "google_tag_{$type}_tag__{$this->id()}" => [
+diff --git a/src/Entity/ContainerManager.php b/src/Entity/ContainerManager.php
+index 80fe83e..46942a2 100644
+--- a/src/Entity/ContainerManager.php
++++ b/src/Entity/ContainerManager.php
+@@ -2,7 +2,7 @@
+ 
+ namespace Drupal\google_tag\Entity;
+ 
+-// use Drupal\google_tag\Entity\ContainerManagerInterface;
++// Use Drupal\google_tag\Entity\ContainerManagerInterface;.
+ use Drupal\Core\Cache\CacheBackendInterface;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Config\Entity\ConfigEntityInterface;
+diff --git a/src/Form/ContainerForm.php b/src/Form/ContainerForm.php
+index 5b5a596..e2be6e4 100644
+--- a/src/Form/ContainerForm.php
++++ b/src/Form/ContainerForm.php
+@@ -78,7 +78,6 @@ class ContainerForm extends EntityForm {
+     // The main premise of entity forms is that we get to work with an entity
+     // object at all times instead of checking submitted values from the form
+     // state.
+-
+     // Build form elements.
+     $form['label'] = [
+       '#type' => 'textfield',
+@@ -197,14 +196,14 @@ class ContainerForm extends EntityForm {
+       $form_state->set(['conditions', $condition_id], $condition);
+       $form[$condition_id] = $this->conditionFieldset($condition, $form_state);
+     }
+-/*
++    /*
+     // Add comment to first condition tab.
+     // @todo This would apply if all insertion conditions were converted to
+     // condition plugins.
+     $description = $this->t('On this and the following tabs, specify the conditions on which the GTM JavaScript snippet will either be inserted on or omitted from the page response, thereby enabling or disabling tracking and other analytics. All conditions must be satisfied for the snippet to be inserted. The snippet will be omitted if any condition is not met.');
+     $condition_id = current(array_keys($definitions));
+     $form[$condition_id]['#description'] = $description;
+-*/
++     */
+     return $form;
+   }
+ 

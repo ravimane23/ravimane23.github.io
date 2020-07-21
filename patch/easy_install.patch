@@ -1,0 +1,39 @@
+diff --git a/src/Form/PurgeConfigurationsConfirmForm.php b/src/Form/PurgeConfigurationsConfirmForm.php
+index 771ca81..876fbcc 100644
+--- a/src/Form/PurgeConfigurationsConfirmForm.php
++++ b/src/Form/PurgeConfigurationsConfirmForm.php
+@@ -144,8 +144,8 @@ class PurgeConfigurationsConfirmForm extends ConfirmFormBase {
+     foreach ($this->modules['install'] as $module => $module_name) {
+       $install_dir = drupal_get_path('module', $module) . '/' . InstallStorage::CONFIG_INSTALL_DIRECTORY;
+       $optional_dir = drupal_get_path('module', $module) . '/' . InstallStorage::CONFIG_OPTIONAL_DIRECTORY;
+-      if(file_exists($install_dir)) { 
+-          $install_details =  $this->fileSystem->scanDirectory($install_dir, "/\.(yml)$/");
++      if (file_exists($install_dir)) {
++        $install_details = $this->fileSystem->scanDirectory($install_dir, "/\.(yml)$/");
+       }
+       if (!empty($install_details)) {
+         $form['modules_config'][$module] = [
+@@ -156,9 +156,9 @@ class PurgeConfigurationsConfirmForm extends ConfirmFormBase {
+           '#validated' => TRUE,
+           '#open' => TRUE,
+         ];
+-        if(file_exists($install_dir)) { 
+-            $install_details =  $this->fileSystem->scanDirectory($install_dir, "/\.(yml)$/");
+-        }    
++        if (file_exists($install_dir)) {
++          $install_details = $this->fileSystem->scanDirectory($install_dir, "/\.(yml)$/");
++        }
+         $ins_options = [];
+         foreach ($install_details as $config_value) {
+           $ins_options[$config_value->name] = $config_value->name;
+@@ -172,8 +172,8 @@ class PurgeConfigurationsConfirmForm extends ConfirmFormBase {
+             '#validated' => TRUE,
+           ];
+         }
+-        if(file_exists($optional_dir)) {
+-          $optional_details =  $this->fileSystem->scanDirectory($optional_dir, "/\.(yml)$/");
++        if (file_exists($optional_dir)) {
++          $optional_details = $this->fileSystem->scanDirectory($optional_dir, "/\.(yml)$/");
+           $opt_options = [];
+           foreach ($optional_details as $config_value) {
+             $opt_options[$config_value->name] = $config_value->name;

@@ -1,0 +1,672 @@
+diff --git a/src/Config.php b/src/Config.php
+index f977c8f..435bce8 100644
+--- a/src/Config.php
++++ b/src/Config.php
+@@ -2,8 +2,10 @@
+ 
+ namespace Drupal\clamav;
+ 
+-
+-class Config  {
++/**
++ *
++ */
++class Config {
+   const MODE_DAEMON = 0;
+   const MODE_EXECUTABLE = 1;
+   const MODE_UNIX_SOCKET = 2;
+@@ -11,10 +13,11 @@ class Config  {
+   const OUTAGE_BLOCK_UNCHECKED = 0;
+   const OUTAGE_ALLOW_UNCHECKED = 1;
+ 
+-  // Drupal read-only config object.
++  /**
++   * Drupal read-only config object.
++   */
+   protected $_config;
+ 
+-
+   /**
+    * Constructor.
+    *
+@@ -24,20 +27,37 @@ class Config  {
+     $this->_config = \Drupal::config('clamav.settings');
+   }
+ 
+-  // Global config options:
++  /**
++   * Global config options:.
++   */
+   public function enabled() {
+     return $this->_config->get('enabled');
+   }
++
++  /**
++   *
++   */
+   public function scan_mode() {
+     return $this->_config->get('scan_mode');
+   }
++
++  /**
++   *
++   */
+   public function outage_action() {
+     return $this->_config->get('outage_action');
+   }
++
++  /**
++   *
++   */
+   public function verbosity() {
+     return $this->_config->get('verbosity');
+   }
+ 
++  /**
++   *
++   */
+   public function get($name) {
+     return $this->_config->get($name);
+   }
+diff --git a/src/Form/ClamAVConfigForm.php b/src/Form/ClamAVConfigForm.php
+index e832581..53f4b63 100644
+--- a/src/Form/ClamAVConfigForm.php
++++ b/src/Form/ClamAVConfigForm.php
+@@ -9,7 +9,6 @@ use Drupal\Core\Link;
+ use Drupal\Core\Url;
+ 
+ use Drupal\clamav\Config;
+-use Drupal\clamav\Scanner;
+ 
+ /**
+  * Configure file system settings for this site.
+@@ -36,162 +35,156 @@ class ClamAVConfigForm extends ConfigFormBase {
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     $config = $this->config('clamav.settings');
+ 
+-    $form['enabled'] = array(
++    $form['enabled'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Enable ClamAV integration'),
+       '#default_value' => $config->get('enabled'),
+-    );
++    ];
+ 
+-    $form['scan_mechanism_wrapper'] = array(
++    $form['scan_mechanism_wrapper'] = [
+       '#type' => 'details',
+       '#title' => $this->t('Scan mechanism'),
+       '#open' => TRUE,
+-    );
+-    $form['scan_mechanism_wrapper']['scan_mode'] = array(
++    ];
++    $form['scan_mechanism_wrapper']['scan_mode'] = [
+       '#type' => 'radios',
+       '#title' => $this->t('Scan mechanism'),
+-      '#options' => array(
++      '#options' => [
+         Config::MODE_EXECUTABLE  => $this->t('Executable'),
+         Config::MODE_DAEMON      => $this->t('Daemon mode (over TCP/IP)'),
+-        Config::MODE_UNIX_SOCKET => $this->t('Daemon mode (over Unix socket)')
+-      ),
++        Config::MODE_UNIX_SOCKET => $this->t('Daemon mode (over Unix socket)'),
++      ],
+       '#default_value' => $config->get('scan_mode'),
+       '#description' => $this->t("Control how Drupal connects to ClamAV.<br />Daemon mode is recommended if the ClamAV service is capable of running as a daemon."),
+-    );
+-
+-
++    ];
+ 
+     // Configuration if ClamAV is set to Executable mode.
+-    $form['scan_mechanism_wrapper']['mode_executable'] = array(
++    $form['scan_mechanism_wrapper']['mode_executable'] = [
+       '#type' => 'details',
+       '#title' => $this->t('Executable mode configuration'),
+       '#open' => TRUE,
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[name="scan_mode"]' => array('value' => Config::MODE_EXECUTABLE),
+-        ),
+-      ),
+-    );
+-    $form['scan_mechanism_wrapper']['mode_executable']['executable_path'] = array(
++      '#states' => [
++        'visible' => [
++          ':input[name="scan_mode"]' => ['value' => Config::MODE_EXECUTABLE],
++        ],
++      ],
++    ];
++    $form['scan_mechanism_wrapper']['mode_executable']['executable_path'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Executable path'),
+       '#default_value' => $config->get('mode_executable.executable_path'),
+       '#maxlength' => 255,
+       // '#description' => t('The path to the ClamAV executable. Defaults to %default_path.', array('%default_path' => CLAMAV_DEFAULT_PATH)),
+-    );
+-    $form['scan_mechanism_wrapper']['mode_executable']['executable_parameters'] = array(
++    ];
++    $form['scan_mechanism_wrapper']['mode_executable']['executable_parameters'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Executable parameters'),
+       '#default_value' => $config->get('mode_executable.executable_parameters') ?: '',
+       '#maxlength' => 255,
+-      '#description' => $this->t('Optional parameters to pass to the clamscan executable, e.g. %example.', array('%example' => '--max-recursion=10')),
+-    );
+-
++      '#description' => $this->t('Optional parameters to pass to the clamscan executable, e.g. %example.', ['%example' => '--max-recursion=10']),
++    ];
+ 
+     // Configuration if ClamAV is set to Daemon mode.
+-    $form['scan_mechanism_wrapper']['mode_daemon_tcpip'] = array(
++    $form['scan_mechanism_wrapper']['mode_daemon_tcpip'] = [
+       '#type' => 'details',
+       '#title' => $this->t('Daemon mode configuration (over TCP/IP)'),
+       '#open' => TRUE,
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[name="scan_mode"]' => array('value' => Config::MODE_DAEMON),
+-        ),
+-      ),
+-    );
+-    $form['scan_mechanism_wrapper']['mode_daemon_tcpip']['hostname'] = array(
++      '#states' => [
++        'visible' => [
++          ':input[name="scan_mode"]' => ['value' => Config::MODE_DAEMON],
++        ],
++      ],
++    ];
++    $form['scan_mechanism_wrapper']['mode_daemon_tcpip']['hostname'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Hostname'),
+       '#default_value' => $config->get('mode_daemon_tcpip.hostname'),
+       '#maxlength' => 255,
+       // '#description' => t('The hostname for the ClamAV daemon. Defaults to %default_host.', array('%default_host' => CLAMAV_DEFAULT_HOST)),
+-    );
+-    $form['scan_mechanism_wrapper']['mode_daemon_tcpip']['port'] = array(
++    ];
++    $form['scan_mechanism_wrapper']['mode_daemon_tcpip']['port'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Port'),
+       '#default_value' => $config->get('mode_daemon_tcpip.port'),
+       '#size' => 6,
+       '#maxlength' => 8,
+       // '#description' => t('The port for the ClamAV daemon.  Defaults to port %default_port.  Must be between 1 and 65535.', array('%default_port' => CLAMAV_DEFAULT_PORT)),
+-    );
+-
++    ];
+ 
+     // Configuration if ClamAV is set to Daemon mode over Unix socket.
+-    $form['scan_mechanism_wrapper']['mode_daemon_unixsocket'] = array(
++    $form['scan_mechanism_wrapper']['mode_daemon_unixsocket'] = [
+       '#type' => 'details',
+       '#title' => $this->t('Daemon mode configuration (over Unix socket)'),
+       '#open' => TRUE,
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[name="scan_mode"]' => array('value' => Config::MODE_UNIX_SOCKET),
+-        ),
+-      ),
+-    );
+-    $form['scan_mechanism_wrapper']['mode_daemon_unixsocket']['unixsocket'] = array(
++      '#states' => [
++        'visible' => [
++          ':input[name="scan_mode"]' => ['value' => Config::MODE_UNIX_SOCKET],
++        ],
++      ],
++    ];
++    $form['scan_mechanism_wrapper']['mode_daemon_unixsocket']['unixsocket'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Socket path'),
+       '#default_value' => $config->get('mode_daemon_unixsocket.unixsocket'),
+       '#maxlength' => 255,
+       // '#description' => t('The unix socket path for the ClamAV daemon. Defaults to %default_socket.', array('%default_socket' => CLAMAV_DEFAULT_UNIX_SOCKET)),
+-    );
++    ];
+ 
+-    $form['outage_actions_wrapper'] = array(
++    $form['outage_actions_wrapper'] = [
+       '#type' => 'details',
+       '#title' => $this->t('Outage behaviour'),
+       '#open' => TRUE,
+-    );
+-    $form['outage_actions_wrapper']['outage_action'] = array(
++    ];
++    $form['outage_actions_wrapper']['outage_action'] = [
+       '#type' => 'radios',
+       '#title' => $this->t('Behaviour when ClamAV is unavailable'),
+-      '#options' => array(
++      '#options' => [
+         Config::OUTAGE_BLOCK_UNCHECKED => $this->t('Block unchecked files'),
+         Config::OUTAGE_ALLOW_UNCHECKED => $this->t('Allow unchecked files'),
+-      ),
++      ],
+       '#default_value' => $config->get('outage_action'),
+-    );
+-
++    ];
+ 
+     // Allow scanning according to scheme-wrapper.
+-    $form['schemes'] = array(
++    $form['schemes'] = [
+       '#type' => 'details',
+       '#title' => 'Scannable schemes / stream wrappers',
+       '#open' => TRUE,
+       '#description' => $this->t('By default only @local schemes are scannable.',
+-        array('@local' => Link::fromTextAndUrl(t('local file-systems'), Url::fromUri('https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21StreamWrapper%21LocalStream.php/class/LocalStream/8.2.x'))->toString())),
+-    );
++        ['@local' => Link::fromTextAndUrl(t('local file-systems'), Url::fromUri('https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21StreamWrapper%21LocalStream.php/class/LocalStream/8.2.x'))->toString()]),
++    ];
+ 
+     $local_schemes  = $this->scheme_wrappers_available('local');
+     $remote_schemes = $this->scheme_wrappers_available('remote');
+ 
+     if (count($local_schemes)) {
+-      $form['schemes']['clamav_local_schemes'] = array(
++      $form['schemes']['clamav_local_schemes'] = [
+         '#type' => 'checkboxes',
+         '#title' => $this->t('Local schemes'),
+         '#options' => $local_schemes,
+         '#default_value' => $this->scheme_wrappers_to_scan('local'),
+-      );
++      ];
+     }
+     if (count($remote_schemes)) {
+-      $form['schemes']['clamav_remote_schemes'] = array(
++      $form['schemes']['clamav_remote_schemes'] = [
+         '#type' => 'checkboxes',
+         '#title' => $this->t('Remote schemes'),
+         '#options' => $remote_schemes,
+         '#default_value' => $this->scheme_wrappers_to_scan('remote'),
+-      );
++      ];
+     }
+ 
+-
+-    $form['verbosity_wrapper'] = array(
++    $form['verbosity_wrapper'] = [
+       '#type' => 'details',
+       '#title' => $this->t('Verbosity'),
+       '#open' => TRUE,
+-    );
+-    $form['verbosity_wrapper']['verbosity'] = array(
++    ];
++    $form['verbosity_wrapper']['verbosity'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Verbose'),
+       '#description' => $this->t('Verbose mode will log all scanned files, including files which pass the ClamAV scan.'),
+       '#default_value' => $config->get('verbosity'),
+-    );
++    ];
+ 
+     return parent::buildForm($form, $form_state);
+   }
+@@ -206,7 +199,6 @@ class ClamAVConfigForm extends ConfigFormBase {
+     // - the executable path exists
+     // - the unix socket exists
+     // - Drupal can connect to the hostname/port (warn but don't fail)
+-    
+   }
+ 
+   /**
+@@ -218,12 +210,12 @@ class ClamAVConfigForm extends ConfigFormBase {
+     // Local schemes behave differently to remote schemes.
+     $local_schemes_to_scan  = (is_array($form_state->getValue('clamav_local_schemes')))
+       ? array_filter($form_state->getValue('clamav_local_schemes'))
+-      : array();
+-    $remote_schemes_to_scan  = (is_array($form_state->getValue('clamav_remote_schemes')))
++      : [];
++    $remote_schemes_to_scan = (is_array($form_state->getValue('clamav_remote_schemes')))
+       ? array_filter($form_state->getValue('clamav_remote_schemes'))
+-      : array();
++      : [];
+     $overridden_schemes = array_merge(
+-      $this->get_overridden_schemes('local',  $local_schemes_to_scan),
++      $this->get_overridden_schemes('local', $local_schemes_to_scan),
+       $this->get_overridden_schemes('remote', $remote_schemes_to_scan)
+     );
+ 
+@@ -275,7 +267,7 @@ class ClamAVConfigForm extends ConfigFormBase {
+         break;
+     }
+ 
+-    $options = array();
++    $options = [];
+     foreach ($schemes as $scheme) {
+       $options[$scheme] = $scheme . '://';
+     }
+@@ -305,7 +297,7 @@ class ClamAVConfigForm extends ConfigFormBase {
+         break;
+     }
+ 
+-    return array_filter($schemes, array('\Drupal\clamav\Scanner', 'isSchemeScannable'));
++    return array_filter($schemes, ['\Drupal\clamav\Scanner', 'isSchemeScannable']);
+   }
+ 
+   /**
+@@ -332,4 +324,5 @@ class ClamAVConfigForm extends ConfigFormBase {
+         return array_keys($overridden);
+     }
+   }
++
+ }
+diff --git a/src/Scanner.php b/src/Scanner.php
+index 532cf53..17a429b 100644
+--- a/src/Scanner.php
++++ b/src/Scanner.php
+@@ -2,10 +2,11 @@
+ 
+ namespace Drupal\clamav;
+ 
+-use Drupal\Core\File\FileSystem;
++use Scanner\DaemonUnixSocket;
++use Scanner\DaemonTCPIP;
++use Scanner\Executable;
+ use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+ use Drupal\file\FileInterface;
+-use Drupal\clamav\Config;
+ 
+ /**
+  * Service class for the ClamAV scanner instance.
+@@ -26,10 +27,14 @@ class Scanner {
+   const FILE_SCANNABLE_IGNORE = NULL;
+ 
+ 
+-  // Instance of a scanner class, implementing ScannerInterface.
++  /**
++   * Instance of a scanner class, implementing ScannerInterface.
++   */
+   protected $scanner = NULL;
+ 
+-  // ClamAV configuration.
++  /**
++   * ClamAV configuration.
++   */
+   protected $config = NULL;
+ 
+   /**
+@@ -38,20 +43,20 @@ class Scanner {
+    * @param object $config
+    *   An instance of \Drupal\clamav\Config.
+    */
+-  public function __construct(\Drupal\clamav\Config $config) {
++  public function __construct(Config $config) {
+     $this->config = $config;
+ 
+     switch ($config->scan_mode()) {
+       case Config::MODE_EXECUTABLE:
+-        $this->scanner = new Scanner\Executable($this->config);
++        $this->scanner = new Executable($this->config);
+         break;
+ 
+       case Config::MODE_DAEMON:
+-        $this->scanner = new Scanner\DaemonTCPIP($this->config);
++        $this->scanner = new DaemonTCPIP($this->config);
+         break;
+ 
+       case Config::MODE_UNIX_SOCKET:
+-        $this->scanner = new Scanner\DaemonUnixSocket($this->config);
++        $this->scanner = new DaemonUnixSocket($this->config);
+         break;
+     }
+   }
+@@ -59,7 +64,7 @@ class Scanner {
+   /**
+    * Check whether the anti-virus checks are enabled.
+    *
+-   * @return boolean
++   * @return bool
+    *   TRUE if files should be scanned.
+    */
+   public function isEnabled() {
+@@ -69,8 +74,8 @@ class Scanner {
+   /**
+    * Check whether files that have not been scanned can be uploaded.
+    *
+-   * @return boolean
+-   *    TRUE if unchecked files are permitted.
++   * @return bool
++   *   TRUE if unchecked files are permitted.
+    */
+   public function allowUncheckedFiles() {
+     return $this->config->outage_action() == Config::OUTAGE_ALLOW_UNCHECKED;
+@@ -79,14 +84,13 @@ class Scanner {
+   /**
+    * Check whether files that have not been scanned can be uploaded.
+    *
+-   * @return boolean
+-   *    TRUE if unchecked files are permitted.
++   * @return bool
++   *   TRUE if unchecked files are permitted.
+    */
+   public function isVerboseModeEnabled() {
+     return $this->config->verbosity();
+   }
+ 
+-
+   /**
+    * Check whether a specific file should be scanned by ClamAV.
+    *
+@@ -94,15 +98,15 @@ class Scanner {
+    * - Image files
+    * - Large files that might take a long time to scan
+    * - Files uploaded by trusted administrators
+-   * - Viruses, intended to be deliberately uploaded to a virus database
++   * - Viruses, intended to be deliberately uploaded to a virus database.
+    *
+    * Files can be excluded from the scans by implementing
+    * hook_clamav_file_is_scannable().
+    *
+-   * @see hook_clamav_file_is_scannable().
++   * @see hook_clamav_file_is_scannable()
+    *
+-   * @return boolean
+-   *    TRUE if a file should be scanned by the anti-virus service.
++   * @return bool
++   *   TRUE if a file should be scanned by the anti-virus service.
+    */
+   public function isScannable(FileInterface $file) {
+     // Check whether this stream-wrapper scheme is scannable.
+@@ -118,7 +122,7 @@ class Scanner {
+     // Modules that do not wish to affact the result should return
+     // FILE_SCANNABLE_IGNORE.
+     foreach (\Drupal::moduleHandler()->getImplementations('clamav_file_is_scannable') as $module) {
+-      $result = \Drupal::moduleHandler()->invoke($module, 'clamav_file_is_scannable', array($file));
++      $result = \Drupal::moduleHandler()->invoke($module, 'clamav_file_is_scannable', [$file]);
+       if ($result !== self::FILE_SCANNABLE_IGNORE) {
+         $scannable = $result;
+       }
+@@ -127,7 +131,6 @@ class Scanner {
+     return $scannable;
+   }
+ 
+-
+   /**
+    * Scan a file for viruses.
+    *
+@@ -153,10 +156,10 @@ class Scanner {
+ 
+     // Prepare to log results.
+     $verbose_mode = $this->config->verbosity();
+-    $replacements = array(
++    $replacements = [
+       '%filename'  => $file->getFileUri(),
+       '%virusname' => $this->scanner->virus_name(),
+-    );
++    ];
+ 
+     switch ($result) {
+       // Log every infected file.
+@@ -205,7 +208,7 @@ class Scanner {
+    *   The machine name of a stream-wrapper scheme, such as "public", or
+    *   "youtube".
+    *
+-   * @return boolean
++   * @return bool
+    *   TRUE if the scheme should be scanned.
+    */
+   public static function isSchemeScannable($scheme) {
+@@ -225,4 +228,5 @@ class Scanner {
+ 
+     return ($scheme_is_local xor $scheme_is_overridden);
+   }
++
+ }
+diff --git a/src/Scanner/DaemonTCPIP.php b/src/Scanner/DaemonTCPIP.php
+index 5d3ea69..c757fd6 100755
+--- a/src/Scanner/DaemonTCPIP.php
++++ b/src/Scanner/DaemonTCPIP.php
+@@ -7,6 +7,9 @@ use Drupal\clamav\ScannerInterface;
+ use Drupal\clamav\Scanner;
+ use Drupal\clamav\Config;
+ 
++/**
++ *
++ */
+ class DaemonTCPIP implements ScannerInterface {
+   protected $_file;
+   protected $_hostname;
+@@ -31,7 +34,7 @@ class DaemonTCPIP implements ScannerInterface {
+ 
+     // Abort if the ClamAV server is unavailable.
+     if (!$scanner_handler) {
+-      \Drupal::logger('Clam AV')->warning('Unable to connect to ClamAV TCP/IP daemon on @hostname:@port', array('@hostname' => $this->_hostname, '@port' => $this->_port));
++      \Drupal::logger('Clam AV')->warning('Unable to connect to ClamAV TCP/IP daemon on @hostname:@port', ['@hostname' => $this->_hostname, '@port' => $this->_port]);
+       return Scanner::FILE_IS_UNCHECKED;
+     }
+ 
+@@ -83,7 +86,7 @@ class DaemonTCPIP implements ScannerInterface {
+   public function version() {
+     $handler = @fsockopen($this->_hostname, $this->_port);
+     if (!$handler) {
+-      \Drupal::logger('Clam AV')->warning('Unable to connect to ClamAV TCP/IP daemon on @hostname:@port', array('@hostname' => $this->_hostname, '@port' => $this->_port));
++      \Drupal::logger('Clam AV')->warning('Unable to connect to ClamAV TCP/IP daemon on @hostname:@port', ['@hostname' => $this->_hostname, '@port' => $this->_port]);
+       return NULL;
+     }
+ 
+@@ -92,4 +95,5 @@ class DaemonTCPIP implements ScannerInterface {
+     fclose($handler);
+     return $content;
+   }
++
+ }
+diff --git a/src/Scanner/DaemonUnixSocket.php b/src/Scanner/DaemonUnixSocket.php
+index e57c50e..a42803c 100755
+--- a/src/Scanner/DaemonUnixSocket.php
++++ b/src/Scanner/DaemonUnixSocket.php
+@@ -7,6 +7,9 @@ use Drupal\clamav\ScannerInterface;
+ use Drupal\clamav\Scanner;
+ use Drupal\clamav\Config;
+ 
++/**
++ *
++ */
+ class DaemonUnixSocket implements ScannerInterface {
+   protected $_file;
+   protected $_unix_socket;
+@@ -29,7 +32,7 @@ class DaemonUnixSocket implements ScannerInterface {
+ 
+     // Abort if the ClamAV server is unavailable.
+     if (!$scanner_handler) {
+-      \Drupal::logger('Clam AV')->warning('Unable to connect to ClamAV daemon on unix socket @unix_socket', array('@unix_socket' => $this->_unix_socket));
++      \Drupal::logger('Clam AV')->warning('Unable to connect to ClamAV daemon on unix socket @unix_socket', ['@unix_socket' => $this->_unix_socket]);
+       return Scanner::FILE_IS_UNCHECKED;
+     }
+ 
+@@ -75,7 +78,7 @@ class DaemonUnixSocket implements ScannerInterface {
+   public function version() {
+     $handler = @fsockopen("unix://{$this->_unix_socket}", 0);
+     if (!$handler) {
+-      \Drupal::logger('Clam AV')->warning('Unable to connect to ClamAV daemon on unix socket @unix_socket', array('@unix_socket' => $this->_unix_socket));
++      \Drupal::logger('Clam AV')->warning('Unable to connect to ClamAV daemon on unix socket @unix_socket', ['@unix_socket' => $this->_unix_socket]);
+       return NULL;
+     }
+ 
+@@ -84,4 +87,5 @@ class DaemonUnixSocket implements ScannerInterface {
+     fclose($handler);
+     return $content;
+   }
++
+ }
+diff --git a/src/Scanner/Executable.php b/src/Scanner/Executable.php
+index 7ff70c6..bf81a1d 100644
+--- a/src/Scanner/Executable.php
++++ b/src/Scanner/Executable.php
+@@ -7,6 +7,9 @@ use Drupal\clamav\ScannerInterface;
+ use Drupal\clamav\Scanner;
+ use Drupal\clamav\Config;
+ 
++/**
++ *
++ */
+ class Executable implements ScannerInterface {
+   private $_executable_path = '';
+   private $_executable_parameters = '';
+@@ -27,7 +30,7 @@ class Executable implements ScannerInterface {
+   public function scan(FileInterface $file) {
+     // Verify that the executable exists.
+     if (!file_exists($this->_executable_path)) {
+-      \Drupal::logger('Clam AV')->warning('Unable to find ClamAV executable at @executable_path', array('@executable_path' => $this->_executable_path));
++      \Drupal::logger('Clam AV')->warning('Unable to find ClamAV executable at @executable_path', ['@executable_path' => $this->_executable_path]);
+       return Scanner::FILE_IS_UNCHECKED;
+     }
+ 
+@@ -38,31 +41,28 @@ class Executable implements ScannerInterface {
+ 
+     // Text output from the executable is assigned to: $output
+     // Return code from the executable is assigned to: $return_code.
+-
+     // Possible return codes (see `man clamscan`):
+     // - 0 = No virus found.
+     // - 1 = Virus(es) found.
+     // - 2 = Some error(s) occured.
+-
+     // Note that older versions of clamscan (prior to 0.96) may have return
+     // values greater than 2. Any value of 2 or greater means that the scan
+     // failed, and the file has not been checked.
+     exec($cmd, $output, $return_code);
+     $output = implode("\n", $output);
+ 
+-
+     switch ($return_code) {
+       case 0:
+         return Scanner::FILE_IS_CLEAN;
+-        // return array(Scanner::FILE_IS_CLEAN, $return_code, $output);
+ 
++      // Return array(Scanner::FILE_IS_CLEAN, $return_code, $output);.
+       case 1:
+         return Scanner::FILE_IS_INFECTED;
+-        // return array(Scanner::FILE_IS_INFECTED, $return_code, $output);
+ 
++      // Return array(Scanner::FILE_IS_INFECTED, $return_code, $output);.
+       default:
+         return Scanner::FILE_IS_UNCHECKED;
+-        // return array(Scanner::FILE_IS_UNCHECKED, $return_code, $output);
++      // Return array(Scanner::FILE_IS_UNCHECKED, $return_code, $output);.
+     }
+   }
+ 
+@@ -84,4 +84,5 @@ class Executable implements ScannerInterface {
+       return NULL;
+     }
+   }
++
+ }
+diff --git a/src/ScannerInterface.php b/src/ScannerInterface.php
+index 6e1e791..4bd10e8 100755
+--- a/src/ScannerInterface.php
++++ b/src/ScannerInterface.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\clamav;
+ 
+ use Drupal\file\FileInterface;
+-use Drupal\clamav\Config;
+ 
+ /**
+  * Provides an interface defining a menu entity.
+@@ -38,4 +37,5 @@ interface ScannerInterface {
+    *   The version number provided by ClamAV.
+    */
+   public function version();
++
+ }

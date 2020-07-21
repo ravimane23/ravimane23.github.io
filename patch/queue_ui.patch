@@ -1,0 +1,600 @@
+diff --git a/queue_ui.drush.inc b/queue_ui.drush.inc
+index d022d5d..d020679 100644
+--- a/queue_ui.drush.inc
++++ b/queue_ui.drush.inc
+@@ -1,5 +1,9 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
+ /**
+  * Implements hook_drush_command().
+  */
+@@ -33,61 +37,61 @@ function queue_ui_drush_command() {
+ }
+ 
+ /**
+- * Process queue
++ * Process queue.
+  *
+  * @param string $queue_name
+  */
+ function drush_queue_ui_queue_process($queue_name = NULL) {
+-  // Require the choice name to be filled
++  // Require the choice name to be filled.
+   if ($queue_name = _queue_ui_queue_choice($queue_name)) {
+-    // Add operations and start to batch process
++    // Add operations and start to batch process.
+     _queue_ui_start_batch([
+-      ['\Drupal\queue_ui\QueueUIBatch::step', [$queue_name]]
++      ['\Drupal\queue_ui\QueueUIBatch::step', [$queue_name]],
+     ]);
+   }
+ }
+ 
+ /**
+- * Process all queues
++ * Process all queues.
+  */
+ function drush_queue_ui_queue_process_all() {
+   $operations = [];
+ 
+   $queues = \Drupal::service('plugin.manager.queue_worker')->getDefinitions();
+-  // Add operations for each queue
++  // Add operations for each queue.
+   foreach ($queues as $queue_name => $queue_definition) {
+     $operations[] = ['\Drupal\queue_ui\QueueUIBatch::step', [$queue_name]];
+   }
+ 
+-  // Start batch process
++  // Start batch process.
+   _queue_ui_start_batch($operations);
+ }
+ 
+ /**
+- * Remove lease from queue
++ * Remove lease from queue.
+  *
+  * @param string $queue_name
+  */
+ function drush_queue_ui_queue_release($queue_name = NULL) {
+-  // Require the choice name to be filled
++  // Require the choice name to be filled.
+   if ($queue_name = _queue_ui_queue_choice($queue_name)) {
+     _queue_ui_release_queue($queue_name);
+   }
+ }
+ 
+ /**
+- * Remove lease from all queues
++ * Remove lease from all queues.
+  */
+ function drush_queue_ui_queue_release_all() {
+   $queues = \Drupal::service('plugin.manager.queue_worker')->getDefinitions();
+-  // Release each queue
++  // Release each queue.
+   foreach ($queues as $queue_name => $queue_definition) {
+     _queue_ui_release_queue($queue_name);
+   }
+ }
+ 
+ /**
+- * Remove leases from all items in a queue
++ * Remove leases from all items in a queue.
+  *
+  * @param $queue_name
+  */
+@@ -95,33 +99,34 @@ function _queue_ui_release_queue($queue_name) {
+   /** @var \Drupal\queue_ui\QueueUIInterface $queue_ui */
+   $queue_ui = \Drupal::service('plugin.manager.queue_ui')->fromQueueName($queue_name);
+ 
+-  // Remove leases
++  // Remove leases.
+   $num_updated = $queue_ui->releaseItems($queue_name);
+ 
+   drush_log(t('@count lease reset in queue @name', [
+     '@count' => $num_updated,
+-    '@name' => $queue_name
++    '@name' => $queue_name,
+   ]), 'ok');
+ }
+ 
+ /**
+- * Give the user a choice prompt
++ * Give the user a choice prompt.
+  *
+  * @param $queue_name
++ *
+  * @return mixed
+  */
+ function _queue_ui_queue_choice($queue_name) {
+-  // Queue name is not provided
++  // Queue name is not provided.
+   if (empty($queue_name)) {
+-    // Get all defined queue names
++    // Get all defined queue names.
+     $defined_queues = \Drupal::service('plugin.manager.queue_worker')->getDefinitions();
+ 
+-    $queue_names = array_map(function($queue) {
+-      // Render queue title
++    $queue_names = array_map(function ($queue) {
++      // Render queue title.
+       return $queue['title']->render();
+     }, $defined_queues);
+ 
+-    // Show a list of all defined queues
++    // Show a list of all defined queues.
+     $queue_name = drush_choice($queue_names, t('Which queue do you want to process?'));
+   }
+ 
+@@ -129,7 +134,7 @@ function _queue_ui_queue_choice($queue_name) {
+ }
+ 
+ /**
+- * Helper function to start a batch process
++ * Helper function to start a batch process.
+  *
+  * @param $operations
+  */
+diff --git a/src/Annotation/QueueUI.php b/src/Annotation/QueueUI.php
+index d293fb4..ca13dac 100644
+--- a/src/Annotation/QueueUI.php
++++ b/src/Annotation/QueueUI.php
+@@ -6,7 +6,7 @@ use Drupal\Component\Annotation\Plugin;
+ 
+ /**
+  * Defines a QueueUI annotation object.
+- * Plugin Namespace: Plugin\QueueUI
++ * Plugin Namespace: Plugin\QueueUI.
+  *
+  * @Annotation
+  */
+diff --git a/src/Form/ConfirmClearForm.php b/src/Form/ConfirmClearForm.php
+index c69f91a..3856a30 100644
+--- a/src/Form/ConfirmClearForm.php
++++ b/src/Form/ConfirmClearForm.php
+@@ -10,13 +10,14 @@ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Class ConfirmClearForm
++ * Class ConfirmClearForm.
++ *
+  * @package Drupal\queue_ui\Form
+  */
+ class ConfirmClearForm extends ConfirmFormBase {
+ 
+   /**
+-   * @var PrivateTempStoreFactory
++   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+    */
+   private $tempStoreFactory;
+ 
+@@ -105,4 +106,5 @@ class ConfirmClearForm extends ConfirmFormBase {
+     $this->messenger->addMessage($this->formatPlural(count($queues), 'Queue deleted', '@count queues cleared'));
+     $form_state->setRedirect('queue_ui.overview_form');
+   }
++
+ }
+diff --git a/src/Form/ConfirmItemDeleteForm.php b/src/Form/ConfirmItemDeleteForm.php
+index 91c6d58..41b8fdc 100644
+--- a/src/Form/ConfirmItemDeleteForm.php
++++ b/src/Form/ConfirmItemDeleteForm.php
+@@ -10,7 +10,8 @@ use Drupal\queue_ui\QueueUIManager;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Class ConfirmItemDeleteForm
++ * Class ConfirmItemDeleteForm.
++ *
+  * @package Drupal\queue_ui\Form
+  */
+ class ConfirmItemDeleteForm extends ConfirmFormBase {
+@@ -104,4 +105,5 @@ class ConfirmItemDeleteForm extends ConfirmFormBase {
+     $this->messenger->addMessage("Deleted queue item " . $this->queue_item);
+     $form_state->setRedirectUrl(Url::fromRoute('queue_ui.inspect', ['queue_name' => $this->queue_name]));
+   }
++
+ }
+diff --git a/src/Form/ConfirmItemReleaseForm.php b/src/Form/ConfirmItemReleaseForm.php
+index d6dee59..6c90ede 100644
+--- a/src/Form/ConfirmItemReleaseForm.php
++++ b/src/Form/ConfirmItemReleaseForm.php
+@@ -10,7 +10,8 @@ use Drupal\queue_ui\QueueUIManager;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Class ConfirmItemReleaseForm
++ * Class ConfirmItemReleaseForm.
++ *
+  * @package Drupal\queue_ui\Form
+  */
+ class ConfirmItemReleaseForm extends ConfirmFormBase {
+@@ -104,4 +105,5 @@ class ConfirmItemReleaseForm extends ConfirmFormBase {
+     $this->messenger->addMessage("Released queue item " . $this->queue_item);
+     $form_state->setRedirectUrl(Url::fromRoute('queue_ui.inspect', ['queue_name' => $this->queue_name]));
+   }
++
+ }
+diff --git a/src/Form/InspectForm.php b/src/Form/InspectForm.php
+index d4d39d3..9d0cfc7 100644
+--- a/src/Form/InspectForm.php
++++ b/src/Form/InspectForm.php
+@@ -9,7 +9,8 @@ use Drupal\queue_ui\QueueUIManager;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Class InspectForm
++ * Class InspectForm.
++ *
+  * @package Drupal\queue_ui\Form
+  */
+ class InspectForm extends FormBase {
+@@ -70,7 +71,7 @@ class InspectForm extends FormBase {
+               '#type' => 'dropbutton',
+               '#links' => $operations,
+             ],
+-          ]
++          ],
+         ];
+       }
+ 
+@@ -83,10 +84,10 @@ class InspectForm extends FormBase {
+             'created' => $this->t('Created'),
+             'operations' => $this->t('Operations'),
+           ],
+-          '#rows' => $rows
++          '#rows' => $rows,
+         ],
+         'pager' => [
+-          '#type' => 'pager'
++          '#type' => 'pager',
+         ],
+       ];
+     }
+diff --git a/src/Form/ItemDetailForm.php b/src/Form/ItemDetailForm.php
+index 913b5ec..1155f7a 100644
+--- a/src/Form/ItemDetailForm.php
++++ b/src/Form/ItemDetailForm.php
+@@ -8,7 +8,8 @@ use Drupal\queue_ui\QueueUIManager;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Class QueueUIInspectForm
++ * Class QueueUIInspectForm.
++ *
+  * @package Drupal\queue_ui\Form
+  */
+ class ItemDetailForm extends FormBase {
+@@ -54,7 +55,7 @@ class ItemDetailForm extends FormBase {
+       $data = [
+         '#type' => 'html_tag',
+         '#tag' => 'pre' ,
+-        '#value' => print_r(unserialize($queue_item->data), TRUE)
++        '#value' => print_r(unserialize($queue_item->data), TRUE),
+       ];
+       $data = \Drupal::service('renderer')->renderPlain($data);
+       // Use kpr to print the data.
+@@ -79,7 +80,7 @@ class ItemDetailForm extends FormBase {
+           'data' => [
+             'header' => $this->t('Expire'),
+             'data' => ($queue_item->expire ? date(DATE_RSS, $queue_item->expire) : $queue_item->expire),
+-          ]
++          ],
+         ],
+         'created' => [
+           'data' => [
+@@ -98,7 +99,7 @@ class ItemDetailForm extends FormBase {
+       return [
+         'table' => [
+           '#type' => 'table',
+-          '#rows' => $rows
++          '#rows' => $rows,
+         ],
+       ];
+     }
+diff --git a/src/Form/OverviewForm.php b/src/Form/OverviewForm.php
+index 05d0a7b..814cd85 100644
+--- a/src/Form/OverviewForm.php
++++ b/src/Form/OverviewForm.php
+@@ -6,20 +6,19 @@ use Drupal\Core\Database\Database;
+ use Drupal\Core\Extension\ModuleHandler;
+ use Drupal\Core\Messenger\Messenger;
+ use Drupal\Core\Queue\QueueFactory;
+-use Drupal\Core\Queue\QueueInterface;
+ use Drupal\Core\Queue\QueueWorkerManager;
+ use Drupal\Core\Session\AccountInterface;
+ use Drupal\Core\State\StateInterface;
+ use Drupal\Core\TempStore\PrivateTempStoreFactory;
+ use Drupal\Core\Url;
+-use Drupal\queue_ui\QueueUIInterface;
+ use Drupal\queue_ui\QueueUIManager;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\Core\Form\FormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ 
+ /**
+- * Class QueueUIOverviewForm
++ * Class QueueUIOverviewForm.
++ *
+  * @package Drupal\queue_ui\Form
+  */
+ class OverviewForm extends FormBase {
+@@ -303,7 +302,7 @@ class OverviewForm extends FormBase {
+     if (in_array($form_state->getValue('operation'), [
+       'submitBatch',
+       'submitRelease',
+-      'submitClear'
++      'submitClear',
+     ])) {
+       $selected_queues = array_filter($form_state->getValue('queues'));
+ 
+@@ -341,13 +340,13 @@ class OverviewForm extends FormBase {
+    */
+   public function submitRelease(FormStateInterface $form_state, $queues) {
+     foreach ($queues as $queue_name) {
+-      /** @var QueueUIInterface $queue_ui */
++      /** @var \Drupal\queue_ui\QueueUIInterface $queue_ui */
+       if ($queue_ui = $this->queueUIManager->fromQueueName($queue_name)) {
+         $num_updated = $queue_ui->releaseItems($queue_name);
+ 
+         $this->messenger->addMessage($this->t('@count lease reset in queue @name', [
+           '@count' => $num_updated,
+-          '@name' => $queue_name
++          '@name' => $queue_name,
+         ]));
+       }
+     }
+@@ -365,4 +364,5 @@ class OverviewForm extends FormBase {
+ 
+     $form_state->setRedirect('queue_ui.confirm_clear_form');
+   }
++
+ }
+diff --git a/src/Plugin/QueueUI/DatabaseQueue.php b/src/Plugin/QueueUI/DatabaseQueue.php
+index 8562e62..958a2dd 100644
+--- a/src/Plugin/QueueUI/DatabaseQueue.php
++++ b/src/Plugin/QueueUI/DatabaseQueue.php
+@@ -9,7 +9,7 @@ use Drupal\queue_ui\QueueUIBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Defines the default Drupal Queue UI backend
++ * Defines the default Drupal Queue UI backend.
+  *
+  * @QueueUI(
+  *   id = "database_queue",
+@@ -57,8 +57,8 @@ class DatabaseQueue extends QueueUIBase implements ContainerFactoryPluginInterfa
+    * SystemQueue implements all default QueueUI methods.
+    *
+    * @return array
+-   *  An array of available QueueUI methods. Array key is system name of the
+-   *  operation, array key value is the display name.
++   *   An array of available QueueUI methods. Array key is system name of the
++   *   operation, array key value is the display name.
+    */
+   public function getOperations() {
+     return [
+@@ -103,17 +103,18 @@ class DatabaseQueue extends QueueUIBase implements ContainerFactoryPluginInterfa
+    * Load a specified SystemQueue queue item from the database.
+    *
+    * @param int $item_id
+-   * The item id to load
++   *   The item id to load.
+    *
+    * @return mixed
+-   * Result of the database query loading the queue item.
++   *   Result of the database query loading the queue item.
+    */
+   public function loadItem($item_id) {
+     // Load the specified queue item from the queue table.
+     $query = $this->database->select('queue', 'q')
+       ->fields('q', ['item_id', 'name', 'data', 'expire', 'created'])
+       ->condition('q.item_id', $item_id)
+-      ->range(0, 1); // item id should be unique
++    // Item id should be unique.
++      ->range(0, 1);
+ 
+     return $query->execute()->fetchObject();
+   }
+diff --git a/src/QueueUIBase.php b/src/QueueUIBase.php
+index 0fc999c..62fd865 100644
+--- a/src/QueueUIBase.php
++++ b/src/QueueUIBase.php
+@@ -3,7 +3,7 @@
+ namespace Drupal\queue_ui;
+ 
+ /**
+- * Class QueueUIBase
++ * Class QueueUIBase.
+  *
+  * @package Drupal\queue_ui
+  */
+@@ -12,43 +12,43 @@ abstract class QueueUIBase implements QueueUIInterface {
+   /**
+    * Retrieve the available operations for the implementing queue class.
+    */
+-  public abstract function getOperations();
++  abstract public function getOperations();
+ 
+   /**
+    * Inspect the queue items in a specified queue.
+    *
+    * @param string $queue_name
+-   *  The name of the queue being inspected.
++   *   The name of the queue being inspected.
+    */
+-  public abstract function getItems($queue_name);
++  abstract public function getItems($queue_name);
+ 
+   /**
+    * @param $queue_name
+    */
+-  public abstract function releaseItems($queue_name);
++  abstract public function releaseItems($queue_name);
+ 
+   /**
+    * View item data for a specified queue item.
+    *
+-   * @param integer $item_id
+-   *  The item id to be viewed.
++   * @param int $item_id
++   *   The item id to be viewed.
+    */
+-  public abstract function loadItem($item_id);
++  abstract public function loadItem($item_id);
+ 
+   /**
+    * Force the releasing of a specified queue item.
+    *
+-   * @param integer $item_id
+-   *  The item id to be released.
++   * @param int $item_id
++   *   The item id to be released.
+    */
+-  public abstract function releaseItem($item_id);
++  abstract public function releaseItem($item_id);
+ 
+   /**
+    * Force the deletion of a specified queue item.
+    *
+-   * @param integer $item_id
+-   *  The item id to be deleted.
++   * @param int $item_id
++   *   The item id to be deleted.
+    */
+-  public abstract function deleteItem($item_id);
++  abstract public function deleteItem($item_id);
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/QueueUIBatch.php b/src/QueueUIBatch.php
+index 97a12c6..c77be35 100644
+--- a/src/QueueUIBatch.php
++++ b/src/QueueUIBatch.php
+@@ -9,7 +9,7 @@ use Drupal\Core\Render\Markup;
+ /**
+  * Batch controller to process a queue from the UI.
+  *
+- * Class QueueUIBatch
++ * Class QueueUIBatch.
+  *
+  * @package Drupal\queue_ui
+  */
+@@ -57,26 +57,28 @@ class QueueUIBatch {
+           ->alter('queue_ui_batch_title', $title, $item->data);
+         $context['message'] = $title;
+ 
+-        // Process and delete item
++        // Process and delete item.
+         $queue_worker->processItem($item->data);
+         $queue->deleteItem($item);
+ 
+-        // Update context
++        // Update context.
+         $context['results']['processed'][] = $item->item_id;
+       }
+       else {
+         // If we cannot claim an item we must be done processing this queue.
+         $context['finished'] = 1;
+       }
+-    } catch (RequeueException $e) {
++    }
++    catch (RequeueException $e) {
+       if (isset($item)) {
+         // The worker requested the task be immediately requeued.
+         $queue->releaseItem($item);
+       }
+-    } catch (SuspendQueueException $e) {
+-      // If the worker indicates there is a problem with the whole queue,
++    }
++    catch (SuspendQueueException $e) {
++      // If the worker indicates there is a problem with the whole queue,.
+       if (isset($item)) {
+-        // release the item and skip to the next queue.
++        // Release the item and skip to the next queue.
+         $queue->releaseItem($item);
+       }
+ 
+@@ -85,7 +87,8 @@ class QueueUIBatch {
+ 
+       // Marking the batch job as finished will stop further processing.
+       $context['finished'] = 1;
+-    } catch (\Exception $e) {
++    }
++    catch (\Exception $e) {
+       // In case of any other kind of exception, log it and leave the item
+       // in the queue to be processed again later.
+       watchdog_exception('queue_ui', $e);
+@@ -137,4 +140,5 @@ class QueueUIBatch {
+       );
+     }
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/QueueUIInterface.php b/src/QueueUIInterface.php
+index 855dc01..c6fb27a 100644
+--- a/src/QueueUIInterface.php
++++ b/src/QueueUIInterface.php
+@@ -16,7 +16,7 @@ interface QueueUIInterface {
+    * Inspect the queue items in a specified queue.
+    *
+    * @param string $queue_name
+-   *  The name of the queue being inspected.
++   *   The name of the queue being inspected.
+    */
+   public function getItems($queue_name);
+ 
+@@ -28,25 +28,25 @@ interface QueueUIInterface {
+   /**
+    * View item data for a specified queue item.
+    *
+-   * @param integer $item_id
+-   *  The item id to be viewed.
++   * @param int $item_id
++   *   The item id to be viewed.
+    */
+   public function loadItem($item_id);
+ 
+   /**
+    * Force the releasing of a specified queue item.
+    *
+-   * @param integer $item_id
+-   *  The item id to be released.
++   * @param int $item_id
++   *   The item id to be released.
+    */
+   public function releaseItem($item_id);
+ 
+   /**
+    * Force the deletion of a specified queue item.
+    *
+-   * @param integer $item_id
+-   *  The item id to be deleted.
++   * @param int $item_id
++   *   The item id to be deleted.
+    */
+   public function deleteItem($item_id);
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/QueueUIManager.php b/src/QueueUIManager.php
+index e8048cf..bceae81 100644
+--- a/src/QueueUIManager.php
++++ b/src/QueueUIManager.php
+@@ -49,7 +49,8 @@ class QueueUIManager extends DefaultPluginManager {
+         }
+       }
+     }
+-    catch (\Exception $e) {}
++    catch (\Exception $e) {
++    }
+ 
+     return FALSE;
+   }

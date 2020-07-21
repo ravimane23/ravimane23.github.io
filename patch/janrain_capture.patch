@@ -1,0 +1,663 @@
+diff --git a/janrain-capture-screens/signin.js b/janrain-capture-screens/signin.js
+index 0286eea..a6b1877 100644
+--- a/janrain-capture-screens/signin.js
++++ b/janrain-capture-screens/signin.js
+@@ -5,13 +5,13 @@ function janrainCaptureWidgetOnLoad() {
+     jQuery.ajax({
+       url: janrain.settings.capture.redirectUri + '?code=' + result.authorizationCode,
+       async: false,
+-      success: function(redirect_uri) {
++      success: function (redirect_uri) {
+         window.location.replace(redirect_uri);
+       }
+     });
+   }
+ 
+-  janrain.events.onCaptureSessionNotFound.addHandler(function() {
++  janrain.events.onCaptureSessionNotFound.addHandler(function () {
+     if (window.hasOwnProperty('Backplane') && Backplane.getChannelID && Backplane.getChannelID()) {
+       Backplane.resetCookieChannel();
+     }
+@@ -19,7 +19,7 @@ function janrainCaptureWidgetOnLoad() {
+ 
+   janrain.events.onCaptureRegistrationSuccess.addHandler(handleCaptureLogin);
+   janrain.events.onCaptureLoginSuccess.addHandler(handleCaptureLogin);
+-  janrain.events.onCaptureSessionEnded.addHandler(function() {
++  janrain.events.onCaptureSessionEnded.addHandler(function () {
+     window.location.replace('/user/logout');
+   });
+ 
+diff --git a/janrain-capture-screens/stylesheets/janrain.css b/janrain-capture-screens/stylesheets/janrain.css
+index 8aeaf5f..0497d95 100644
+--- a/janrain-capture-screens/stylesheets/janrain.css
++++ b/janrain-capture-screens/stylesheets/janrain.css
+@@ -1,4 +1,6 @@
+-#janrainModal, #janrainModalOverlay, #janrain-share {
++#janrainModal,
++#janrainModalOverlay,
++#janrain-share {
+   z-index: 99999 !important
+ }
+ #janrainModal .janrain_modal_closebutton {
+@@ -129,7 +131,9 @@
+   -o-border-radius: 5px;
+   border-radius: 5px
+ }
+-.janrain-capture-ui a, .janrain-capture-ui a:visited, .janrain-capture-ui a:link {
++.janrain-capture-ui a,
++.janrain-capture-ui a:visited,
++.janrain-capture-ui a:link {
+   color: #009ddc
+ }
+ .janrain-capture-ui a:hover {
+@@ -139,10 +143,24 @@
+   background-color: #f6f6f6;
+   color: #666
+ }
+-.janrain-capture-ui .capture_backgroundColor .capture_text_input, .janrain-capture-ui .capture_backgroundColor .capture_checkbox, .janrain-capture-ui .capture_backgroundColor .capture_radio, .janrain-capture-ui .capture_backgroundColor .capture_inputPlaceholder, .janrain-capture-ui .capture_backgroundColor .capture_select, .janrain-capture-ui .capture_backgroundColor .capture_textarea, .janrain-capture-ui .capture_backgroundColor .capture_checkbox, .janrain-capture-ui .capture_backgroundColor .capture_radio {
++.janrain-capture-ui .capture_backgroundColor .capture_text_input,
++.janrain-capture-ui .capture_backgroundColor .capture_checkbox,
++.janrain-capture-ui .capture_backgroundColor .capture_radio,
++.janrain-capture-ui .capture_backgroundColor .capture_inputPlaceholder,
++.janrain-capture-ui .capture_backgroundColor .capture_select,
++.janrain-capture-ui .capture_backgroundColor .capture_textarea,
++.janrain-capture-ui .capture_backgroundColor .capture_checkbox,
++.janrain-capture-ui .capture_backgroundColor .capture_radio {
+   background-color: #fff
+ }
+-.janrain-capture-ui .capture_backgroundColor .capture_text_input:focus, .janrain-capture-ui .capture_backgroundColor .capture_checkbox:focus, .janrain-capture-ui .capture_backgroundColor .capture_radio:focus, .janrain-capture-ui .capture_backgroundColor .capture_inputPlaceholder:focus, .janrain-capture-ui .capture_backgroundColor .capture_select:focus, .janrain-capture-ui .capture_backgroundColor .capture_textarea:focus, .janrain-capture-ui .capture_backgroundColor .capture_checkbox:focus, .janrain-capture-ui .capture_backgroundColor .capture_radio:focus {
++.janrain-capture-ui .capture_backgroundColor .capture_text_input:focus,
++.janrain-capture-ui .capture_backgroundColor .capture_checkbox:focus,
++.janrain-capture-ui .capture_backgroundColor .capture_radio:focus,
++.janrain-capture-ui .capture_backgroundColor .capture_inputPlaceholder:focus,
++.janrain-capture-ui .capture_backgroundColor .capture_select:focus,
++.janrain-capture-ui .capture_backgroundColor .capture_textarea:focus,
++.janrain-capture-ui .capture_backgroundColor .capture_checkbox:focus,
++.janrain-capture-ui .capture_backgroundColor .capture_radio:focus {
+   background-color: #fff
+ }
+ .janrain-capture-ui .capture_backgroundColor .capture_secondary {
+@@ -185,7 +203,12 @@
+ .janrain-capture-ui .capture_footer .capture_btn {
+   margin: 0 20px
+ }
+-.janrain-capture-ui .capture_text_input, .janrain-capture-ui .capture_checkbox, .janrain-capture-ui .capture_radio, .janrain-capture-ui .capture_inputPlaceholder, .janrain-capture-ui .capture_select, .janrain-capture-ui .capture_textarea {
++.janrain-capture-ui .capture_text_input,
++.janrain-capture-ui .capture_checkbox,
++.janrain-capture-ui .capture_radio,
++.janrain-capture-ui .capture_inputPlaceholder,
++.janrain-capture-ui .capture_select,
++.janrain-capture-ui .capture_textarea {
+   font-size: 14px;
+   font-family: helvetica, sans-serif;
+   border: 1px solid #ccc;
+@@ -204,7 +227,12 @@
+   box-shadow: 0 0 3px rgba(0,0,0,0.2) inset;
+   background-color: #f6f6f6
+ }
+-.janrain-capture-ui .capture_text_input:focus, .janrain-capture-ui .capture_checkbox:focus, .janrain-capture-ui .capture_radio:focus, .janrain-capture-ui .capture_inputPlaceholder:focus, .janrain-capture-ui .capture_select:focus, .janrain-capture-ui .capture_textarea:focus {
++.janrain-capture-ui .capture_text_input:focus,
++.janrain-capture-ui .capture_checkbox:focus,
++.janrain-capture-ui .capture_radio:focus,
++.janrain-capture-ui .capture_inputPlaceholder:focus,
++.janrain-capture-ui .capture_select:focus,
++.janrain-capture-ui .capture_textarea:focus {
+   color: #333;
+   background-color: #e2e2e2;
+   -moz-box-shadow: 0 0 3px #009ddc, 0 0 3px rgba(0,0,0,0.2) inset;
+@@ -213,7 +241,12 @@
+   box-shadow: 0 0 3px #009ddc, 0 0 3px rgba(0,0,0,0.2) inset;
+   border: 1px solid #009ddc
+ }
+-.janrain-capture-ui .capture_text_input, .janrain-capture-ui .capture_checkbox, .janrain-capture-ui .capture_radio, .janrain-capture-ui .capture_inputPlaceholder, .janrain-capture-ui .capture_textarea, .janrain-capture-ui .capture_inputPlaceholder {
++.janrain-capture-ui .capture_text_input,
++.janrain-capture-ui .capture_checkbox,
++.janrain-capture-ui .capture_radio,
++.janrain-capture-ui .capture_inputPlaceholder,
++.janrain-capture-ui .capture_textarea,
++.janrain-capture-ui .capture_inputPlaceholder {
+   width: 100%;
+   -moz-box-sizing: border-box;
+   -webkit-box-sizing: border-box;
+@@ -226,16 +259,36 @@
+   *vertical-align: auto;
+   color: #333
+ }
+-.janrain-capture-ui .capture_text_input, .janrain-capture-ui .capture_checkbox, .janrain-capture-ui .capture_radio, .janrain-capture-ui .capture_inputPlaceholder, .janrain-capture-ui .capture_textarea, .janrain-capture-ui .capture_inputPlaceholder {
++.janrain-capture-ui .capture_text_input,
++.janrain-capture-ui .capture_checkbox,
++.janrain-capture-ui .capture_radio,
++.janrain-capture-ui .capture_inputPlaceholder,
++.janrain-capture-ui .capture_textarea,
++.janrain-capture-ui .capture_inputPlaceholder {
+   *display: inline
+ }
+-.janrain-capture-ui .capture_text_input::-webkit-input-placeholder, .janrain-capture-ui .capture_checkbox::-webkit-input-placeholder, .janrain-capture-ui .capture_radio::-webkit-input-placeholder, .janrain-capture-ui .capture_inputPlaceholder::-webkit-input-placeholder, .janrain-capture-ui .capture_textarea::-webkit-input-placeholder, .janrain-capture-ui .capture_inputPlaceholder::-webkit-input-placeholder {
++.janrain-capture-ui .capture_text_input::-webkit-input-placeholder,
++.janrain-capture-ui .capture_checkbox::-webkit-input-placeholder,
++.janrain-capture-ui .capture_radio::-webkit-input-placeholder,
++.janrain-capture-ui .capture_inputPlaceholder::-webkit-input-placeholder,
++.janrain-capture-ui .capture_textarea::-webkit-input-placeholder,
++.janrain-capture-ui .capture_inputPlaceholder::-webkit-input-placeholder {
+   color: #b3b3b3
+ }
+-.janrain-capture-ui .capture_text_input:-moz-placeholder, .janrain-capture-ui .capture_checkbox:-moz-placeholder, .janrain-capture-ui .capture_radio:-moz-placeholder, .janrain-capture-ui .capture_inputPlaceholder:-moz-placeholder, .janrain-capture-ui .capture_textarea:-moz-placeholder, .janrain-capture-ui .capture_inputPlaceholder:-moz-placeholder {
++.janrain-capture-ui .capture_text_input:-moz-placeholder,
++.janrain-capture-ui .capture_checkbox:-moz-placeholder,
++.janrain-capture-ui .capture_radio:-moz-placeholder,
++.janrain-capture-ui .capture_inputPlaceholder:-moz-placeholder,
++.janrain-capture-ui .capture_textarea:-moz-placeholder,
++.janrain-capture-ui .capture_inputPlaceholder:-moz-placeholder {
+   color: #b3b3b3
+ }
+-.janrain-capture-ui .capture_text_input:-ms-input-placeholder, .janrain-capture-ui .capture_checkbox:-ms-input-placeholder, .janrain-capture-ui .capture_radio:-ms-input-placeholder, .janrain-capture-ui .capture_inputPlaceholder:-ms-input-placeholder, .janrain-capture-ui .capture_textarea:-ms-input-placeholder, .janrain-capture-ui .capture_inputPlaceholder:-ms-input-placeholder {
++.janrain-capture-ui .capture_text_input:-ms-input-placeholder,
++.janrain-capture-ui .capture_checkbox:-ms-input-placeholder,
++.janrain-capture-ui .capture_radio:-ms-input-placeholder,
++.janrain-capture-ui .capture_inputPlaceholder:-ms-input-placeholder,
++.janrain-capture-ui .capture_textarea:-ms-input-placeholder,
++.janrain-capture-ui .capture_inputPlaceholder:-ms-input-placeholder {
+   color: #b3b3b3
+ }
+ .janrain-capture-ui .capture_select {
+@@ -252,14 +305,16 @@
+ .janrain-capture-ui .capture_select.capture_disabled:focus {
+   color: #333
+ }
+-.janrain-capture-ui .capture_checkbox, .janrain-capture-ui .capture_radio {
++.janrain-capture-ui .capture_checkbox,
++.janrain-capture-ui .capture_radio {
+   -moz-box-shadow: none;
+   -webkit-box-shadow: none;
+   -o-box-shadow: none;
+   box-shadow: none;
+   border: 0
+ }
+-.janrain-capture-ui .capture_checkbox label, .janrain-capture-ui .capture_radio label {
++.janrain-capture-ui .capture_checkbox label,
++.janrain-capture-ui .capture_radio label {
+   font-size: 13px
+ }
+ .janrain-capture-ui .capture_inputPlaceholder {
+@@ -269,20 +324,41 @@
+   -o-box-shadow: none;
+   box-shadow: none
+ }
+-.janrain-capture-ui .capture_btn, .janrain-capture-ui a.capture_btn, .janrain-capture-ui .capture_btn:focus, .janrain-capture-ui a.capture_btn:focus, .janrain-capture-ui button.capture_btn:focus, .janrain-capture-ui input.capture_btn:focus, .janrain-capture-ui .capture_backButton:focus, .janrain-capture-ui button.capture_btn, .janrain-capture-ui input.capture_btn, .janrain-capture-ui .capture_backButton {
++.janrain-capture-ui .capture_btn,
++.janrain-capture-ui a.capture_btn,
++.janrain-capture-ui .capture_btn:focus,
++.janrain-capture-ui a.capture_btn:focus,
++.janrain-capture-ui button.capture_btn:focus,
++.janrain-capture-ui input.capture_btn:focus,
++.janrain-capture-ui .capture_backButton:focus,
++.janrain-capture-ui button.capture_btn,
++.janrain-capture-ui input.capture_btn,
++.janrain-capture-ui .capture_backButton {
+   -moz-box-shadow: 0 1px 0px 0px rgba(255,255,255,0.35) inset, 0 -26px 13px -13px rgba(0,0,0,0.2) inset;
+   -webkit-box-shadow: 0 1px 0px 0px rgba(255,255,255,0.35) inset, 0 -26px 13px -13px rgba(0,0,0,0.2) inset;
+   -o-box-shadow: 0 1px 0px 0px rgba(255,255,255,0.35) inset, 0 -26px 13px -13px rgba(0,0,0,0.2) inset;
+   box-shadow: 0 1px 0px 0px rgba(255,255,255,0.35) inset, 0 -26px 13px -13px rgba(0,0,0,0.2) inset;
+   font-family: helvetica, sans-serif
+ }
+-.janrain-capture-ui .capture_btn:active, .janrain-capture-ui a.capture_btn:active, .janrain-capture-ui .capture_btn:active:focus, .janrain-capture-ui a.capture_btn:active:focus, .janrain-capture-ui button.capture_btn:active:focus, .janrain-capture-ui input.capture_btn:active:focus, .janrain-capture-ui .capture_backButton:active:focus, .janrain-capture-ui button.capture_btn:active, .janrain-capture-ui input.capture_btn:active, .janrain-capture-ui .capture_backButton:active {
++.janrain-capture-ui .capture_btn:active,
++.janrain-capture-ui a.capture_btn:active,
++.janrain-capture-ui .capture_btn:active:focus,
++.janrain-capture-ui a.capture_btn:active:focus,
++.janrain-capture-ui button.capture_btn:active:focus,
++.janrain-capture-ui input.capture_btn:active:focus,
++.janrain-capture-ui .capture_backButton:active:focus,
++.janrain-capture-ui button.capture_btn:active,
++.janrain-capture-ui input.capture_btn:active,
++.janrain-capture-ui .capture_backButton:active {
+   -moz-box-shadow: 0 1px 0px 0px rgba(0,0,0,0.1) inset, 0 -1px 0px 0px rgba(255,255,255,0.35) inset, 0 -26px 13px -13px rgba(0,0,0,0.2) inset;
+   -webkit-box-shadow: 0 1px 0px 0px rgba(0,0,0,0.1) inset, 0 -1px 0px 0px rgba(255,255,255,0.35) inset, 0 -26px 13px -13px rgba(0,0,0,0.2) inset;
+   -o-box-shadow: 0 1px 0px 0px rgba(0,0,0,0.1) inset, 0 -1px 0px 0px rgba(255,255,255,0.35) inset, 0 -26px 13px -13px rgba(0,0,0,0.2) inset;
+   box-shadow: 0 1px 0px 0px rgba(0,0,0,0.1) inset, 0 -1px 0px 0px rgba(255,255,255,0.35) inset, 0 -26px 13px -13px rgba(0,0,0,0.2) inset
+ }
+-.janrain-capture-ui .capture_primary, .janrain-capture-ui a.capture_primary, .janrain-capture-ui button.capture_primary, .janrain-capture-ui input.capture_primary {
++.janrain-capture-ui .capture_primary,
++.janrain-capture-ui a.capture_primary,
++.janrain-capture-ui button.capture_primary,
++.janrain-capture-ui input.capture_primary {
+   background-color: #009ddc;
+   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #34c5ff), color-stop(100%, #0092cd));
+   background: -webkit-linear-gradient(top, #34c5ff,#0092cd);
+@@ -293,17 +369,25 @@
+   text-shadow: 0 1px 1px rgba(0,0,0,0.45);
+   color: #fff
+ }
+-.janrain-capture-ui a.capture_primary:visited, .janrain-capture-ui a.capture_primary:link, .janrain-capture-ui a.capture_primary:hover {
++.janrain-capture-ui a.capture_primary:visited,
++.janrain-capture-ui a.capture_primary:link,
++.janrain-capture-ui a.capture_primary:hover {
+   color: #fff
+ }
+-.janrain-capture-ui .capture_secondary, .janrain-capture-ui a.capture_secondary, .janrain-capture-ui button.capture_secondary, .janrain-capture-ui input.capture_secondary {
++.janrain-capture-ui .capture_secondary,
++.janrain-capture-ui a.capture_secondary,
++.janrain-capture-ui button.capture_secondary,
++.janrain-capture-ui input.capture_secondary {
+   background-color: #f6f6f6;
+   background-image: none;
+   color: #009ddc;
+   text-decoration: none;
+   text-shadow: none
+ }
+-.janrain-capture-ui .capture_btn_half, .janrain-capture-ui a.capture_btn_half, .janrain-capture-ui button.capture_btn_half, .janrain-capture-ui input.capture_btn_half {
++.janrain-capture-ui .capture_btn_half,
++.janrain-capture-ui a.capture_btn_half,
++.janrain-capture-ui button.capture_btn_half,
++.janrain-capture-ui input.capture_btn_half {
+   -moz-box-sizing: border-box;
+   -webkit-box-sizing: border-box;
+   -ms-box-sizing: border-box;
+@@ -321,7 +405,9 @@
+   box-sizing: border-box;
+   width: 100%
+ }
+-.janrain-capture-ui a.capture_secondary:visited, .janrain-capture-ui a.capture_secondary:link, .janrain-capture-ui a.capture_secondary:hover {
++.janrain-capture-ui a.capture_secondary:visited,
++.janrain-capture-ui a.capture_secondary:link,
++.janrain-capture-ui a.capture_secondary:hover {
+   color: #333
+ }
+ .janrain-capture-ui .capture_processing {
+@@ -378,7 +464,7 @@
+   margin: 0
+ }
+ .janrain-capture-ui .capture_save_success {
+-  color: #64AE29;
++  color: #64ae29;
+   display: -moz-inline-box;
+   -moz-box-orient: vertical;
+   display: inline-block;
+@@ -388,7 +474,12 @@
+ .janrain-capture-ui .capture_save_success {
+   *display: inline
+ }
+-.janrain-capture-ui .capture_error .capture_radio, .janrain-capture-ui .capture_error .capture_checkbox, .janrain-capture-ui .capture_error .capture_text_input, .janrain-capture-ui .capture_error .capture_checkbox, .janrain-capture-ui .capture_error .capture_radio, .janrain-capture-ui .capture_error .capture_inputPlaceholder {
++.janrain-capture-ui .capture_error .capture_radio,
++.janrain-capture-ui .capture_error .capture_checkbox,
++.janrain-capture-ui .capture_error .capture_text_input,
++.janrain-capture-ui .capture_error .capture_checkbox,
++.janrain-capture-ui .capture_error .capture_radio,
++.janrain-capture-ui .capture_error .capture_inputPlaceholder {
+   border: 1px solid #f58002;
+   -moz-box-shadow: 0 0 3px rgba(245,148,2,0.3) inset;
+   -webkit-box-shadow: 0 0 3px rgba(245,148,2,0.3) inset;
+@@ -420,11 +511,17 @@
+   *text-indent: 0;
+   *text-transform: capitalize
+ }
+-.janrain-capture-ui .capture_nameBlock .capture_form_item, .janrain-capture-ui .capture_addressBlock .capture_form_item {
++.janrain-capture-ui .capture_nameBlock .capture_form_item,
++.janrain-capture-ui .capture_addressBlock .capture_form_item {
+   margin-bottom: 0;
+   min-height: 0
+ }
+-.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_city_, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_stateprovince_, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_zippostalcode_, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_city_, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_stateprovince_, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_zippostalcode_ {
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_city_,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_stateprovince_,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_zippostalcode_,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_city_,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_stateprovince_,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_zippostalcode_ {
+   display: -moz-inline-box;
+   -moz-box-orient: vertical;
+   display: inline-block;
+@@ -432,10 +529,17 @@
+   *vertical-align: auto;
+   margin-left: 1%
+ }
+-.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_city_, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_stateprovince_, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_zippostalcode_, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_city_, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_stateprovince_, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_zippostalcode_ {
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_city_,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_stateprovince_,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_zippostalcode_,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_city_,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_stateprovince_,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_editProfile_addressDrop_zippostalcode_ {
+   *display: inline
+ }
+-.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_tip_validating, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_tip_error, .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_tip_validated {
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_tip_validating,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_tip_error,
++.janrain-capture-ui .capture_form_item.capture_addressBlock .capture_tip_validated {
+   position: absolute;
+   left: 290px;
+   top: 10px
+@@ -450,7 +554,9 @@
+ .janrain-capture-ui .capture_form_item.capture_addressBlock .capture_form_item_addressDrop_zippostalcode_ {
+   width: 38%
+ }
+-.janrain-capture-ui .capture_dateselect_day, .janrain-capture-ui .capture_dateselect_month, .janrain-capture-ui .capture_dateselect_year {
++.janrain-capture-ui .capture_dateselect_day,
++.janrain-capture-ui .capture_dateselect_month,
++.janrain-capture-ui .capture_dateselect_year {
+   display: -moz-inline-box;
+   -moz-box-orient: vertical;
+   display: inline-block;
+@@ -458,7 +564,9 @@
+   *vertical-align: auto;
+   margin-left: 1%
+ }
+-.janrain-capture-ui .capture_dateselect_day, .janrain-capture-ui .capture_dateselect_month, .janrain-capture-ui .capture_dateselect_year {
++.janrain-capture-ui .capture_dateselect_day,
++.janrain-capture-ui .capture_dateselect_month,
++.janrain-capture-ui .capture_dateselect_year {
+   *display: inline
+ }
+ .janrain-capture-ui .capture_dateselect_month {
+@@ -485,7 +593,8 @@
+   box-shadow: 0 -26px 13px -13px rgba(0,0,0,0.2) inset;
+   text-shadow: 0 1px #fff
+ }
+-.janrain-capture-ui .capture_datePicker_monthButtons:visited, .janrain-capture-ui .capture_datePicker_monthButtons:link {
++.janrain-capture-ui .capture_datePicker_monthButtons:visited,
++.janrain-capture-ui .capture_datePicker_monthButtons:link {
+   color: #666
+ }
+ .janrain-capture-ui .capture_datePicker_monthTable th {
+@@ -495,13 +604,18 @@
+   border-color: #ccc;
+   border-style: solid
+ }
+-.janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_prevMonthDay a:visited, .janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_prevMonthDay a:link, .janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_nextMonthDay a:visited, .janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_nextMonthDay a:link {
++.janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_prevMonthDay a:visited,
++.janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_prevMonthDay a:link,
++.janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_nextMonthDay a:visited,
++.janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_nextMonthDay a:link {
+   color: #ccc
+ }
+-.janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_prevMonthDay a:hover, .janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_nextMonthDay a:hover {
++.janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_prevMonthDay a:hover,
++.janrain-capture-ui .capture_datePicker_monthTable td.capture_datePicker_nextMonthDay a:hover {
+   color: #666
+ }
+-.janrain-capture-ui .capture_datePicker_monthTable a:visited, .janrain-capture-ui .capture_datePicker_monthTable a:link {
++.janrain-capture-ui .capture_datePicker_monthTable a:visited,
++.janrain-capture-ui .capture_datePicker_monthTable a:link {
+   color: #666
+ }
+ .janrain-capture-ui .capture_datePicker_monthTable a:hover {
+@@ -531,7 +645,9 @@
+   font-size: 14px;
+   display: block
+ }
+-.janrain-capture-ui .capture_tabs li a:visited, .janrain-capture-ui .capture_tabs li a:link, .janrain-capture-ui .capture_tabs li a:hover {
++.janrain-capture-ui .capture_tabs li a:visited,
++.janrain-capture-ui .capture_tabs li a:link,
++.janrain-capture-ui .capture_tabs li a:hover {
+   color: #999
+ }
+ .janrain-capture-ui .capture_tabs li.capture_toggled a {
+@@ -541,7 +657,9 @@
+   -o-box-shadow: none;
+   box-shadow: none
+ }
+-.janrain-capture-ui .capture_tabs li.capture_toggled a:visited, .janrain-capture-ui .capture_tabs li.capture_toggled a:link, .janrain-capture-ui .capture_tabs li.capture_toggled a:hover {
++.janrain-capture-ui .capture_tabs li.capture_toggled a:visited,
++.janrain-capture-ui .capture_tabs li.capture_toggled a:link,
++.janrain-capture-ui .capture_tabs li.capture_toggled a:hover {
+   color: #666
+ }
+ .janrain-capture-ui .capture_data_item {
+@@ -637,12 +755,16 @@
+   -khtml-border-radius: 5px;
+   border-radius: 5px
+ }
+-#janrainModal .janrain-capture-ui.capture-ui-content#signIn, #janrainModal .janrain-capture-ui.capture-ui-content#returnSocial, #janrainModal .janrain-capture-ui.capture-ui-content#returnTraditional {
++#janrainModal .janrain-capture-ui.capture-ui-content#signIn,
++#janrainModal .janrain-capture-ui.capture-ui-content#returnSocial,
++#janrainModal .janrain-capture-ui.capture-ui-content#returnTraditional {
+   width: 392px;
+   min-height: 220px;
+   padding: 20px 0 0 0
+ }
+-#janrainModal .janrain-capture-ui.capture-ui-content#signIn h1, #janrainModal .janrain-capture-ui.capture-ui-content#returnSocial h1, #janrainModal .janrain-capture-ui.capture-ui-content#returnTraditional h1 {
++#janrainModal .janrain-capture-ui.capture-ui-content#signIn h1,
++#janrainModal .janrain-capture-ui.capture-ui-content#returnSocial h1,
++#janrainModal .janrain-capture-ui.capture-ui-content#returnTraditional h1 {
+   margin: 0 0 0 20px
+ }
+ #janrainModal .janrain-capture-ui.capture-ui-content#capture_editProfile_photoManager_editphotoscreen {
+@@ -714,7 +836,8 @@
+   border: 1px #ccc dashed;
+   margin: 0 20px
+ }
+-.janrain-capture-ui .capture_border, .janrain-capture-ui .capture_form_collection_merge_radioButtonCollection {
++.janrain-capture-ui .capture_border,
++.janrain-capture-ui .capture_form_collection_merge_radioButtonCollection {
+   border: 1px solid #ccc
+ }
+ .janrain-capture-ui .capture_backButton span {
+@@ -746,10 +869,13 @@
+ .janrain-capture-ui #recaptcha_container .recaptchatable #recaptcha_response_field:focus {
+   border: 1px solid #009ddc !important
+ }
+-.janrain-capture-ui .capture_signInOption, .janrain-capture-ui .capture_createAccountOption {
++.janrain-capture-ui .capture_signInOption,
++.janrain-capture-ui .capture_createAccountOption {
+   margin-top: 10px
+ }
+-.janrain-capture-ui#returnTraditional .capture_backgroundColor, .janrain-capture-ui .capture_signInOption .capture_backgroundColor, .janrain-capture-ui .capture_createAccountOption .capture_backgroundColor {
++.janrain-capture-ui#returnTraditional .capture_backgroundColor,
++.janrain-capture-ui .capture_signInOption .capture_backgroundColor,
++.janrain-capture-ui .capture_createAccountOption .capture_backgroundColor {
+   padding: 25px 10px
+ }
+ .janrain-capture-ui#mergeAccounts .capture_form_item label {
+@@ -787,7 +913,8 @@
+ .janrain-capture-ui .capture_mergeCol .capture_popup_container .capture_popup-arrow {
+   left: 100px
+ }
+-.janrain-capture-ui .capture_mergeCol .capture_mergeProvider, .janrain-capture-ui .capture_header .capture_mergeProvider {
++.janrain-capture-ui .capture_mergeCol .capture_mergeProvider,
++.janrain-capture-ui .capture_header .capture_mergeProvider {
+   position: absolute;
+   right: 30px;
+   top: 8px
+@@ -884,7 +1011,9 @@
+ .janrain-capture-ui .capture_form_collection_merge_radioButtonCollection .capture_form_item_mergeAccounts_mergeRadio.capture_toggled label {
+   color: #fff
+ }
+-.janrain-capture-ui#returnTraditional .capture_form_item, .janrain-capture-ui .capture_signInOption .capture_form_item, .janrain-capture-ui .capture_createAccountOption .capture_form_item {
++.janrain-capture-ui#returnTraditional .capture_form_item,
++.janrain-capture-ui .capture_signInOption .capture_form_item,
++.janrain-capture-ui .capture_createAccountOption .capture_form_item {
+   margin-bottom: 0;
+   min-height: 51px
+ }
+@@ -942,7 +1071,8 @@
+ .janrain-capture-ui .capture_photoManager .options li {
+   *display: inline
+ }
+-.janrain-capture-ui .capture_photoManager .options li:first-child, .janrain-capture-ui .capture_photoManager .options li:last-child {
++.janrain-capture-ui .capture_photoManager .options li:first-child,
++.janrain-capture-ui .capture_photoManager .options li:last-child {
+   border: none
+ }
+ .janrain-capture-ui #capture_accountInfo {
+diff --git a/js/janrain-init.js b/js/janrain-init.js
+index b43d3b5..2208448 100644
+--- a/js/janrain-init.js
++++ b/js/janrain-init.js
+@@ -87,7 +87,7 @@ window.janrain = window.janrain || {};
+     window.attachEvent('onload', onload);
+   }
+ 
+-  var interval = setInterval(function() {
++  var interval = setInterval(function () {
+     if (
+       getProperty(janrain, ['engage', 'signin', 'status']) === 'loaded' &&
+       typeof getProperty(janrain, ['capture', 'ui']) === 'object'
+@@ -105,20 +105,20 @@ window.janrain = window.janrain || {};
+ (function ($) {
+ 
+     Drupal.janrainCapture = {
+-        closeProfileEditor: function() {
++        closeProfileEditor: function () {
+             window.location.href = drupalSettings.janrain.capture.profile_sync_url;
+         },
+-        closeRecoverPassword: function() {
++        closeRecoverPassword: function () {
+             window.location.reload();
+         },
+-        token_expired: function() {
++        token_expired: function () {
+             window.location.href = drupalSettings.janrain.capture.token_expired_url;
+         },
+-        bp_ready: function() {
++        bp_ready: function () {
+             var ssojs = null;
+             var ssotrue = false;
+             var channelId = Backplane.getChannelID();
+-            jQuery('script').each(function() {
++            jQuery('script').each(function () {
+                 if(jQuery(this).attr('src')) {
+                     ssojs = jQuery(this).attr('src');
+                     if ( undefined != ssojs && ssojs.search(/sso.js/i) > 0 ) {
+@@ -139,13 +139,13 @@ window.janrain = window.janrain || {};
+                     bp_channel: channelId
+                 });
+             }
+-            jQuery("a.janrain_capture_signin").each(function(){
+-                jQuery(this).attr("href", $(this).attr("href") + "&bp_channel=" + channelId).click(function(){
++            jQuery("a.janrain_capture_signin").each(function () {
++                jQuery(this).attr("href", $(this).attr("href") + "&bp_channel=" + channelId).click(function () {
+                     Backplane.expectMessages("identity/login");
+                 });
+             });
+         },
+-        logout: function() {
++        logout: function () {
+             if (typeof(JANRAIN) !== 'undefined' && typeof(Drupal.settings.janrainCapture.sso_address) != 'undefined') {
+                 JANRAIN.SSO.CAPTURE.logout({
+                     sso_server: "https://" + drupalSettings.janrain.capture.sso_address,
+@@ -159,12 +159,12 @@ window.janrain = window.janrain || {};
+                 Backplane.resetCookieChannel();
+             }
+         },
+-        addDestination: function(destination) {
++        addDestination: function (destination) {
+             if ($.bbq) {
+                 $.bbq.pushState({"destination": destination});
+             }
+         },
+-        removeDestination: function() {
++        removeDestination: function () {
+             if ($.bbq) {
+                 $.bbq.removeState('destination');
+             }
+@@ -172,21 +172,21 @@ window.janrain = window.janrain || {};
+     };
+ 
+     Drupal.janrainCapture.prototype = {
+-        passwordRecover: function(url) {
++        passwordRecover: function (url) {
+             // Placeholder to be overwritten by the CaptureUI Module
+         },
+-        resize: function(jargs) {
++        resize: function (jargs) {
+             // Placeholder to be overwritten by the CaptureUI Module
+         }
+     }
+ 
+     Drupal.behaviors.janrainCapture = {
+-        attach: function(context, settings) {
++        attach: function (context, settings) {
+             if (typeof(settings.janrainCapture) != 'undefined' && settings.janrainCapture.enforce) {
+                 // Modify all /user/login and /user/register links to use Capture.
+                 var ver = Drupal.settings.janrainCapture.ver;
+                 var bp = Drupal.settings.basePath;
+-                var links = $('a[href^="'+ bp +'user/login"], a[href^="'+ bp +'user/register"]').once('janrain-capture');
++                var links = $('a[href^="' + bp + 'user/login"], a[href^="' + bp + 'user/register"]').once('janrain-capture');
+                 var regex = /(?:\?|&)destination\=([^\&]*)/;
+                 if (ver == '1.0') {
+                     //legacy
+@@ -222,7 +222,7 @@ window.janrain = window.janrain || {};
+ 
+ // Override the resize method on the Drupal.janrainCapture object so
+ // as to use a fancybox for it.
+-    Drupal.janrainCapture.resize = function(jargs) {
++    Drupal.janrainCapture.resize = function (jargs) {
+         var args = $.parseJSON(jargs);
+         $("#fancybox-inner, #fancybox-wrap, #fancybox-content, #fancybox-frame")
+             .css({
+@@ -235,7 +235,7 @@ window.janrain = window.janrain || {};
+ 
+ // Override the passwordRecover method on the Drupal.janrainCapture object so
+ // as to use a fancybox for it.
+-    Drupal.janrainCapture.passwordRecover = function(url) {
++    Drupal.janrainCapture.passwordRecover = function (url) {
+         $.fancybox({
+             type: "iframe",
+             href: url,
+@@ -248,10 +248,10 @@ window.janrain = window.janrain || {};
+     }
+ 
+     Drupal.behaviors.janrainCaptureUi = {
+-        attach: function(context, settings) {
++        attach: function (context, settings) {
+             // Make all Capture signin and profile links appear in a fancybox.
+             if ($.fn.fancybox) {
+-                $(".janrain_capture_anchor", context).once("capture-ui", function(){
++                $(".janrain_capture_anchor", context).once("capture-ui", function () {
+                     var data = $(this).data();
+                     $(this).addClass('iframe').fancybox({
+                         padding: 0,
+@@ -259,12 +259,12 @@ window.janrain = window.janrain || {};
+                         autoScale: true,
+                         width: 666,
+                         autoDimensions: false,
+-                        onStart: function() {
++                        onStart: function () {
+                             if (data.destination) {
+                                 Drupal.janrainCapture.addDestination(data.destination);
+                             }
+                         },
+-                        onClosed: function() {
++                        onClosed: function () {
+                             if (data.destination) {
+                                 Drupal.janrainCapture.removeDestination(data.destination);
+                             }
+diff --git a/src/Exception/JanrainApiCallError.php b/src/Exception/JanrainApiCallError.php
+index ead61e3..a65a09f 100644
+--- a/src/Exception/JanrainApiCallError.php
++++ b/src/Exception/JanrainApiCallError.php
+@@ -10,7 +10,7 @@ class JanrainApiCallError extends \RuntimeException {
+   /**
+    * The response from Janrain.
+    *
+-   * @var \stdClass
++   * @var object
+    */
+   protected $response;
+ 
+diff --git a/src/JanrainCaptureApi.php b/src/JanrainCaptureApi.php
+index 3a92c92..ab1a844 100644
+--- a/src/JanrainCaptureApi.php
++++ b/src/JanrainCaptureApi.php
+@@ -329,7 +329,7 @@ class JanrainCaptureApi implements JanrainCaptureApiInterface {
+    * @param string $access_token
+    *   The client access token to use when performing user-specific calls.
+    *
+-   * @return \stdClass
++   * @return object
+    *   The HTTP request result data.
+    *
+    * @throws \GuzzleHttp\Exception\TransferException
+diff --git a/src/User/JanrainDataContainer.php b/src/User/JanrainDataContainer.php
+index 99cbafd..d21372c 100644
+--- a/src/User/JanrainDataContainer.php
++++ b/src/User/JanrainDataContainer.php
+@@ -10,7 +10,7 @@ class JanrainDataContainer {
+   /**
+    * The profile's data.
+    *
+-   * @var \stdClass
++   * @var object
+    */
+   protected $data;
+ 

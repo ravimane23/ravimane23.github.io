@@ -1,0 +1,45 @@
+diff --git a/src/Form/GoogleImageSitemapDeleteForm.php b/src/Form/GoogleImageSitemapDeleteForm.php
+index 3d9f609..694b9c6 100644
+--- a/src/Form/GoogleImageSitemapDeleteForm.php
++++ b/src/Form/GoogleImageSitemapDeleteForm.php
+@@ -35,28 +35,28 @@ class GoogleImageSitemapDeleteForm extends ConfirmFormBase {
+   /**
+    * {@inheritdoc}
+    */
+-    public function getCancelUrl() {
+-      return new Url('my_module.myroute');
++  public function getCancelUrl() {
++    return new Url('my_module.myroute');
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-    public function getDescription() {
++  public function getDescription() {
+     return $this->t('Only do this if you are sure!');
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-    public function getConfirmText() {
++  public function getConfirmText() {
+     return $this->t('Delete it!');
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-    public function getCancelText() {
++  public function getCancelText() {
+     return $this->t('Nevermind');
+   }
+ 
+@@ -80,4 +80,4 @@ class GoogleImageSitemapDeleteForm extends ConfirmFormBase {
+     mymodule_delete($this->id);
+   }
+ 
+-}
+\ No newline at end of file
++}

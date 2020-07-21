@@ -1,0 +1,104 @@
+diff --git a/js/yoast_seo.js b/js/yoast_seo.js
+index 76e5693..3efaad4 100644
+--- a/js/yoast_seo.js
++++ b/js/yoast_seo.js
+@@ -51,10 +51,11 @@
+       String.prototype.endsWith = function (searchStr, Position) {
+         // This works much better than >= because
+         // it compensates for NaN:
+-        if (!(Position < this.length))
++        if (!(Position < this.length)) {
+           Position = this.length;
+-        else
+-          Position |= 0; // round position
++        } else {
++          Position | = 0; // round position
++        }
+         return this.substr(Position - searchStr.length,
+           searchStr.length) === searchStr;
+       };
+@@ -74,7 +75,6 @@
+       }
+     }
+ 
+-
+     if (typeof RealTimeSEO === 'undefined') {
+       $('#' + config.targets.output).html('<p><strong>' + Drupal.t('It looks like something went wrong when we tried to load the Real-Time SEO content analysis library. Please check it the module is installed correctly.') + '</strong></p>');
+       throw 'RealTimeSEO is not defined. Is the library attached?';
+@@ -224,7 +224,6 @@
+     this.app.runAnalyzer();
+   };
+ 
+-
+   /**
+    * Sends a request to our Drupal endpoint to refresh our local data.
+    *
+diff --git a/src/EntityAnalyser.php b/src/EntityAnalyser.php
+index 49216e5..827dd5d 100644
+--- a/src/EntityAnalyser.php
++++ b/src/EntityAnalyser.php
+@@ -2,18 +2,10 @@
+ 
+ namespace Drupal\yoast_seo;
+ 
+-use Drupal\Core\Config\Entity\ConfigEntityBase;
+-use Drupal\Core\Entity\ContentEntityBase;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+-use Drupal\Core\Form\FormState;
+ use Drupal\Core\Render\RendererInterface;
+ use Drupal\metatag\MetatagManagerInterface;
+-use Drupal\user\Entity\User;
+-use Drupal\user\EntityOwnerInterface;
+-use Symfony\Component\HttpFoundation\Request;
+-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+ use Symfony\Component\Routing\RouterInterface;
+ 
+ /**
+@@ -143,7 +135,7 @@ class EntityAnalyser {
+    * @param array $metatags
+    *   The metatags array that contains the tokens.
+    * @param \Drupal\Core\Entity\EntityInterface $entity
+-   *   The entity to use as context
++   *   The entity to use as context.
+    */
+   protected function replaceContextAwareTokens(array &$metatags, EntityInterface $entity) {
+     foreach ($metatags as $tag => $value) {
+diff --git a/src/Plugin/Field/FieldWidget/YoastSeoWidget.php b/src/Plugin/Field/FieldWidget/YoastSeoWidget.php
+index 2996702..4bdd6e0 100644
+--- a/src/Plugin/Field/FieldWidget/YoastSeoWidget.php
++++ b/src/Plugin/Field/FieldWidget/YoastSeoWidget.php
+@@ -173,8 +173,8 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
+    */
+   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+     foreach ($values as &$value) {
+-      $value['title']         = ($this->getSetting('edit_title') ? $value['edit_title'] : null);
+-      $value['description']   = ($this->getSetting('edit_description') ? $value['edit_description'] : null);
++      $value['title']       = ($this->getSetting('edit_title') ? $value['edit_title'] : NULL);
++      $value['description'] = ($this->getSetting('edit_description') ? $value['edit_description'] : NULL);
+     }
+     return $values;
+   }
+diff --git a/src/SeoManager.php b/src/SeoManager.php
+index cb4dcd8..620ce75 100644
+--- a/src/SeoManager.php
++++ b/src/SeoManager.php
+@@ -99,7 +99,7 @@ class SeoManager {
+    * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
+    *   The entity for which to find the Real-Time SEO field.
+    *
+-   * @return NULL|\Drupal\Core\Field\FieldItemListInterface
++   * @return null|\Drupal\Core\Field\FieldItemListInterface
+    *   The field item list of the field or NULL if no RTSEO field was found.
+    */
+   public function getSeoField(FieldableEntityInterface $entity) {
+@@ -153,6 +153,7 @@ class SeoManager {
+ 
+     // Ensure rules are sorted from high to low score.
+     ksort($rules);
+-    return array_reverse($rules, true);
++    return array_reverse($rules, TRUE);
+   }
++
+ }

@@ -1,0 +1,12 @@
+diff --git a/src/GalleryIdHelper.php b/src/GalleryIdHelper.php
+index 0ccfafe..2ab02d3 100644
+--- a/src/GalleryIdHelper.php
++++ b/src/GalleryIdHelper.php
+@@ -17,7 +17,6 @@ class GalleryIdHelper {
+ 
+   /**
+    * @var null
+-   *
+    */
+   protected $galleryToken = NULL;
+ 

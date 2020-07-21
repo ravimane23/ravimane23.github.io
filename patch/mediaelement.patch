@@ -1,0 +1,40 @@
+diff --git a/js/mediaelement.es6.js b/js/mediaelement.es6.js
+index 3f96009..0f5d04e 100755
+--- a/js/mediaelement.es6.js
++++ b/js/mediaelement.es6.js
+@@ -1,9 +1,9 @@
+-(function($, Drupal) {
++(function ($, Drupal) {
+   Drupal.behaviors.mediaelement = {
+     attach(context, settings) {
+       $('.mediaelementjs', context)
+         .once('mediaelement')
+-        .each(function() {
++        .each(function () {
+           $(this).mediaelementplayer(settings.mediaelement);
+         });
+ 
+@@ -11,7 +11,7 @@
+       if (settings.mediaelement.attachSitewide !== undefined) {
+         $('audio,video', context)
+           .once('mediaelement')
+-          .each(function() {
++          .each(function () {
+             $(this).mediaelementplayer(settings.mediaelement);
+           });
+       }
+diff --git a/src/Plugin/Field/FieldFormatter/MediaElementVideoFieldFormatter.php b/src/Plugin/Field/FieldFormatter/MediaElementVideoFieldFormatter.php
+index ec19876..b9b3910 100755
+--- a/src/Plugin/Field/FieldFormatter/MediaElementVideoFieldFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/MediaElementVideoFieldFormatter.php
+@@ -181,7 +181,9 @@ class MediaElementVideoFieldFormatter extends FileVideoFormatter implements Cont
+ 
+     // @codingStandardsIgnoreLine
+     if ($image_field == 'none') { return ''; }
+-    if ($entity->get($image_field)->isEmpty()) { return ''; }
++    if ($entity->get($image_field)->isEmpty()) {
++      return '';
++    }
+ 
+     $image_uri = $entity->{$image_field}->entity->getFileUri();
+ 

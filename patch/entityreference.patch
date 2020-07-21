@@ -1,0 +1,1938 @@
+diff --git a/css/entityreference-rtl.admin.css b/css/entityreference-rtl.admin.css
+index 600e3d7..90a3400 100644
+--- a/css/entityreference-rtl.admin.css
++++ b/css/entityreference-rtl.admin.css
+@@ -1,4 +1,3 @@
+-
+ .entityreference-settings {
+   margin-right: 1.5em;
+ }
+diff --git a/css/entityreference.admin.css b/css/entityreference.admin.css
+index d6066ef..1e08f05 100644
+--- a/css/entityreference.admin.css
++++ b/css/entityreference.admin.css
+@@ -1,4 +1,3 @@
+-
+ .entityreference-settings {
+   margin-left: 1.5em; /* LTR */
+ }
+diff --git a/lib/Drupal/entityreference/EntityReferenceRecursiveRenderingException.php b/lib/Drupal/entityreference/EntityReferenceRecursiveRenderingException.php
+index bd4a888..cf2fc99 100644
+--- a/lib/Drupal/entityreference/EntityReferenceRecursiveRenderingException.php
++++ b/lib/Drupal/entityreference/EntityReferenceRecursiveRenderingException.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\EntityReferenceRecursiveRenderingException.
+- */
+-
+ namespace Drupal\entityreference;
+ 
+ use Exception;
+diff --git a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionBroken.php b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionBroken.php
+index eeb4898..8caa845 100644
+--- a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionBroken.php
++++ b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionBroken.php
+@@ -1,53 +1,63 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\entityreference\selection\SelectionBroken.
+- *
+- * Provide entity type specific access control of the node entity type.
+- */
+-
+ namespace Drupal\entityreference\Plugin\Type\Selection;
+ 
+-use Drupal\Core\Entity\EntityFieldQuery;
+ use Drupal\Core\Database\Query\AlterableInterface;
+-use Drupal\Core\Entity\EntityInterface;
+-
+-use Drupal\entityreference\Plugin\entityreference\selection\SelectionBase;
+-
+ 
+ /**
+  * A null implementation of EntityReference_SelectionHandler.
+  */
+ class SelectionBroken implements SelectionInterface {
+ 
++  /**
++   *
++   */
+   protected function __construct($field, $instance) {
+     $this->field = $field;
+     $this->instance = $instance;
+   }
+ 
++  /**
++   *
++   */
+   public static function settingsForm($field, $instance) {
+-    $form['selection_handler'] = array(
++    $form['selection_handler'] = [
+       '#markup' => t('The selected selection handler is broken.'),
+-    );
++    ];
+     return $form;
+   }
+ 
++  /**
++   *
++   */
+   public function getReferencableEntities($match = NULL, $match_operator = 'CONTAINS', $limit = 0) {
+-    return array();
++    return [];
+   }
+ 
++  /**
++   *
++   */
+   public function countReferencableEntities($match = NULL, $match_operator = 'CONTAINS') {
+     return 0;
+   }
+ 
++  /**
++   *
++   */
+   public function validateReferencableEntities(array $ids) {
+-    return array();
++    return [];
+   }
+ 
++  /**
++   *
++   */
+   public function validateAutocompleteInput($input, &$element, &$form_state, $form) {
+   }
+ 
++  /**
++   *
++   */
+   public function entityFieldQueryAlter(AlterableInterface $query) {
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeComment.php b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeComment.php
+index f2296d9..7844572 100644
+--- a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeComment.php
++++ b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeComment.php
+@@ -1,21 +1,19 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\entityreference\selection\SelectionEntityTypeComment.
+- *
+- * Provide entity type specific access control of the node entity type.
+- */
+-
+ namespace Drupal\entityreference\Plugin\Type\Selection;
+ 
+-use Drupal\Core\Entity\EntityFieldQuery;
+ use Drupal\Core\Database\Query\AlterableInterface;
+ 
+ use Drupal\entityreference\Plugin\entityreference\selection\SelectionBase;
+ 
++/**
++ *
++ */
+ class SelectionEntityTypeComment extends SelectionBase {
+ 
++  /**
++   *
++   */
+   public function entityFieldQueryAlter(AlterableInterface $query) {
+     // Adding the 'comment_access' tag is sadly insufficient for comments: core
+     // requires us to also know about the concept of 'published' and
+@@ -57,4 +55,5 @@ class SelectionEntityTypeComment extends SelectionBase {
+       $query->condition($node_alias . '.status', 1);
+     }
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeFile.php b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeFile.php
+index 13b2625..ad9fc03 100644
+--- a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeFile.php
++++ b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeFile.php
+@@ -1,21 +1,19 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\entityreference\selection\SelectionEntityTypeFile.
+- *
+- * Provide entity type specific access control of the file entity type.
+- */
+-
+ namespace Drupal\entityreference\Plugin\Type\Selection;
+ 
+-use Drupal\Core\Entity\EntityFieldQuery;
+ use Drupal\Core\Database\Query\AlterableInterface;
+ 
+ use Drupal\entityreference\Plugin\entityreference\selection\SelectionBase;
+ 
++/**
++ *
++ */
+ class SelectionEntityTypeFile extends SelectionBase {
+ 
++  /**
++   *
++   */
+   public function entityFieldQueryAlter(AlterableInterface $query) {
+     // Core forces us to know about 'permanent' vs. 'temporary' files.
+     $tables = $query->getTables();
+@@ -27,4 +25,5 @@ class SelectionEntityTypeFile extends SelectionBase {
+     // @todo: fix this when core access control is less insane.
+     return $query;
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeNode.php b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeNode.php
+index f33c83c..2aed4a5 100644
+--- a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeNode.php
++++ b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeNode.php
+@@ -1,21 +1,19 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\entityreference\selection\SelectionEntityTypeNode.
+- *
+- * Provide entity type specific access control of the node entity type.
+- */
+-
+ namespace Drupal\entityreference\Plugin\Type\Selection;
+ 
+-use Drupal\Core\Entity\EntityFieldQuery;
+ use Drupal\Core\Database\Query\AlterableInterface;
+ 
+ use Drupal\entityreference\Plugin\entityreference\selection\SelectionBase;
+ 
++/**
++ *
++ */
+ class SelectionEntityTypeNode extends SelectionBase {
+ 
++  /**
++   *
++   */
+   public function entityFieldQueryAlter(AlterableInterface $query) {
+     // Adding the 'node_access' tag is sadly insufficient for nodes: core
+     // requires us to also know about the concept of 'published' and
+@@ -27,4 +25,5 @@ class SelectionEntityTypeNode extends SelectionBase {
+       $query->condition(key($tables) . '.status', NODE_PUBLISHED);
+     }
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeTaxonomyTerm.php b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeTaxonomyTerm.php
+index bbbf626..b91a33f 100644
+--- a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeTaxonomyTerm.php
++++ b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeTaxonomyTerm.php
+@@ -1,21 +1,19 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\entityreference\selection\SelectionEntityTypeTaxonomyTerm.
+- *
+- * Provide entity type specific access control of the file entity type.
+- */
+-
+ namespace Drupal\entityreference\Plugin\Type\Selection;
+ 
+-use Drupal\Core\Entity\EntityFieldQuery;
+ use Drupal\Core\Database\Query\AlterableInterface;
+ 
+ use Drupal\entityreference\Plugin\entityreference\selection\SelectionBase;
+ 
++/**
++ *
++ */
+ class SelectionEntityTypeTaxonomyTerm extends SelectionBase {
+ 
++  /**
++   *
++   */
+   public function entityFieldQueryAlter(AlterableInterface $query) {
+     // The Taxonomy module doesn't implement any proper taxonomy term access,
+     // and as a consequence doesn't make sure that taxonomy terms cannot be viewed
+@@ -38,4 +36,5 @@ class SelectionEntityTypeTaxonomyTerm extends SelectionBase {
+       }
+     }
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeUser.php b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeUser.php
+index 88eee5e..9e1c9a2 100644
+--- a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeUser.php
++++ b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionEntityTypeUser.php
+@@ -1,23 +1,21 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\entityreference\selection\SelectionEntityTypeNode.
+- *
+- * Provide entity type specific access control of the node entity type.
+- */
+-
+ namespace Drupal\entityreference\Plugin\Type\Selection;
+ 
+-use Drupal\Core\Entity\EntityFieldQuery;
+ use Drupal\Core\Database\Database;
+ use Drupal\Core\Database\Query\AlterableInterface;
+ 
+ 
+ use Drupal\entityreference\Plugin\entityreference\selection\SelectionBase;
+ 
++/**
++ *
++ */
+ class SelectionEntityTypeUser extends SelectionBase {
+ 
++  /**
++   *
++   */
+   public function buildEntityFieldQuery($match = NULL, $match_operator = 'CONTAINS') {
+     $query = parent::buildEntityFieldQuery($match, $match_operator);
+ 
+@@ -35,6 +33,9 @@ class SelectionEntityTypeUser extends SelectionBase {
+     return $query;
+   }
+ 
++  /**
++   *
++   */
+   public function entityFieldQueryAlter(AlterableInterface $query) {
+     if (user_access('administer users')) {
+       // In addition, if the user is administrator, we need to make sure to
+@@ -60,7 +61,7 @@ class SelectionEntityTypeUser extends SelectionBase {
+           $value_part->condition('anonymous_name', $condition['value'], $condition['operator']);
+           $value_part->compile(Database::getConnection(), $query);
+           $or->condition(db_and()
+-            ->where(str_replace('anonymous_name', ':anonymous_name', (string) $value_part), $value_part->arguments() + array(':anonymous_name' => user_format_name(user_load(0))))
++            ->where(str_replace('anonymous_name', ':anonymous_name', (string) $value_part), $value_part->arguments() + [':anonymous_name' => user_format_name(user_load(0))])
+             ->condition('users.uid', 0)
+           );
+           $query->condition($or);
+@@ -68,4 +69,5 @@ class SelectionEntityTypeUser extends SelectionBase {
+       }
+     }
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionInterface.php b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionInterface.php
+index 6a324cc..a85308e 100644
+--- a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionInterface.php
++++ b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionInterface.php
+@@ -1,19 +1,13 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\Type\Selection\SelectionInterface.
+- */
+-
+ namespace Drupal\entityreference\Plugin\Type\Selection;
+ 
+-use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Database\Query\AlterableInterface;
+ 
+ /**
+  * Interface definition for entityre-ference selection plugins.
+  */
+-interface SelectionInterface  {
++interface SelectionInterface {
+ 
+   /**
+    * Return a list of referencable entities.
+@@ -46,6 +40,7 @@ interface SelectionInterface  {
+    *   Single string from autocomplete widget.
+    * @param $element
+    *   The form element to set a form error.
++   *
+    * @return
+    *   Value of a matching entity id, or NULL if none.
+    */
+@@ -60,4 +55,5 @@ interface SelectionInterface  {
+    * Generate a settings form for this handler.
+    */
+   public static function settingsForm($field, $instance);
++
+ }
+diff --git a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionPluginManager.php b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionPluginManager.php
+index e5a0da8..207a224 100644
+--- a/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionPluginManager.php
++++ b/lib/Drupal/entityreference/Plugin/Type/Selection/SelectionPluginManager.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\Type\Selection\SelectionPluginManager.
+- */
+-
+ namespace Drupal\entityreference\Plugin\Type\Selection;
+ 
+ use Drupal\Component\Plugin\PluginManagerBase;
+@@ -30,4 +25,5 @@ class SelectionPluginManager extends PluginManagerBase {
+     $this->baseDiscovery = new AnnotatedClassDiscovery('entityreference', 'selection');
+     $this->discovery = new CacheDecorator($this->baseDiscovery, $this->cache_key);
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Plugin/entityreference/selection/SelectionBase.php b/lib/Drupal/entityreference/Plugin/entityreference/selection/SelectionBase.php
+index c0ee220..5bb0fc9 100644
+--- a/lib/Drupal/entityreference/Plugin/entityreference/selection/SelectionBase.php
++++ b/lib/Drupal/entityreference/Plugin/entityreference/selection/SelectionBase.php
+@@ -1,21 +1,13 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\entityreference\selection\SelectionBase.
+- */
+-
+ namespace Drupal\entityreference\Plugin\entityreference\selection;
+ 
+ use Drupal\Core\Entity\EntityFieldQuery;
+ 
+-use Drupal\Core\Annotation\Plugin;
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Database\Query\AlterableInterface;
+ 
+ use Drupal\entityreference\Plugin\Type\Selection\SelectionInterface;
+-use Drupal\entityreference\Plugin\Type\Selection\SelectionBroken;
+ 
+ /**
+  * Plugin implementation of the 'selection' entityreference.
+@@ -28,6 +20,9 @@ use Drupal\entityreference\Plugin\Type\Selection\SelectionBroken;
+  */
+ class SelectionBase implements SelectionInterface {
+ 
++  /**
++   *
++   */
+   public function __construct($field, $instance = NULL, EntityInterface $entity = NULL) {
+     $this->field = $field;
+     $this->instance = $instance;
+@@ -41,20 +36,20 @@ class SelectionBase implements SelectionInterface {
+     $entity_info = entity_get_info($field['settings']['target_type']);
+ 
+     // Merge-in default values.
+-    $field['settings']['handler_settings'] += array(
+-      'target_bundles' => array(),
+-      'sort' => array(
++    $field['settings']['handler_settings'] += [
++      'target_bundles' => [],
++      'sort' => [
+         'type' => 'none',
+-      )
+-    );
++      ],
++    ];
+ 
+     if (!empty($entity_info['entity keys']['bundle'])) {
+-      $bundles = array();
++      $bundles = [];
+       foreach ($entity_info['bundles'] as $bundle_name => $bundle_info) {
+         $bundles[$bundle_name] = $bundle_info['label'];
+       }
+ 
+-      $form['target_bundles'] = array(
++      $form['target_bundles'] = [
+         '#type' => 'checkboxes',
+         '#title' => t('Target bundles'),
+         '#options' => $bundles,
+@@ -62,90 +57,90 @@ class SelectionBase implements SelectionInterface {
+         '#size' => 6,
+         '#multiple' => TRUE,
+         '#description' => t('The bundles of the entity type that can be referenced. Optional, leave empty for all bundles.'),
+-        '#element_validate' => array('_entityreference_element_validate_filter'),
+-      );
++        '#element_validate' => ['_entityreference_element_validate_filter'],
++      ];
+     }
+     else {
+-      $form['target_bundles'] = array(
++      $form['target_bundles'] = [
+         '#type' => 'value',
+-        '#value' => array(),
+-      );
++        '#value' => [],
++      ];
+     }
+ 
+-    $form['sort']['type'] = array(
++    $form['sort']['type'] = [
+       '#type' => 'select',
+       '#title' => t('Sort by'),
+-      '#options' => array(
++      '#options' => [
+         'none' => t("Don't sort"),
+         'property' => t('A property of the base table of the entity'),
+         'field' => t('A field attached to this entity'),
+-      ),
++      ],
+       '#ajax' => TRUE,
+-      '#limit_validation_errors' => array(),
++      '#limit_validation_errors' => [],
+       '#default_value' => $field['settings']['handler_settings']['sort']['type'],
+-    );
++    ];
+ 
+-    $form['sort']['settings'] = array(
++    $form['sort']['settings'] = [
+       '#type' => 'container',
+-      '#attributes' => array('class' => array('entityreference-settings')),
+-      '#process' => array('_entityreference_form_process_merge_parent'),
+-    );
++      '#attributes' => ['class' => ['entityreference-settings']],
++      '#process' => ['_entityreference_form_process_merge_parent'],
++    ];
+ 
+     if ($field['settings']['handler_settings']['sort']['type'] == 'property') {
+       // Merge-in default values.
+-      $field['settings']['handler_settings']['sort'] += array(
++      $field['settings']['handler_settings']['sort'] += [
+         'property' => NULL,
+-      );
++      ];
+ 
+-      $form['sort']['settings']['property'] = array(
++      $form['sort']['settings']['property'] = [
+         '#type' => 'select',
+         '#title' => t('Sort property'),
+         '#required' => TRUE,
+         '#options' => drupal_map_assoc($entity_info['schema_fields_sql']['base table']),
+         '#default_value' => $field['settings']['handler_settings']['sort']['property'],
+-      );
++      ];
+     }
+     elseif ($field['settings']['handler_settings']['sort']['type'] == 'field') {
+       // Merge-in default values.
+-      $field['settings']['handler_settings']['sort'] += array(
++      $field['settings']['handler_settings']['sort'] += [
+         'field' => NULL,
+-      );
++      ];
+ 
+-      $fields = array();
++      $fields = [];
+       foreach (field_info_instances($field['settings']['target_type']) as $bundle_name => $bundle_instances) {
+         foreach ($bundle_instances as $instance_name => $instance_info) {
+           $field_info = field_info_field($instance_name);
+           foreach ($field_info['columns'] as $column_name => $column_info) {
+-            $fields[$instance_name . ':' . $column_name] = t('@label (column @column)', array('@label' => $instance_info['label'], '@column' => $column_name));
++            $fields[$instance_name . ':' . $column_name] = t('@label (column @column)', ['@label' => $instance_info['label'], '@column' => $column_name]);
+           }
+         }
+       }
+ 
+-      $form['sort']['settings']['field'] = array(
++      $form['sort']['settings']['field'] = [
+         '#type' => 'select',
+         '#title' => t('Sort field'),
+         '#required' => TRUE,
+         '#options' => $fields,
+         '#default_value' => $field['settings']['handler_settings']['sort']['field'],
+-      );
++      ];
+     }
+ 
+     if ($field['settings']['handler_settings']['sort']['type'] != 'none') {
+       // Merge-in default values.
+-      $field['settings']['handler_settings']['sort'] += array(
++      $field['settings']['handler_settings']['sort'] += [
+         'direction' => 'ASC',
+-      );
++      ];
+ 
+-      $form['sort']['settings']['direction'] = array(
++      $form['sort']['settings']['direction'] = [
+         '#type' => 'select',
+         '#title' => t('Sort direction'),
+         '#required' => TRUE,
+-        '#options' => array(
++        '#options' => [
+           'ASC' => t('Ascending'),
+           'DESC' => t('Descending'),
+-        ),
++        ],
+         '#default_value' => $field['settings']['handler_settings']['sort']['direction'],
+-      );
++      ];
+     }
+ 
+     return $form;
+@@ -165,10 +160,10 @@ class SelectionBase implements SelectionInterface {
+     $result = $query->execute();
+ 
+     if (empty($result[$entity_type])) {
+-      return array();
++      return [];
+     }
+ 
+-    $options = array();
++    $options = [];
+     $entities = entity_load_multiple($entity_type, array_keys($result[$entity_type]));
+     foreach ($entities as $entity_id => $entity) {
+       $options[$entity_id] = check_plain($entity->label());
+@@ -201,38 +196,38 @@ class SelectionBase implements SelectionInterface {
+       }
+     }
+ 
+-    return array();
++    return [];
+   }
+ 
+   /**
+    * Implements EntityReferenceHandler::validateAutocompleteInput().
+    */
+   public function validateAutocompleteInput($input, &$element, &$form_state, $form) {
+-      $entities = $this->getReferencableEntities($input, '=', 6);
+-      if (empty($entities)) {
+-        // Error if there are no entities available for a required field.
+-        form_error($element, t('There are no entities matching "%value"', array('%value' => $input)));
+-      }
+-      elseif (count($entities) > 5) {
+-        // Error if there are more than 5 matching entities.
+-        form_error($element, t('Many entities are called %value. Specify the one you want by appending the id in parentheses, like "@value (@id)"', array(
+-          '%value' => $input,
+-          '@value' => $input,
+-          '@id' => key($entities),
+-        )));
+-      }
+-      elseif (count($entities) > 1) {
+-        // More helpful error if there are only a few matching entities.
+-        $multiples = array();
+-        foreach ($entities as $id => $name) {
+-          $multiples[] = $name . ' (' . $id . ')';
+-        }
+-        form_error($element, t('Multiple entities match this reference; "%multiple"', array('%multiple' => implode('", "', $multiples))));
+-      }
+-      else {
+-        // Take the one and only matching entity.
+-        return key($entities);
++    $entities = $this->getReferencableEntities($input, '=', 6);
++    if (empty($entities)) {
++      // Error if there are no entities available for a required field.
++      form_error($element, t('There are no entities matching "%value"', ['%value' => $input]));
++    }
++    elseif (count($entities) > 5) {
++      // Error if there are more than 5 matching entities.
++      form_error($element, t('Many entities are called %value. Specify the one you want by appending the id in parentheses, like "@value (@id)"', [
++        '%value' => $input,
++        '@value' => $input,
++        '@id' => key($entities),
++      ]));
++    }
++    elseif (count($entities) > 1) {
++      // More helpful error if there are only a few matching entities.
++      $multiples = [];
++      foreach ($entities as $id => $name) {
++        $multiples[] = $name . ' (' . $id . ')';
+       }
++      form_error($element, t('Multiple entities match this reference; "%multiple"', ['%multiple' => implode('", "', $multiples)]));
++    }
++    else {
++      // Take the one and only matching entity.
++      return key($entities);
++    }
+   }
+ 
+   /**
+@@ -290,12 +285,13 @@ class SelectionBase implements SelectionInterface {
+     $old_tags = $query->alterTags;
+     $old_metadata = $query->alterMetaData;
+ 
+-    $query->alterTags = array($tag => TRUE);
++    $query->alterTags = [$tag => TRUE];
+     $query->alterMetaData['base_table'] = $base_table;
+-    drupal_alter(array('query', 'query_' . $tag), $query);
++    drupal_alter(['query', 'query_' . $tag], $query);
+ 
+     // Restore the tags and metadata.
+     $query->alterTags = $old_tags;
+     $query->alterMetaData = $old_metadata;
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceEntityFormatter.php b/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceEntityFormatter.php
+index 0863172..3826c66 100644
+--- a/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceEntityFormatter.php
++++ b/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceEntityFormatter.php
+@@ -1,18 +1,10 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\field\formatter\EntityReferenceEntityFormatter.
+- */
+-
+ namespace Drupal\entityreference\Plugin\field\formatter;
+ 
+-use Drupal\Core\Annotation\Plugin;
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\Core\Entity\EntityInterface;
+ 
+ use Drupal\entityreference\EntityReferenceRecursiveRenderingException;
+-use Drupal\entityreference\Plugin\field\formatter\EntityReferenceFormatterBase;
+ 
+ /**
+  * Plugin implementation of the 'entity-reference rendered entity' formatter.
+@@ -38,26 +30,26 @@ class EntityReferenceEntityFormatter extends EntityReferenceFormatterBase {
+    */
+   public function settingsForm(array $form, array &$form_state) {
+     $entity_info = entity_get_info($this->field['settings']['target_type']);
+-    $options = array();
++    $options = [];
+     if (!empty($entity_info['view modes'])) {
+       foreach ($entity_info['view modes'] as $view_mode => $view_mode_settings) {
+         $options[$view_mode] = $view_mode_settings['label'];
+       }
+     }
+ 
+-    $elements['view_mode'] = array(
++    $elements['view_mode'] = [
+       '#type' => 'select',
+       '#options' => $options,
+       '#title' => t('View mode'),
+       '#default_value' => $this->getSetting('view_mode'),
+       '#required' => TRUE,
+-    );
++    ];
+ 
+-    $elements['links'] = array(
++    $elements['links'] = [
+       '#type' => 'checkbox',
+       '#title' => t('Show links'),
+       '#default_value' => $this->getSetting('links'),
+-    );
++    ];
+ 
+     return $elements;
+   }
+@@ -66,11 +58,11 @@ class EntityReferenceEntityFormatter extends EntityReferenceFormatterBase {
+    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsForm().
+    */
+   public function settingsSummary() {
+-    $summary = array();
++    $summary = [];
+ 
+     $entity_info = entity_get_info($this->field['settings']['target_type']);
+     $view_mode = $this->getSetting('view_mode');
+-    $summary[] = t('Rendered as @mode', array('@mode' => isset($entity_info['view modes'][$view_mode]['label']) ? $entity_info['view modes'][$view_mode]['label'] : $view_mode));
++    $summary[] = t('Rendered as @mode', ['@mode' => isset($entity_info['view modes'][$view_mode]['label']) ? $entity_info['view modes'][$view_mode]['label'] : $view_mode]);
+     $summary[] = $this->getSetting('links') ? t('Display links') : t('Do not display links');
+ 
+     return implode('<br />', $summary);
+@@ -90,14 +82,14 @@ class EntityReferenceEntityFormatter extends EntityReferenceFormatterBase {
+ 
+     $target_type = $field['settings']['target_type'];
+ 
+-    $elements = array();
++    $elements = [];
+ 
+     foreach ($items as $delta => $item) {
+       // Protect ourselves from recursive rendering.
+       static $depth = 0;
+       $depth++;
+       if ($depth > 20) {
+-        throw new EntityReferenceRecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', array('@entity_type' => $entity_type, '@entity_id' => $item['target_id'])));
++        throw new EntityReferenceRecursiveRenderingException(format_string('Recursive rendering detected when rendering entity @entity_type(@entity_id). Aborting rendering.', ['@entity_type' => $entity_type, '@entity_id' => $item['target_id']]));
+       }
+ 
+       $entity = clone $item['entity'];
+@@ -111,7 +103,7 @@ class EntityReferenceEntityFormatter extends EntityReferenceFormatterBase {
+       $depth = 0;
+     }
+ 
+-
+     return $elements;
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceFormatterBase.php b/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceFormatterBase.php
+index 6ecc0b4..ebefaf5 100644
+--- a/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceFormatterBase.php
++++ b/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceFormatterBase.php
+@@ -1,14 +1,7 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\field\formatter\EntityReferenceFormatterBase.
+- */
+-
+ namespace Drupal\entityreference\Plugin\field\formatter;
+ 
+-use Drupal\Core\Annotation\Plugin;
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\Core\Entity\EntityInterface;
+ 
+ use Drupal\field\Plugin\Type\Formatter\FormatterBase;
+@@ -26,7 +19,7 @@ abstract class EntityReferenceFormatterBase extends FormatterBase {
+    * not be accessed.
+    */
+   public function prepareView(array $entities, $langcode, array &$items) {
+-    $target_ids = array();
++    $target_ids = [];
+ 
+     // Collect every possible entity attached to any of the entities.
+     foreach ($entities as $id => $entity) {
+@@ -43,7 +36,7 @@ abstract class EntityReferenceFormatterBase extends FormatterBase {
+       $target_entities = entity_load_multiple($target_type, $target_ids);
+     }
+     else {
+-      $target_entities = array();
++      $target_entities = [];
+     }
+ 
+     // Iterate through the fieldable entities again to attach the loaded
+@@ -76,7 +69,7 @@ abstract class EntityReferenceFormatterBase extends FormatterBase {
+    *
+    * Remove unaccessible values.
+    *
+-   * @see Drupal\entityreference\Plugin\field\formatter\EntityReferenceFormatterBase::prepareView().
++   * @see Drupal\entityreference\Plugin\field\formatter\EntityReferenceFormatterBase::prepareView()
+    */
+   public function viewElements(EntityInterface $entity, $langcode, array $items) {
+     // Remove unaccessible items.
+@@ -85,6 +78,7 @@ abstract class EntityReferenceFormatterBase extends FormatterBase {
+         unset($items[$delta]);
+       }
+     }
+-    return array();
++    return [];
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceIdFormatter.php b/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceIdFormatter.php
+index 89f9f98..eec7fc4 100644
+--- a/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceIdFormatter.php
++++ b/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceIdFormatter.php
+@@ -1,18 +1,9 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\field\formatter\EntityReferenceIdFormatter.
+- */
+-
+ namespace Drupal\entityreference\Plugin\field\formatter;
+ 
+-use Drupal\Core\Annotation\Plugin;
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\Core\Entity\EntityInterface;
+ 
+-use Drupal\entityreference\Plugin\field\formatter\EntityReferenceFormatterBase;
+-
+ /**
+  * Plugin implementation of the 'entity-reference ID' formatter.
+  *
+@@ -32,10 +23,10 @@ class EntityReferenceIdFormatter extends EntityReferenceFormatterBase {
+    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::viewElements().
+    */
+   public function viewElements(EntityInterface $entity, $langcode, array $items) {
+-    $elements = array();
++    $elements = [];
+ 
+     foreach ($items as $delta => $item) {
+-      $elements[$delta] = array('#markup' => check_plain($item['target_id']));
++      $elements[$delta] = ['#markup' => check_plain($item['target_id'])];
+     }
+ 
+     return $elements;
+diff --git a/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceLabelFormatter.php b/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceLabelFormatter.php
+index 43d7132..ba11ffd 100644
+--- a/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceLabelFormatter.php
++++ b/lib/Drupal/entityreference/Plugin/field/formatter/EntityReferenceLabelFormatter.php
+@@ -1,18 +1,9 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\field\formatter\EntityReferenceLabelFormatter.
+- */
+-
+ namespace Drupal\entityreference\Plugin\field\formatter;
+ 
+-use Drupal\Core\Annotation\Plugin;
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\Core\Entity\EntityInterface;
+ 
+-use Drupal\entityreference\Plugin\field\formatter\EntityReferenceFormatterBase;
+-
+ /**
+  * Plugin implementation of the 'entity-reference label' formatter.
+  *
+@@ -35,11 +26,11 @@ class EntityReferenceLabelFormatter extends EntityReferenceFormatterBase {
+    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsForm().
+    */
+   public function settingsForm(array $form, array &$form_state) {
+-    $elements['link'] = array(
++    $elements['link'] = [
+       '#title' => t('Link label to the referenced entity'),
+       '#type' => 'checkbox',
+       '#default_value' => $this->getSetting('link'),
+-    );
++    ];
+ 
+     return $elements;
+   }
+@@ -48,7 +39,7 @@ class EntityReferenceLabelFormatter extends EntityReferenceFormatterBase {
+    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsForm().
+    */
+   public function settingsSummary() {
+-    $summary = array();
++    $summary = [];
+     $summary[] = $this->getSetting('link') ? t('Link to the referenced entity') : t('No link');
+ 
+     return implode('<br />', $summary);
+@@ -64,7 +55,7 @@ class EntityReferenceLabelFormatter extends EntityReferenceFormatterBase {
+     $instance = $this->instance;
+     $field = $this->field;
+ 
+-    $elements = array();
++    $elements = [];
+ 
+     foreach ($items as $delta => $item) {
+       $entity = $item['entity'];
+@@ -72,10 +63,10 @@ class EntityReferenceLabelFormatter extends EntityReferenceFormatterBase {
+       // If the link is to be displayed and the entity has a uri,
+       // display a link.
+       if ($this->getSetting('link') && $uri = $entity->uri()) {
+-        $elements[$delta] = array('#markup' => l($label, $uri['path'], $uri['options']));
++        $elements[$delta] = ['#markup' => l($label, $uri['path'], $uri['options'])];
+       }
+       else {
+-        $elements[$delta] = array('#markup' => check_plain($label));
++        $elements[$delta] = ['#markup' => check_plain($label)];
+       }
+     }
+ 
+diff --git a/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteTagsWidget.php b/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteTagsWidget.php
+index bb38650..ad899d2 100644
+--- a/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteTagsWidget.php
++++ b/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteTagsWidget.php
+@@ -1,18 +1,7 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\field\widget\AutocompleteTagsWidget.
+- */
+-
+ namespace Drupal\entityreference\Plugin\field\widget;
+ 
+-use Drupal\Core\Annotation\Plugin;
+-use Drupal\Core\Annotation\Translation;
+-use Drupal\field\Plugin\Type\Widget\WidgetBase;
+-
+-use Drupal\entityreference\Plugin\field\widget\AutocompleteWidgetBase;
+-
+ /**
+  * Plugin implementation of the 'entityreference autocomplete-tags' widget.
+  *
+@@ -50,29 +39,30 @@ class AutocompleteTagsWidget extends AutocompleteWidgetBase {
+    * Implements Drupal\entityreference\Plugin\field\widget\DefaultAutocompleteWidget::elementValidate()
+    */
+   public function elementValidate($element, &$form_state) {
+-    $value = array();
++    $value = [];
+     // If a value was entered into the autocomplete.
+     if (!empty($element['#value'])) {
+       $entities = drupal_explode_tags($element['#value']);
+-      $value = array();
++      $value = [];
+       foreach ($entities as $entity) {
+         // Take "label (entity id)', match the id from parenthesis.
+         if (preg_match("/.+\((\d+)\)/", $entity, $matches)) {
+-          $value[] = array(
++          $value[] = [
+             'target_id' => $matches[1],
+-          );
++          ];
+         }
+         else {
+           // Try to get a match from the input string when the user didn't use the
+           // autocomplete but filled in a value manually.
+-        $instance = field_info_instance($element['#entity_type'], $element['#field_name'], $element['#bundle']);
+-        $handler = entityreference_get_selection_handler($field, $instance);
+-          $value[] = array(
++          $instance = field_info_instance($element['#entity_type'], $element['#field_name'], $element['#bundle']);
++          $handler = entityreference_get_selection_handler($field, $instance);
++          $value[] = [
+             'target_id' => $handler->validateAutocompleteInput($entity, $element, $form_state, $form),
+-          );
++          ];
+         }
+       }
+     }
+     form_set_value($element, $value, $form_state);
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteWidget.php b/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteWidget.php
+index ce4e62f..f47c21a 100644
+--- a/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteWidget.php
++++ b/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteWidget.php
+@@ -1,18 +1,7 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\field\widget\AutocompleteWidget.
+- */
+-
+ namespace Drupal\entityreference\Plugin\field\widget;
+ 
+-use Drupal\Core\Annotation\Plugin;
+-use Drupal\Core\Annotation\Translation;
+-use Drupal\field\Plugin\Type\Widget\WidgetBase;
+-
+-use Drupal\entityreference\Plugin\field\widget\AutocompleteWidgetBase;
+-
+ /**
+  * Plugin implementation of the 'entityreference autocomplete' widget.
+  *
+@@ -45,14 +34,14 @@ class AutocompleteWidget extends AutocompleteWidgetBase {
+     // We let the Field API handles multiple values for us, only take
+     // care of the one matching our delta.
+     if (isset($items[$delta])) {
+-      $items = array($items[$delta]);
++      $items = [$items[$delta]];
+     }
+     else {
+-      $items = array();
++      $items = [];
+     }
+ 
+     $element = $this->prepareElement($items, $delta, $element, $langcode, $form, $form_state, 'entityreference/autocomplete/single');
+-    return array('target_id' => $element);
++    return ['target_id' => $element];
+   }
+ 
+   /**
+@@ -77,4 +66,5 @@ class AutocompleteWidget extends AutocompleteWidgetBase {
+     }
+     form_set_value($element, $value, $form_state);
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteWidgetBase.php b/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteWidgetBase.php
+index 810b1ab..e0774b2 100644
+--- a/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteWidgetBase.php
++++ b/lib/Drupal/entityreference/Plugin/field/widget/AutocompleteWidgetBase.php
+@@ -1,14 +1,7 @@
+ <?php
+ 
+-/**
+- * @file
+- * Definition of Drupal\entityreference\Plugin\field\widget\AutocompleteWidgetBase.
+- */
+-
+ namespace Drupal\entityreference\Plugin\field\widget;
+ 
+-use Drupal\Core\Annotation\Plugin;
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\field\Plugin\Type\Widget\WidgetBase;
+ 
+ /**
+@@ -21,25 +14,25 @@ abstract class AutocompleteWidgetBase extends WidgetBase {
+    */
+   public function settingsForm(array $form, array &$form_state) {
+ 
+-    $form['match_operator'] = array(
++    $form['match_operator'] = [
+       '#type' => 'select',
+       '#title' => t('Autocomplete matching'),
+       '#default_value' => $this->getSetting('match_operator'),
+-      '#options' => array(
++      '#options' => [
+         'STARTS_WITH' => t('Starts with'),
+         'CONTAINS' => t('Contains'),
+-      ),
++      ],
+       '#description' => t('Select the method used to collect autocomplete suggestions. Note that <em>Contains</em> can cause performance issues on sites with thousands of nodes.'),
+-    );
+-    $form['size'] = array(
++    ];
++    $form['size'] = [
+       '#type' => 'textfield',
+       '#title' => t('Size of textfield'),
+       '#default_value' => $this->getSetting('size'),
+-      '#element_validate' => array('form_validate_number'),
++      '#element_validate' => ['form_validate_number'],
+       // Minimum value for form_validate_number().
+       '#min' => 1,
+       '#required' => TRUE,
+-    );
++    ];
+ 
+     return $form;
+   }
+@@ -49,7 +42,7 @@ abstract class AutocompleteWidgetBase extends WidgetBase {
+    */
+   public function formElement(array $items, $delta, array $element, $langcode, array &$form, array &$form_state) {
+     $element = $this->prepareElement($items, $delta, $element, $langcode, $form, $form_state, 'entityreference/autocomplete/single');
+-    return array('target_id' => $element);
++    return ['target_id' => $element];
+   }
+ 
+   /**
+@@ -78,14 +71,14 @@ abstract class AutocompleteWidgetBase extends WidgetBase {
+     }
+     $autocomplete_path .= $id;
+ 
+-    $element += array(
++    $element += [
+       '#type' => 'textfield',
+       '#maxlength' => 1024,
+       '#default_value' => implode(', ', $this->getLabels($items)),
+       '#autocomplete_path' => $autocomplete_path,
+       '#size' => $this->getSetting('size'),
+-      '#element_validate' => array(array($this, 'elementValidate')),
+-    );
++      '#element_validate' => [[$this, 'elementValidate']],
++    ];
+     return $element;
+   }
+ 
+@@ -112,8 +105,8 @@ abstract class AutocompleteWidgetBase extends WidgetBase {
+     $entity = isset($element['#entity']) ? $element['#entity'] : NULL;
+     $handler = entityreference_get_selection_handler($field, $instance, $entity);
+ 
+-    $entity_ids = array();
+-    $entity_labels = array();
++    $entity_ids = [];
++    $entity_labels = [];
+ 
+     // Build an array of entities ID.
+     foreach ($items as $item) {
+@@ -134,4 +127,5 @@ abstract class AutocompleteWidgetBase extends WidgetBase {
+     }
+     return $entity_labels;
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Tests/entityReferenceAdminTest.php b/lib/Drupal/entityreference/Tests/entityReferenceAdminTest.php
+index 661e5b6..371bec4 100644
+--- a/lib/Drupal/entityreference/Tests/entityReferenceAdminTest.php
++++ b/lib/Drupal/entityreference/Tests/entityReferenceAdminTest.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains Drupal\entityreference\Tests\entityReferenceAdminTest.
+- */
+-
+ namespace Drupal\entityreference\Tests;
+ 
+ use Drupal\simpletest\WebTestBase;
+@@ -13,31 +8,41 @@ use Drupal\simpletest\WebTestBase;
+  * Test for Entity Reference admin UI.
+  */
+ class entityReferenceAdminTest extends WebTestBase {
++
++  /**
++   *
++   */
+   public static function getInfo() {
+-    return array(
++    return [
+       'name' => 'Entity Reference UI',
+       'description' => 'Tests for the administrative UI.',
+       'group' => 'Entity Reference',
+-    );
++    ];
+   }
+ 
+-  public static $modules = array('field_ui', 'entityreference');
++  public static $modules = ['field_ui', 'entityreference'];
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+ 
+     // Create test user.
+-    $this->admin_user = $this->drupalCreateUser(array('access content', 'administer content types'));
++    $this->admin_user = $this->drupalCreateUser(['access content', 'administer content types']);
+     $this->drupalLogin($this->admin_user);
+ 
+     // Create content type, with underscores.
+     $type_name = strtolower($this->randomName(8)) . '_test';
+-    $type = $this->drupalCreateContentType(array('name' => $type_name, 'type' => $type_name));
++    $type = $this->drupalCreateContentType(['name' => $type_name, 'type' => $type_name]);
+     $this->type = $type->type;
+   }
+ 
++  /**
++   *
++   */
+   protected function assertFieldSelectOptions($name, $expected_options) {
+-    $xpath = $this->buildXPathQuery('//select[@name=:name]', array(':name' => $name));
++    $xpath = $this->buildXPathQuery('//select[@name=:name]', [':name' => $name]);
+     $fields = $this->xpath($xpath);
+     if ($fields) {
+       $field = $fields[0];
+@@ -45,7 +50,7 @@ class entityReferenceAdminTest extends WebTestBase {
+       return $this->assertIdentical($options, $expected_options);
+     }
+     else {
+-      return $this->fail(t('Unable to find field @name', array('@name' => $name)));
++      return $this->fail(t('Unable to find field @name', ['@name' => $name]));
+     }
+   }
+ 
+@@ -53,7 +58,7 @@ class entityReferenceAdminTest extends WebTestBase {
+    * Extract all the options of a select element.
+    */
+   protected function getAllOptionsList($element) {
+-    $options = array();
++    $options = [];
+     // Add all options items.
+     foreach ($element->option as $option) {
+       $options[] = (string) $option['value'];
+@@ -62,16 +67,19 @@ class entityReferenceAdminTest extends WebTestBase {
+     return $options;
+   }
+ 
++  /**
++   *
++   */
+   public function testFieldAdminHandler() {
+     $bundle_path = 'admin/structure/types/manage/' . $this->type;
+ 
+     // First step: 'Add new field' on the 'Manage fields' page.
+-    $this->drupalPost($bundle_path . '/fields', array(
++    $this->drupalPost($bundle_path . '/fields', [
+       'fields[_add_new_field][label]' => 'Test label',
+       'fields[_add_new_field][field_name]' => 'test',
+       'fields[_add_new_field][type]' => 'entityreference',
+       'fields[_add_new_field][widget_type]' => 'entityreference_autocomplete',
+-    ), t('Save'));
++    ], t('Save'));
+ 
+     // Node should be selected by default.
+     $this->assertFieldByName('field[settings][target_type]', 'node');
+@@ -86,7 +94,7 @@ class entityReferenceAdminTest extends WebTestBase {
+     }
+ 
+     // Test the sort settings.
+-    $options = array('none', 'property', 'field');
++    $options = ['none', 'property', 'field'];
+     $this->assertFieldSelectOptions('field[settings][handler_settings][sort][type]', $options);
+     // Option 0: no sort.
+     $this->assertFieldByName('field[settings][handler_settings][sort][type]', 'none');
+@@ -94,25 +102,26 @@ class entityReferenceAdminTest extends WebTestBase {
+     $this->assertNoFieldByName('field[settings][handler_settings][sort][field]');
+     $this->assertNoFieldByName('field[settings][handler_settings][sort][direction]');
+     // Option 1: sort by property.
+-    $this->drupalPostAJAX(NULL, array('field[settings][handler_settings][sort][type]' => 'property'), 'field[settings][handler_settings][sort][type]');
++    $this->drupalPostAJAX(NULL, ['field[settings][handler_settings][sort][type]' => 'property'], 'field[settings][handler_settings][sort][type]');
+     $this->assertFieldByName('field[settings][handler_settings][sort][property]', '');
+     $this->assertNoFieldByName('field[settings][handler_settings][sort][field]');
+     $this->assertFieldByName('field[settings][handler_settings][sort][direction]', 'ASC');
+     // Option 2: sort by field.
+-    $this->drupalPostAJAX(NULL, array('field[settings][handler_settings][sort][type]' => 'field'), 'field[settings][handler_settings][sort][type]');
++    $this->drupalPostAJAX(NULL, ['field[settings][handler_settings][sort][type]' => 'field'], 'field[settings][handler_settings][sort][type]');
+     $this->assertNoFieldByName('field[settings][handler_settings][sort][property]');
+     $this->assertFieldByName('field[settings][handler_settings][sort][field]', '');
+     $this->assertFieldByName('field[settings][handler_settings][sort][direction]', 'ASC');
+     // Set back to no sort.
+-    $this->drupalPostAJAX(NULL, array('field[settings][handler_settings][sort][type]' => 'none'), 'field[settings][handler_settings][sort][type]');
++    $this->drupalPostAJAX(NULL, ['field[settings][handler_settings][sort][type]' => 'none'], 'field[settings][handler_settings][sort][type]');
+ 
+     // Second step: 'Instance settings' form.
+-    $this->drupalPost(NULL, array(), t('Save field settings'));
++    $this->drupalPost(NULL, [], t('Save field settings'));
+ 
+     // Third step: confirm.
+-    $this->drupalPost(NULL, array(), t('Save settings'));
++    $this->drupalPost(NULL, [], t('Save settings'));
+ 
+     // Check that the field appears in the overview form.
+     $this->assertFieldByXPath('//table[@id="field-overview"]//td[1]', 'Test label', t('Field was created and appears in the overview page.'));
+   }
++
+ }
+diff --git a/lib/Drupal/entityreference/Tests/entityReferenceSelectionAccessTest.php b/lib/Drupal/entityreference/Tests/entityReferenceSelectionAccessTest.php
+index b946929..1a7c808 100644
+--- a/lib/Drupal/entityreference/Tests/entityReferenceSelectionAccessTest.php
++++ b/lib/Drupal/entityreference/Tests/entityReferenceSelectionAccessTest.php
+@@ -1,39 +1,40 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains Drupal\entityreference\Tests\entityReferenceSelectionAccessTest.
+- */
+-
+ namespace Drupal\entityreference\Tests;
+ 
+ use Drupal\simpletest\WebTestBase;
+ 
+-
+ /**
+  * Test for Entity Reference handlers.
+  */
+ class entityReferenceSelectionAccessTest extends WebTestBase {
++
++  /**
++   *
++   */
+   public static function getInfo() {
+-    return array(
++    return [
+       'name' => 'Entity Reference Handlers',
+       'description' => 'Tests for the base handlers provided by Entity Reference.',
+       'group' => 'Entity Reference',
+-    );
++    ];
+   }
+ 
+-  public static $modules = array('node', 'comment', 'entityreference');
++  public static $modules = ['node', 'comment', 'entityreference'];
+ 
++  /**
++   *
++   */
+   protected function assertReferencable($field, $tests, $handler_name) {
+     $handler = entityreference_get_selection_handler($field);
+ 
+     foreach ($tests as $test) {
+       foreach ($test['arguments'] as $arguments) {
+-        $result = call_user_func_array(array($handler, 'getReferencableEntities'), $arguments);
+-        $this->assertEqual($result, $test['result'], t('Valid result set returned by @handler.', array('@handler' => $handler_name)));
++        $result = call_user_func_array([$handler, 'getReferencableEntities'], $arguments);
++        $this->assertEqual($result, $test['result'], t('Valid result set returned by @handler.', ['@handler' => $handler_name]));
+ 
+-        $result = call_user_func_array(array($handler, 'countReferencableEntities'), $arguments);
+-        $this->assertEqual($result, count($test['result']), t('Valid count returned by @handler.', array('@handler' => $handler_name)));
++        $result = call_user_func_array([$handler, 'countReferencableEntities'], $arguments);
++        $this->assertEqual($result, count($test['result']), t('Valid count returned by @handler.', ['@handler' => $handler_name]));
+       }
+     }
+   }
+@@ -43,46 +44,46 @@ class entityReferenceSelectionAccessTest extends WebTestBase {
+    */
+   public function testNodeHandler() {
+     // Build a fake field instance.
+-    $field = array(
++    $field = [
+       'translatable' => FALSE,
+-      'entity_types' => array(),
+-      'settings' => array(
++      'entity_types' => [],
++      'settings' => [
+         'handler' => 'base',
+         'target_type' => 'node',
+-        'handler_settings' => array(
+-          'target_bundles' => array(),
+-        ),
+-      ),
++        'handler_settings' => [
++          'target_bundles' => [],
++        ],
++      ],
+       'field_name' => 'test_field',
+       'type' => 'entityreference',
+       'cardinality' => '1',
+-    );
++    ];
+ 
+     // Build a set of test data.
+     // Titles contain HTML-special characters to test escaping.
+-    $node_values = array(
+-      'published1' => array(
++    $node_values = [
++      'published1' => [
+         'type' => 'article',
+         'status' => NODE_PUBLISHED,
+         'title' => 'Node published1 (<&>)',
+         'uid' => 1,
+-      ),
+-      'published2' => array(
++      ],
++      'published2' => [
+         'type' => 'article',
+         'status' => NODE_PUBLISHED,
+         'title' => 'Node published2 (<&>)',
+         'uid' => 1,
+-      ),
+-      'unpublished' => array(
++      ],
++      'unpublished' => [
+         'type' => 'article',
+         'status' => NODE_NOT_PUBLISHED,
+         'title' => 'Node unpublished (<&>)',
+         'uid' => 1,
+-      ),
+-    );
++      ],
++    ];
+ 
+-    $nodes = array();
+-    $node_labels = array();
++    $nodes = [];
++    $node_labels = [];
+     foreach ($node_values as $key => $values) {
+       $node = entity_create('node', $values);
+       $node->save();
+@@ -91,74 +92,74 @@ class entityReferenceSelectionAccessTest extends WebTestBase {
+     }
+ 
+     // Test as a non-admin.
+-    $normal_user = $this->drupalCreateUser(array('access content'));
++    $normal_user = $this->drupalCreateUser(['access content']);
+     $GLOBALS['user'] = $normal_user;
+-    $referencable_tests = array(
+-      array(
+-        'arguments' => array(
+-          array(NULL, 'CONTAINS'),
+-        ),
+-        'result' => array(
++    $referencable_tests = [
++      [
++        'arguments' => [
++          [NULL, 'CONTAINS'],
++        ],
++        'result' => [
+           $nodes['published1']->nid => $node_labels['published1'],
+           $nodes['published2']->nid => $node_labels['published2'],
+-        ),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('published1', 'CONTAINS'),
+-          array('Published1', 'CONTAINS'),
+-        ),
+-        'result' => array(
++        ],
++      ],
++      [
++        'arguments' => [
++          ['published1', 'CONTAINS'],
++          ['Published1', 'CONTAINS'],
++        ],
++        'result' => [
+           $nodes['published1']->nid => $node_labels['published1'],
+-        ),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('published2', 'CONTAINS'),
+-          array('Published2', 'CONTAINS'),
+-        ),
+-        'result' => array(
++        ],
++      ],
++      [
++        'arguments' => [
++          ['published2', 'CONTAINS'],
++          ['Published2', 'CONTAINS'],
++        ],
++        'result' => [
+           $nodes['published2']->nid => $node_labels['published2'],
+-        ),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('invalid node', 'CONTAINS'),
+-        ),
+-        'result' => array(),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('Node unpublished', 'CONTAINS'),
+-        ),
+-        'result' => array(),
+-      ),
+-    );
++        ],
++      ],
++      [
++        'arguments' => [
++          ['invalid node', 'CONTAINS'],
++        ],
++        'result' => [],
++      ],
++      [
++        'arguments' => [
++          ['Node unpublished', 'CONTAINS'],
++        ],
++        'result' => [],
++      ],
++    ];
+     $this->assertReferencable($field, $referencable_tests, 'Node handler');
+ 
+     // Test as an admin.
+-    $admin_user = $this->drupalCreateUser(array('access content', 'bypass node access'));
++    $admin_user = $this->drupalCreateUser(['access content', 'bypass node access']);
+     $GLOBALS['user'] = $admin_user;
+-    $referencable_tests = array(
+-      array(
+-        'arguments' => array(
+-          array(NULL, 'CONTAINS'),
+-        ),
+-        'result' => array(
++    $referencable_tests = [
++      [
++        'arguments' => [
++          [NULL, 'CONTAINS'],
++        ],
++        'result' => [
+           $nodes['published1']->nid => $node_labels['published1'],
+           $nodes['published2']->nid => $node_labels['published2'],
+           $nodes['unpublished']->nid => $node_labels['unpublished'],
+-        ),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('Node unpublished', 'CONTAINS'),
+-        ),
+-        'result' => array(
++        ],
++      ],
++      [
++        'arguments' => [
++          ['Node unpublished', 'CONTAINS'],
++        ],
++        'result' => [
+           $nodes['unpublished']->nid => $node_labels['unpublished'],
+-        ),
+-      ),
+-    );
++        ],
++      ],
++    ];
+     $this->assertReferencable($field, $referencable_tests, 'Node handler (admin)');
+   }
+ 
+@@ -167,45 +168,45 @@ class entityReferenceSelectionAccessTest extends WebTestBase {
+    */
+   public function testUserHandler() {
+     // Build a fake field instance.
+-    $field = array(
++    $field = [
+       'translatable' => FALSE,
+-      'entity_types' => array(),
+-      'settings' => array(
++      'entity_types' => [],
++      'settings' => [
+         'handler' => 'base',
+         'target_type' => 'user',
+-        'handler_settings' => array(
+-          'target_bundles' => array(),
+-        ),
+-      ),
++        'handler_settings' => [
++          'target_bundles' => [],
++        ],
++      ],
+       'field_name' => 'test_field',
+       'type' => 'entityreference',
+       'cardinality' => '1',
+-    );
++    ];
+ 
+     // Build a set of test data.
+-    $user_values = array(
++    $user_values = [
+       'anonymous' => user_load(0),
+       'admin' => user_load(1),
+-      'non_admin' => array(
++      'non_admin' => [
+         'name' => 'non_admin <&>',
+         'mail' => 'non_admin@example.com',
+-        'roles' => array(),
++        'roles' => [],
+         'pass' => user_password(),
+         'status' => 1,
+-      ),
+-      'blocked' => array(
++      ],
++      'blocked' => [
+         'name' => 'blocked <&>',
+         'mail' => 'blocked@example.com',
+-        'roles' => array(),
++        'roles' => [],
+         'pass' => user_password(),
+         'status' => 0,
+-      ),
+-    );
++      ],
++    ];
+ 
+     $user_values['anonymous']->name = config('user.settings')->get('anonymous');
+-    $users = array();
++    $users = [];
+ 
+-    $user_labels = array();
++    $user_labels = [];
+     foreach ($user_values as $key => $values) {
+       if (is_array($values)) {
+         $account = entity_create('user', $values);
+@@ -220,71 +221,71 @@ class entityReferenceSelectionAccessTest extends WebTestBase {
+ 
+     // Test as a non-admin.
+     $GLOBALS['user'] = $users['non_admin'];
+-    $referencable_tests = array(
+-      array(
+-        'arguments' => array(
+-          array(NULL, 'CONTAINS'),
+-        ),
+-        'result' => array(
++    $referencable_tests = [
++      [
++        'arguments' => [
++          [NULL, 'CONTAINS'],
++        ],
++        'result' => [
+           $users['admin']->uid => $user_labels['admin'],
+           $users['non_admin']->uid => $user_labels['non_admin'],
+-        ),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('non_admin', 'CONTAINS'),
+-          array('NON_ADMIN', 'CONTAINS'),
+-        ),
+-        'result' => array(
++        ],
++      ],
++      [
++        'arguments' => [
++          ['non_admin', 'CONTAINS'],
++          ['NON_ADMIN', 'CONTAINS'],
++        ],
++        'result' => [
+           $users['non_admin']->uid => $user_labels['non_admin'],
+-        ),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('invalid user', 'CONTAINS'),
+-        ),
+-        'result' => array(),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('blocked', 'CONTAINS'),
+-        ),
+-        'result' => array(),
+-      ),
+-    );
++        ],
++      ],
++      [
++        'arguments' => [
++          ['invalid user', 'CONTAINS'],
++        ],
++        'result' => [],
++      ],
++      [
++        'arguments' => [
++          ['blocked', 'CONTAINS'],
++        ],
++        'result' => [],
++      ],
++    ];
+     $this->assertReferencable($field, $referencable_tests, 'User handler');
+ 
+     $GLOBALS['user'] = $users['admin'];
+-    $referencable_tests = array(
+-      array(
+-        'arguments' => array(
+-          array(NULL, 'CONTAINS'),
+-        ),
+-        'result' => array(
++    $referencable_tests = [
++      [
++        'arguments' => [
++          [NULL, 'CONTAINS'],
++        ],
++        'result' => [
+           $users['anonymous']->uid => $user_labels['anonymous'],
+           $users['admin']->uid => $user_labels['admin'],
+           $users['non_admin']->uid => $user_labels['non_admin'],
+           $users['blocked']->uid => $user_labels['blocked'],
+-        ),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('blocked', 'CONTAINS'),
+-        ),
+-        'result' => array(
++        ],
++      ],
++      [
++        'arguments' => [
++          ['blocked', 'CONTAINS'],
++        ],
++        'result' => [
+           $users['blocked']->uid => $user_labels['blocked'],
+-        ),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('Anonymous', 'CONTAINS'),
+-          array('anonymous', 'CONTAINS'),
+-        ),
+-        'result' => array(
++        ],
++      ],
++      [
++        'arguments' => [
++          ['Anonymous', 'CONTAINS'],
++          ['anonymous', 'CONTAINS'],
++        ],
++        'result' => [
+           $users['anonymous']->uid => $user_labels['anonymous'],
+-        ),
+-      ),
+-    );
++        ],
++      ],
++    ];
+     $this->assertReferencable($field, $referencable_tests, 'User handler (admin)');
+   }
+ 
+@@ -293,45 +294,45 @@ class entityReferenceSelectionAccessTest extends WebTestBase {
+    */
+   public function testCommentHandler() {
+     // Build a fake field instance.
+-    $field = array(
++    $field = [
+       'translatable' => FALSE,
+-      'entity_types' => array(),
+-      'settings' => array(
++      'entity_types' => [],
++      'settings' => [
+         'handler' => 'base',
+         'target_type' => 'comment',
+-        'handler_settings' => array(
+-          'target_bundles' => array(),
+-        ),
+-      ),
++        'handler_settings' => [
++          'target_bundles' => [],
++        ],
++      ],
+       'field_name' => 'test_field',
+       'type' => 'entityreference',
+       'cardinality' => '1',
+-    );
++    ];
+ 
+     // Build a set of test data.
+-    $node_values = array(
+-      'published' => array(
++    $node_values = [
++      'published' => [
+         'type' => 'article',
+         'status' => 1,
+         'title' => 'Node published',
+         'uid' => 1,
+-      ),
+-      'unpublished' => array(
++      ],
++      'unpublished' => [
+         'type' => 'article',
+         'status' => 0,
+         'title' => 'Node unpublished',
+         'uid' => 1,
+-      ),
+-    );
+-    $nodes = array();
++      ],
++    ];
++    $nodes = [];
+     foreach ($node_values as $key => $values) {
+       $node = entity_create('node', $values);
+       $node->save();
+       $nodes[$key] = $node;
+     }
+ 
+-    $comment_values = array(
+-      'published_published' => array(
++    $comment_values = [
++      'published_published' => [
+         'nid' => $nodes['published']->nid,
+         'uid' => 1,
+         'cid' => NULL,
+@@ -339,8 +340,8 @@ class entityReferenceSelectionAccessTest extends WebTestBase {
+         'status' => COMMENT_PUBLISHED,
+         'subject' => 'Comment Published <&>',
+         'language' => LANGUAGE_NOT_SPECIFIED,
+-      ),
+-      'published_unpublished' => array(
++      ],
++      'published_unpublished' => [
+         'nid' => $nodes['published']->nid,
+         'uid' => 1,
+         'cid' => NULL,
+@@ -348,8 +349,8 @@ class entityReferenceSelectionAccessTest extends WebTestBase {
+         'status' => COMMENT_NOT_PUBLISHED,
+         'subject' => 'Comment Unpublished <&>',
+         'language' => LANGUAGE_NOT_SPECIFIED,
+-      ),
+-      'unpublished_published' => array(
++      ],
++      'unpublished_published' => [
+         'nid' => $nodes['unpublished']->nid,
+         'uid' => 1,
+         'cid' => NULL,
+@@ -357,11 +358,11 @@ class entityReferenceSelectionAccessTest extends WebTestBase {
+         'status' => COMMENT_NOT_PUBLISHED,
+         'subject' => 'Comment Published on Unpublished node <&>',
+         'language' => LANGUAGE_NOT_SPECIFIED,
+-      ),
+-    );
++      ],
++    ];
+ 
+-    $comments = array();
+-    $comment_labels = array();
++    $comments = [];
++    $comment_labels = [];
+     foreach ($comment_values as $key => $values) {
+       $comment = entity_create('comment', $values);
+       $comment->save();
+@@ -370,71 +371,72 @@ class entityReferenceSelectionAccessTest extends WebTestBase {
+     }
+ 
+     // Test as a non-admin.
+-    $normal_user = $this->drupalCreateUser(array('access content', 'access comments'));
++    $normal_user = $this->drupalCreateUser(['access content', 'access comments']);
+     $GLOBALS['user'] = $normal_user;
+-    $referencable_tests = array(
+-      array(
+-        'arguments' => array(
+-          array(NULL, 'CONTAINS'),
+-        ),
+-        'result' => array(
++    $referencable_tests = [
++      [
++        'arguments' => [
++          [NULL, 'CONTAINS'],
++        ],
++        'result' => [
+           $comments['published_published']->cid => $comment_labels['published_published'],
+-        ),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('Published', 'CONTAINS'),
+-        ),
+-        'result' => array(
++        ],
++      ],
++      [
++        'arguments' => [
++          ['Published', 'CONTAINS'],
++        ],
++        'result' => [
+           $comments['published_published']->cid => $comment_labels['published_published'],
+-        ),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('invalid comment', 'CONTAINS'),
+-        ),
+-        'result' => array(),
+-      ),
+-      array(
+-        'arguments' => array(
+-          array('Comment Unpublished', 'CONTAINS'),
+-        ),
+-        'result' => array(),
+-      ),
+-    );
++        ],
++      ],
++      [
++        'arguments' => [
++          ['invalid comment', 'CONTAINS'],
++        ],
++        'result' => [],
++      ],
++      [
++        'arguments' => [
++          ['Comment Unpublished', 'CONTAINS'],
++        ],
++        'result' => [],
++      ],
++    ];
+     $this->assertReferencable($field, $referencable_tests, 'Comment handler');
+ 
+     // Test as a comment admin.
+-    $admin_user = $this->drupalCreateUser(array('access content', 'access comments', 'administer comments'));
++    $admin_user = $this->drupalCreateUser(['access content', 'access comments', 'administer comments']);
+     $GLOBALS['user'] = $admin_user;
+-    $referencable_tests = array(
+-      array(
+-        'arguments' => array(
+-          array(NULL, 'CONTAINS'),
+-        ),
+-        'result' => array(
++    $referencable_tests = [
++      [
++        'arguments' => [
++          [NULL, 'CONTAINS'],
++        ],
++        'result' => [
+           $comments['published_published']->cid => $comment_labels['published_published'],
+           $comments['published_unpublished']->cid => $comment_labels['published_unpublished'],
+-        ),
+-      ),
+-    );
++        ],
++      ],
++    ];
+     $this->assertReferencable($field, $referencable_tests, 'Comment handler (comment admin)');
+ 
+     // Test as a node and comment admin.
+-    $admin_user = $this->drupalCreateUser(array('access content', 'access comments', 'administer comments', 'bypass node access'));
++    $admin_user = $this->drupalCreateUser(['access content', 'access comments', 'administer comments', 'bypass node access']);
+     $GLOBALS['user'] = $admin_user;
+-    $referencable_tests = array(
+-      array(
+-        'arguments' => array(
+-          array(NULL, 'CONTAINS'),
+-        ),
+-        'result' => array(
++    $referencable_tests = [
++      [
++        'arguments' => [
++          [NULL, 'CONTAINS'],
++        ],
++        'result' => [
+           $comments['published_published']->cid => $comment_labels['published_published'],
+           $comments['published_unpublished']->cid => $comment_labels['published_unpublished'],
+           $comments['unpublished_published']->cid => $comment_labels['unpublished_published'],
+-        ),
+-      ),
+-    );
++        ],
++      ],
++    ];
+     $this->assertReferencable($field, $referencable_tests, 'Comment handler (comment + node admin)');
+   }
++
+ }

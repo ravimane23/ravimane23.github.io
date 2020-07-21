@@ -1,0 +1,34 @@
+diff --git a/src/MenuItems.php b/src/MenuItems.php
+index 890bc76..3114a37 100644
+--- a/src/MenuItems.php
++++ b/src/MenuItems.php
+@@ -22,7 +22,7 @@ class MenuItems {
+   /**
+    * MenuItems constructor.
+    *
+-   * @param MenuLinkTree $menu_link_tree
++   * @param \Drupal\Core\Menu\MenuLinkTree $menu_link_tree
+    *   The MenuLinkTree service.
+    */
+   public function __construct(MenuLinkTree $menu_link_tree) {
+diff --git a/src/TwigExtension/MenuItemsTwigExtension.php b/src/TwigExtension/MenuItemsTwigExtension.php
+index 7284771..e40007b 100644
+--- a/src/TwigExtension/MenuItemsTwigExtension.php
++++ b/src/TwigExtension/MenuItemsTwigExtension.php
+@@ -14,14 +14,14 @@ class MenuItemsTwigExtension extends \Twig_Extension {
+   /**
+    * MenuItems definition.
+    *
+-   * @var MenuItems
++   * @var \Drupal\simplify_menu\MenuItems
+    */
+   protected $menuItems;
+ 
+   /**
+    * MenuItemsTwigExtension constructor.
+    *
+-   * @param MenuItems $menuItems
++   * @param \Drupal\simplify_menu\MenuItems $menuItems
+    *   The MenuItems service.
+    */
+   public function __construct(MenuItems $menuItems) {

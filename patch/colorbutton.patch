@@ -1,0 +1,12 @@
+diff --git a/src/Plugin/CKEditorPlugin/ColorButton.php b/src/Plugin/CKEditorPlugin/ColorButton.php
+index d38aa3d..a0d8e03 100644
+--- a/src/Plugin/CKEditorPlugin/ColorButton.php
++++ b/src/Plugin/CKEditorPlugin/ColorButton.php
+@@ -105,6 +105,7 @@ class ColorButton extends CKEditorPluginBase implements CKEditorPluginConfigurab
+ 
+   /**
+    * Ensure values entered for color hex values contain no unsafe characters.
++   *
+    * @param $element
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+    */

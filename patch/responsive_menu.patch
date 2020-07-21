@@ -1,0 +1,69 @@
+diff --git a/js/responsive_menu.bootstrap.js b/js/responsive_menu.bootstrap.js
+index 1ebf217..45c22f9 100644
+--- a/js/responsive_menu.bootstrap.js
++++ b/js/responsive_menu.bootstrap.js
+@@ -53,7 +53,7 @@
+ 
+         // Removes bootstrap classes.
+         function _removeClasses(els) {
+-          [].forEach.call(els, function(el) {
++          [].forEach.call(els, function (el) {
+             el.classList.remove('nav', 'nav-link', 'nav-item')
+           })
+         }
+diff --git a/js/responsive_menu.config.js b/js/responsive_menu.config.js
+index 528d199..110d39f 100644
+--- a/js/responsive_menu.config.js
++++ b/js/responsive_menu.config.js
+@@ -73,10 +73,10 @@
+           const defaultViewport = viewports[0].content
+           const staticViewport = "width=device-width, initial-scale=1.0, minimum-scale=1.0";
+ 
+-          mmenuApi.bind('open:start', function() {
++          mmenuApi.bind('open:start', function () {
+             viewportMeta.setAttribute('content', staticViewport);
+           });
+-          mmenuApi.bind('close:start', function() {
++          mmenuApi.bind('close:start', function () {
+             viewportMeta.setAttribute('content', defaultViewport);
+           });
+         }
+@@ -95,12 +95,14 @@ const extend = function (out) {
+   out = out || {};
+ 
+   for (let i = 1; i < arguments.length; i++) {
+-    if (!arguments[i])
++    if (!arguments[i]) {
+       continue;
++    }
+ 
+     for (let key in arguments[i]) {
+-      if (arguments[i].hasOwnProperty(key))
++      if (arguments[i].hasOwnProperty(key)) {
+         out[key] = arguments[i][key];
++      }
+     }
+   }
+ 
+diff --git a/js/views/ToolbarVisualView.js b/js/views/ToolbarVisualView.js
+index 3108cd4..6b6c082 100644
+--- a/js/views/ToolbarVisualView.js
++++ b/js/views/ToolbarVisualView.js
+@@ -9,7 +9,7 @@
+ 
+ (function ($, Drupal, drupalSettings, Backbone) {
+   "use strict";
+-  Drupal.toolbar.ToolbarVisualView.prototype.updateToolbarHeight = function() {
++  Drupal.toolbar.ToolbarVisualView.prototype.updateToolbarHeight = function () {
+     var toolbarTabOuterHeight = $('#toolbar-bar').find('.toolbar-tab').outerHeight() || 0;
+     var toolbarTrayHorizontalOuterHeight = $('.is-active.toolbar-tray-horizontal').outerHeight() || 0;
+     this.model.set('height', toolbarTabOuterHeight + toolbarTrayHorizontalOuterHeight);
+diff --git a/responsive_menu.api.php b/responsive_menu.api.php
+index 812bbf9..74d1635 100644
+--- a/responsive_menu.api.php
++++ b/responsive_menu.api.php
+@@ -79,4 +79,3 @@ function hook_responsive_menu_horizontal_manipulators_alter(array &$manipulators
+   // Add an another callable manipulator.
+   $manipulators[] = ['callable' => 'my_module.custom_tree_manipulators:filterMenus'];
+ }
+-

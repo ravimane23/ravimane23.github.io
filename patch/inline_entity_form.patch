@@ -1,0 +1,84 @@
+diff --git a/inline_entity_form.api.php b/inline_entity_form.api.php
+index 444f5cf..47966c9 100644
+--- a/inline_entity_form.api.php
++++ b/inline_entity_form.api.php
+@@ -23,7 +23,7 @@ function hook_inline_entity_form_entity_form_alter(&$entity_form, &$form_state)
+  * Perform alterations before the reference form is included in the IEF widget.
+  *
+  * The reference form is used to add existing entities through an autocomplete
+- * field
++ * field.
+  *
+  * @param $reference_form
+  *   Nested array of form elements that comprise the reference form.
+diff --git a/src/ElementSubmit.php b/src/ElementSubmit.php
+index 72e08a1..5e82042 100644
+--- a/src/ElementSubmit.php
++++ b/src/ElementSubmit.php
+@@ -60,7 +60,7 @@ class ElementSubmit {
+ 
+     $element['#submit'] = array_merge([[get_called_class(), 'trigger']], $element['#submit']);
+     // Used to distinguish between an inline form submit and main form submit.
+-    $element['#ief_submit_trigger']  = TRUE;
++    $element['#ief_submit_trigger'] = TRUE;
+     $element['#ief_submit_trigger_all'] = TRUE;
+   }
+ 
+diff --git a/src/Form/EntityInlineForm.php b/src/Form/EntityInlineForm.php
+index 22533e6..48a2e5f 100644
+--- a/src/Form/EntityInlineForm.php
++++ b/src/Form/EntityInlineForm.php
+@@ -12,7 +12,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Field\WidgetBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\StringTranslation\TranslationInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\Core\Render\Element;
+ use Drupal\inline_entity_form\InlineFormInterface;
+diff --git a/src/Form/NodeInlineForm.php b/src/Form/NodeInlineForm.php
+index 1c00b6a..85a2631 100644
+--- a/src/Form/NodeInlineForm.php
++++ b/src/Form/NodeInlineForm.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\inline_entity_form\Form;
+ 
+-use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ 
+ /**
+diff --git a/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php b/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php
+index a4b2c30..460a127 100644
+--- a/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php
++++ b/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php
+@@ -863,7 +863,6 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
+     $form_state->set(['inline_entity_form', $ief_id, 'entities', $delta, 'form'], NULL);
+   }
+ 
+-
+   /**
+    * Remove form submit callback.
+    *
+@@ -986,7 +985,7 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
+       ['\Drupal\inline_entity_form\ElementSubmit', 'trigger'],
+       ['\Drupal\inline_entity_form\Plugin\Field\FieldWidget\InlineEntityFormComplex', 'closeForm'],
+     ];
+-    $element['#ief_submit_trigger']  = TRUE;
++    $element['#ief_submit_trigger'] = TRUE;
+   }
+ 
+   /**
+diff --git a/src/Plugin/Field/FieldWidget/InlineEntityFormSimple.php b/src/Plugin/Field/FieldWidget/InlineEntityFormSimple.php
+index 03eef59..4021326 100644
+--- a/src/Plugin/Field/FieldWidget/InlineEntityFormSimple.php
++++ b/src/Plugin/Field/FieldWidget/InlineEntityFormSimple.php
+@@ -59,7 +59,7 @@ class InlineEntityFormSimple extends InlineEntityFormBase {
+     $parents = array_merge($element['#field_parents'], [
+       $items->getName(),
+       $delta,
+-      'inline_entity_form'
++      'inline_entity_form',
+     ]);
+     $bundle = $this->getBundle();
+     $element['inline_entity_form'] = $this->getInlineEntityForm($op, $bundle, $langcode, $delta, $parents, $entity);

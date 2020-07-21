@@ -1,0 +1,95 @@
+diff --git a/css/bootstrap-paragraphs-image.min.css b/css/bootstrap-paragraphs-image.min.css
+index b160675..cfd6829 100644
+--- a/css/bootstrap-paragraphs-image.min.css
++++ b/css/bootstrap-paragraphs-image.min.css
+@@ -4,4 +4,7 @@
+  *
+  * Compiled from bootstrap-paragraphs-image.less.
+  */
+-.paragraph.paragraph--type--bp-image.paragraph--width--full>.paragraph__column{padding-right:0;padding-left:0}
++.paragraph.paragraph--type--bp-image.paragraph--width--full>.paragraph__column {
++  padding-right: 0;
++  padding-left: 0
++}
+diff --git a/css/bootstrap-paragraphs-modal.min.css b/css/bootstrap-paragraphs-modal.min.css
+index d9a5fe9..37c8c01 100644
+--- a/css/bootstrap-paragraphs-modal.min.css
++++ b/css/bootstrap-paragraphs-modal.min.css
+@@ -4,4 +4,21 @@
+  *
+  * Compiled from bootstrap-paragraphs-modal.less.
+  */
+-.paragraph--type--bp-modal .btn.btn-modal{display:block;margin-left:auto;margin-right:auto}.modal .modal-header{padding:15px 30px}.modal .modal-body,.modal .modal-footer{padding:15px 30px 0}.modal .modal-title{font-weight:700}.modal .modal-footer{text-align:left}.modal .modal-body .paragraph,.modal .modal-footer .paragraph{display:table;width:100%}
++.paragraph--type--bp-modal .btn.btn-modal {
++  display: block;
++  margin-left: auto;
++  margin-right: auto
++}.modal .modal-header {
++  padding: 15px 30px
++}.modal .modal-body,
++.modal .modal-footer {
++  padding: 15px 30px 0
++}.modal .modal-title {
++  font-weight: 700
++}.modal .modal-footer {
++  text-align: left
++}.modal .modal-body .paragraph,
++.modal .modal-footer .paragraph {
++  display: table;
++  width: 100%
++}
+diff --git a/css/bootstrap-paragraphs-tabs.min.css b/css/bootstrap-paragraphs-tabs.min.css
+index b9b358a..d60b11c 100644
+--- a/css/bootstrap-paragraphs-tabs.min.css
++++ b/css/bootstrap-paragraphs-tabs.min.css
+@@ -4,4 +4,6 @@
+  *
+  * Compiled from bootstrap-paragraphs-tabs.less.
+  */
+-.paragraph.paragraph--type--bp-tabs .tab-content .paragraph>.paragraph__column{padding-top:15px}
++.paragraph.paragraph--type--bp-tabs .tab-content .paragraph>.paragraph__column {
++  padding-top: 15px
++}
+diff --git a/modules/bp_card/css/bp-card.min.css b/modules/bp_card/css/bp-card.min.css
+index b94e5d0..e89cd8e 100644
+--- a/modules/bp_card/css/bp-card.min.css
++++ b/modules/bp_card/css/bp-card.min.css
+@@ -4,4 +4,9 @@
+  *
+  * Minified from the CSS file of the same name.
+  */
+-.card{margin-bottom:1rem}.card-image img{height:auto;max-width:100%}
++.card {
++  margin-bottom: 1rem
++}.card-image img {
++  height: auto;
++  max-width: 100%
++}
+diff --git a/modules/bp_quicklinks/css/bp-quicklinks.min.css b/modules/bp_quicklinks/css/bp-quicklinks.min.css
+index 7483077..6c25658 100644
+--- a/modules/bp_quicklinks/css/bp-quicklinks.min.css
++++ b/modules/bp_quicklinks/css/bp-quicklinks.min.css
+@@ -4,4 +4,22 @@
+  *
+  * Minified from the CSS file of the same name.
+  */
+-.quicklinks{align-items:stretch;display:flex;flex-wrap:wrap;justify-content:space-around;list-style:none;margin:0;padding:0}.quicklinks .quicklink{margin-bottom:1rem;padding:3rem 2rem}.quicklinks .quicklink a{background:#f8f9fa;padding:3rem 2rem;transition:all .25s ease-in-out}.quicklinks .quicklink a:hover{background:#6c757d;transition:all .25s ease-in-out}
++.quicklinks {
++  align-items: stretch;
++  display: flex;
++  flex-wrap: wrap;
++  justify-content: space-around;
++  list-style: none;
++  margin: 0;
++  padding: 0
++}.quicklinks .quicklink {
++  margin-bottom: 1rem;
++  padding: 3rem 2rem
++}.quicklinks .quicklink a {
++  background: #f8f9fa;
++  padding: 3rem 2rem;
++  transition: all .25s ease-in-out
++}.quicklinks .quicklink a:hover {
++  background: #6c757d;
++  transition: all .25s ease-in-out
++}

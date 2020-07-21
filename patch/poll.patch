@@ -1,0 +1,1966 @@
+diff --git a/css/poll.base-rtl.css b/css/poll.base-rtl.css
+index 7c737a93a..956e44122 100644
+--- a/css/poll.base-rtl.css
++++ b/css/poll.base-rtl.css
+@@ -1,4 +1,3 @@
+-
+ /**
+  * @file
+  * Right-to-left specfic base stylesheet for the Poll module.
+diff --git a/css/poll.base.css b/css/poll.base.css
+index 1d24c67cb..004072db0 100644
+--- a/css/poll.base.css
++++ b/css/poll.base.css
+@@ -1,4 +1,3 @@
+-
+ /**
+  * @file
+  * Base stylesheet for the Poll module.
+diff --git a/css/poll.theme-rtl.css b/css/poll.theme-rtl.css
+index 2ba85c663..4018d06ac 100644
+--- a/css/poll.theme-rtl.css
++++ b/css/poll.theme-rtl.css
+@@ -1,4 +1,3 @@
+-
+ /**
+  * @file
+  * Right-to-left specfic theme stylesheet for the Poll module.
+diff --git a/css/poll.theme.css b/css/poll.theme.css
+index 1b5c72f21..c50079233 100644
+--- a/css/poll.theme.css
++++ b/css/poll.theme.css
+@@ -1,4 +1,3 @@
+-
+ /**
+  * @file
+  * Theme stylesheet for the Poll module.
+diff --git a/poll.tokens.inc b/poll.tokens.inc
+index 95f6dc48b..aac7bd1b3 100644
+--- a/poll.tokens.inc
++++ b/poll.tokens.inc
+@@ -11,37 +11,37 @@ use Drupal\Core\Render\BubbleableMetadata;
+  * Implements hook_token_info().
+  */
+ function poll_token_info() {
+-  $node['votes'] = array(
++  $node['votes'] = [
+     'name' => t("Poll votes"),
+     'description' => t("The number of votes that have been cast on a poll."),
+-  );
+-  $node['winner'] = array(
++  ];
++  $node['winner'] = [
+     'name' => t("Poll winner"),
+     'description' => t("The winning poll answer."),
+-  );
+-  $node['winner-votes'] = array(
++  ];
++  $node['winner-votes'] = [
+     'name' => t("Poll winner votes"),
+     'description' => t("The number of votes received by the winning poll answer."),
+-  );
+-  $node['winner-percent'] = array(
++  ];
++  $node['winner-percent'] = [
+     'name' => t("Poll winner percent"),
+     'description' => t("The percentage of votes received by the winning poll answer."),
+-  );
+-  $node['duration'] = array(
++  ];
++  $node['duration'] = [
+     'name' => t("Poll duration"),
+     'description' => t("The length of time the poll is set to run."),
+-  );
++  ];
+ 
+-  return array(
+-    'tokens' => array('poll' => $node),
+-  );
++  return [
++    'tokens' => ['poll' => $node],
++  ];
+ }
+ 
+ /**
+  * Implements hook_tokens().
+  */
+ function poll_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+-  $replacements = array();
++  $replacements = [];
+ 
+   if ($type == 'poll' && !empty($data['poll'])) {
+     /** @var \Drupal\poll\Entity\Poll $poll */
+diff --git a/src/Entity/Poll.php b/src/Entity/Poll.php
+index 0fae5f155..41a15319e 100644
+--- a/src/Entity/Poll.php
++++ b/src/Entity/Poll.php
+@@ -208,16 +208,16 @@ class Poll extends ContentEntityBase implements PollInterface {
+       ->setSetting('target_type', 'user')
+       ->setTranslatable(TRUE)
+       ->setDefaultValueCallback('Drupal\poll\Entity\Poll::getCurrentUserId')
+-      ->setDisplayOptions('form', array(
++      ->setDisplayOptions('form', [
+         'type' => 'entity_reference_autocomplete',
+         'weight' => -10,
+-        'settings' => array(
++        'settings' => [
+           'match_operator' => 'CONTAINS',
+           'size' => '60',
+           'autocomplete_type' => 'tags',
+           'placeholder' => '',
+-        ),
+-      ))
++        ],
++      ])
+       ->setDisplayConfigurable('form', TRUE);
+ 
+     $fields['uuid'] = BaseFieldDefinition::create('uuid')
+@@ -231,10 +231,10 @@ class Poll extends ContentEntityBase implements PollInterface {
+       ->setRequired(TRUE)
+       ->setTranslatable(TRUE)
+       ->setSetting('max_length', 255)
+-      ->setDisplayOptions('form', array(
++      ->setDisplayOptions('form', [
+         'type' => 'string_textfield',
+         'weight' => -100,
+-      ))
++      ])
+       ->setDisplayConfigurable('form', TRUE);
+ 
+     $fields['langcode'] = BaseFieldDefinition::create('language')
+@@ -258,8 +258,8 @@ class Poll extends ContentEntityBase implements PollInterface {
+       ])
+       ->setDisplayConfigurable('form', TRUE);
+ 
+-    // Poll attributes
+-    $duration = array(
++    // Poll attributes.
++    $duration = [
+       // 1-6 days.
+       86400,
+       2 * 86400,
+@@ -279,9 +279,9 @@ class Poll extends ContentEntityBase implements PollInterface {
+       9 * 2592000,
+       // 1 year (365 days).
+       31536000,
+-    );
++    ];
+ 
+-    $period = array(0 => t('Unlimited')) + array_map(array(\Drupal::service('date.formatter'), 'formatInterval'), array_combine($duration, $duration));
++    $period = [0 => t('Unlimited')] + array_map([\Drupal::service('date.formatter'), 'formatInterval'], array_combine($duration, $duration));
+ 
+     $fields['runtime'] = BaseFieldDefinition::create('list_integer')
+       ->setLabel(t('Poll Duration'))
+@@ -290,62 +290,62 @@ class Poll extends ContentEntityBase implements PollInterface {
+       ->setRequired(TRUE)
+       ->setSetting('allowed_values', $period)
+       ->setDefaultValue(0)
+-      ->setDisplayOptions('form', array(
++      ->setDisplayOptions('form', [
+         'type' => 'options_select',
+         'weight' => 0,
+-      ))
++      ])
+       ->setDisplayConfigurable('form', TRUE);
+ 
+     $fields['anonymous_vote_allow'] = BaseFieldDefinition::create('boolean')
+       ->setLabel(t('Allow anonymous votes'))
+       ->setDescription(t('A flag indicating whether anonymous users are allowed to vote.'))
+       ->setDefaultValue(0)
+-      ->setDisplayOptions('form', array(
++      ->setDisplayOptions('form', [
+         'type' => 'boolean_checkbox',
+-        'settings' => array(
++        'settings' => [
+           'display_label' => TRUE,
+-        ),
++        ],
+         'weight' => 1,
+-      ))
++      ])
+       ->setDisplayConfigurable('form', TRUE);
+ 
+     $fields['cancel_vote_allow'] = BaseFieldDefinition::create('boolean')
+       ->setLabel(t('Allow cancel votes'))
+       ->setDescription(t('A flag indicating whether users may cancel their vote.'))
+       ->setDefaultValue(1)
+-      ->setDisplayOptions('form', array(
++      ->setDisplayOptions('form', [
+         'type' => 'boolean_checkbox',
+-        'settings' => array(
++        'settings' => [
+           'display_label' => TRUE,
+-        ),
++        ],
+         'weight' => 2,
+-      ))
++      ])
+       ->setDisplayConfigurable('form', TRUE);
+ 
+     $fields['result_vote_allow'] = BaseFieldDefinition::create('boolean')
+       ->setLabel(t('Allow view results'))
+       ->setDescription(t('A flag indicating whether users may see the results before voting.'))
+       ->setDefaultValue(0)
+-      ->setDisplayOptions('form', array(
++      ->setDisplayOptions('form', [
+         'type' => 'boolean_checkbox',
+-        'settings' => array(
++        'settings' => [
+           'display_label' => TRUE,
+-        ),
++        ],
+         'weight' => 3,
+-      ))
++      ])
+       ->setDisplayConfigurable('form', TRUE);
+ 
+     $fields['status'] = BaseFieldDefinition::create('boolean')
+       ->setLabel(t('Active'))
+       ->setDescription(t('A flag indicating whether the poll is active.'))
+       ->setDefaultValue(1)
+-      ->setDisplayOptions('form', array(
++      ->setDisplayOptions('form', [
+         'type' => 'boolean_checkbox',
+-        'settings' => array(
++        'settings' => [
+           'display_label' => TRUE,
+-        ),
++        ],
+         'weight' => -5,
+-      ))
++      ])
+       ->setDisplayConfigurable('form', TRUE);
+ 
+     $fields['created'] = BaseFieldDefinition::create('created')
+@@ -364,18 +364,16 @@ class Poll extends ContentEntityBase implements PollInterface {
+    *   An array of default values.
+    */
+   public static function getCurrentUserId() {
+-    return array(\Drupal::currentUser()->id());
++    return [\Drupal::currentUser()->id()];
+   }
+ 
+   /**
+-   *
+    * {@inheritdoc}
+    */
+   public static function sort($a, $b) {
+     return strcmp($a->label(), $b->label());
+   }
+ 
+-
+   /**
+    * @todo: Refactor - doesn't belong here.
+    *
+@@ -391,7 +389,7 @@ class Poll extends ContentEntityBase implements PollInterface {
+    * {@inheritdoc}
+    */
+   public function getOptions() {
+-    $options = array();
++    $options = [];
+     if (count($this->choice)) {
+       foreach ($this->choice as $choice_item) {
+         $options[$choice_item->target_id] = \Drupal::service('entity.repository')->getTranslationFromContext($choice_item->entity, $this->language()->getId())->label();
+@@ -404,7 +402,7 @@ class Poll extends ContentEntityBase implements PollInterface {
+    * {@inheritdoc}
+    */
+   public function getOptionValues() {
+-    $options = array();
++    $options = [];
+     if (count($this->choice)) {
+       foreach ($this->choice as $choice_item) {
+         $options[$choice_item->target_id] = 1;
+diff --git a/src/Entity/PollChoice.php b/src/Entity/PollChoice.php
+index 0eb17acec..913f32095 100644
+--- a/src/Entity/PollChoice.php
++++ b/src/Entity/PollChoice.php
+@@ -78,10 +78,10 @@ class PollChoice extends ContentEntityBase implements PollChoiceInterface {
+       ->setRequired(TRUE)
+       ->setTranslatable(TRUE)
+       ->setSetting('max_length', 255)
+-      ->setDisplayOptions('form', array(
++      ->setDisplayOptions('form', [
+         'type' => 'string_textfield',
+         'weight' => -100,
+-      ));
++      ]);
+ 
+     $fields['langcode'] = BaseFieldDefinition::create('language')
+       ->setLabel(t('Language code'))
+diff --git a/src/Form/PollDeleteForm.php b/src/Form/PollDeleteForm.php
+index 41e29aadf..98a52b65c 100644
+--- a/src/Form/PollDeleteForm.php
++++ b/src/Form/PollDeleteForm.php
+@@ -22,7 +22,7 @@ class PollDeleteForm extends ContentEntityConfirmFormBase {
+    * {@inheritdoc}
+    */
+   public function getQuestion() {
+-    return $this->t('Are you sure you want to delete this poll %poll', array('%poll' => $this->entity->label()));
++    return $this->t('Are you sure you want to delete this poll %poll', ['%poll' => $this->entity->label()]);
+   }
+ 
+   /**
+@@ -44,8 +44,8 @@ class PollDeleteForm extends ContentEntityConfirmFormBase {
+    */
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+     $this->entity->delete();
+-    \Drupal::logger('poll')->notice('Poll %poll deleted.', array('%poll' => $this->entity->label()));
+-    $this->messenger()->addMessage($this->t('The poll %poll has been deleted.', array('%poll' => $this->entity->label())));
++    \Drupal::logger('poll')->notice('Poll %poll deleted.', ['%poll' => $this->entity->label()]);
++    $this->messenger()->addMessage($this->t('The poll %poll has been deleted.', ['%poll' => $this->entity->label()]));
+     $form_state->setRedirect('poll.poll_list');
+   }
+ 
+diff --git a/src/Form/PollForm.php b/src/Form/PollForm.php
+index fa252cdeb..82b59b38c 100644
+--- a/src/Form/PollForm.php
++++ b/src/Form/PollForm.php
+@@ -46,7 +46,7 @@ class PollForm extends ContentEntityForm {
+     $result = $poll_storage->getPollDuplicates($poll);
+     foreach ($result as $item) {
+       if (strcasecmp($item->label(), $poll->label()) == 0) {
+-        $form_state->setErrorByName('question', $this->t('A feed named %feed already exists. Enter a unique question.', array('%feed' => $poll->label())));
++        $form_state->setErrorByName('question', $this->t('A feed named %feed already exists. Enter a unique question.', ['%feed' => $poll->label()]));
+       }
+     }
+     parent::validateForm($form, $form_state);
+@@ -60,11 +60,11 @@ class PollForm extends ContentEntityForm {
+     $insert = (bool) $poll->id();
+     $poll->save();
+     if ($insert) {
+-      $this->messenger()->addMessage($this->t('The poll %poll has been updated.', array('%poll' => $poll->label())));
++      $this->messenger()->addMessage($this->t('The poll %poll has been updated.', ['%poll' => $poll->label()]));
+     }
+     else {
+-      \Drupal::logger('poll')->notice('Poll %poll added.', array('%poll' => $poll->label(), 'link' => $poll->toLink()->toString()));
+-      $this->messenger()->addMessage($this->t('The poll %poll has been added.', array('%poll' => $poll->label())));
++      \Drupal::logger('poll')->notice('Poll %poll added.', ['%poll' => $poll->label(), 'link' => $poll->toLink()->toString()]);
++      $this->messenger()->addMessage($this->t('The poll %poll has been added.', ['%poll' => $poll->label()]));
+     }
+ 
+     $form_state->setRedirect('poll.poll_list');
+diff --git a/src/Form/PollItemsDeleteForm.php b/src/Form/PollItemsDeleteForm.php
+index a32fdcfad..0f796b78e 100644
+--- a/src/Form/PollItemsDeleteForm.php
++++ b/src/Form/PollItemsDeleteForm.php
+@@ -15,7 +15,7 @@ class PollItemsDeleteForm extends ContentEntityConfirmFormBase {
+    * {@inheritdoc}
+    */
+   public function getQuestion() {
+-    return $this->t('Are you sure you want to delete all items from the feed %feed?', array('%feed' => $this->entity->label()));
++    return $this->t('Are you sure you want to delete all items from the feed %feed?', ['%feed' => $this->entity->label()]);
+   }
+ 
+   /**
+diff --git a/src/Form/PollSettingsForm.php b/src/Form/PollSettingsForm.php
+index 281384d9b..5680bb13f 100644
+--- a/src/Form/PollSettingsForm.php
++++ b/src/Form/PollSettingsForm.php
+@@ -29,11 +29,11 @@ class PollSettingsForm extends ConfigFormBase {
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     // This exists to make the field UI pages visible and must not be removed.
+-    $form['account'] = array(
++    $form['account'] = [
+       '#markup' => '<p>' . t('There are no settings yet.') . '</p>',
+-    );
++    ];
+ 
+     return $form;
+   }
+-}
+ 
++}
+diff --git a/src/Form/PollViewForm.php b/src/Form/PollViewForm.php
+index 54f246c3f..0e2c8c3f9 100644
+--- a/src/Form/PollViewForm.php
++++ b/src/Form/PollViewForm.php
+@@ -84,12 +84,12 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+     else {
+       $options = $this->poll->getOptions();
+       if ($options) {
+-        $form['choice'] = array(
++        $form['choice'] = [
+           '#type' => 'radios',
+           '#title' => t('Choices'),
+           '#title_display' => 'invisible',
+           '#options' => $options,
+-        );
++        ];
+       }
+       $form['#theme'] = 'poll_vote';
+       $form['#entity'] = $this->poll;
+@@ -108,9 +108,9 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+ 
+     $form['actions'] = $this->actions($form, $form_state, $this->poll);
+ 
+-    $form['#cache'] = array(
++    $form['#cache'] = [
+       'tags' => $this->poll->getCacheTags(),
+-    );
++    ];
+ 
+     return $form;
+   }
+@@ -140,6 +140,9 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+ 
+   }
+ 
++  /**
++   *
++   */
+   public function showResults(PollInterface $poll, FormStateInterface $form_state) {
+     $account = $this->currentUser();
+     switch (TRUE) {
+@@ -164,6 +167,9 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+     }
+   }
+ 
++  /**
++   *
++   */
+   protected function actions(array $form, FormStateInterface $form_state, $poll) {
+     $actions = [];
+ 
+@@ -173,7 +179,7 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+     $ajax = [
+       'callback' => '::ajaxReplaceForm',
+       'url' => $this->poll->toUrl(),
+-      'options' => ['query' => [FormBuilderInterface::AJAX_FORM_REQUEST => TRUE, 'view_mode' => $form['#view_mode']]]
++      'options' => ['query' => [FormBuilderInterface::AJAX_FORM_REQUEST => TRUE, 'view_mode' => $form['#view_mode']]],
+     ];
+ 
+     if ($this->showResults($poll, $form_state)) {
+@@ -183,7 +189,7 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+         $actions['cancel']['#type'] = 'submit';
+         $actions['cancel']['#button_type'] = 'primary';
+         $actions['cancel']['#value'] = t('Cancel vote');
+-        $actions['cancel']['#submit'] = array('::cancel');
++        $actions['cancel']['#submit'] = ['::cancel'];
+         $actions['cancel']['#ajax'] = $ajax;
+         $actions['cancel']['#weight'] = '0';
+       }
+@@ -192,7 +198,7 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+         $actions['back']['#type'] = 'submit';
+         $actions['back']['#button_type'] = 'primary';
+         $actions['back']['#value'] = t('View poll');
+-        $actions['back']['#submit'] = array('::back');
++        $actions['back']['#submit'] = ['::back'];
+         $actions['back']['#ajax'] = $ajax;
+         $actions['back']['#weight'] = '0';
+       }
+@@ -202,8 +208,8 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+       $actions['vote']['#type'] = 'submit';
+       $actions['vote']['#button_type'] = 'primary';
+       $actions['vote']['#value'] = t('Vote');
+-      $actions['vote']['#validate'] = array('::validateVote');
+-      $actions['vote']['#submit'] = array('::save');
++      $actions['vote']['#validate'] = ['::validateVote'];
++      $actions['vote']['#submit'] = ['::save'];
+       $actions['vote']['#ajax'] = $ajax;
+       $actions['vote']['#weight'] = '0';
+ 
+@@ -212,7 +218,7 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+         $actions['result']['#type'] = 'submit';
+         $actions['result']['#button_type'] = 'primary';
+         $actions['result']['#value'] = t('View results');
+-        $actions['result']['#submit'] = array('::result');
++        $actions['result']['#submit'] = ['::result'];
+         $actions['result']['#ajax'] = $ajax;
+         $actions['result']['#weight'] = '1';
+       }
+@@ -232,7 +238,7 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+    *
+    * @return array $output
+    */
+-  function showPollResults(PollInterface $poll, $view_mode = 'default', $block = FALSE) {
++  public function showPollResults(PollInterface $poll, $view_mode = 'default', $block = FALSE) {
+ 
+     // Ensure that a page that shows poll results can not be cached.
+     \Drupal::service('page_cache_kill_switch')->trigger();
+@@ -243,30 +249,30 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+     }
+ 
+     $options = $poll->getOptions();
+-    $poll_results = array();
++    $poll_results = [];
+     foreach ($poll->getVotes() as $pid => $vote) {
+       $percentage = round($vote * 100 / max($total_votes, 1));
+       $display_votes = (!$block) ? ' (' . \Drupal::translation()
+-          ->formatPlural($vote, '1 vote', '@count votes') . ')' : '';
++        ->formatPlural($vote, '1 vote', '@count votes') . ')' : '';
+ 
+-      $poll_results[] = array(
++      $poll_results[] = [
+         '#theme' => 'poll_meter',
+         '#choice' => $options[$pid],
+-        '#display_value' => t('@percentage%', array('@percentage' => $percentage)) . $display_votes,
++        '#display_value' => t('@percentage%', ['@percentage' => $percentage]) . $display_votes,
+         '#min' => 0,
+         '#max' => $total_votes,
+         '#value' => $vote,
+         '#percentage' => $percentage,
+-        '#attributes' => array('class' => array('bar')),
++        '#attributes' => ['class' => ['bar']],
+         '#poll' => $poll,
+-      );
++      ];
+     }
+ 
+     /** @var \Drupal\poll\PollVoteStorageInterface $vote_storage */
+     $vote_storage = \Drupal::service('poll_vote.storage');
+     $user_vote = $vote_storage->getUserVote($poll);
+ 
+-    $output = array(
++    $output = [
+       '#theme' => 'poll_results',
+       '#raw_question' => $poll->label(),
+       '#results' => $poll_results,
+@@ -276,13 +282,11 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+       '#poll' => $poll,
+       '#view_mode' => $view_mode,
+       '#vote' => isset($user_vote['chid']) ? $user_vote['chid'] : NULL,
+-    );
++    ];
+ 
+     return $output;
+   }
+ 
+-
+-
+   /**
+    * Cancel vote submit function.
+    *
+@@ -295,10 +299,10 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+     /** @var \Drupal\poll\PollVoteStorageInterface $vote_storage */
+     $vote_storage = \Drupal::service('poll_vote.storage');
+     $vote_storage->cancelVote($this->poll, $this->currentUser());
+-    \Drupal::logger('poll')->notice('%user\'s vote in Poll #%poll deleted.', array(
++    \Drupal::logger('poll')->notice('%user\'s vote in Poll #%poll deleted.', [
+       '%user' => $this->currentUser()->id(),
+       '%poll' => $this->poll->id(),
+-    ));
++    ]);
+     $this->messenger()->addMessage($this->t('Your vote was cancelled.'));
+ 
+     // In case of an ajax submission, trigger a form rebuild so that we can
+@@ -337,7 +341,7 @@ class PollViewForm extends FormBase implements BaseFormIdInterface {
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+    */
+   public function save(array $form, FormStateInterface $form_state) {
+-    $options = array();
++    $options = [];
+     $options['chid'] = $form_state->getValue('choice');
+     $options['uid'] = $this->currentUser()->id();
+     $options['pid'] = $form_state->getValue('poll')->id();
+diff --git a/src/Form/PollVoteDeleteForm.php b/src/Form/PollVoteDeleteForm.php
+index abe9c10c9..f0cb3731f 100644
+--- a/src/Form/PollVoteDeleteForm.php
++++ b/src/Form/PollVoteDeleteForm.php
+@@ -18,7 +18,7 @@ class PollVoteDeleteForm extends ContentEntityConfirmFormBase implements Contain
+    * {@inheritdoc}
+    */
+   public function getQuestion() {
+-    return $this->t('Are you sure you want to delete this vote for %poll', array('%poll' => $this->entity->label()));
++    return $this->t('Are you sure you want to delete this vote for %poll', ['%poll' => $this->entity->label()]);
+   }
+ 
+   /**
+@@ -44,13 +44,14 @@ class PollVoteDeleteForm extends ContentEntityConfirmFormBase implements Contain
+     /** @var \Drupal\poll\PollVoteStorage $vote_storage */
+     $vote_storage = \Drupal::service('poll_vote.storage');
+     $vote_storage->cancelVote($this->entity, $account);
+-    \Drupal::logger('poll')->notice('%user\'s vote in Poll #%poll deleted.', array(
++    \Drupal::logger('poll')->notice('%user\'s vote in Poll #%poll deleted.', [
+       '%user' => $account->id(),
+-      '%poll' => $this->entity->id()
+-    ));
++      '%poll' => $this->entity->id(),
++    ]);
+     $this->messenger()->addMessage($this->t('Your vote was cancelled.'));
+ 
+     // Display the original poll.
+-    $form_state->setRedirect('entity.poll.canonical', array('poll' => $this->entity->id()));
++    $form_state->setRedirect('entity.poll.canonical', ['poll' => $this->entity->id()]);
+   }
++
+ }
+diff --git a/src/Plugin/Block/PollRecentBlock.php b/src/Plugin/Block/PollRecentBlock.php
+index 3dfae86e9..ecc33b3e7 100644
+--- a/src/Plugin/Block/PollRecentBlock.php
++++ b/src/Plugin/Block/PollRecentBlock.php
+@@ -70,7 +70,7 @@ class PollRecentBlock extends BlockBase implements ContainerFactoryPluginInterfa
+    * {@inheritdoc}
+    */
+   public function getCacheTags() {
+-    return array('poll_list');
++    return ['poll_list'];
+   }
+ 
+   /**
+@@ -82,10 +82,10 @@ class PollRecentBlock extends BlockBase implements ContainerFactoryPluginInterfa
+     if ($polls) {
+       $poll = reset($polls);
+       // If we're viewing this poll, don't show this block.
+-//      $page = \Drupal::request()->attributes->get('poll');
+-//      if ($page instanceof PollInterface && $page->id() == $poll->id()) {
+-//        return;
+-//      }
++      //      $page = \Drupal::request()->attributes->get('poll');
++      //      if ($page instanceof PollInterface && $page->id() == $poll->id()) {
++      //        return;
++      //      }.
+       // @todo: new view mode using ajax
+       $build = $this->entityTypeManager->getViewBuilder('poll')->view($poll, 'block');
+       $build['#title'] = $poll->label();
+diff --git a/src/Plugin/Field/FieldWidget/PollChoiceDefaultWidget.php b/src/Plugin/Field/FieldWidget/PollChoiceDefaultWidget.php
+index 803668226..a71c293b6 100644
+--- a/src/Plugin/Field/FieldWidget/PollChoiceDefaultWidget.php
++++ b/src/Plugin/Field/FieldWidget/PollChoiceDefaultWidget.php
+@@ -7,7 +7,6 @@ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Field\WidgetBase;
+ use Drupal\Core\Form\FormStateInterface;
+ 
+-
+ /**
+  * Plugin implementation of the 'poll_choice_default' widget.
+  *
+@@ -46,23 +45,23 @@ class PollChoiceDefaultWidget extends WidgetBase {
+       $choice = $choice->getTranslation($langcode);
+     }
+ 
+-    $element['target_id'] = array(
++    $element['target_id'] = [
+       '#type' => 'value',
+       '#value' => $choice ? $choice->id() : NULL,
+-    );
+-    $element['langcode'] = array(
++    ];
++    $element['langcode'] = [
+       '#type' => 'value',
+       '#value' => $langcode,
+-    );
++    ];
+ 
+-    $element['choice'] = array(
++    $element['choice'] = [
+       '#type' => 'textfield',
+       '#placeholder' => t('Choice'),
+       '#empty_value' => '',
+       '#maxlength' => 255,
+       '#default_value' => $choice ? $choice->choice->value : NULL,
+       '#prefix' => '<div class="container-inline">',
+-    );
++    ];
+     return $element;
+   }
+ 
+diff --git a/src/Plugin/views/field/PollStatus.php b/src/Plugin/views/field/PollStatus.php
+index 9495d3956..feb73b4d5 100644
+--- a/src/Plugin/views/field/PollStatus.php
++++ b/src/Plugin/views/field/PollStatus.php
+@@ -5,7 +5,6 @@ namespace Drupal\poll\Plugin\views\field;
+ use Drupal\views\Plugin\views\field\FieldPluginBase;
+ use Drupal\views\ResultRow;
+ 
+-
+ /**
+  * Field handler which displays the flag indicating whether the poll is active
+  * including the runtime.
+@@ -18,21 +17,22 @@ class PollStatus extends FieldPluginBase {
+    * @param \Drupal\views\ResultRow $values
+    * @return mixed
+    */
+-  function render(ResultRow $values) {
++  public function render(ResultRow $values) {
+     /** @var \Drupal\poll\PollInterface $entity */
+     $entity = $values->_entity;
+ 
+     if ($entity->isOpen() && $entity->getRuntime() != 0) {
+       $date = \Drupal::service('date.formatter')->format($entity->getCreated() + $entity->getRuntime(), 'short');
+-      $output = 'Yes (until ' . rtrim(strstr($date, '-', true)) . ')';
++      $output = 'Yes (until ' . rtrim(strstr($date, '-', TRUE)) . ')';
+     }
+-    else if ($entity->isOpen()) {
++    elseif ($entity->isOpen()) {
+       $output = t('Yes');
+     }
+     else {
+-     $output = 'No';
++      $output = 'No';
+     }
+ 
+     return $output;
+   }
++
+ }
+diff --git a/src/Plugin/views/field/PollTotalVotes.php b/src/Plugin/views/field/PollTotalVotes.php
+index 69b9bc566..a0a7e3734 100644
+--- a/src/Plugin/views/field/PollTotalVotes.php
++++ b/src/Plugin/views/field/PollTotalVotes.php
+@@ -6,7 +6,6 @@ use Drupal\poll\Entity\Poll;
+ use Drupal\views\Plugin\views\field\FieldPluginBase;
+ use Drupal\views\ResultRow;
+ 
+-
+ /**
+  * Field handler which shows the total votes for a poll.
+  *
+@@ -18,7 +17,7 @@ class PollTotalVotes extends FieldPluginBase {
+    * @param \Drupal\views\ResultRow $values
+    * @return mixed
+    */
+-  function render(ResultRow $values) {
++  public function render(ResultRow $values) {
+     /** @var \Drupal\poll\PollVoteStorage $vote_storage */
+     $vote_storage = \Drupal::service('poll_vote.storage');
+     $entity = Poll::load($this->getValue($values));
+@@ -26,4 +25,5 @@ class PollTotalVotes extends FieldPluginBase {
+     $build['#cache']['tags'][] = 'poll-votes:' . $entity->id();
+     return $build;
+   }
++
+ }
+diff --git a/src/PollAccessControlHandler.php b/src/PollAccessControlHandler.php
+index b714af94e..411e506bf 100644
+--- a/src/PollAccessControlHandler.php
++++ b/src/PollAccessControlHandler.php
+@@ -54,4 +54,5 @@ class PollAccessControlHandler extends EntityAccessControlHandler {
+     }
+     return parent::checkFieldAccess($operation, $field_definition, $account, $items);
+   }
++
+ }
+diff --git a/src/PollChoiceTranslationHandler.php b/src/PollChoiceTranslationHandler.php
+index c9bdc766e..d54fa85ab 100644
+--- a/src/PollChoiceTranslationHandler.php
++++ b/src/PollChoiceTranslationHandler.php
+@@ -8,6 +8,7 @@ use Drupal\content_translation\ContentTranslationHandler;
+  * Defines the translation handler for poll.
+  */
+ class PollChoiceTranslationHandler extends ContentTranslationHandler {
++
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/PollInterface.php b/src/PollInterface.php
+index aabca6908..779da44d1 100644
+--- a/src/PollInterface.php
++++ b/src/PollInterface.php
+@@ -39,7 +39,6 @@ interface PollInterface extends ContentEntityInterface {
+    */
+   public function setCreated($created);
+ 
+-
+   /**
+    * Returns the runtime of the feed in seconds.
+    *
+@@ -59,7 +58,6 @@ interface PollInterface extends ContentEntityInterface {
+    */
+   public function setRuntime($runtime);
+ 
+-
+   /**
+    * Returns the last time where the feed was checked for new items.
+    *
+@@ -98,7 +96,6 @@ interface PollInterface extends ContentEntityInterface {
+    */
+   public function setCancelVoteAllow($cancel_vote_allow);
+ 
+-
+   /**
+    * Returns the time when this feed was queued for refresh, 0 if not queued.
+    *
+diff --git a/src/PollListBuilder.php b/src/PollListBuilder.php
+index 5979ff665..143472766 100644
+--- a/src/PollListBuilder.php
++++ b/src/PollListBuilder.php
+@@ -1,9 +1,5 @@
+ <?php
+ 
+-/**
+- * Contains \Drupal\poll\PollListBuilder.
+- */
+-
+ namespace Drupal\poll;
+ 
+ use Drupal;
+@@ -25,7 +21,7 @@ class PollListBuilder extends DraggableListBuilder {
+ 
+     // Sort the entities using the entity class's sort() method.
+     // See \Drupal\Core\Config\Entity\ConfigEntityBase::sort().
+-    uasort($entities, array($this->entityType->getClass(), 'sort'));
++    uasort($entities, [$this->entityType->getClass(), 'sort']);
+     return $entities;
+   }
+ 
+@@ -58,10 +54,10 @@ class PollListBuilder extends DraggableListBuilder {
+     $vote_storage = \Drupal::service('poll_vote.storage');
+ 
+     $row['question'] = $entity->toLink()->toString();
+-    $row['author']['data'] = array(
++    $row['author']['data'] = [
+       '#theme' => 'username',
+       '#account' => $entity->getOwner(),
+-    );
++    ];
+     // $row['votes'] = $vote_storage->getTotalVotes($entity);
+     $row['status'] = ($entity->isOpen()) ? t('Y') : t('N');
+     $row['created'] = ($entity->getCreated()) ? Drupal::service('date.formatter')
+diff --git a/src/PollStorage.php b/src/PollStorage.php
+index d70563a00..c67c73430 100644
+--- a/src/PollStorage.php
++++ b/src/PollStorage.php
+@@ -86,4 +86,5 @@ class PollStorage extends SqlContentEntityStorage implements PollStorageInterfac
+     $query = $this->database->query('SELECT id FROM {poll_field_data} WHERE (:timestamp > (created + runtime)) AND status = 1 AND runtime <> 0', [':timestamp' => \Drupal::time()->getCurrentTime()]);
+     return $this->loadMultiple($query->fetchCol());
+   }
++
+ }
+diff --git a/src/PollStorageInterface.php b/src/PollStorageInterface.php
+index 6007fc338..bc7bc2375 100644
+--- a/src/PollStorageInterface.php
++++ b/src/PollStorageInterface.php
+@@ -28,7 +28,7 @@ interface PollStorageInterface extends EntityStorageInterface {
+    * Cancel a user's vote.
+    *
+    * @param PollInterface $poll
+-   * @param AccountInterface $account
++   * @param \Drupal\Core\Session\AccountInterface $account
+    *
+    * @return mixed
+    *
+@@ -115,7 +115,6 @@ interface PollStorageInterface extends EntityStorageInterface {
+    * Returns all expired polls.
+    *
+    * @return \Drupal\poll\PollInterface[]
+-   *
+    */
+   public function getExpiredPolls();
+ 
+diff --git a/src/PollViewBuilder.php b/src/PollViewBuilder.php
+index f83d41b65..4fc1b2fce 100644
+--- a/src/PollViewBuilder.php
++++ b/src/PollViewBuilder.php
+@@ -23,12 +23,12 @@ class PollViewBuilder extends EntityViewBuilder {
+     }
+ 
+     $output = parent::view($entity, $view_mode, $langcode);
+-    $output['#theme_wrappers'] = array('container');
++    $output['#theme_wrappers'] = ['container'];
+     $output['#attributes']['class'][] = 'poll-view';
+     $output['#attributes']['class'][] = $view_mode;
+ 
+     $output['#poll'] = $entity;
+-    $output['poll'] = array(
++    $output['poll'] = [
+       '#lazy_builder' => [
+         'poll.post_render_cache:renderViewForm',
+         [
+@@ -41,7 +41,7 @@ class PollViewBuilder extends EntityViewBuilder {
+       '#cache' => [
+         'tags' => $entity->getCacheTags(),
+       ],
+-    );
++    ];
+ 
+     return $output;
+ 
+diff --git a/src/PollViewData.php b/src/PollViewData.php
+index 3d14fdb5d..2ee893de2 100644
+--- a/src/PollViewData.php
++++ b/src/PollViewData.php
+@@ -15,23 +15,23 @@ class PollViewData extends EntityViewsData {
+   public function getViewsData() {
+     $data = parent::getViewsData();
+ 
+-    $data['poll_field_data']['votes'] = array(
++    $data['poll_field_data']['votes'] = [
+       'title' => 'Total votes',
+       'help' => 'Displays the total number of votes.',
+       'real field' => 'id',
+-      'field' => array(
++      'field' => [
+         'id' => 'poll_totalvotes',
+-      ),
+-    );
++      ],
++    ];
+ 
+-    $data['poll_field_data']['status_with_runtime'] = array(
++    $data['poll_field_data']['status_with_runtime'] = [
+       'title' => 'Active with runtime',
+       'help' => 'Displays the status with runtime.',
+       'real field' => 'id',
+-      'field' => array(
++      'field' => [
+         'id' => 'poll_status',
+-      ),
+-    );
++      ],
++    ];
+ 
+     return $data;
+   }
+diff --git a/src/PollVoteStorage.php b/src/PollVoteStorage.php
+index ae8dc10a4..7ed28d9c3 100644
+--- a/src/PollVoteStorage.php
++++ b/src/PollVoteStorage.php
+@@ -59,7 +59,7 @@ class PollVoteStorage implements PollVoteStorageInterface {
+    */
+   public function deleteVotes(PollInterface $poll) {
+     $this->connection->delete('poll_vote')->condition('pid', $poll->id())
+-    ->execute();
++      ->execute();
+ 
+     // Deleting a vote means that any cached vote might not be updated in the
+     // UI, so we need to invalidate them all.
+@@ -113,14 +113,14 @@ class PollVoteStorage implements PollVoteStorageInterface {
+    * {@inheritdoc}
+    */
+   public function getVotes(PollInterface $poll) {
+-    $votes = array();
+-    // Set votes for all options to 0
++    $votes = [];
++    // Set votes for all options to 0.
+     $options = $poll->getOptions();
+     foreach ($options as $id => $label) {
+       $votes[$id] = 0;
+     }
+ 
+-    $result = $this->connection->query("SELECT chid, COUNT(chid) AS votes FROM {poll_vote} WHERE pid = :pid GROUP BY chid", array(':pid' => $poll->id()));
++    $result = $this->connection->query("SELECT chid, COUNT(chid) AS votes FROM {poll_vote} WHERE pid = :pid GROUP BY chid", [':pid' => $poll->id()]);
+     // Replace the count for options that have recorded votes in the database.
+     foreach ($result as $row) {
+       $votes[$row->chid] = $row->votes;
+@@ -141,16 +141,16 @@ class PollVoteStorage implements PollVoteStorageInterface {
+     $this->currentUserVote[$key] = FALSE;
+     if ($uid || $poll->getAnonymousVoteAllow()) {
+       if ($uid) {
+-        $query = $this->connection->query("SELECT * FROM {poll_vote} WHERE pid = :pid AND uid = :uid", array(
++        $query = $this->connection->query("SELECT * FROM {poll_vote} WHERE pid = :pid AND uid = :uid", [
+           ':pid' => $poll->id(),
+-          ':uid' => $uid
+-        ));
++          ':uid' => $uid,
++        ]);
+       }
+       else {
+-        $query = $this->connection->query("SELECT * FROM {poll_vote} WHERE pid = :pid AND hostname = :hostname AND uid = 0", array(
++        $query = $this->connection->query("SELECT * FROM {poll_vote} WHERE pid = :pid AND hostname = :hostname AND uid = 0", [
+           ':pid' => $poll->id(),
+-          ':hostname' => \Drupal::request()->getClientIp()
+-        ));
++          ':hostname' => \Drupal::request()->getClientIp(),
++        ]);
+       }
+       $this->currentUserVote[$key] = $query->fetchAssoc();
+     }
+@@ -161,7 +161,7 @@ class PollVoteStorage implements PollVoteStorageInterface {
+    * {@inheritdoc}
+    */
+   public function getTotalVotes(PollInterface $poll) {
+-    $query = $this->connection->query("SELECT COUNT(chid) FROM {poll_vote} WHERE pid = :pid", array(':pid' => $poll->id()));
++    $query = $this->connection->query("SELECT COUNT(chid) FROM {poll_vote} WHERE pid = :pid", [':pid' => $poll->id()]);
+     return $query->fetchField();
+   }
+ 
+diff --git a/src/PollVoteStorageInterface.php b/src/PollVoteStorageInterface.php
+index 12bda1cd5..880eb5f3d 100644
+--- a/src/PollVoteStorageInterface.php
++++ b/src/PollVoteStorageInterface.php
+@@ -30,7 +30,7 @@ interface PollVoteStorageInterface {
+    * Cancel a user's vote.
+    *
+    * @param PollInterface $poll
+-   * @param AccountInterface $account
++   * @param \Drupal\Core\Session\AccountInterface $account
+    */
+   public function cancelVote(PollInterface $poll, AccountInterface $account = NULL);
+ 
+diff --git a/tests/src/Functional/PollBlockTest.php b/tests/src/Functional/PollBlockTest.php
+index 8dd2f58ea..88568e244 100644
+--- a/tests/src/Functional/PollBlockTest.php
++++ b/tests/src/Functional/PollBlockTest.php
+@@ -14,9 +14,12 @@ class PollBlockTest extends PollTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array('block');
++  public static $modules = ['block'];
+ 
+-  function setUp() {
++  /**
++   *
++   */
++  public function setUp() {
+     parent::setUp();
+ 
+     // Enable the recent poll block.
+@@ -26,7 +29,7 @@ class PollBlockTest extends PollTestBase {
+   /**
+    * Tests creating, viewing, voting on recent poll block.
+    */
+-  function testRecentBlock() {
++  public function testRecentBlock() {
+ 
+     $poll = $this->poll;
+     $user = $this->web_user;
+@@ -44,9 +47,9 @@ class PollBlockTest extends PollTestBase {
+     }
+ 
+     // Verify we can vote via the block.
+-    $edit = array(
++    $edit = [
+       'choice' => '1',
+-    );
++    ];
+     $this->drupalPostForm('user/' . $this->web_user->id(), $edit, t('Vote'));
+     $this->assertText('Your vote has been recorded.');
+     $this->assertText('Total votes: 1');
+@@ -57,4 +60,5 @@ class PollBlockTest extends PollTestBase {
+     $this->drupalGet('user/' . $user->id());
+     $this->assertNoText($poll->label());
+   }
++
+ }
+diff --git a/tests/src/Functional/PollCreateTest.php b/tests/src/Functional/PollCreateTest.php
+index d4505fa35..867055259 100644
+--- a/tests/src/Functional/PollCreateTest.php
++++ b/tests/src/Functional/PollCreateTest.php
+@@ -57,7 +57,7 @@ class PollCreateTest extends PollTestBase {
+   /**
+    * Tests creating, editing, and closing a poll.
+    */
+-  function testPollClose() {
++  public function testPollClose() {
+ 
+     $poll = $this->poll;
+     $poll->close();
+@@ -90,7 +90,7 @@ class PollCreateTest extends PollTestBase {
+     $this->assertFalse(empty($elements), "Vote button appears.");
+ 
+     // Check to see if the vote was recorded and that the user may cancel their vote.
+-    $edit = array('choice' => 1);
++    $edit = ['choice' => 1];
+     $this->drupalPostForm(NULL, $edit, t('Vote'));
+     $this->assertText('Your vote has been recorded.');
+     $elements = $this->xpath('//input[@value="Cancel vote"]');
+@@ -107,7 +107,7 @@ class PollCreateTest extends PollTestBase {
+   /**
+    * Poll create with restricted user.
+    */
+-  function testwithRestrictedUser() {
++  public function testwithRestrictedUser() {
+     $admin_poll = $this->poll;
+     // Create and login restricted user.
+     $account = $this->drupalCreateUser([
+@@ -118,13 +118,13 @@ class PollCreateTest extends PollTestBase {
+     $this->drupalGet('poll/add');
+     $this->assertResponse(200);
+     $this->assertNoFieldByName('uid[0][target_id]', NULL);
+-    // create poll and test edit
++    // Create poll and test edit.
+     $own_poll = $this->pollCreate(7, $account);
+     $this->drupalGet('poll/' . $admin_poll->id() . '/edit');
+     $this->assertResponse(403);
+     $this->drupalGet('poll/' . $own_poll->id() . '/edit');
+     $this->assertResponse(403);
+-    // test another user with "edit own poll" permission
++    // Test another user with "edit own poll" permission.
+     $account = $this->drupalCreateUser([
+       'create polls',
+       'edit own polls',
+@@ -137,4 +137,5 @@ class PollCreateTest extends PollTestBase {
+     $this->assertResponse(200);
+     $this->assertNoFieldByName('uid[0][target_id]', NULL);
+   }
++
+ }
+diff --git a/tests/src/Functional/PollDeleteChoiceTest.php b/tests/src/Functional/PollDeleteChoiceTest.php
+index 6b4b25b47..81f32358a 100644
+--- a/tests/src/Functional/PollDeleteChoiceTest.php
++++ b/tests/src/Functional/PollDeleteChoiceTest.php
+@@ -12,16 +12,16 @@ class PollDeleteChoiceTest extends PollTestBase {
+   /**
+    * Tests removing a choice from a poll.
+    */
+-  function testChoiceRemoval() {
++  public function testChoiceRemoval() {
+     $ids = \Drupal::entityQuery('poll_choice')
+       ->condition('choice', $this->poll->choice[0]->entity->label())
+       ->execute();
+     $this->assertEqual(count($ids), 1, 'Choice 1 exists in the database');
+ 
+     // Record a vote for the second choice.
+-    $edit = array(
++    $edit = [
+       'choice' => $this->poll->choice[1]->target_id,
+-    );
++    ];
+     $this->drupalPostForm('poll/' . $this->poll->id(), $edit, t('Vote'));
+ 
+     // Assert the selected option.
+@@ -50,7 +50,7 @@ class PollDeleteChoiceTest extends PollTestBase {
+     // Ensure that the existing vote still shows.
+     $this->drupalGet('poll/' . $this->poll->id());
+     $vote = $this->poll->choice[1]->target_id;
+-    $vote_recorded = \Drupal::database()->query('SELECT chid FROM {poll_vote} WHERE chid = :chid', array(':chid' => $vote))->fetch();
++    $vote_recorded = \Drupal::database()->query('SELECT chid FROM {poll_vote} WHERE chid = :chid', [':chid' => $vote])->fetch();
+     $this->assertFalse(empty($vote_recorded), 'Vote in Choice 2 still in the database');
+ 
+     // Assert the selected option.
+@@ -73,7 +73,7 @@ class PollDeleteChoiceTest extends PollTestBase {
+     $this->assertTrue(isset($elements[0]), "vote deleted successfully");
+ 
+     // Assert that the existing vote has been deleted from the database.
+-    $vote_deleted = \Drupal::database()->query('SELECT chid FROM {poll_vote} WHERE chid = :chid', array(':chid' => $vote))->fetch();
++    $vote_deleted = \Drupal::database()->query('SELECT chid FROM {poll_vote} WHERE chid = :chid', [':chid' => $vote])->fetch();
+     $this->assertTrue(empty($vote_deleted), 'Vote in Choice 2 has been deleted from the database');
+   }
+ 
+diff --git a/tests/src/Functional/PollExpirationTest.php b/tests/src/Functional/PollExpirationTest.php
+index 5a658e4a5..12d52f3c0 100644
+--- a/tests/src/Functional/PollExpirationTest.php
++++ b/tests/src/Functional/PollExpirationTest.php
+@@ -14,7 +14,7 @@ class PollExpirationTest extends PollTestBase {
+   /**
+    * Tests the expiration of a poll.
+    */
+-  function testAutoExpire() {
++  public function testAutoExpire() {
+ 
+     // Set up a poll.
+     $poll = $this->poll;
+@@ -22,19 +22,20 @@ class PollExpirationTest extends PollTestBase {
+     // Visit the poll edit page and verify that by default, expiration
+     // is set to unlimited.
+     $this->drupalLogin($this->admin_user);
+-    $this->drupalGet('poll/' . $poll->id(). '/edit');
++    $this->drupalGet('poll/' . $poll->id() . '/edit');
+     $this->assertField('runtime');
+     $elements = $this->xpath('//select[@id="edit-runtime"]/option[@selected="selected"]');
+     $this->assertEquals(0, $elements[0]->getAttribute('value'), 'Poll expiration set to unlimited.');
+ 
+     // Set the expiration to one week.
+-    $runtime = 604800; // One week.
++    // One week.
++    $runtime = 604800;
+     $poll->setRuntime($runtime);
+     $poll->save();
+ 
+     // Make sure that the changed expiration settings is kept.
+-    // here
+-    $this->drupalGet('poll/' . $poll->id(). '/edit');
++    // here.
++    $this->drupalGet('poll/' . $poll->id() . '/edit');
+     $elements = $this->xpath('//select[@id="edit-runtime"]/option[@selected="selected"]');
+     $this->assertEquals($runtime, $elements[0]->getAttribute('value'), 'Poll expiration set to one week.');
+ 
+@@ -53,4 +54,5 @@ class PollExpirationTest extends PollTestBase {
+     $loaded_poll = Poll::load($poll->id());
+     $this->assertTrue($loaded_poll->isClosed(), 'Poll has expired.');
+   }
++
+ }
+diff --git a/tests/src/Functional/PollFieldTest.php b/tests/src/Functional/PollFieldTest.php
+index 0c2253c0c..c95be8a79 100644
+--- a/tests/src/Functional/PollFieldTest.php
++++ b/tests/src/Functional/PollFieldTest.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\Tests\poll\Functional;
+ 
+-
+ use Drupal\Tests\field_ui\Traits\FieldUiTestTrait;
+ 
+ /**
+@@ -60,14 +59,15 @@ class PollFieldTest extends PollTestBase {
+     $this->drupalGet('poll/' . $poll->id() . '/edit');
+     $this->assertText('Number field');
+     $this->assertText('Text field');
+-    $edit = array(
++    $edit = [
+       'field_number[0][value]' => random_int(10, 1000),
+       'field_text[0][value]' => $this->randomString(),
+-    );
++    ];
+     $this->drupalPostForm(NULL, $edit, 'Save');
+     // Test view poll form.
+     $this->drupalGet('poll/' . $poll->id());
+     $this->assertText('Number field');
+     $this->assertText('Text field');
+   }
++
+ }
+diff --git a/tests/src/Functional/PollFieldUITest.php b/tests/src/Functional/PollFieldUITest.php
+index 104122601..f2427d70b 100644
+--- a/tests/src/Functional/PollFieldUITest.php
++++ b/tests/src/Functional/PollFieldUITest.php
+@@ -51,9 +51,9 @@ class PollFieldUITest extends PollTestBase {
+     $this->clickLink('Manage display');
+     $this->assertTitle('Manage display | Drupal');
+ 
+-    // Ensure vote results in List
++    // Ensure vote results in List.
+     $element = $this->cssSelect('#poll-votes');
+-    $this->assertNotEqual($element, array(), '"Vote form/Results" field is available.');
++    $this->assertNotEqual($element, [], '"Vote form/Results" field is available.');
+ 
+     // Ensure that the 'Manage fields' page is visible.
+     $this->clickLink('Manage fields');
+@@ -87,7 +87,7 @@ class PollFieldUITest extends PollTestBase {
+   /**
+    * Tests if the links on the Poll Help-page are working properly.
+    */
+-  function testPollHelpLinks() {
++  public function testPollHelpLinks() {
+     $this->drupalGet('admin/help/poll');
+ 
+     $this->clickLink('Poll module');
+@@ -113,4 +113,5 @@ class PollFieldUITest extends PollTestBase {
+     $this->clickLink('Configure Poll permissions');
+     $this->assertUrl('admin/people/permissions#module-poll');
+   }
++
+ }
+diff --git a/tests/src/Functional/PollHtmlSpecialCharactersTest.php b/tests/src/Functional/PollHtmlSpecialCharactersTest.php
+index 2856c4ae7..4116fcd5d 100644
+--- a/tests/src/Functional/PollHtmlSpecialCharactersTest.php
++++ b/tests/src/Functional/PollHtmlSpecialCharactersTest.php
+@@ -12,7 +12,7 @@ class PollHtmlSpecialCharactersTest extends PollTestBase {
+   /**
+    * {@inheritdoc}
+    */
+-  function setUp() {
++  public function setUp() {
+     parent::setUp();
+ 
+     $this->special_choice = '> old & spice <';
+@@ -69,4 +69,5 @@ class PollHtmlSpecialCharactersTest extends PollTestBase {
+     $result = $this->xpath('//*[@id="poll-view-form-1"]/div/dl/dt[1]/text()');
+     $this->assertEqual($this->special_choice, $result[0]->getText(), 'HTML entities displayed correctly in vote results.');
+   }
++
+ }
+diff --git a/tests/src/Functional/PollListTest.php b/tests/src/Functional/PollListTest.php
+index 827f35874..061f14c94 100644
+--- a/tests/src/Functional/PollListTest.php
++++ b/tests/src/Functional/PollListTest.php
+@@ -27,11 +27,11 @@ class PollListTest extends PollTestBase {
+     $this->assertText($poll2->label());
+ 
+     // Check to see if the vote was recorded.
+-    $edit = array('choice' => $this->getChoiceId($poll, 1));
++    $edit = ['choice' => $this->getChoiceId($poll, 1)];
+     $this->drupalPostForm(NULL, $edit, t('Vote'), [], 'poll-view-form-1');
+     $this->assertText('Your vote has been recorded.');
+ 
+-    // Check overview list with "access poll overview" permission
++    // Check overview list with "access poll overview" permission.
+     $account = $this->drupalCreateUser([
+       'access poll overview',
+     ]);
+diff --git a/tests/src/Functional/PollTestBase.php b/tests/src/Functional/PollTestBase.php
+index 52d02b2ea..03f2beec7 100644
+--- a/tests/src/Functional/PollTestBase.php
++++ b/tests/src/Functional/PollTestBase.php
+@@ -45,7 +45,7 @@ abstract class PollTestBase extends BrowserTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array('poll', 'node', 'block');
++  public static $modules = ['poll', 'node', 'block'];
+ 
+   /**
+    * {@inheritdoc}
+@@ -71,7 +71,7 @@ abstract class PollTestBase extends BrowserTestBase {
+     $this->web_user = $this->drupalCreateUser(array_merge([
+       'access polls',
+       'cancel own vote',
+-      ], $this->webUserPermissions));
++    ], $this->webUserPermissions));
+     $this->poll = $this->pollCreate();
+   }
+ 
+@@ -82,14 +82,14 @@ abstract class PollTestBase extends BrowserTestBase {
+    *   (optional) The number of choices to generate. Defaults to 7.
+    * @param \Drupal\user\UserInterface $account
+    *   (optional) Poll creator user. Defaults to NULL, then use $this->admin_user.
+-   * @param boolean $preview
++   * @param bool $preview
+    *   (optional) Whether to test if the preview is working or not. Defaults to
+    *   TRUE.
+    *
+    * @return mixed
+    *   The created poll entity, or FALSE on error.
+    */
+-  function pollCreate($choice_count = 7, $account = NULL, $preview = TRUE) {
++  public function pollCreate($choice_count = 7, $account = NULL, $preview = TRUE) {
+     if (!$account) {
+       $this->drupalLogin($this->admin_user);
+     }
+@@ -112,20 +112,19 @@ abstract class PollTestBase extends BrowserTestBase {
+       }
+     }
+ 
+-//    if ($preview) {
+-//      $this->drupalPostForm('poll/add', $edit, t('Preview'));
+-//      $this->assertPollChoiceOrder($choices, $index, TRUE);
+-//      list($edit, $index) = $this->pollGenerateEdit($title, $choices, $index);
+-//    }
+-
++    // If ($preview) {
++    //      $this->drupalPostForm('poll/add', $edit, t('Preview'));
++    //      $this->assertPollChoiceOrder($choices, $index, TRUE);
++    //      list($edit, $index) = $this->pollGenerateEdit($title, $choices, $index);
++    //    }.
+     $this->drupalPostForm(NULL, $edit, t('Save'));
+ 
+     // Load the first poll returned from the database.
+     $polls = \Drupal::entityTypeManager()
+       ->getStorage('poll')
+-      ->loadByProperties(array('question' => $question));
++      ->loadByProperties(['question' => $question]);
+     $poll = reset($polls);
+-    $this->assertText(t('The poll @question has been added.', array('@question' => $question)));
++    $this->assertText(t('The poll @question has been added.', ['@question' => $question]));
+     $this->assertInstanceOf(PollInterface::class, $poll);
+ 
+     return $poll instanceof PollInterface ? $poll : FALSE;
+@@ -150,21 +149,20 @@ abstract class PollTestBase extends BrowserTestBase {
+    *   - The number of poll choices contained in 'edit', for potential re-usage
+    *     in subsequent invocations of this function.
+    */
+-
+   private function pollGenerateEdit($question, array $choices, $index = 0) {
+     $max_new_choices = 1;
+     $already_submitted_choices = array_slice($choices, 0, $index);
+     $new_choices = array_values(array_slice($choices, $index, $max_new_choices));
+-    $edit = array(
++    $edit = [
+       'question[0][value]' => $question,
+-    );
++    ];
+     foreach ($already_submitted_choices as $k => $text) {
+       $edit['choice[' . $k . '][choice]'] = $text;
+     }
+     foreach ($new_choices as $k => $text) {
+       $edit['choice[' . $k . '][choice]'] = $text;
+     }
+-    return array($edit, count($already_submitted_choices) + count($new_choices));
++    return [$edit, count($already_submitted_choices) + count($new_choices)];
+   }
+ 
+   /**
+@@ -173,11 +171,11 @@ abstract class PollTestBase extends BrowserTestBase {
+    * @param int $count
+    *   (optional) The number of choices to generate. Defaults to 7.
+    *
+-   * @return array $choices
++   * @return array
+    *   An array of generated choices.
+    */
+   private function generateChoices($count = 7) {
+-    $choices = array();
++    $choices = [];
+     for ($i = 1; $i <= $count; $i++) {
+       $choices[] = $this->randomMachineName();
+     }
+@@ -200,8 +198,8 @@ abstract class PollTestBase extends BrowserTestBase {
+    *
+    * @see PollTestBase::pollGenerateEdit()
+    */
+-  function assertPollChoiceOrder(array $choices, $index = 0, $preview = FALSE) {
+-    $expected = array();
++  public function assertPollChoiceOrder(array $choices, $index = 0, $preview = FALSE) {
++    $expected = [];
+     $weight = 0;
+     foreach ($choices as $id => $label) {
+       if ($id < $index) {
+@@ -216,10 +214,10 @@ abstract class PollTestBase extends BrowserTestBase {
+     ksort($expected);
+ 
+     // Verify DOM order of poll choices (i.e., #weight of form elements).
+-    $elements = $this->xpath('//input[starts-with(@name, :prefix) and contains(@name, :suffix)]', array(
++    $elements = $this->xpath('//input[starts-with(@name, :prefix) and contains(@name, :suffix)]', [
+       ':prefix' => 'choice[chid:',
+       ':suffix' => '][chtext]',
+-    ));
++    ]);
+     $expected_order = $expected;
+     foreach ($elements as $element) {
+       $next_label = array_shift($expected_order);
+@@ -228,10 +226,10 @@ abstract class PollTestBase extends BrowserTestBase {
+ 
+     // If requested, also verify DOM order in preview.
+     if ($preview) {
+-      $elements = $this->xpath('//div[contains(@class, :teaser)]/descendant::div[@class=:text]', array(
++      $elements = $this->xpath('//div[contains(@class, :teaser)]/descendant::div[@class=:text]', [
+         ':teaser' => 'node-teaser',
+         ':text' => 'text',
+-      ));
++      ]);
+       $expected_order = $expected;
+       foreach ($elements as $element) {
+         $next_label = array_shift($expected_order);
+@@ -248,10 +246,10 @@ abstract class PollTestBase extends BrowserTestBase {
+    * @param int $delta
+    *   The number of the choice.
+    *
+-   * @return int $key
++   * @return int
+    *   Returns the choice ID or an error.
+    *
+-   * @throws InvalidArgumentException
++   * @throws \InvalidArgumentException
+    *   Throws it if the poll does not have the choice delta.
+    */
+   protected function getChoiceId(PollInterface $poll, $delta) {
+@@ -273,10 +271,10 @@ abstract class PollTestBase extends BrowserTestBase {
+    * @param string $label
+    *   The label of the choice.
+    *
+-   * @return int $id
++   * @return int
+    *   Returns the choice id or an error.
+    *
+-   * @throws InvalidArgumentException
++   * @throws \InvalidArgumentException
+    *   Throws it if the poll does not have the choice label.
+    */
+   protected function getChoiceIdByLabel(PollInterface $poll, $label) {
+diff --git a/tests/src/Functional/PollTokenReplaceTest.php b/tests/src/Functional/PollTokenReplaceTest.php
+index 8ff012f8b..06c8b0384 100644
+--- a/tests/src/Functional/PollTokenReplaceTest.php
++++ b/tests/src/Functional/PollTokenReplaceTest.php
+@@ -21,35 +21,35 @@ class PollTokenReplaceTest extends PollTestBase {
+     $poll_nid = $poll->id();
+ 
+     // Create four users and have each of them vote.
+-    $vote_user1 = $this->drupalCreateUser(array('access polls', 'access content'));
++    $vote_user1 = $this->drupalCreateUser(['access polls', 'access content']);
+     $this->drupalLogin($vote_user1);
+-    $edit = array(
++    $edit = [
+       'choice' => $this->getChoiceId($poll, 1),
+-    );
++    ];
+     $this->drupalPostForm('poll/' . $poll_nid, $edit, t('Vote'));
+     $this->drupalLogout();
+ 
+-    $vote_user2 = $this->drupalCreateUser(array('access polls', 'access content'));
++    $vote_user2 = $this->drupalCreateUser(['access polls', 'access content']);
+     $this->drupalLogin($vote_user2);
+-    $edit = array(
++    $edit = [
+       'choice' => $this->getChoiceId($poll, 1),
+-    );
++    ];
+     $this->drupalPostForm('poll/' . $poll_nid, $edit, t('Vote'));
+     $this->drupalLogout();
+ 
+-    $vote_user3 = $this->drupalCreateUser(array('access polls', 'access content'));
++    $vote_user3 = $this->drupalCreateUser(['access polls', 'access content']);
+     $this->drupalLogin($vote_user3);
+-    $edit = array(
++    $edit = [
+       'choice' => $this->getChoiceId($poll, 2),
+-    );
++    ];
+     $this->drupalPostForm('poll/' . $poll_nid, $edit, t('Vote'));
+     $this->drupalLogout();
+ 
+-    $vote_user4 = $this->drupalCreateUser(array('access polls', 'access content'));
++    $vote_user4 = $this->drupalCreateUser(['access polls', 'access content']);
+     $this->drupalLogin($vote_user4);
+-    $edit = array(
++    $edit = [
+       'choice' => $this->getChoiceId($poll, 3),
+-    );
++    ];
+     $this->drupalPostForm('poll/' . $poll_nid, $edit, t('Vote'));
+     $this->drupalLogout();
+ 
+@@ -57,7 +57,7 @@ class PollTokenReplaceTest extends PollTestBase {
+     $poll = Poll::load($poll_nid);
+ 
+     // Generate and test sanitized tokens.
+-    $tests = array();
++    $tests = [];
+     $tests['[poll:votes]'] = 4;
+     $tests['[poll:winner]'] = $poll->getOptions()[$this->getChoiceId($poll, 1)];
+     $tests['[poll:winner-votes]'] = 2;
+@@ -69,7 +69,7 @@ class PollTokenReplaceTest extends PollTestBase {
+ 
+     $token = \Drupal::service('token');
+     foreach ($tests as $input => $expected) {
+-      $output = $token->replace($input, array('poll' => $poll));
++      $output = $token->replace($input, ['poll' => $poll]);
+       $this->assertEqual($output, $expected, "Sanitized poll token $input replaced.");
+     }
+ 
+@@ -77,7 +77,7 @@ class PollTokenReplaceTest extends PollTestBase {
+     $tests['[poll:winner]'] = $poll->getOptions()[$this->getChoiceId($poll, 1)];
+ 
+     foreach ($tests as $input => $expected) {
+-      $output = $token->replace($input, array('poll' => $poll), array('sanitize' => FALSE));
++      $output = $token->replace($input, ['poll' => $poll], ['sanitize' => FALSE]);
+       $this->assertEqual($output, $expected, "Unsanitized poll token $input replaced.");
+     }
+   }
+diff --git a/tests/src/Functional/PollViewTest.php b/tests/src/Functional/PollViewTest.php
+index ece0799f5..6628181bb 100644
+--- a/tests/src/Functional/PollViewTest.php
++++ b/tests/src/Functional/PollViewTest.php
+@@ -12,7 +12,7 @@ class PollViewTest extends PollTestBase {
+   /**
+    * Test with/without permission and with/without a poll.
+    */
+-  function testAdminView() {
++  public function testAdminView() {
+     $this->drupalGet('admin/content/poll');
+     $this->assertResponse(200);
+     $this->assertText($this->poll->label());
+@@ -28,4 +28,5 @@ class PollViewTest extends PollTestBase {
+     $this->drupalGet('admin/content/poll');
+     $this->assertResponse(403);
+   }
++
+ }
+diff --git a/tests/src/Functional/PollVoteCheckHostnameTest.php b/tests/src/Functional/PollVoteCheckHostnameTest.php
+index 67bf93eae..1818132d8 100644
+--- a/tests/src/Functional/PollVoteCheckHostnameTest.php
++++ b/tests/src/Functional/PollVoteCheckHostnameTest.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\Tests\poll\Functional;
+ 
+ use Drupal\Core\Session\AccountInterface;
+-use Drupal\Core\Session\AnonymousUserSession;
+ 
+ /**
+  * Check that users and anonymous users from specified ip-address can only vote once.
+@@ -12,15 +11,18 @@ use Drupal\Core\Session\AnonymousUserSession;
+  */
+ class PollVoteCheckHostnameTest extends PollTestBase {
+ 
+-  function setUp() {
++  /**
++   *
++   */
++  public function setUp() {
+     parent::setUp();
+ 
+     // Allow anonymous users to vote on polls.
+-    user_role_change_permissions(AccountInterface::ANONYMOUS_ROLE, array(
++    user_role_change_permissions(AccountInterface::ANONYMOUS_ROLE, [
+       // 'vote on polls' => TRUE,
+       'cancel own vote' => TRUE,
+       'access polls' => TRUE,
+-    ));
++    ]);
+ 
+     $this->poll->setAnonymousVoteAllow(TRUE)->save();
+   }
+@@ -31,21 +33,21 @@ class PollVoteCheckHostnameTest extends PollTestBase {
+    * Also checks that authenticated users can only vote once, even when the
+    * user's IP address has changed.
+    */
+-  function testHostnamePollVote() {
++  public function testHostnamePollVote() {
+ 
+-    $web_user2 = $this->drupalCreateUser(array('access polls'));
++    $web_user2 = $this->drupalCreateUser(['access polls']);
+     // Login User1.
+     $this->drupalLogin($this->web_user);
+ 
+-    $edit = array(
++    $edit = [
+       'choice' => '1',
+-    );
++    ];
+ 
+-    //  $this->web_user->getUserName();
++    // $this->web_user->getUserName();
+     // User1 vote on Poll.
+     $this->drupalPostForm('poll/' . $this->poll->id(), $edit, t('Vote'));
+     $this->assertText(t('Your vote has been recorded.'));
+-    $this->assertText(t('Total votes: @votes', array('@votes' => 1)));
++    $this->assertText(t('Total votes: @votes', ['@votes' => 1]));
+ 
+     // Check to make sure User1 cannot vote again.
+     $this->drupalGet('poll/' . $this->poll->id());
+@@ -66,7 +68,7 @@ class PollVoteCheckHostnameTest extends PollTestBase {
+     // Anonymous user vote on Poll.
+     $this->drupalPostForm(NULL, $edit, t('Vote'));
+     $this->assertText(t('Your vote has been recorded.'));
+-    $this->assertText(t('Total votes: @votes', array('@votes' => 2)));
++    $this->assertText(t('Total votes: @votes', ['@votes' => 2]));
+     $elements = $this->xpath('//input[@value="Cancel vote"]');
+     $this->assertTrue(!empty($elements), "'Cancel vote' button appears.");
+ 
+@@ -84,7 +86,7 @@ class PollVoteCheckHostnameTest extends PollTestBase {
+     // User2 vote on poll.
+     $this->drupalPostForm('poll/' . $this->poll->id(), $edit, t('Vote'));
+     $this->assertText(t('Your vote has been recorded.'));
+-    $this->assertText(t('Total votes: @votes', array('@votes' => 3)));
++    $this->assertText(t('Total votes: @votes', ['@votes' => 3]));
+     $elements = $this->xpath('//input[@value="Cancel vote"]');
+     $this->assertTrue(empty($elements), "'Cancel vote' button does not appear.");
+ 
+@@ -93,9 +95,9 @@ class PollVoteCheckHostnameTest extends PollTestBase {
+ 
+     // Change host name for anonymous users.
+     \Drupal::database()->update('poll_vote')
+-      ->fields(array(
++      ->fields([
+         'hostname' => '123.456.789.1',
+-      ))
++      ])
+       ->condition('hostname', '', '<>')
+       ->execute();
+ 
+@@ -105,7 +107,7 @@ class PollVoteCheckHostnameTest extends PollTestBase {
+     $this->assertEqual($this->drupalGetHeader('x-drupal-cache'), 'HIT', 'Cached page return.');
+     $this->drupalPostForm(NULL, $edit, t('Vote'));
+     $this->assertText(t('Your vote has been recorded.'));
+-    $this->assertText(t('Total votes: @votes', array('@votes' => 4)));
++    $this->assertText(t('Total votes: @votes', ['@votes' => 4]));
+     $elements = $this->xpath('//input[@value="Cancel vote"]');
+     $this->assertTrue(!empty($elements), "'Cancel vote' button appears.");
+ 
+@@ -131,4 +133,5 @@ class PollVoteCheckHostnameTest extends PollTestBase {
+     $elements = $this->xpath('//input[@value="Cancel vote"]');
+     $this->assertTrue(!empty($elements), "'Cancel vote' button appears.");
+   }
++
+ }
+diff --git a/tests/src/Functional/PollVoteMultilingualTest.php b/tests/src/Functional/PollVoteMultilingualTest.php
+index c90bc5c40..8a2fc14cc 100644
+--- a/tests/src/Functional/PollVoteMultilingualTest.php
++++ b/tests/src/Functional/PollVoteMultilingualTest.php
+@@ -6,7 +6,6 @@ use Drupal\Core\Session\AccountInterface;
+ use Drupal\language\Entity\ConfigurableLanguage;
+ use Drupal\poll\Entity\Poll;
+ 
+-
+ /**
+  * Tests multilingual voting on a poll.
+  *
+@@ -40,10 +39,10 @@ class PollVoteMultilingualTest extends PollTestBase {
+     parent::setUp();
+ 
+     // Allow anonymous users to vote on polls.
+-    user_role_change_permissions(AccountInterface::ANONYMOUS_ROLE, array(
++    user_role_change_permissions(AccountInterface::ANONYMOUS_ROLE, [
+       'cancel own vote' => TRUE,
+       'access polls' => TRUE,
+-    ));
++    ]);
+ 
+     $this->poll = $this->pollCreate(3);
+ 
+@@ -63,24 +62,24 @@ class PollVoteMultilingualTest extends PollTestBase {
+ 
+     // Make poll translatable.
+     $this->drupalGet('admin/config/regional/content-language');
+-    $edit = array(
++    $edit = [
+       'entity_types[poll]' => TRUE,
+       'entity_types[poll_choice]' => TRUE,
+       'settings[poll][poll][translatable]' => TRUE,
+       'settings[poll_choice][poll_choice][translatable]' => TRUE,
+-    );
++    ];
+     $this->drupalPostForm(NULL, $edit, t('Save configuration'));
+     \Drupal::service('entity_field.manager')->clearCachedFieldDefinitions();
+ 
+     // Translate a poll.
+     $this->drupalGet('poll/' . $this->poll->id() . '/translations');
+     $this->clickLink(t('Add'));
+-    $edit = array(
++    $edit = [
+       'question[0][value]' => 'ca question',
+       'choice[0][choice]' => 'ca choice 1',
+       'choice[1][choice]' => 'ca choice 2',
+       'choice[2][choice]' => 'ca choice 3',
+-    );
++    ];
+     $this->drupalPostForm(NULL, $edit, t('Save'));
+     $this->drupalGet('ca/poll/' . $this->poll->id());
+     $this->assertText('ca choice 1');
+@@ -93,9 +92,9 @@ class PollVoteMultilingualTest extends PollTestBase {
+     $this->drupalLogin($this->web_user);
+ 
+     // Record a vote.
+-    $edit = array(
++    $edit = [
+       'choice' => $this->getChoiceId($this->poll, 2),
+-    );
++    ];
+     $this->drupalPostForm('poll/' . $this->poll->id(), $edit, t('Vote'));
+     $this->assertText('Your vote has been recorded.');
+     $this->assertText('Total votes: 1');
+@@ -105,14 +104,14 @@ class PollVoteMultilingualTest extends PollTestBase {
+     $this->assertTrue(isset($elements[0]), "'Cancel vote' button appears.");
+ 
+     // Cancel a vote.
+-    $this->drupalPostForm('poll/' . $this->poll->id(), array(), t('Cancel vote'));
++    $this->drupalPostForm('poll/' . $this->poll->id(), [], t('Cancel vote'));
+     $this->assertText('Your vote was cancelled.');
+     $this->assertNoText('Cancel your vote');
+ 
+     // Vote again in reverse order.
+-    $edit = array(
++    $edit = [
+       'choice' => $this->getChoiceIdByLabel($this->poll->getTranslation('ca'), 'ca choice 2'),
+-    );
++    ];
+     $this->drupalPostForm('ca/poll/' . $this->poll->id(), $edit, t('Vote'));
+     $this->assertText('Your vote has been recorded.');
+     $this->assertText('Total votes: 1');
+@@ -124,19 +123,19 @@ class PollVoteMultilingualTest extends PollTestBase {
+     // Edit the original poll.
+     $this->drupalLogin($this->admin_user);
+     $this->drupalGet('poll/' . $this->poll->id() . '/edit');
+-    $edit = array(
++    $edit = [
+       'choice[0][choice]' => '',
+       'choice[1][choice]' => 'choice 2',
+       'choice[2][choice]' => 'choice 3',
+       'choice[3][choice]' => 'choice 4',
+-    );
++    ];
+     $this->drupalPostForm(NULL, $edit, t('Save'));
+ 
+     // Translate the new label.
+     $this->drupalGet('ca/poll/' . $this->poll->id() . '/edit');
+-    $edit = array(
++    $edit = [
+       'choice[2][choice]' => 'ca choice 4',
+-    );
++    ];
+     $this->drupalPostForm(NULL, $edit, t('Save'));
+ 
+     \Drupal::entityTypeManager()->getStorage('poll')->resetCache();
+@@ -145,9 +144,9 @@ class PollVoteMultilingualTest extends PollTestBase {
+ 
+     // Vote as anonymous user.
+     $this->drupalLogout();
+-    $edit = array(
++    $edit = [
+       'choice' => $this->getChoiceIdByLabel($this->poll->getTranslation('ca'), 'ca choice 4'),
+-    );
++    ];
+     $this->drupalPostForm('ca/poll/' . $this->poll->id(), $edit, t('Vote'));
+     $this->assertText('Your vote has been recorded.');
+     $this->assertText('Total votes: 2');
+diff --git a/tests/src/Functional/PollVoteTest.php b/tests/src/Functional/PollVoteTest.php
+index 386107a44..8eec2a7f6 100644
+--- a/tests/src/Functional/PollVoteTest.php
++++ b/tests/src/Functional/PollVoteTest.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\Tests\poll\Functional;
+ 
+ use Drupal\Core\Database\Database;
+-use Drupal\poll\PollInterface;
+ use Drupal\user\Entity\Role;
+ use Drupal\user\RoleInterface;
+ 
+@@ -17,49 +16,43 @@ class PollVoteTest extends PollTestBase {
+   /**
+    * Tests voting on a poll.
+    */
+-  function testPollVote() {
++  public function testPollVote() {
+ 
+     $this->drupalLogin($this->web_user);
+ 
+     // Record a vote for the first choice.
+-    $edit = array(
++    $edit = [
+       'choice' => '1',
+-    );
++    ];
+     $this->drupalPostForm('poll/' . $this->poll->id(), $edit, t('Vote'));
+     $this->assertText('Your vote has been recorded.');
+     $this->assertText('Total votes: 1');
+     $elements = $this->xpath('//input[@value="Cancel vote"]');
+     $this->assertTrue(isset($elements[0]), "'Cancel your vote' button appears.");
+ 
+-//    $this->drupalGet('poll/' . $this->poll->id() . '/votes');
+-//    $this->assertText(t('This table lists all the recorded votes for this poll. If anonymous users are allowed to vote, they will be identified by the IP address of the computer they used when they voted.'), 'Vote table text.');
+-//    $options = $this->poll->getOptions();
+-//    debug($options);
+-
+-   // $this->assertText($this->poll->getOptions()[0], 'Vote recorded');
+-
++    // $this->drupalGet('poll/' . $this->poll->id() . '/votes');
++    //    $this->assertText(t('This table lists all the recorded votes for this poll. If anonymous users are allowed to vote, they will be identified by the IP address of the computer they used when they voted.'), 'Vote table text.');
++    //    $options = $this->poll->getOptions();
++    //    debug($options);
++    // $this->assertText($this->poll->getOptions()[0], 'Vote recorded');
+     // Ensure poll listing page has correct number of votes.
+-//    $this->drupalGet('poll');
+-//    $this->assertText($this->poll->label(), 'Poll appears in poll list.');
+-//    $this->assertText('1 vote', 'Poll has 1 vote.');
+-
++    //    $this->drupalGet('poll');
++    //    $this->assertText($this->poll->label(), 'Poll appears in poll list.');
++    //    $this->assertText('1 vote', 'Poll has 1 vote.');
+     // Cancel a vote.
+-    $this->drupalPostForm('poll/' . $this->poll->id(), array(), t('Cancel vote'));
++    $this->drupalPostForm('poll/' . $this->poll->id(), [], t('Cancel vote'));
+     $this->assertText('Your vote was cancelled.');
+     $this->assertNoText('Cancel your vote');
+ 
+-//    $this->drupalGet('poll/' . $this->poll->id() . '/votes');
+-//    $this->assertNoText($choices[0], 'Vote cancelled');
+-
++    // $this->drupalGet('poll/' . $this->poll->id() . '/votes');
++    //    $this->assertNoText($choices[0], 'Vote cancelled');
+     // Ensure poll listing page has correct number of votes.
+-//    $this->drupalGet('poll');
+-//    $this->assertText($title, 'Poll appears in poll list.');
+-//    $this->assertText('0 votes', 'Poll has 0 votes.');
+-
++    //    $this->drupalGet('poll');
++    //    $this->assertText($title, 'Poll appears in poll list.');
++    //    $this->assertText('0 votes', 'Poll has 0 votes.');
+     // Log in as a user who can only vote on polls.
+-//    $this->drupalLogout();
+-//    $this->drupalLogin($restricted_vote_user);
+-
++    //    $this->drupalLogout();
++    //    $this->drupalLogin($restricted_vote_user);
+     // Empty vote on a poll.
+     $this->drupalPostForm('poll/' . $this->poll->id(), [], t('Vote'));
+     $this->assertText('Your vote could not be recorded because you did not select any of the choices.');
+@@ -67,9 +60,9 @@ class PollVoteTest extends PollTestBase {
+     $this->assertTrue(isset($elements[0]), "'Vote' button appears.");
+ 
+     // Vote on a poll.
+-    $edit = array(
++    $edit = [
+       'choice' => '1',
+-    );
++    ];
+     $this->drupalPostForm('poll/' . $this->poll->id(), $edit, t('Vote'));
+     $this->assertText('Your vote has been recorded.');
+     $this->assertText('Total votes: 1');
+@@ -92,10 +85,10 @@ class PollVoteTest extends PollTestBase {
+     $this->clickLink('Edit');
+ 
+     // Add the runtime date and allow anonymous to vote.
+-    $edit = array(
++    $edit = [
+       'runtime' => 172800,
+       'anonymous_vote_allow[value]' => TRUE,
+-    );
++    ];
+ 
+     $this->drupalPostForm(NULL, $edit, t('Save'));
+ 
+@@ -157,15 +150,15 @@ class PollVoteTest extends PollTestBase {
+    * Test closed poll with "Cancel vote" button.
+    */
+   public function testClosedPollVoteCancel() {
+-    /** @var PollInterface $poll */
++    /** @var \Drupal\poll\PollInterface $poll */
+     $poll = $this->pollCreate();
+     $this->drupalLogin($this->web_user);
+     $choices = $poll->choice->getValue();
+     $this->drupalGet('poll/' . $poll->id());
+     // Vote on a poll.
+-    $edit = array(
++    $edit = [
+       'choice' => $choices[0]['target_id'],
+-    );
++    ];
+     $this->drupalPostForm(NULL, $edit, t('Vote'));
+     $elements = $this->xpath('//input[@value="Cancel vote"]');
+     $this->assertTrue(isset($elements[0]), "'Cancel your vote' button appears.");
+@@ -189,37 +182,37 @@ class PollVoteTest extends PollTestBase {
+   public function testAnonymousCancelVote() {
+     // Now grant anonymous users permission to view the polls, vote and delete
+     // it's own vote.
+-    user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, array('cancel own vote', 'access polls'));
++    user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, ['cancel own vote', 'access polls']);
+     $this->poll->setAnonymousVoteAllow(TRUE)->save();
+     $this->drupalLogout();
+     // First anonymous user votes.
+-    $edit = array(
++    $edit = [
+       'choice' => '1',
+-    );
++    ];
+     $this->drupalPostForm('poll/' . $this->poll->id(), $edit, t('Vote'));
+ 
+     // Change the IP of first user.
+     Database::getConnection()->update('poll_vote')
+-      ->fields(array('hostname' => '240.0.0.1'))
++      ->fields(['hostname' => '240.0.0.1'])
+       ->condition('uid', \Drupal::currentUser()->id())
+       ->execute();
+ 
+     // Logged user votes.
+     $this->drupalLogin($this->web_user);
+     $this->drupalPostForm('poll/' . $this->poll->id(), $edit, t('Vote'));
+-    $this->assertText(t('Total votes: @votes', array('@votes' => 2)));
++    $this->assertText(t('Total votes: @votes', ['@votes' => 2]));
+ 
+     // Second anonymous user votes from same IP than the logged.
+     $this->drupalLogout();
+     $this->drupalPostForm('poll/' . $this->poll->id(), $edit, t('Vote'));
+-    $this->assertText(t('Total votes: @votes', array('@votes' => 3)));
++    $this->assertText(t('Total votes: @votes', ['@votes' => 3]));
+ 
+     // Second anonymous user cancels own vote.
+-    $this->drupalPostForm(NULL, array(), t('Cancel vote'));
++    $this->drupalPostForm(NULL, [], t('Cancel vote'));
+ 
+     // Vote again to see the results, resulting in three votes again.
+     $this->drupalPostForm('poll/' . $this->poll->id(), $edit, t('Vote'));
+-    $this->assertText(t('Total votes: @votes', array('@votes' => 3)));
++    $this->assertText(t('Total votes: @votes', ['@votes' => 3]));
+   }
+ 
+ }
+diff --git a/tests/src/FunctionalJavascript/PollVoteJavascriptTest.php b/tests/src/FunctionalJavascript/PollVoteJavascriptTest.php
+index 7270098a7..b9692c6f5 100644
+--- a/tests/src/FunctionalJavascript/PollVoteJavascriptTest.php
++++ b/tests/src/FunctionalJavascript/PollVoteJavascriptTest.php
+@@ -17,21 +17,21 @@ class PollVoteJavascriptTest extends WebDriverTestBase {
+   /**
+    * Admin user.
+    *
+-   * @var \Drupal\user\UserInterface $entity
++   * @var \Drupal\user\UserInterface
+    */
+   protected $adminUser;
+ 
+   /**
+    * Web user.
+    *
+-   * @var \Drupal\user\UserInterface $entity
++   * @var \Drupal\user\UserInterface
+    */
+   protected $webUser;
+ 
+   /**
+    * The poll object.
+    *
+-   * @var \Drupal\poll\PollInterface $entity
++   * @var \Drupal\poll\PollInterface
+    */
+   protected $poll;
+ 
+@@ -165,7 +165,7 @@ class PollVoteJavascriptTest extends WebDriverTestBase {
+    * @param int $count
+    *   (optional) The number of choices to generate. Defaults to 7.
+    *
+-   * @return array $choices
++   * @return array
+    *   An array of generated choices.
+    */
+   private function generateChoices($count = 7) {

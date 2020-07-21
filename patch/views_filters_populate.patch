@@ -1,0 +1,90 @@
+diff --git a/src/Plugin/views/filter/Populate.php b/src/Plugin/views/filter/Populate.php
+index 570816f..00f46c7 100644
+--- a/src/Plugin/views/filter/Populate.php
++++ b/src/Plugin/views/filter/Populate.php
+@@ -16,10 +16,16 @@ use Drupal\views\Plugin\views\filter\StringFilter;
+ class PopulateRemoveEmptyFilterMock extends HandlerBase {
+   private $views_filters_populate_handler_caller;
+ 
++  /**
++   *
++   */
+   public function __construct($handler) {
+     $this->views_filters_populate_handler_caller = $handler;
+   }
+ 
++  /**
++   *
++   */
+   public function preQuery() {
+     $handler = $this->views_filters_populate_handler_caller;
+     foreach ($handler->options['filters'] as $id) {
+@@ -31,6 +37,7 @@ class PopulateRemoveEmptyFilterMock extends HandlerBase {
+       }
+     }
+   }
++
+ }
+ 
+ 
+@@ -64,7 +71,7 @@ class Populate extends FilterPluginBase {
+     $value = $this->value;
+ 
+     // If exposed, take data from input, as this hasn't reached the views
+-    // object yet
++    // object yet.
+     if ($this->options['exposed']) {
+       $input = $this->view->getExposedInput();
+       $identifier = $this->options['expose']['identifier'];
+@@ -149,11 +156,11 @@ class Populate extends FilterPluginBase {
+    * {@inheritdoc}
+    */
+   public function preQuery() {
+-    // start with default value
++    // Start with default value.
+     $value = $this->value;
+ 
+     // If exposed, take data from input, as this hasn't reached the views
+-    // object yet
++    // object yet.
+     if ($this->options['exposed']) {
+       $input = $this->view->getExposedInput();
+       $identifier = $this->options['expose']['identifier'];
+@@ -179,7 +186,7 @@ class Populate extends FilterPluginBase {
+    * {@inheritdoc}
+    */
+   public function query() {
+-    // do nothing
++    // Do nothing.
+   }
+ 
+   /**
+@@ -189,11 +196,11 @@ class Populate extends FilterPluginBase {
+     $errors = parent::validate();
+     $filters = $this->displayHandler->getHandlers('filter');
+ 
+-    // Only perform these validatiosn if the query is not being built
++    // Only perform these validatiosn if the query is not being built.
+     // @see ViewExecutable::build()
+     if (empty($this->view->build_info)) {
+       foreach ($this->options['filters'] as $id) {
+-        // Make sure are populate filters are properly configured/available
++        // Make sure are populate filters are properly configured/available.
+         if (!isset($filters[$id])) {
+           $errors[] = $this->t('%display: Filter %filter set in %name is not available.', ['%filter' => $id, '%name' => $this->adminLabel(), '%display' => $this->displayHandler->display['display_title']]);
+         }
+@@ -211,7 +218,7 @@ class Populate extends FilterPluginBase {
+   }
+ 
+   /**
+-   * Provide a simple textfield for equality
++   * Provide a simple textfield for equality.
+    *
+    * @see \Drupal\views\Plugin\views\filter\StringFilter;
+    */
+@@ -246,4 +253,5 @@ class Populate extends FilterPluginBase {
+       ];
+     }
+   }
++
+ }

@@ -1,0 +1,143 @@
+diff --git a/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/ApiRateLimitCheck.php b/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/ApiRateLimitCheck.php
+index 565cefe..26252d0 100644
+--- a/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/ApiRateLimitCheck.php
++++ b/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/ApiRateLimitCheck.php
+@@ -79,7 +79,7 @@ class ApiRateLimitCheck extends DiagnosticCheckBase implements DiagnosticCheckIn
+   public function run() {
+     if (!$this->cloudFlareComposerDependenciesCheck->check()) {
+       $this->recommendation = $this->t("Composer dependencies unmet.  Unable to assess API rate limits.");
+-      return SELF::SEVERITY_ERROR;
++      return self::SEVERITY_ERROR;
+     }
+ 
+     // Current number of purges today.
+@@ -96,17 +96,17 @@ class ApiRateLimitCheck extends DiagnosticCheckBase implements DiagnosticCheckIn
+ 
+     if ($rate_count >= CloudFlareAPI::API_RATE_LIMIT) {
+       $this->recommendation = $this->t('Exceeded Api limit of :$rate_count/:rate_limit limit purges/day.', $message_variables);
+-      return SELF::SEVERITY_ERROR;
++      return self::SEVERITY_ERROR;
+     }
+ 
+     elseif ($rate_count >= $daily_warning_level) {
+       $this->recommendation = $this->t('Approaching Api limit of :$rate_count/:rate_limit limit purges/day.', $message_variables);
+-      return SELF::SEVERITY_WARNING;
++      return self::SEVERITY_WARNING;
+     }
+ 
+     elseif ($rate_count < $daily_warning_level) {
+       $this->recommendation = $this->t('Site is safely below the rate limit of :rate_limit every 5 minutes.', $message_variables);
+-      return SELF::SEVERITY_OK;
++      return self::SEVERITY_OK;
+     }
+   }
+ 
+diff --git a/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/ComposerDependenciesCheck.php b/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/ComposerDependenciesCheck.php
+index 843503c..fe6a9ea 100644
+--- a/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/ComposerDependenciesCheck.php
++++ b/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/ComposerDependenciesCheck.php
+@@ -63,12 +63,12 @@ class ComposerDependenciesCheck extends DiagnosticCheckBase implements Diagnosti
+   public function run() {
+     if (!$this->areCloudFlareComposerDependenciesMet) {
+       $this->recommendation = CloudFlareComposerDependenciesCheckInterface::ERROR_MESSAGE;
+-      return SELF::SEVERITY_ERROR;
++      return self::SEVERITY_ERROR;
+     }
+ 
+     else {
+       $this->recommendation = $this->t('Composer dependencies have been met.');
+-      return SELF::SEVERITY_OK;
++      return self::SEVERITY_OK;
+     }
+   }
+ 
+diff --git a/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/CredentialCheck.php b/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/CredentialCheck.php
+index 3785c59..8b6df83 100644
+--- a/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/CredentialCheck.php
++++ b/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/CredentialCheck.php
+@@ -63,11 +63,11 @@ class CredentialCheck extends DiagnosticCheckBase implements DiagnosticCheckInte
+ 
+     if (!$has_valid_credentials) {
+       $this->recommendation = $this->t("Invalid Api credentials.");
+-      return SELF::SEVERITY_ERROR;
++      return self::SEVERITY_ERROR;
+     }
+ 
+     $this->recommendation = $this->t('Valid Api credentials detected.');
+-    return SELF::SEVERITY_OK;
++    return self::SEVERITY_OK;
+   }
+ 
+ }
+diff --git a/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/DailyTagPurgeLimitCheck.php b/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/DailyTagPurgeLimitCheck.php
+index 1364d65..510f866 100644
+--- a/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/DailyTagPurgeLimitCheck.php
++++ b/modules/cloudflarepurger/src/Plugin/Purge/DiagnosticCheck/DailyTagPurgeLimitCheck.php
+@@ -80,7 +80,7 @@ class DailyTagPurgeLimitCheck extends DiagnosticCheckBase implements DiagnosticC
+   public function run() {
+     if (!$this->areCloudFlareComposerDependenciesMet) {
+       $this->recommendation = $this->t("Composer dependencies unmet.  Unable to assess API rate limits.");
+-      return SELF::SEVERITY_ERROR;
++      return self::SEVERITY_ERROR;
+     }
+ 
+     // Current number of purges today.
+@@ -97,17 +97,17 @@ class DailyTagPurgeLimitCheck extends DiagnosticCheckBase implements DiagnosticC
+ 
+     if ($daily_count >= CloudFlareAPI::API_TAG_PURGE_DAILY_RATE_LIMIT) {
+       $this->recommendation = $this->t('Past Api limit of :daily_count/:daily_limit limit tag purges/day.', $message_variables);
+-      return SELF::SEVERITY_ERROR;
++      return self::SEVERITY_ERROR;
+     }
+ 
+     elseif ($daily_count >= $daily_warning_level) {
+       $this->recommendation = $this->t('Approaching Api limit of :daily_count/:daily_limit limit tag purges/day.', $message_variables);
+-      return SELF::SEVERITY_WARNING;
++      return self::SEVERITY_WARNING;
+     }
+ 
+     elseif ($daily_count < $daily_warning_level) {
+       $this->recommendation = $this->t('Site is safely below the daily limit of :daily_limit tag purges/day.', $message_variables);
+-      return SELF::SEVERITY_OK;
++      return self::SEVERITY_OK;
+     }
+   }
+ 
+diff --git a/src/EventSubscriber/ClientIpRestore.php b/src/EventSubscriber/ClientIpRestore.php
+index 197beb0..d0d8563 100644
+--- a/src/EventSubscriber/ClientIpRestore.php
++++ b/src/EventSubscriber/ClientIpRestore.php
+@@ -81,8 +81,8 @@ class ClientIpRestore implements EventSubscriberInterface {
+     $this->cache = $cache;
+     $this->config = $config_factory->get('cloudflare.settings');
+     $this->logger = $logger;
+-    $this->isClientIpRestoreEnabled = $this->config->get(SELF::CLOUDFLARE_CLIENT_IP_RESTORE_ENABLED);
+-    $this->bypassHost = $this->config->get(SELF::CLOUDFLARE_BYPASS_HOST);
++    $this->isClientIpRestoreEnabled = $this->config->get(self::CLOUDFLARE_CLIENT_IP_RESTORE_ENABLED);
++    $this->bypassHost = $this->config->get(self::CLOUDFLARE_BYPASS_HOST);
+   }
+ 
+   /**
+@@ -160,11 +160,11 @@ class ClientIpRestore implements EventSubscriberInterface {
+ 
+     try {
+       $ipv4_raw_listings = trim((string) $this->httpClient
+-        ->get(SELF::IPV4_ENDPOINTS_URL)
++        ->get(self::IPV4_ENDPOINTS_URL)
+         ->getBody());
+ 
+       $ipv6_raw_listings = trim((string) $this->httpClient
+-        ->get(SELF::IPV6_ENDPOINTS_URL)
++        ->get(self::IPV6_ENDPOINTS_URL)
+         ->getBody());
+ 
+       $iv4_endpoints = explode("\n", $ipv4_raw_listings);
+@@ -176,7 +176,7 @@ class ClientIpRestore implements EventSubscriberInterface {
+         $this->logger->error("Unable to get a listing of CloudFlare IPs.");
+         return [];
+       }
+-      $this->cache->set(SELF::CLOUDFLARE_RANGE_KEY, $cloudflare_ips, Cache::PERMANENT);
++      $this->cache->set(self::CLOUDFLARE_RANGE_KEY, $cloudflare_ips, Cache::PERMANENT);
+       return $cloudflare_ips;
+     }
+     catch (RequestException $exception) {

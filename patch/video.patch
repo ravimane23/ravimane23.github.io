@@ -1,0 +1,2948 @@
+diff --git a/modules/video_transcode/src/Annotation/Transcoder.php b/modules/video_transcode/src/Annotation/Transcoder.php
+index f15f54a..9de4b9b 100644
+--- a/modules/video_transcode/src/Annotation/Transcoder.php
++++ b/modules/video_transcode/src/Annotation/Transcoder.php
+@@ -1,8 +1,4 @@
+ <?php
+-/**
+- * @file
+- * Contains \Drupal\video_transcode\Annotation\Transcoder.
+- */
+ 
+ namespace Drupal\video_transcode\Annotation;
+ 
+@@ -11,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
+ /**
+  * Defines a transcoder annotation object.
+  *
+- * Plugin Namespace: Plugin\video\Transcoder
++ * Plugin Namespace: Plugin\video\Transcoder.
+  *
+  * @see \Drupal\video_transcode\Plugin\TranscoderManager
+  * @see plugin_api
+@@ -35,21 +31,21 @@ class Transcoder extends Plugin {
+    * @ingroup plugin_translatable
+    */
+   public $label;
+-  
++
+   /**
+    * A brief description of the transcoder.
+    *
+    * @ingroup plugin_translatable
+    *
+-   * @var \Drupal\Core\Annotation\Translation (optional)
++   * @var \Drupal\Core\Annotation\Translationoptional
+    */
+   public $description = '';
+-  
++
+   /**
+    * The type of the service, external service or a locally installed service like Ffmpeg.
+    *
+-   * @var boolean
++   * @var bool
+    */
+   public $isExternal;
+-  
+-}
+\ No newline at end of file
++
++}
+diff --git a/modules/video_transcode/src/Controller/PresetListBuilder.php b/modules/video_transcode/src/Controller/PresetListBuilder.php
+index f4b6192..638d485 100644
+--- a/modules/video_transcode/src/Controller/PresetListBuilder.php
++++ b/modules/video_transcode/src/Controller/PresetListBuilder.php
+@@ -45,7 +45,7 @@ class PresetListBuilder extends ConfigEntityListBuilder {
+   /**
+    * Builds a row for an entity in the entity listing.
+    *
+-   * @param EntityInterface $entity
++   * @param \Drupal\Core\Entity\EntityInterface $entity
+    *   The entity for which to build the row.
+    *
+    * @return array
+@@ -73,4 +73,4 @@ class PresetListBuilder extends ConfigEntityListBuilder {
+     return $build;
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/Controller/TranscodeJobListBuilder.php b/modules/video_transcode/src/Controller/TranscodeJobListBuilder.php
+index 73fa219..5125981 100644
+--- a/modules/video_transcode/src/Controller/TranscodeJobListBuilder.php
++++ b/modules/video_transcode/src/Controller/TranscodeJobListBuilder.php
+@@ -23,7 +23,6 @@ class TranscodeJobListBuilder extends EntityListBuilder {
+    */
+   protected $urlGenerator;
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -50,7 +49,6 @@ class TranscodeJobListBuilder extends EntityListBuilder {
+     $this->urlGenerator = $url_generator;
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    *
+@@ -87,4 +85,4 @@ class TranscodeJobListBuilder extends EntityListBuilder {
+     return $row + parent::buildRow($entity);
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/Entity/Preset.php b/modules/video_transcode/src/Entity/Preset.php
+index 2a10382..f5e6737 100644
+--- a/modules/video_transcode/src/Entity/Preset.php
++++ b/modules/video_transcode/src/Entity/Preset.php
+@@ -332,5 +332,4 @@ class Preset extends ConfigEntityBase {
+    */
+   public $clip_length;
+ 
+-
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/Entity/TranscodeJob.php b/modules/video_transcode/src/Entity/TranscodeJob.php
+index 80a121c..e1399a8 100644
+--- a/modules/video_transcode/src/Entity/TranscodeJob.php
++++ b/modules/video_transcode/src/Entity/TranscodeJob.php
+@@ -45,7 +45,6 @@ use Drupal\Core\Link;
+  *   field_ui_base_route = "video_transcode.video_transcode_job_settings",
+  *   common_reference_target = TRUE
+  * )
+- *
+  */
+ class TranscodeJob extends ContentEntityBase implements TranscodeJobInterface {
+ 
+@@ -59,9 +58,9 @@ class TranscodeJob extends ContentEntityBase implements TranscodeJobInterface {
+    */
+   public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
+     parent::preCreate($storage_controller, $values);
+-    $values += array(
++    $values += [
+       'user_id' => \Drupal::currentUser()->id(),
+-    );
++    ];
+   }
+ 
+   /**
+@@ -132,7 +131,7 @@ class TranscodeJob extends ContentEntityBase implements TranscodeJobInterface {
+       ->setDescription(t('The UUID of the Transcode Job entity.'))
+       ->setReadOnly(TRUE);
+ 
+-    // Needed as label of entity
++    // Needed as label of entity.
+     $fields['name'] = BaseFieldDefinition::create('string')
+       ->setLabel(t('Name'))
+       ->setDescription(t('The Name of the Transcode Job entity.'))
+@@ -142,105 +141,105 @@ class TranscodeJob extends ContentEntityBase implements TranscodeJobInterface {
+     $fields['input_file'] = BaseFieldDefinition::create('video')
+       ->setLabel(t('Input File'))
+       ->setDescription(t('The input file for transcode job.'))
+-      ->setDisplayOptions('view', array(
++      ->setDisplayOptions('view', [
+         'label' => 'above',
+         'type' => 'video_player_list',
+         'weight' => -6,
+-      ))
+-      ->setDisplayOptions('form', array(
++      ])
++      ->setDisplayOptions('form', [
+         'type' => 'video_upload',
+         'weight' => -6,
+-      ))
++      ])
+       ->setRequired(TRUE)
+       ->setDisplayConfigurable('form', TRUE)
+       ->setDisplayConfigurable('view', TRUE);
+ 
+-      // Transcoder field for the transcode job.
+-      $fields['transcoder'] = BaseFieldDefinition::create('list_string')
+-        ->setLabel(t('Transcoder'))
+-        ->setDescription(t('The transcoder.'))
+-        ->setSettings(array(
+-          'allowed_values' => array(
+-            'zencoder' => 'Zencoder',
+-            'ffmpeg' => 'FFMpeg',
+-          ),
+-        ))
+-        ->setDisplayOptions('view', array(
+-          'label' => 'above',
+-          'type' => 'string',
+-          'weight' => -5,
+-        ))
+-        ->setDisplayOptions('form', array(
+-          'type' => 'options_buttons',
+-          'weight' => -5,
+-        ))
+-        ->setRequired(TRUE)
+-        ->setDisplayConfigurable('form', TRUE)
+-        ->setDisplayConfigurable('view', TRUE);
++    // Transcoder field for the transcode job.
++    $fields['transcoder'] = BaseFieldDefinition::create('list_string')
++      ->setLabel(t('Transcoder'))
++      ->setDescription(t('The transcoder.'))
++      ->setSettings([
++        'allowed_values' => [
++          'zencoder' => 'Zencoder',
++          'ffmpeg' => 'FFMpeg',
++        ],
++      ])
++      ->setDisplayOptions('view', [
++        'label' => 'above',
++        'type' => 'string',
++        'weight' => -5,
++      ])
++      ->setDisplayOptions('form', [
++        'type' => 'options_buttons',
++        'weight' => -5,
++      ])
++      ->setRequired(TRUE)
++      ->setDisplayConfigurable('form', TRUE)
++      ->setDisplayConfigurable('view', TRUE);
+ 
+-      // Transcoder field for the transcode job.
+-      $preset_ids = \Drupal::entityQuery('video_transcode_preset')->execute();
+-      $presets = \Drupal::entityTypeManager()->getStorage('video_transcode_preset')->loadMultiple($preset_ids);
+-      $preset_options = array();
+-      foreach($presets as $key => $preset){
+-        $preset_options[$key] = $preset->label;
+-      }
+-      if(empty($preset_options)){
+-        $preset_options['_none'] = t('None - Please create a Video Preset @here.', ['@here' => Link::fromTextAndUrl(t('here'), Url::fromUri('internal:/admin/config/media/transcode-preset'))]);
+-      }
+-      $fields['transcoder_preset'] = BaseFieldDefinition::create('list_string')
+-        ->setLabel(t('Transcoder preset'))
+-        ->setDescription(t('The transcoder presets to use for output.'))
+-        ->setSettings(array(
+-          'allowed_values' => $preset_options,
+-        ))
+-        ->setDisplayOptions('view', array(
+-          'label' => 'above',
+-          'type' => 'string',
+-          'weight' => -5,
+-        ))
+-        ->setDisplayOptions('form', array(
+-          'type' => 'options_buttons',
+-          'weight' => -5,
+-        ))
+-        ->setCardinality(-1)
+-        ->setRequired(TRUE)
+-        ->setDisplayConfigurable('form', TRUE)
+-        ->setDisplayConfigurable('view', TRUE);
++    // Transcoder field for the transcode job.
++    $preset_ids = \Drupal::entityQuery('video_transcode_preset')->execute();
++    $presets = \Drupal::entityTypeManager()->getStorage('video_transcode_preset')->loadMultiple($preset_ids);
++    $preset_options = [];
++    foreach ($presets as $key => $preset) {
++      $preset_options[$key] = $preset->label;
++    }
++    if (empty($preset_options)) {
++      $preset_options['_none'] = t('None - Please create a Video Preset @here.', ['@here' => Link::fromTextAndUrl(t('here'), Url::fromUri('internal:/admin/config/media/transcode-preset'))]);
++    }
++    $fields['transcoder_preset'] = BaseFieldDefinition::create('list_string')
++      ->setLabel(t('Transcoder preset'))
++      ->setDescription(t('The transcoder presets to use for output.'))
++      ->setSettings([
++        'allowed_values' => $preset_options,
++      ])
++      ->setDisplayOptions('view', [
++        'label' => 'above',
++        'type' => 'string',
++        'weight' => -5,
++      ])
++      ->setDisplayOptions('form', [
++        'type' => 'options_buttons',
++        'weight' => -5,
++      ])
++      ->setCardinality(-1)
++      ->setRequired(TRUE)
++      ->setDisplayConfigurable('form', TRUE)
++      ->setDisplayConfigurable('view', TRUE);
+ 
+-      // Outpu files from the transcode job.
+-      $fields['output_files'] = BaseFieldDefinition::create('video')
+-        ->setLabel(t('Output Files'))
+-        ->setDescription(t('The output files from them transcode job.'))
+-        ->setDisplayOptions('view', array(
+-          'label' => 'above',
+-          'type' => 'video_player_list',
+-          'weight' => -4,
+-        ))
+-        ->setDisplayOptions('form', array(
+-          'type' => 'video_upload',
+-          'weight' => -4,
+-        ))
+-        ->setCardinality(-1)
+-        ->setDisplayConfigurable('form', TRUE)
+-        ->setDisplayConfigurable('view', TRUE);
++    // Outpu files from the transcode job.
++    $fields['output_files'] = BaseFieldDefinition::create('video')
++      ->setLabel(t('Output Files'))
++      ->setDescription(t('The output files from them transcode job.'))
++      ->setDisplayOptions('view', [
++        'label' => 'above',
++        'type' => 'video_player_list',
++        'weight' => -4,
++      ])
++      ->setDisplayOptions('form', [
++        'type' => 'video_upload',
++        'weight' => -4,
++      ])
++      ->setCardinality(-1)
++      ->setDisplayConfigurable('form', TRUE)
++      ->setDisplayConfigurable('view', TRUE);
+ 
+-      // Thumbnail file from the transcode job.
+-      $fields['thumbnails'] = BaseFieldDefinition::create('image')
+-        ->setLabel(t('Thumbnails'))
+-        ->setDescription(t('The video thumbnails.'))
+-        ->setDisplayOptions('view', array(
+-          'label' => 'above',
+-          'type' => 'image',
+-          'weight' => -4,
+-        ))
+-        ->setDisplayOptions('form', array(
+-          'type' => 'image',
+-          'weight' => -4,
+-        ))
+-        ->setCardinality(-1)
+-        ->setDisplayConfigurable('form', TRUE)
+-        ->setDisplayConfigurable('view', TRUE);
++    // Thumbnail file from the transcode job.
++    $fields['thumbnails'] = BaseFieldDefinition::create('image')
++      ->setLabel(t('Thumbnails'))
++      ->setDescription(t('The video thumbnails.'))
++      ->setDisplayOptions('view', [
++        'label' => 'above',
++        'type' => 'image',
++        'weight' => -4,
++      ])
++      ->setDisplayOptions('form', [
++        'type' => 'image',
++        'weight' => -4,
++      ])
++      ->setCardinality(-1)
++      ->setDisplayConfigurable('form', TRUE)
++      ->setDisplayConfigurable('view', TRUE);
+ 
+     // Owner field of the transcoder job.
+     // Entity reference field, holds the reference to the user object.
+@@ -251,42 +250,42 @@ class TranscodeJob extends ContentEntityBase implements TranscodeJobInterface {
+       ->setDescription(t('The Name of the associated user.'))
+       ->setSetting('target_type', 'user')
+       ->setSetting('handler', 'default')
+-      ->setDisplayOptions('view', array(
++      ->setDisplayOptions('view', [
+         'label' => 'above',
+         'type' => 'author',
+         'weight' => -3,
+-      ))
+-      ->setDisplayOptions('form', array(
++      ])
++      ->setDisplayOptions('form', [
+         'type' => 'entity_reference_autocomplete',
+-        'settings' => array(
++        'settings' => [
+           'match_operator' => 'CONTAINS',
+           'size' => 60,
+           'placeholder' => '',
+-        ),
++        ],
+         'weight' => -3,
+-      ))
++      ])
+       ->setDisplayConfigurable('form', TRUE)
+       ->setDisplayConfigurable('view', TRUE);
+ 
+     $fields['state'] = BaseFieldDefinition::create('list_string')
+       ->setLabel(t('Job state'))
+       ->setDescription(t('The transcoder job state.'))
+-      ->setSettings(array(
+-        'allowed_values' => array(
++      ->setSettings([
++        'allowed_values' => [
+           'idle' => 'Idle',
+           'processing' => 'Processing',
+-          'finished' => 'Finished'
+-        ),
+-      ))
+-      ->setDisplayOptions('view', array(
++          'finished' => 'Finished',
++        ],
++      ])
++      ->setDisplayOptions('view', [
+         'label' => 'above',
+         'type' => 'string',
+         'weight' => -5,
+-      ))
+-      ->setDisplayOptions('form', array(
++      ])
++      ->setDisplayOptions('form', [
+         'type' => 'options_select',
+         'weight' => -5,
+-      ))
++      ])
+       ->setDisplayConfigurable('form', FALSE)
+       ->setDisplayConfigurable('view', FALSE);
+ 
+diff --git a/modules/video_transcode/src/Form/PresetAddForm.php b/modules/video_transcode/src/Form/PresetAddForm.php
+index aecdaa6..c279bfb 100644
+--- a/modules/video_transcode/src/Form/PresetAddForm.php
++++ b/modules/video_transcode/src/Form/PresetAddForm.php
+@@ -34,4 +34,4 @@ class PresetAddForm extends PresetFormBase {
+     return $actions;
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/Form/PresetDeleteForm.php b/modules/video_transcode/src/Form/PresetDeleteForm.php
+index 4053c7e..bf53608 100644
+--- a/modules/video_transcode/src/Form/PresetDeleteForm.php
++++ b/modules/video_transcode/src/Form/PresetDeleteForm.php
+@@ -32,9 +32,9 @@ class PresetDeleteForm extends EntityConfirmFormBase {
+    *   Translated string.
+    */
+   public function getQuestion() {
+-    return $this->t('Are you sure you want to delete preset %label?', array(
++    return $this->t('Are you sure you want to delete preset %label?', [
+       '%label' => $this->entity->label(),
+-    ));
++    ]);
+   }
+ 
+   /**
+@@ -80,12 +80,12 @@ class PresetDeleteForm extends EntityConfirmFormBase {
+     $this->entity->delete();
+ 
+     // Set a message that the entity was deleted.
+-    drupal_set_message($this->t('Preset %label was deleted.', array(
++    drupal_set_message($this->t('Preset %label was deleted.', [
+       '%label' => $this->entity->label(),
+-    )));
++    ]));
+ 
+     // Redirect the user to the list controller when complete.
+     $form_state->setRedirectUrl($this->getCancelUrl());
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/Form/PresetEditForm.php b/modules/video_transcode/src/Form/PresetEditForm.php
+index fdc4b27..4d8c59c 100644
+--- a/modules/video_transcode/src/Form/PresetEditForm.php
++++ b/modules/video_transcode/src/Form/PresetEditForm.php
+@@ -34,4 +34,4 @@ class PresetEditForm extends PresetFormBase {
+     return $actions;
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/Form/PresetFormBase.php b/modules/video_transcode/src/Form/PresetFormBase.php
+index fcc2c33..0f92ec4 100644
+--- a/modules/video_transcode/src/Form/PresetFormBase.php
++++ b/modules/video_transcode/src/Form/PresetFormBase.php
+@@ -7,7 +7,6 @@ use Drupal\Core\Entity\EntityTypeManager;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Link;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+-use Drupal\Core\Url;
+ 
+ /**
+  * Class PresetFormBase.
+@@ -85,306 +84,305 @@ class PresetFormBase extends EntityForm {
+     // annotation on our Preset class.
+     $preset = $this->entity;
+     // Build the form.
+-    $form['label'] = array(
++    $form['label'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Label'),
+       '#maxlength' => 255,
+       '#default_value' => $preset->label(),
+       '#required' => TRUE,
+-      '#weight' => -10
+-    );
+-    $form['id'] = array(
++      '#weight' => -10,
++    ];
++    $form['id'] = [
+       '#type' => 'machine_name',
+       '#title' => $this->t('Machine name'),
+       '#default_value' => $preset->id(),
+-      '#machine_name' => array(
+-        'exists' => array($this, 'exists'),
++      '#machine_name' => [
++        'exists' => [$this, 'exists'],
+         'replace_pattern' => '([^a-z0-9_]+)|(^custom$)',
+         'error' => 'The machine-readable name must be unique, and can only contain lowercase letters, numbers, and underscores. Additionally, it can not be the reserved word "custom".',
+-      ),
++      ],
+       '#disabled' => !$preset->isNew(),
+-      '#weight' => -10
+-    );
+-    // Container/File format
+-    $form['video_extension'] = array(
++      '#weight' => -10,
++    ];
++    // Container/File format.
++    $form['video_extension'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Output extension/Container'),
+       '#description' => $this->t('Extension of the output. Use mp4 for H.264 content. Use fmp4 for Smooth Streaming or MPEG-DASH content. Use ts for HLS content. Use webm for vp8/vp9 downloaded content. Use mp3 for mp3 audio. Use ogg for vorbis audio. Use oga for flac audio. Use flac for flac audio. Use mpg for mpeg2 content. Use flv for Flash content. Use gif for Animated Gif videos. Use mxf for XDCAM content. Use wav for pcm audio.'),
+-      '#options' => ['3gp' => '3GP', 'aac' => 'AAC', 'ac3' => 'AC3', 'ec3' => 'EC3', 'flv' => 'FLV', 'm4f' => 'M4F', 'mj2' => 'MJ2', 'mkv' => 'MKV', 'mp3' => 'MP3', 'mp4' => 'MP4', 'mxf' => 'MXF', 'ogg' => 'OGG', 'oga' => 'OGA', 'ts' => 'TS', 'webm' => 'WEBM', 'wmv' => 'WMV', 'fmp4'=>'FMP4', 'flac'=> 'FLAC', 'mpg' => 'MPG', 'gif' => 'GIF'],
+-      '#default_value' => !empty($preset->video_extension) ? $preset->video_extension :  'mp4',
++      '#options' => ['3gp' => '3GP', 'aac' => 'AAC', 'ac3' => 'AC3', 'ec3' => 'EC3', 'flv' => 'FLV', 'm4f' => 'M4F', 'mj2' => 'MJ2', 'mkv' => 'MKV', 'mp3' => 'MP3', 'mp4' => 'MP4', 'mxf' => 'MXF', 'ogg' => 'OGG', 'oga' => 'OGA', 'ts' => 'TS', 'webm' => 'WEBM', 'wmv' => 'WMV', 'fmp4' => 'FMP4', 'flac' => 'FLAC', 'mpg' => 'MPG', 'gif' => 'GIF'],
++      '#default_value' => !empty($preset->video_extension) ? $preset->video_extension : 'mp4',
+       '#required' => TRUE,
+-      '#weight' => -9
+-    );
+-    
+-    // video settings
+-    $form['settings']['video'] = array(
++      '#weight' => -9,
++    ];
++
++    // Video settings.
++    $form['settings']['video'] = [
+       '#type' => 'fieldset',
+       '#title' => $this->t('Video settings'),
+       '#collapsible' => TRUE,
+       '#collapsed' => TRUE,
+-    );
++    ];
+ 
+-    $form['settings']['video']['video_codec'] = array(
++    $form['settings']['video']['video_codec'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Video codec'),
+       '#description' => $this->t('The video codec used in the video file can affect the ability to play the video on certain devices.'),
+       '#options' => ['h264' => 'H246', 'hevc' => 'HEVC', 'jp2' => 'JP2', 'mpeg4' => 'MPEG4', 'theora' => 'Theora', 'vp6' => 'VP6', 'vp8' => 'VP8', 'vp9' => 'VP9', 'wmv' => 'WMV'],
+-      '#default_value' => !empty($preset->video_codec) ? $preset->video_codec :  'h264',
++      '#default_value' => !empty($preset->video_codec) ? $preset->video_codec : 'h264',
+       '#required' => TRUE,
+-    );
++    ];
+ 
+-    $form['settings']['video']['video_quality'] = array(
++    $form['settings']['video']['video_quality'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Video quality'),
+       '#description' => $this->t('A target video quality. Affects bitrate and file size.'),
+-      '#options' => array(
++      '#options' => [
+         'none' => $this->t('None'),
+         1 => '1 - Poor quality (smaller file)',
+         2 => '2',
+         3 => '3' . ' (' . $this->t('default') . ')',
+         4 => '4',
+-        5 => '5 - High quality (larger file)'
+-      ),
++        5 => '5 - High quality (larger file)',
++      ],
+       '#default_value' => (!empty($preset->video_quality)) ? $preset->video_quality : 3,
+-    );
+-    
+-    $form['settings']['video']['video_speed'] = array(
++    ];
++
++    $form['settings']['video']['video_speed'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Video speed'),
+       '#description' => $this->t('Speed of encoding. Affects compression.'),
+-      '#options' => array(
++      '#options' => [
+         'none' => $this->t('None'),
+         1 => '1 - Slow (better compression)',
+         2 => '2',
+         3 => '3' . ' (' . $this->t('default') . ')',
+         4 => '4',
+-        5 => '5 - Fast (worse compression)'
+-      ),
++        5 => '5 - Fast (worse compression)',
++      ],
+       '#default_value' => (!empty($preset->video_speed)) ? $preset->video_speed : 3,
+-    );
+-    
+-    $form['settings']['video']['wxh'] = array(
++    ];
++
++    $form['settings']['video']['wxh'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Dimensions'),
+       '#description' => $this->t('The resolution of the output file, expressed as WxH, like 640×480 or 1280×720.'),
+       '#default_value' => !empty($preset->wxh) ? $preset->wxh : '640x360',
+-    );
+-    
+-    $form['settings']['video']['video_aspectmode'] = array(
++    ];
++
++    $form['settings']['video']['video_aspectmode'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Aspect mode'),
+       '#description' => $this->t('What to do when aspect ratio of input file does not match the target width/height aspect ratio.'),
+-      '#options' => array(
++      '#options' => [
+         'preserve' => $this->t('Preserve aspect ratio') . ' (' . $this->t('default') . ')',
+         'crop' => $this->t('Crop to fit output aspect ratio'),
+         'pad' => $this->t('Pad (letterbox) to fit output aspect ratio'),
+         'stretch' => $this->t('Stretch (distort) to output aspect ratio'),
+-      ),
++      ],
+       '#default_value' => (!empty($preset->video_aspectmode)) ? $preset->video_aspectmode : 'preserve',
+-    );
+-    
+-    $form['settings']['video']['video_upscale'] = array(
++    ];
++
++    $form['settings']['video']['video_upscale'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Upscale'),
+       '#description' => $this->t('If the input file is smaller than the target output, should the file be upscaled to the target size?'),
+-      '#default_value' => !empty($preset->video_upscale) ? $preset->video_upscale : ''
+-    );
+-    
+-    // audio settings
+-    $form['settings']['audio'] = array(
++      '#default_value' => !empty($preset->video_upscale) ? $preset->video_upscale : '',
++    ];
++
++    // Audio settings.
++    $form['settings']['audio'] = [
+       '#type' => 'fieldset',
+       '#title' => $this->t('Audio settings'),
+       '#collapsible' => TRUE,
+       '#collapsed' => FALSE,
+-    );
++    ];
+ 
+-    $form['settings']['audio']['audio_codec'] = array(
++    $form['settings']['audio']['audio_codec'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Audio codec'),
+       '#description' => $this->t('The audio codec to be used.'),
+-      '#options' => ['aac'=>'AAC', 'ac3'=>'AC3', 'amr'=>'AMR', 'eac3'=>'EAC3', 'mp3'=>'MP3', 'pcm'=>'PCM', 'vorbis'=>'Vorbis', 'wma'=>'WMA'],
++      '#options' => ['aac' => 'AAC', 'ac3' => 'AC3', 'amr' => 'AMR', 'eac3' => 'EAC3', 'mp3' => 'MP3', 'pcm' => 'PCM', 'vorbis' => 'Vorbis', 'wma' => 'WMA'],
+       '#required' => TRUE,
+       '#default_value' => (!empty($preset->audio_codec)) ? $preset->audio_codec : 'mp3',
+-    );
+-    
+-    $form['settings']['audio']['audio_quality'] = array(
++    ];
++
++    $form['settings']['audio']['audio_quality'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Audio quality'),
+       '#description' => $this->t('A target audio quality. Affects bitrate and file size.'),
+-      '#options' => array(
++      '#options' => [
+         '' => $this->t('None'),
+         1 => '1 - Poor quality (smaller file)',
+         2 => '2',
+         3 => '3' . ' (' . $this->t('default') . ')',
+         4 => '4',
+-        5 => '5 - High quality (larger file)'
+-      ),
++        5 => '5 - High quality (larger file)',
++      ],
+       '#default_value' => (!empty($preset->audio_quality)) ? $preset->audio_quality : 3,
+-    );
+-    
+-    // advanced video settings
+-    $form['settings']['adv_video'] = array(
++    ];
++
++    // Advanced video settings.
++    $form['settings']['adv_video'] = [
+       '#type' => 'fieldset',
+       '#title' => $this->t('Advanced video settings'),
+       '#collapsible' => TRUE,
+-      '#collapsed' => TRUE
+-    );
+-    $form['settings']['adv_video']['deinterlace'] = array(
++      '#collapsed' => TRUE,
++    ];
++    $form['settings']['adv_video']['deinterlace'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Deinterlace'),
+       '#description' => $this->t('Note that detect mode will auto-detect and deinterlace interlaced content.'),
+-      '#options' => array(
++      '#options' => [
+         'detect' => 'Detect' . ' (' . $this->t('default') . ')',
+         'on' => 'On (reduces quality of non-interlaced content)',
+-        'off' => 'Off'
+-      ),
+-      '#default_value' => (!empty($preset->deinterlace)) ? $preset->deinterlace : 'detect'
+-    );
+-    $form['settings']['adv_video']['max_frame_rate'] = array(
++        'off' => 'Off',
++      ],
++      '#default_value' => (!empty($preset->deinterlace)) ? $preset->deinterlace : 'detect',
++    ];
++    $form['settings']['adv_video']['max_frame_rate'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Maximum frame rate'),
+       '#description' => $this->t('A maximum frame rate cap (in frames per second).'),
+-      '#default_value' => !empty($preset->max_frame_rate) ? $preset->max_frame_rate : ''
+-    );
+-    $form['settings']['adv_video']['frame_rate'] = array(
++      '#default_value' => !empty($preset->max_frame_rate) ? $preset->max_frame_rate : '',
++    ];
++    $form['settings']['adv_video']['frame_rate'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Frame rate'),
+       '#description' => $this->t('Force a specific output frame rate (in frames per second). For best quality, do not use this setting.'),
+-      '#default_value' => !empty($preset->frame_rate) ? $preset->frame_rate : ''
+-    );
+-    $form['settings']['adv_video']['keyframe_interval'] = array(
++      '#default_value' => !empty($preset->frame_rate) ? $preset->frame_rate : '',
++    ];
++    $form['settings']['adv_video']['keyframe_interval'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Key frame interval'),
+       '#description' => $this->t('By default, a keyframe will be created at most every 250 frames. Specifying a different keyframe interval will allow you to create more or fewer keyframes in your video. A greater number of keyframes will increase the size of your output file, but will allow for more precise scrubbing in most players. Keyframe interval should be specified as a positive integer. For example, a value of 100 will create a keyframe every 100 frames.'),
+-      '#default_value' => !empty($preset->keyframe_interval) ? $preset->keyframe_interval : ''
+-    );
+-    $form['settings']['adv_video']['video_bitrate'] = array(
++      '#default_value' => !empty($preset->keyframe_interval) ? $preset->keyframe_interval : '',
++    ];
++    $form['settings']['adv_video']['video_bitrate'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Video bitrate'),
+       '#description' => $this->t('A target bitrate in kbps. Not necessary if you select a Video Quality setting, unless you want to target a specific bitrate.'),
+       '#default_value' => !empty($preset->video_bitrate) ? $preset->video_bitrate : '',
+-    );
+-    $form['settings']['adv_video']['bitrate_cap'] = array(
++    ];
++    $form['settings']['adv_video']['bitrate_cap'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Bitrate cap'),
+       '#description' => $this->t('A bitrate cap in kbps, used for streaming servers.'),
+-      '#default_value' => !empty($preset->bitrate_cap) ? $preset->bitrate_cap : ''
+-    );
+-    $form['settings']['adv_video']['buffer_size'] = array(
++      '#default_value' => !empty($preset->bitrate_cap) ? $preset->bitrate_cap : '',
++    ];
++    $form['settings']['adv_video']['buffer_size'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Buffer size'),
+       '#description' => $this->t('The buffer size for the bitrate cap in kbps.'),
+-      '#default_value' => !empty($preset->buffer_size) ? $preset->buffer_size : ''
+-    );
+-    $form['settings']['adv_video']['one_pass'] = array(
++      '#default_value' => !empty($preset->buffer_size) ? $preset->buffer_size : '',
++    ];
++    $form['settings']['adv_video']['one_pass'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Force one-pass encoding'),
+-      '#default_value' => !empty($preset->one_pass) ? $preset->one_pass : ''
+-    );
+-    $form['settings']['adv_video']['skip_video'] = array(
++      '#default_value' => !empty($preset->one_pass) ? $preset->one_pass : '',
++    ];
++    $form['settings']['adv_video']['skip_video'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Skip video'),
+       '#description' => $this->t('The video track will be omitted from the output. You can still specify a video format, however, no video track will be present in the resulting file.'),
+-      '#default_value' => !empty($preset->skip_video) ? $preset->skip_video : ''
+-    );
+-    
++      '#default_value' => !empty($preset->skip_video) ? $preset->skip_video : '',
++    ];
++
+     $reference_frames = ['auto' => 'auto'] + range(0, 16);
+-    $form['settings']['adv_video']['reference_frames'] = array(
++    $form['settings']['adv_video']['reference_frames'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Video reference frames'),
+       '#description' => $this->t('Number of reference frames to use. More reference frames result in slightly higher compression quality, but increased decoding complexity. In practice, going above 5 rarely has much benefit. Determined partly by speed as well as video_codec_profile. Set to "auto" to allow our speed setting to naturally choose this number. We default to 3 as a good compromise of compression and decoding complexity. Use 1 for video created for legacy iPod or first-generation iPhone video, or for other technically-limited decoders.'),
+       '#options' => $reference_frames,
+       '#default_value' => !empty($preset->reference_frames) ? $preset->reference_frames : 3,
+-    );
++    ];
+ 
+-    $profiles = array('' => $this->t('None'), 'baseline' => 'Baseline', 'main' => 'Main', 'high' => 'High');
+-    $form['settings']['adv_video']['h264_profile'] = array(
++    $profiles = ['' => $this->t('None'), 'baseline' => 'Baseline', 'main' => 'Main', 'high' => 'High'];
++    $form['settings']['adv_video']['h264_profile'] = [
+       '#type' => 'select',
+       '#title' => $this->t('H.264 profile'),
+-      '#description' => $this->t('Use Baseline for maximum compatibility with players. Select @optionnamenone when this is not an H.264 preset or when setting the profile causes errors.', array('@optionnamenone' => $this->t('None'))),
++      '#description' => $this->t('Use Baseline for maximum compatibility with players. Select @optionnamenone when this is not an H.264 preset or when setting the profile causes errors.', ['@optionnamenone' => $this->t('None')]),
+       '#options' => $profiles,
+       '#default_value' => !empty($preset->h264_profile) ? $preset->h264_profile : '1',
+-    );
+-    
+-    $codec_levels = ['1'=>'1', '1b'=>'1b', '1.1'=>'1.1', '1.2'=>'1.2', '1.3'=>'1.3', '2'=>'2', '2.1'=>'2.1', '2.2'=>'2.2', '3'=>'3', '3.1'=>'3.1', '3.2'=>'3.2', '4'=>'4', '4.1'=>'4.1', '4.2'=>'4.2', '5'=>'5', '5.1'=>'5.1', '5.2'=>'5.2', '6'=>'6', '6.1'=>'6.1', '6.2'=>'6.2'];
+-    $form['settings']['adv_video']['codec_level'] = array(
++    ];
++
++    $codec_levels = ['1' => '1', '1b' => '1b', '1.1' => '1.1', '1.2' => '1.2', '1.3' => '1.3', '2' => '2', '2.1' => '2.1', '2.2' => '2.2', '3' => '3', '3.1' => '3.1', '3.2' => '3.2', '4' => '4', '4.1' => '4.1', '4.2' => '4.2', '5' => '5', '5.1' => '5.1', '5.2' => '5.2', '6' => '6', '6.1' => '6.1', '6.2' => '6.2'];
++    $form['settings']['adv_video']['codec_level'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Video codec level'),
+       '#description' => $this->t('Constrains bitrate, macroblocks (H.264) or bitrate, coding tree units (HEVC). Primarily used for device compatibility. For example, the iPhone supports H.264 Level 3, which means that a video’s decoder_bitrate_cap can’t exceed 10,000kbps. Typically, you should only change this setting if you’re targeting a specific device that requires it.'),
+       '#options' => $codec_levels,
+       '#default_value' => !empty($preset->codec_level) ? $preset->codec_level : '4',
+-    );
+-    
+-    
+-    // advanced audio settings
+-    $form['settings']['adv_audio'] = array(
++    ];
++
++    // Advanced audio settings.
++    $form['settings']['adv_audio'] = [
+       '#type' => 'fieldset',
+       '#title' => $this->t('Advanced audio settings'),
+       '#collapsible' => TRUE,
+-      '#collapsed' => TRUE
+-    );
+-    $form['settings']['adv_audio']['audio_bitrate'] = array(
++      '#collapsed' => TRUE,
++    ];
++    $form['settings']['adv_audio']['audio_bitrate'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Audio bitrate'),
+       '#description' => $this->t('The overall audio bitrate specified as kilobits per second (kbps, e.g. 96 or 160). This value can\'t exceed 160 kbps per channel. 96-160 is usually a good range for stereo output.'),
+-      '#default_value' => !empty($preset->audio_bitrate) ? $preset->audio_bitrate : ''
+-    );
+-    $form['settings']['adv_audio']['audio_channels'] = array(
++      '#default_value' => !empty($preset->audio_bitrate) ? $preset->audio_bitrate : '',
++    ];
++    $form['settings']['adv_audio']['audio_channels'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Audio channels'),
+       '#description' => $this->t('By default we will choose the lesser of the number of audio channels in the input file or 2 (stereo).'),
+-      '#options' => array(
++      '#options' => [
+         1 => '1 - Mono',
+-        2 => '2 - Stereo' . ' (' . $this->t('default') . ')'
+-      ),
+-      '#default_value' => (!empty($preset->audio_channels)) ? $preset->audio_channels : 2
+-    );
+-    $form['settings']['adv_audio']['audio_sample_rate'] = array(
++        2 => '2 - Stereo' . ' (' . $this->t('default') . ')',
++      ],
++      '#default_value' => (!empty($preset->audio_channels)) ? $preset->audio_channels : 2,
++    ];
++    $form['settings']['adv_audio']['audio_sample_rate'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Audio sample rate'),
+       '#description' => $this->t('The sample rate of the audio in hertz. Manually setting this may cause problems, depending on the selected bitrate and number of channels.'),
+-      '#default_value' => !empty($preset->audio_sample_rate) ? $preset->audio_sample_rate : ''
+-    );
+-    $form['settings']['adv_audio']['skip_audio'] = array(
++      '#default_value' => !empty($preset->audio_sample_rate) ? $preset->audio_sample_rate : '',
++    ];
++    $form['settings']['adv_audio']['skip_audio'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Skip audio'),
+       '#description' => $this->t('The audio track will be omitted from the output. You must specify a video format and no audio track will be present in the resulting file.'),
+-      '#default_value' => !empty($preset->skip_audio) ? $preset->skip_audio : ''
+-    );
++      '#default_value' => !empty($preset->skip_audio) ? $preset->skip_audio : '',
++    ];
+ 
+-    // Watermark
+-    $form['settings']['watermark'] = array(
++    // Watermark.
++    $form['settings']['watermark'] = [
+       '#type' => 'fieldset',
+       '#title' => $this->t('Video watermark'),
+       '#collapsible' => TRUE,
+       '#collapsed' => TRUE,
+       '#description' => $this->t('At this moment this only works when using the Zencoder transcoder.'),
+-    );
+-    $form['settings']['watermark']['video_watermark_enabled'] = array(
++    ];
++    $form['settings']['watermark']['video_watermark_enabled'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Enable watermark video'),
+       '#default_value' => !empty($preset->video_watermark_enabled) ? $preset->video_watermark_enabled : FALSE,
+-    );
++    ];
+     $form['settings']['watermark']['file'] = [
+       '#type' => 'container',
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[id=edit-video-watermark-enabled]' => array('checked' => TRUE),
+-        ),
+-        'required' => array(
+-          ':input[id=edit-video-watermark-enabled]' => array('checked' => TRUE),
+-        ),
+-      ),
+-    ];
+-    $form['settings']['watermark']['file']['video_watermark_fid'] = array(
++      '#states' => [
++        'visible' => [
++          ':input[id=edit-video-watermark-enabled]' => ['checked' => TRUE],
++        ],
++        'required' => [
++          ':input[id=edit-video-watermark-enabled]' => ['checked' => TRUE],
++        ],
++      ],
++    ];
++    $form['settings']['watermark']['file']['video_watermark_fid'] = [
+       '#type' => 'managed_file',
+       '#title' => $this->t('Upload watermark image'),
+-      '#description' => $this->t('Watermark image should be a PNG or JPG image. The file will be uploaded to %destination.', array('%destination' => $destination)),
++      '#description' => $this->t('Watermark image should be a PNG or JPG image. The file will be uploaded to %destination.', ['%destination' => $destination]),
+       '#default_value' => !empty($preset->video_watermark_fid) ? $preset->video_watermark_fid : 0,
+       '#upload_location' => $destination,
+-      '#upload_validators' => array('file_validate_extensions' => array('jpg png'), 'file_validate_is_image' => array()),
+-    );
+-    $form['settings']['watermark']['video_watermark_y'] = array(
++      '#upload_validators' => ['file_validate_extensions' => ['jpg png'], 'file_validate_is_image' => []],
++    ];
++    $form['settings']['watermark']['video_watermark_y'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Top position'),
+       '#description' => $this->t('Where to place the watermark relative to the top of the video. Use a negative number to place the watermark relative to the bottom of the video.'),
+@@ -392,118 +390,118 @@ class PresetFormBase extends EntityForm {
+       '#size' => 10,
+       '#maxlength' => 10,
+       '#field_suffix' => 'px',
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[id=edit-video-watermark-enabled]' => array('checked' => TRUE),
+-        ),
+-      ),
+-    );
+-    $form['settings']['watermark']['video_watermark_width'] = array(
++      '#states' => [
++        'visible' => [
++          ':input[id=edit-video-watermark-enabled]' => ['checked' => TRUE],
++        ],
++      ],
++    ];
++    $form['settings']['watermark']['video_watermark_width'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Width'),
+       '#description' => $this->t('The width of the watermark. Use pixels or append a % sign to indicate a percentage relative to the width of the video. If left empty, the width will be the original width maximized by the video width.'),
+       '#default_value' => isset($preset->video_watermark_width) ? $preset->video_watermark_width : '',
+       '#size' => 10,
+       '#maxlength' => 10,
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[id=edit-video-watermark-enabled]' => array('checked' => TRUE),
+-        ),
+-      ),
+-    );
+-    $form['settings']['watermark']['video_watermark_height'] = array(
++      '#states' => [
++        'visible' => [
++          ':input[id=edit-video-watermark-enabled]' => ['checked' => TRUE],
++        ],
++      ],
++    ];
++    $form['settings']['watermark']['video_watermark_height'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Height'),
+       '#description' => $this->t('The height of the watermark. Use pixels or append a % sign to indicate a percentage relative to the height of the video. If left empty, the width will be the original height maximized by the video height.'),
+       '#default_value' => isset($preset->video_watermark_width) ? $preset->video_watermark_width : '',
+       '#size' => 10,
+       '#maxlength' => 10,
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[id=edit-video-watermark-enabled]' => array('checked' => TRUE),
+-        ),
+-      ),
+-    );
+-    $form['settings']['watermark']['video_watermark_origin'] = array(
++      '#states' => [
++        'visible' => [
++          ':input[id=edit-video-watermark-enabled]' => ['checked' => TRUE],
++        ],
++      ],
++    ];
++    $form['settings']['watermark']['video_watermark_origin'] = [
+       '#title' => $this->t('Origin'),
+       '#type' => 'select',
+-      '#options' => array(
++      '#options' => [
+         'content' => $this->t('content: visible video area') . ' (' . $this->t('default') . ')',
+         'frame' => $this->t('frame: video area including padding'),
+-      ),
++      ],
+       '#default_value' => isset($preset->video_watermark_origin) ? $preset->video_watermark_origin : 'content',
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[id=edit-video-watermark-enabled]' => array('checked' => TRUE),
+-        ),
+-      ),
+-    );
++      '#states' => [
++        'visible' => [
++          ':input[id=edit-video-watermark-enabled]' => ['checked' => TRUE],
++        ],
++      ],
++    ];
+     /*
+     Not supported by Zencoder anyway
+     $form['settings']['watermark']['video_watermark_onlyforaudio'] = array(
+-      '#type' => 'checkbox',
+-      '#title' => t('Only add watermark for audio files'),
+-      '#description' => t('Use this function to create video files using an audio input file and a static image.'),
+-      '#default_value' => !empty($preset->video_watermark_onlyforaudio) ? $preset->video_watermark_onlyforaudio : FALSE,
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[id=edit-video-watermark-enabled]' => array('checked' => TRUE),
+-        ),
+-      ),
+-    );
+-    */
+-    // video optimizations
+-    $form['settings']['vid_optimization'] = array(
++    '#type' => 'checkbox',
++    '#title' => t('Only add watermark for audio files'),
++    '#description' => t('Use this function to create video files using an audio input file and a static image.'),
++    '#default_value' => !empty($preset->video_watermark_onlyforaudio) ? $preset->video_watermark_onlyforaudio : FALSE,
++    '#states' => array(
++    'visible' => array(
++    ':input[id=edit-video-watermark-enabled]' => array('checked' => TRUE),
++    ),
++    ),
++    );
++     */
++    // Video optimizations.
++    $form['settings']['vid_optimization'] = [
+       '#type' => 'fieldset',
+       '#title' => $this->t('Video optimization'),
+       '#collapsible' => TRUE,
+-      '#collapsed' => TRUE
+-    );
+-    $form['settings']['vid_optimization']['autolevels'] = array(
++      '#collapsed' => TRUE,
++    ];
++    $form['settings']['vid_optimization']['autolevels'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Autolevels'),
+       '#description' => $this->t('Automatic brightness / contrast correction.'),
+-      '#default_value' => !empty($preset->autolevels) ? $preset->autolevels : ''
+-    );
+-    $form['settings']['vid_optimization']['deblock'] = array(
++      '#default_value' => !empty($preset->autolevels) ? $preset->autolevels : '',
++    ];
++    $form['settings']['vid_optimization']['deblock'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Deblock'),
+       '#description' => $this->t('Apply deblocking filter. Useful for highly compressed or blocky input videos.'),
+-      '#default_value' => !empty($preset->deblock) ? $preset->deblock : ''
+-    );
+-    $form['settings']['vid_optimization']['denoise'] = array(
++      '#default_value' => !empty($preset->deblock) ? $preset->deblock : '',
++    ];
++    $form['settings']['vid_optimization']['denoise'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Denoise'),
+       '#description' => $this->t('Apply denoise filter. Generally results in slightly better compression and slightly slower encoding. Beware of any value higher than "Weak" (unless you\'re encoding animation).'),
+-      '#options' => array(
++      '#options' => [
+         '' => $this->t('None'),
+         'weak' => 'Weak - usually OK for general use',
+         'medium' => 'Medium',
+         'strong' => 'Strong - beware',
+-        'strongest' => 'Strongest - beware, except for Anime'
+-      ),
+-      '#default_value' => (!empty($preset->denoise)) ? $preset->denoise : 2
+-    );
+-    
+-    // Create clip
+-    $form['settings']['create_clip'] = array(
++        'strongest' => 'Strongest - beware, except for Anime',
++      ],
++      '#default_value' => (!empty($preset->denoise)) ? $preset->denoise : 2,
++    ];
++
++    // Create clip.
++    $form['settings']['create_clip'] = [
+       '#type' => 'fieldset',
+       '#title' => $this->t('Create clip'),
+       '#collapsible' => TRUE,
+       '#collapsed' => empty($preset->clip_start) && empty($preset->clip_length),
+-    );
+-    $form['settings']['create_clip']['clip_start'] = array(
++    ];
++    $form['settings']['create_clip']['clip_start'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Start clip'),
+       '#description' => $this->t('The starting point of a subclip (in hh:mm:ss.s or number of seconds).'),
+       '#default_value' => !empty($preset->clip_start) ? $preset->clip_start : '',
+-    );
+-    $form['settings']['create_clip']['clip_length'] = array(
++    ];
++    $form['settings']['create_clip']['clip_length'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Clip length'),
+       '#description' => $this->t('The length of the subclip (in hh:mm:ss.s or number of seconds).'),
+       '#default_value' => !empty($preset->clip_length) ? $preset->clip_length : '',
+-    );
++    ];
+     return $form;
+   }
+ 
+@@ -514,7 +512,7 @@ class PresetFormBase extends EntityForm {
+    *   The entity ID.
+    * @param array $element
+    *   The form element.
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The form state.
+    *
+    * @return bool
+@@ -600,12 +598,12 @@ class PresetFormBase extends EntityForm {
+ 
+     if ($status == SAVED_UPDATED) {
+       // If we edited an existing entity...
+-      drupal_set_message($this->t('Preset %label has been updated.', array('%label' => $preset->label())));
++      drupal_set_message($this->t('Preset %label has been updated.', ['%label' => $preset->label()]));
+       $this->logger('video_transcode')->notice('Preset %label has been updated.', ['%label' => $preset->label(), 'link' => $edit_link]);
+     }
+     else {
+       // If we created a new entity...
+-      drupal_set_message($this->t('Preset %label has been added.', array('%label' => $preset->label())));
++      drupal_set_message($this->t('Preset %label has been added.', ['%label' => $preset->label()]));
+       $this->logger('video_transcode')->notice('Preset %label has been added.', ['%label' => $preset->label(), 'link' => $edit_link]);
+     }
+ 
+@@ -613,4 +611,4 @@ class PresetFormBase extends EntityForm {
+     $form_state->setRedirect('entity.video_transcode_preset.list');
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/Form/TranscodeJobDeleteForm.php b/modules/video_transcode/src/Form/TranscodeJobDeleteForm.php
+index 4547032..3c8ece3 100644
+--- a/modules/video_transcode/src/Form/TranscodeJobDeleteForm.php
++++ b/modules/video_transcode/src/Form/TranscodeJobDeleteForm.php
+@@ -17,7 +17,7 @@ class TranscodeJobDeleteForm extends ContentEntityConfirmFormBase {
+    * {@inheritdoc}
+    */
+   public function getQuestion() {
+-    return $this->t('Are you sure you want to delete entity %name?', array('%name' => $this->entity->label()));
++    return $this->t('Are you sure you want to delete entity %name?', ['%name' => $this->entity->label()]);
+   }
+ 
+   /**
+@@ -46,11 +46,11 @@ class TranscodeJobDeleteForm extends ContentEntityConfirmFormBase {
+     $entity->delete();
+ 
+     $this->logger('video_transcode')->notice('@type: deleted %title.',
+-      array(
++      [
+         '@type' => $this->entity->bundle(),
+         '%title' => $this->entity->label(),
+-      ));
++      ]);
+     $form_state->setRedirect('entity.video_transcode_job.collection');
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/Form/TranscodeJobForm.php b/modules/video_transcode/src/Form/TranscodeJobForm.php
+index 24339ab..10a2060 100644
+--- a/modules/video_transcode/src/Form/TranscodeJobForm.php
++++ b/modules/video_transcode/src/Form/TranscodeJobForm.php
+@@ -21,12 +21,12 @@ class TranscodeJobForm extends ContentEntityForm {
+     $form = parent::buildForm($form, $form_state);
+     $entity = $this->entity;
+ 
+-    $form['langcode'] = array(
++    $form['langcode'] = [
+       '#title' => $this->t('Language'),
+       '#type' => 'language_select',
+       '#default_value' => $entity->getUntranslated()->language()->getId(),
+       '#languages' => Language::STATE_ALL,
+-    );
++    ];
+     return $form;
+   }
+ 
+@@ -39,4 +39,4 @@ class TranscodeJobForm extends ContentEntityForm {
+     $entity->save();
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/Form/TranscodeJobSettingsForm.php b/modules/video_transcode/src/Form/TranscodeJobSettingsForm.php
+index 8b953f7..4dcb732 100644
+--- a/modules/video_transcode/src/Form/TranscodeJobSettingsForm.php
++++ b/modules/video_transcode/src/Form/TranscodeJobSettingsForm.php
+@@ -13,6 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
+  * @ingroup video_transcode
+  */
+ class TranscodeJobSettingsForm extends FormBase {
++
+   /**
+    * Returns a unique string identifying the form.
+    *
+@@ -37,4 +38,4 @@ class TranscodeJobSettingsForm extends FormBase {
+     return $form;
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/Plugin/Field/FieldWidget/VideoUploadTranscodeWidget.php b/modules/video_transcode/src/Plugin/Field/FieldWidget/VideoUploadTranscodeWidget.php
+index 573b240..a3586ee 100644
+--- a/modules/video_transcode/src/Plugin/Field/FieldWidget/VideoUploadTranscodeWidget.php
++++ b/modules/video_transcode/src/Plugin/Field/FieldWidget/VideoUploadTranscodeWidget.php
+@@ -41,5 +41,5 @@ class VideoUploadTranscodeWidget extends VideoUploadWidget {
+   public static function process($element, FormStateInterface $form_state, $form) {
+     return parent::process($element, $form_state, $form);
+   }
+-  
++
+ }
+diff --git a/modules/video_transcode/src/Plugin/video/Transcoder/Ffmpeg.php b/modules/video_transcode/src/Plugin/video/Transcoder/Ffmpeg.php
+index aff16ab..b6a05f6 100644
+--- a/modules/video_transcode/src/Plugin/video/Transcoder/Ffmpeg.php
++++ b/modules/video_transcode/src/Plugin/video/Transcoder/Ffmpeg.php
+@@ -1,8 +1,4 @@
+ <?php
+-/**
+- * @file
+- * Contains \Drupal\video_transcode\Plugin\video\Transcoder\Ffmpeg.
+- */
+ 
+ namespace Drupal\video_transcode\Plugin\video\Transcoder;
+ 
+@@ -17,26 +13,24 @@ use Drupal\video_transcode\TranscoderBase;
+  *   isExternal = false
+  * )
+  */
+-
+ class FFmpeg extends TranscoderBase {
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+-  public function getOutputFiles(){
++  public function getOutputFiles() {
+     return [
+-      ['format' => 'mpeg4', 'url' => 'http://s3.amazonaws.com/bucket/video.mp4', 'id' => 1]
++      ['format' => 'mpeg4', 'url' => 'http://s3.amazonaws.com/bucket/video.mp4', 'id' => 1],
+     ];
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+-  public function getVideoThumbnails(){
++  public function getVideoThumbnails() {
+     return [
+-      ['id' => 1, 'url' => 'http://s3.amazonaws.com/bucket/video/frame_0000.png']
++      ['id' => 1, 'url' => 'http://s3.amazonaws.com/bucket/video/frame_0000.png'],
+     ];
+   }
+-  
+-  
+-}
+\ No newline at end of file
++
++}
+diff --git a/modules/video_transcode/src/PresetAccessController.php b/modules/video_transcode/src/PresetAccessController.php
+index 0083b25..c4165a8 100644
+--- a/modules/video_transcode/src/PresetAccessController.php
++++ b/modules/video_transcode/src/PresetAccessController.php
+@@ -31,4 +31,4 @@ class PresetAccessController extends EntityAccessControlHandler {
+     return parent::checkAccess($entity, $operation, $account);
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/TranscodeJobAccessControlHandler.php b/modules/video_transcode/src/TranscodeJobAccessControlHandler.php
+index 7672dba..1ca6f87 100644
+--- a/modules/video_transcode/src/TranscodeJobAccessControlHandler.php
++++ b/modules/video_transcode/src/TranscodeJobAccessControlHandler.php
+@@ -42,4 +42,4 @@ class TranscodeJobAccessControlHandler extends EntityAccessControlHandler {
+     return AccessResult::allowedIfHasPermission($account, 'add transcode job entity');
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/modules/video_transcode/src/TranscodeJobInterface.php b/modules/video_transcode/src/TranscodeJobInterface.php
+index cae486f..326da9a 100644
+--- a/modules/video_transcode/src/TranscodeJobInterface.php
++++ b/modules/video_transcode/src/TranscodeJobInterface.php
+@@ -9,4 +9,4 @@ use Drupal\Core\Entity\EntityChangedInterface;
+ /**
+  * Provides an interface defining a Transcode Job entity.
+  */
+-interface TranscodeJobInterface extends ContentEntityInterface, EntityOwnerInterface, EntityChangedInterface {}
+\ No newline at end of file
++interface TranscodeJobInterface extends ContentEntityInterface, EntityOwnerInterface, EntityChangedInterface {}
+diff --git a/modules/video_transcode/src/TranscoderBase.php b/modules/video_transcode/src/TranscoderBase.php
+index 65a9f14..ea7ff01 100644
+--- a/modules/video_transcode/src/TranscoderBase.php
++++ b/modules/video_transcode/src/TranscoderBase.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Provides Drupal\video_transcode\TranscoderBase.
+- */
+-
+ namespace Drupal\video_transcode;
+ 
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+@@ -12,30 +7,32 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use GuzzleHttp\ClientInterface;
+ use Drupal\Component\Plugin\PluginBase;
+ 
++/**
++ *
++ */
+ abstract class TranscoderBase extends PluginBase implements TranscoderInterface, ContainerFactoryPluginInterface {
+ 
+   /**
+-   * File object to transcode
++   * File object to transcode.
+    *
+-   * @var Drupal\file\Entity\File $file
++   * @var Drupal\file\Entity\File
+    */
+   protected $file;
+-  
++
+   /**
+    * An http client.
+    *
+    * @var \GuzzleHttp\ClientInterface
+    */
+   protected $httpClient;
+-  
+-  
++
+   /**
+    * Create a plugin with the given input.
+    *
+    * @param string $configuration
+    *   The configuration of the plugin.
+    * @param \GuzzleHttp\ClientInterface $http_client
+-   *    An HTTP client.
++   *   An HTTP client.
+    *
+    * @throws \Exception
+    */
+@@ -43,17 +40,17 @@ abstract class TranscoderBase extends PluginBase implements TranscoderInterface,
+     $this->file = $configuration['file'];
+     $this->httpClient = $http_client;
+   }
+-  
++
+   /**
+    * Get the Plugin label.
+    *
+    * @return string
+-   * The name of the plugin.
++   *   The name of the plugin.
+    */
+   public function getLabel() {
+     return $this->pluginDefinition['label'];
+   }
+-  
++
+   /**
+    * Get the ID of the video.
+    *
+@@ -63,14 +60,14 @@ abstract class TranscoderBase extends PluginBase implements TranscoderInterface,
+   protected function getInputFile() {
+     return $this->file;
+   }
+-  
++
+   /**
+    * Get the transcoder supported codecs.
+    *
+    * @return array
+    *   Array of supported codes.
+    */
+-  public function getAvailableCodecs(){
++  public function getAvailableCodecs() {
+     return [
+       'encode' => [
+         'video' => [
+@@ -86,19 +83,19 @@ abstract class TranscoderBase extends PluginBase implements TranscoderInterface,
+           'mp3' => 'MP3',
+           'vorbis' => 'Vorbis',
+           'wma' => 'WMA',
+-        ]
++        ],
+       ],
+       'decode' => [],
+     ];
+   }
+-  
++
+   /**
+    * Get the transcoder supported formats.
+    *
+    * @return array
+    *   Array of supported formats.
+    */
+-  public function getAvailableFormats($type = FALSE){
++  public function getAvailableFormats($type = FALSE) {
+     return [
+       '3g2' => '3G2',
+       '3gp' => '3GP',
+@@ -127,12 +124,12 @@ abstract class TranscoderBase extends PluginBase implements TranscoderInterface,
+       'wmv' => 'WMV',
+     ];
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+     return new static($configuration, $container->get('http_client'));
+   }
+-  
+-}
+\ No newline at end of file
++
++}
+diff --git a/modules/video_transcode/src/TranscoderInterface.php b/modules/video_transcode/src/TranscoderInterface.php
+index 02f4a27..fc31947 100644
+--- a/modules/video_transcode/src/TranscoderInterface.php
++++ b/modules/video_transcode/src/TranscoderInterface.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Provides Drupal\video_transcode\TranscoderInterface
+- */
+-
+ namespace Drupal\video_transcode;
+ 
+ use Drupal\Component\Plugin\PluginInspectionInterface;
+@@ -13,7 +8,7 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
+  * Defines an interface for transcoder plugins.
+  */
+ interface TranscoderInterface extends PluginInspectionInterface {
+-  
++
+   /**
+    * Get the transcoded files.
+    *
+@@ -21,7 +16,7 @@ interface TranscoderInterface extends PluginInspectionInterface {
+    *   Array of transcoded files.
+    */
+   public function getOutputFiles();
+-  
++
+   /**
+    * Get the video thumbnails.
+    *
+@@ -29,23 +24,23 @@ interface TranscoderInterface extends PluginInspectionInterface {
+    *   Array of video thumbnails.
+    */
+   public function getVideoThumbnails();
+-  
++
+   /**
+    * Execute commands or create the video transcoding job.
+    *
+-   * @return boolean
++   * @return bool
+    *   true on success and false on failed.
+    */
+   public function createJob();
+-  
++
+   /**
+    * Cancel an active video transcoding job.
+    *
+-   * @return boolean
++   * @return bool
+    *   true on success and false on failed.
+    */
+   public function createJob();
+-  
++
+   /**
+    * Get the current transocde job details.
+    *
+@@ -53,7 +48,7 @@ interface TranscoderInterface extends PluginInspectionInterface {
+    *   Current transcoding job details.
+    */
+   public function getJobDetails();
+-  
++
+   /**
+    * Get the current transocde job progress.
+    *
+@@ -61,20 +56,21 @@ interface TranscoderInterface extends PluginInspectionInterface {
+    *   Current transcoding job progress.
+    */
+   public function getJobProgress();
+-  
++
+   /**
+    * Handle the transcoding job post processing callbacks.
+    *
+-   * @return boolean
++   * @return bool
+    *   true on success and false on failed.
+    */
+   public function processCallback();
+-  
++
+   /**
+    * Get the current version.
+    *
+    * @return string
+-   *  Get the current version.
++   *   Get the current version.
+    */
+   public function getVersion();
+-}
+\ No newline at end of file
++
++}
+diff --git a/modules/video_transcode/src/TranscoderManager.php b/modules/video_transcode/src/TranscoderManager.php
+index 920f8ec..a5ac4b2 100644
+--- a/modules/video_transcode/src/TranscoderManager.php
++++ b/modules/video_transcode/src/TranscoderManager.php
+@@ -1,8 +1,4 @@
+ <?php
+-/**
+- * @file
+- * Provides Drupal\video_transcode\TranscoderManager
+- */
+ 
+ namespace Drupal\video_transcode;
+ 
+@@ -20,7 +16,7 @@ class TranscoderManager extends DefaultPluginManager {
+    *
+    * @param \Traversable $namespaces
+    *   An object that implements \Traversable which contains the root paths
+-   *   keyed by the corresponding namespace to look for plugin implementations,
++   *   keyed by the corresponding namespace to look for plugin implementations,.
+    * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
+    *   Cache backend instance to use.
+    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+@@ -32,4 +28,5 @@ class TranscoderManager extends DefaultPluginManager {
+     $this->alterInfo('video_transcode_transcoder_info');
+     $this->setCacheBackend($cache_backend, 'video_transcode_transcoders');
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/Annotation/VideoEmbeddableProvider.php b/src/Annotation/VideoEmbeddableProvider.php
+index d67fecb..686ef79 100644
+--- a/src/Annotation/VideoEmbeddableProvider.php
++++ b/src/Annotation/VideoEmbeddableProvider.php
+@@ -26,35 +26,35 @@ class VideoEmbeddableProvider extends Plugin {
+    * @ingroup plugin_translatable
+    */
+   public $label;
+-  
++
+   /**
+    * A brief description of the plugin.
+    *
+    * @ingroup plugin_translatable
+    *
+-   * @var \Drupal\Core\Annotation\Translation (optional)
++   * @var \Drupal\Core\Annotation\Translationoptional
+    */
+   public $description = '';
+-  
++
+   /**
+    * List of regular expressions that match embed codes and URLs of videos.
+    *
+    * @var array
+    */
+   public $regular_expressions = [];
+-  
++
+   /**
+    * A mimetype of the plugin.
+    *
+    * @var string
+    */
+   public $mimetype = '';
+-  
++
+   /**
+    * A stream_wrapper to use in the plugin.
+    *
+    * @var string
+    */
+-  public $stream_wrapper = '';  
++  public $stream_wrapper = '';
+ 
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/VideoEmbedPlayerFormatter.php b/src/Plugin/Field/FieldFormatter/VideoEmbedPlayerFormatter.php
+index 48790e1..0c06c68 100644
+--- a/src/Plugin/Field/FieldFormatter/VideoEmbedPlayerFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/VideoEmbedPlayerFormatter.php
+@@ -9,7 +9,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Drupal\video\ProviderManagerInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\file\Entity\File;
+-use Drupal\Core\File\FileSystem;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ 
+ /**
+@@ -40,11 +39,13 @@ class VideoEmbedPlayerFormatter extends FormatterBase implements ContainerFactor
+     $settings = $this->getSettings();
+     foreach ($items as $delta => $item) {
+       $file = File::load($item->target_id);
+-      if(!$file) continue;
++      if (!$file) {
++        continue;
++      }
+       $metadata = isset($item->data) ? unserialize($item->data) : [];
+       $scheme = \Drupal::service('file_system')->uriScheme($file->getFileUri());
+       $provider = $this->providerManager->loadProviderFromStream($scheme, $file, $metadata);
+-      if($provider){
++      if ($provider) {
+         $element[$delta] = $provider->renderEmbedCode($settings);
+       }
+     }
+@@ -59,7 +60,7 @@ class VideoEmbedPlayerFormatter extends FormatterBase implements ContainerFactor
+       'width' => '854',
+       'height' => '480',
+       'autoplay' => TRUE,
+-      'related_videos' => FALSE
++      'related_videos' => FALSE,
+     ];
+   }
+ 
+@@ -100,7 +101,7 @@ class VideoEmbedPlayerFormatter extends FormatterBase implements ContainerFactor
+     $summary[] = t('Embedded Video (@widthx@height@autoplay@related_videos).', [
+       '@width' => $this->getSetting('width'),
+       '@height' => $this->getSetting('height'),
+-      '@related_videos' => $this->getSetting('related_videos') ? t(', showing related videos') : '' ,
++      '@related_videos' => $this->getSetting('related_videos') ? t(', showing related videos') : '',
+       '@autoplay' => $this->getSetting('autoplay') ? t(', autoplaying') : '' ,
+     ]);
+     return $summary;
+@@ -146,12 +147,12 @@ class VideoEmbedPlayerFormatter extends FormatterBase implements ContainerFactor
+       $container->get('video.provider_manager')
+     );
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public static function isApplicable(FieldDefinitionInterface $field_definition) {
+-    if(empty($field_definition->getTargetBundle())){
++    if (empty($field_definition->getTargetBundle())) {
+       return TRUE;
+     }
+     else {
+@@ -171,10 +172,11 @@ class VideoEmbedPlayerFormatter extends FormatterBase implements ContainerFactor
+       }
+       $widget = $entity_form_display->getRenderer($field_definition->getName());
+       $widget_id = $widget->getBaseId();
+-      if($widget_id == 'video_embed'){
++      if ($widget_id == 'video_embed') {
+         return TRUE;
+       }
+     }
+     return FALSE;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/VideoEmbedThumbnailFormatter.php b/src/Plugin/Field/FieldFormatter/VideoEmbedThumbnailFormatter.php
+index 794f706..576735a 100644
+--- a/src/Plugin/Field/FieldFormatter/VideoEmbedThumbnailFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/VideoEmbedThumbnailFormatter.php
+@@ -10,7 +10,6 @@ use Drupal\Core\Url;
+ use Drupal\video\ProviderManagerInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\file\Entity\File;
+-use Drupal\Core\File\FileSystem;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ 
+ /**
+@@ -47,7 +46,7 @@ class VideoEmbedThumbnailFormatter extends FormatterBase implements ContainerFac
+    * {@inheritdoc}
+    */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+-    // load widget settings
++    // Load widget settings.
+     $field_definition = $this->fieldDefinition;
+     $form_mode = 'default';
+     $entity_form_display = \Drupal::entityTypeManager()
+@@ -89,7 +88,7 @@ class VideoEmbedThumbnailFormatter extends FormatterBase implements ContainerFac
+   public static function defaultSettings() {
+     return [
+       'image_style' => '',
+-      'link_image_to' => ''
++      'link_image_to' => '',
+     ];
+   }
+ 
+@@ -171,10 +170,10 @@ class VideoEmbedThumbnailFormatter extends FormatterBase implements ContainerFac
+    * {@inheritdoc}
+    */
+   public static function isApplicable(FieldDefinitionInterface $field_definition) {
+-    if(empty($field_definition->getTargetBundle())){
++    if (empty($field_definition->getTargetBundle())) {
+       return TRUE;
+     }
+-    else{
++    else {
+       $form_mode = 'default';
+       $entity_form_display = \Drupal::entityTypeManager()
+         ->getStorage('entity_form_display')
+@@ -191,10 +190,11 @@ class VideoEmbedThumbnailFormatter extends FormatterBase implements ContainerFac
+       }
+       $widget = $entity_form_display->getRenderer($field_definition->getName());
+       $widget_id = $widget->getBaseId();
+-      if($widget_id == 'video_embed'){
++      if ($widget_id == 'video_embed') {
+         return TRUE;
+       }
+     }
+     return FALSE;
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/Plugin/Field/FieldFormatter/VideoPlayerFormatter.php b/src/Plugin/Field/FieldFormatter/VideoPlayerFormatter.php
+index 2b7a480..46abd11 100644
+--- a/src/Plugin/Field/FieldFormatter/VideoPlayerFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/VideoPlayerFormatter.php
+@@ -4,13 +4,11 @@ namespace Drupal\video\Plugin\Field\FieldFormatter;
+ 
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+-use Drupal\Core\Link;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Drupal\Core\Session\AccountInterface;
+ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Cache\Cache;
+ 
+ /**
+  * Plugin implementation of the 'video_player' formatter.
+@@ -23,7 +21,6 @@ use Drupal\Core\Cache\Cache;
+  *   }
+  * )
+  */
+-
+ class VideoPlayerFormatter extends VideoPlayerFormatterBase implements ContainerFactoryPluginInterface {
+ 
+   /**
+@@ -85,7 +82,7 @@ class VideoPlayerFormatter extends VideoPlayerFormatterBase implements Container
+       'autoplay' => FALSE,
+       'loop' => FALSE,
+       'muted' => FALSE,
+-      'preload' => 'none'
++      'preload' => 'none',
+     ] + parent::defaultSettings();
+   }
+ 
+@@ -130,11 +127,11 @@ class VideoPlayerFormatter extends VideoPlayerFormatterBase implements Container
+       '#type' => 'select',
+       '#default_value' => $this->getSetting('preload'),
+       '#options' => [
+-        'none' =>'none',
++        'none' => 'none',
+         'metadata' => 'metadata',
+-        'auto' => 'auto'
++        'auto' => 'auto',
+       ],
+-      '#description' => t('Hint to the browser about whether optimistic downloading of the video itself or its metadata is considered worthwhile.')
++      '#description' => t('Hint to the browser about whether optimistic downloading of the video itself or its metadata is considered worthwhile.'),
+     ];
+     return $element;
+   }
+@@ -147,13 +144,14 @@ class VideoPlayerFormatter extends VideoPlayerFormatterBase implements Container
+     $summary[] = t('HTML5 Video (@widthx@height@controls@autoplay@loop@muted).', [
+       '@width' => $this->getSetting('width'),
+       '@height' => $this->getSetting('height'),
+-      '@controls' => $this->getSetting('controls') ? t(', controls') : '' ,
+-      '@autoplay' => $this->getSetting('autoplay') ? t(', autoplaying') : '' ,
++      '@controls' => $this->getSetting('controls') ? t(', controls') : '',
++      '@autoplay' => $this->getSetting('autoplay') ? t(', autoplaying') : '',
+       '@loop' => $this->getSetting('loop') ? t(', looping') : '' ,
+       '@muted' => $this->getSetting('muted') ? t(', muted') : '',
+     ]);
+     return $summary;
+   }
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -183,10 +181,10 @@ class VideoPlayerFormatter extends VideoPlayerFormatterBase implements Container
+    * {@inheritdoc}
+    */
+   public static function isApplicable(FieldDefinitionInterface $field_definition) {
+-    if(empty($field_definition->getTargetBundle())){
++    if (empty($field_definition->getTargetBundle())) {
+       return TRUE;
+     }
+-    else{
++    else {
+       $form_mode = 'default';
+       $entity_form_display = \Drupal::entityTypeManager()
+         ->getStorage('entity_form_display')
+@@ -203,10 +201,11 @@ class VideoPlayerFormatter extends VideoPlayerFormatterBase implements Container
+       }
+       $widget = $entity_form_display->getRenderer($field_definition->getName());
+       $widget_id = $widget->getBaseId();
+-      if($widget_id == 'video_upload'){
++      if ($widget_id == 'video_upload') {
+         return TRUE;
+       }
+     }
+     return FALSE;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/VideoPlayerFormatterBase.php b/src/Plugin/Field/FieldFormatter/VideoPlayerFormatterBase.php
+index d55a81e..49c8cd0 100644
+--- a/src/Plugin/Field/FieldFormatter/VideoPlayerFormatterBase.php
++++ b/src/Plugin/Field/FieldFormatter/VideoPlayerFormatterBase.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\video\Plugin\Field\FieldFormatter;
+ 
+ use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
+-use Drupal\field\FieldConfigInterface;
+ use Drupal\file\Plugin\Field\FieldFormatter\FileFormatterBase;
+ 
+ /**
+@@ -17,4 +16,5 @@ abstract class VideoPlayerFormatterBase extends FileFormatterBase {
+   protected function getEntitiesToView(EntityReferenceFieldItemListInterface $items, $langcode) {
+     return parent::getEntitiesToView($items, $langcode);
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/VideoPlayerListFormatter.php b/src/Plugin/Field/FieldFormatter/VideoPlayerListFormatter.php
+index e5b1d3e..87537ba 100644
+--- a/src/Plugin/Field/FieldFormatter/VideoPlayerListFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/VideoPlayerListFormatter.php
+@@ -4,14 +4,8 @@ namespace Drupal\video\Plugin\Field\FieldFormatter;
+ 
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+-use Drupal\Core\Link;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+-use Drupal\Core\Session\AccountInterface;
+ use Drupal\Core\Url;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+-use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Cache\Cache;
+-use Drupal\video\Plugin\Field\FieldFormatter\VideoPlayerFormatter;
+ 
+ /**
+  * Plugin implementation of the 'video_player_list' formatter.
+@@ -24,7 +18,6 @@ use Drupal\video\Plugin\Field\FieldFormatter\VideoPlayerFormatter;
+  *   }
+  * )
+  */
+-
+ class VideoPlayerListFormatter extends VideoPlayerFormatter implements ContainerFactoryPluginInterface {
+ 
+   /**
+@@ -58,10 +51,10 @@ class VideoPlayerListFormatter extends VideoPlayerFormatter implements Container
+    * {@inheritdoc}
+    */
+   public static function isApplicable(FieldDefinitionInterface $field_definition) {
+-    if(empty($field_definition->getTargetBundle()) && $field_definition->isList()){
++    if (empty($field_definition->getTargetBundle()) && $field_definition->isList()) {
+       return TRUE;
+     }
+-    else{
++    else {
+       $form_mode = 'default';
+       $entity_form_display = \Drupal::entityTypeManager()
+         ->getStorage('entity_form_display')
+@@ -79,11 +72,12 @@ class VideoPlayerListFormatter extends VideoPlayerFormatter implements Container
+       $widget = $entity_form_display->getRenderer($field_definition->getName());
+       if ($widget) {
+         $widget_id = $widget->getBaseId();
+-        if($field_definition->isList() && $widget_id == 'video_upload'){
++        if ($field_definition->isList() && $widget_id == 'video_upload') {
+           return TRUE;
+         }
+       }
+     }
+     return FALSE;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/VideoUrlFormatter.php b/src/Plugin/Field/FieldFormatter/VideoUrlFormatter.php
+index 12c1839..0e9d2e6 100644
+--- a/src/Plugin/Field/FieldFormatter/VideoUrlFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/VideoUrlFormatter.php
+@@ -1,21 +1,12 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\video\Plugin\Field\FieldFormatter\VidePlayerFormatter.
+- */
+-
+ namespace Drupal\video\Plugin\Field\FieldFormatter;
+ 
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+-use Drupal\Core\Link;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Drupal\Core\Session\AccountInterface;
+-use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+-use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Cache\Cache;
+ 
+ /**
+  * Plugin implementation of the 'video_player' formatter.
+@@ -28,7 +19,6 @@ use Drupal\Core\Cache\Cache;
+  *   }
+  * )
+  */
+-
+ class VideoUrlFormatter extends VideoPlayerFormatterBase implements ContainerFactoryPluginInterface {
+ 
+   /**
+@@ -90,7 +80,7 @@ class VideoUrlFormatter extends VideoPlayerFormatterBase implements ContainerFac
+    * {@inheritdoc}
+    */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+-    $elements = array();
++    $elements = [];
+     $files = $this->getEntitiesToView($items, $langcode);
+ 
+     // Early opt-out if the field is empty.
+@@ -105,4 +95,5 @@ class VideoUrlFormatter extends VideoPlayerFormatterBase implements ContainerFac
+     }
+     return $elements;
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/Plugin/Field/FieldType/VideoItem.php b/src/Plugin/Field/FieldType/VideoItem.php
+index 7c1fd26..ad4e970 100644
+--- a/src/Plugin/Field/FieldType/VideoItem.php
++++ b/src/Plugin/Field/FieldType/VideoItem.php
+@@ -5,9 +5,7 @@ namespace Drupal\video\Plugin\Field\FieldType;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\FieldStorageDefinitionInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+ use Drupal\Core\TypedData\DataDefinition;
+-use Drupal\file\Entity\File;
+ use Drupal\file\Plugin\Field\FieldType\FileItem;
+ use Drupal\Component\Utility\Random;
+ 
+@@ -52,7 +50,7 @@ class VideoItem extends FileItem {
+     return [
+       'default_video' => [
+         'uuid' => NULL,
+-        'data' => NULL
++        'data' => NULL,
+       ],
+     ] + parent::defaultStorageSettings();
+   }
+@@ -104,8 +102,8 @@ class VideoItem extends FileItem {
+    */
+   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
+     $properties = parent::propertyDefinitions($field_definition);
+-    
+-    // unset the default values from the file module
++
++    // Unset the default values from the file module.
+     unset($properties['display']);
+     unset($properties['description']);
+ 
+@@ -130,7 +128,7 @@ class VideoItem extends FileItem {
+   public function fieldSettingsForm(array $form, FormStateInterface $form_state) {
+     // Get base form from FileItem.
+     $element = parent::fieldSettingsForm($form, $form_state);
+-    
++
+     // Remove the description option.
+     unset($element['description_field']);
+     unset($element['file_directory']);
+@@ -178,7 +176,7 @@ class VideoItem extends FileItem {
+   /**
+    * Gets the entity manager.
+    *
+-   * @return \Drupal\Core\Entity\EntityTypeManagerInterface.
++   * @return \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+   protected function getEntityTypeManager() {
+     if (!isset($this->entityTypeManager)) {
+diff --git a/src/Plugin/Field/FieldWidget/VideoEmbedWidget.php b/src/Plugin/Field/FieldWidget/VideoEmbedWidget.php
+index b438a3b..8f6b7e5 100644
+--- a/src/Plugin/Field/FieldWidget/VideoEmbedWidget.php
++++ b/src/Plugin/Field/FieldWidget/VideoEmbedWidget.php
+@@ -9,12 +9,8 @@ use Drupal\file\Entity\File;
+ use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
+ use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+ 
+-use Drupal\Core\Field\FieldItemBase;
+ use Drupal\Core\Field\FieldStorageDefinitionInterface;
+-use Drupal\Core\TypedData\DataDefinition;
+-use Drupal\Core\TypedData\TraversableTypedDataInterface;
+ 
+-use Drupal\Core\Field\WidgetBase;
+ 
+ use Drupal\Core\Field\FieldFilteredMarkup;
+ use Drupal\Component\Utility\Html;
+@@ -42,7 +38,7 @@ class VideoEmbedWidget extends FileWidget {
+     $settings = [
+       'file_directory' => 'video-thumbnails/[date:custom:Y]-[date:custom:m]',
+       'allowed_providers' => ["youtube" => "youtube"],
+-      'uri_scheme' => 'public'
++      'uri_scheme' => 'public',
+     ];
+     return $settings;
+   }
+@@ -79,9 +75,9 @@ class VideoEmbedWidget extends FileWidget {
+     ];
+     return $element;
+   }
+-  
++
+   /**
+-   * Form API callback
++   * Form API callback.
+    *
+    * Removes slashes from the beginning and end of the destination value and
+    * ensures that the file directory path is not included at the beginning of the
+@@ -101,14 +97,14 @@ class VideoEmbedWidget extends FileWidget {
+    */
+   public function settingsSummary() {
+     $summary = [];
+-    $summary[] = t('Providers : @allowed_providers<br/>Thumbnail directory : @file_directory', 
++    $summary[] = t('Providers : @allowed_providers<br/>Thumbnail directory : @file_directory',
+     [
+       '@allowed_providers' => implode(', ', array_filter($this->getSetting('allowed_providers'))),
+       '@file_directory' => $this->getSetting('uri_scheme') . '://' . $this->getSetting('file_directory'),
+     ]);
+     return $summary;
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -207,7 +203,6 @@ class VideoEmbedWidget extends FileWidget {
+         $wrapper_id = Html::getUniqueId($id_prefix . '-add-more-wrapper');
+         // $elements['#prefix'] = '<div id="' . $wrapper_id . '">';
+         // $elements['#suffix'] = '</div>';
+-
+         $elements['add_more'] = [
+           '#type' => 'submit',
+           '#name' => strtr($id_prefix, '-', '_') . '_add_more',
+@@ -219,7 +214,7 @@ class VideoEmbedWidget extends FileWidget {
+             'callback' => [get_class($this), 'addMoreAjax'],
+             'effect' => 'fade',
+           ],
+-          '#weight' => 1000
++          '#weight' => 1000,
+         ];
+       }
+     }
+@@ -235,7 +230,7 @@ class VideoEmbedWidget extends FileWidget {
+     }
+     return $elements;
+   }
+-  
++
+   /**
+    * Form API callback: Processes a group of file_generic field elements.
+    *
+@@ -291,32 +286,32 @@ class VideoEmbedWidget extends FileWidget {
+ 
+     return $element;
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+-    if (isset(NestedArray::getValue($form_state->getUserInput(), $element['#field_parents'])[$items->getName()][0]['value'])){
++    if (isset(NestedArray::getValue($form_state->getUserInput(), $element['#field_parents'])[$items->getName()][0]['value'])) {
+       $value = NestedArray::getValue($form_state->getUserInput(), $element['#field_parents'])[$items->getName()][0]['value'];
+     }
+-    if(empty($items[$delta]->getValue()) || !empty($value)){
+-      $element['value'] =  $element + [
++    if (empty($items[$delta]->getValue()) || !empty($value)) {
++      $element['value'] = $element + [
+         '#type' => 'textfield',
+         '#attributes' => ['class' => ['js-text-full', 'text-full']],
+-          '#default_value' => empty($value) ? '' : $value,
++        '#default_value' => empty($value) ? '' : $value,
+         '#element_validate' => [
+           [get_class($this), 'validateFormElement'],
+         ],
+-        '#allowed_providers' => $this->getSetting('allowed_providers')
++        '#allowed_providers' => $this->getSetting('allowed_providers'),
+       ];
+     }
+     else {
+       $element += parent::formElement($items, $delta, $element, $form, $form_state);
+     }
+-    
++
+     return $element;
+   }
+-  
++
+   /**
+    * Form API callback: Processes a file_generic field element.
+    *
+@@ -331,8 +326,8 @@ class VideoEmbedWidget extends FileWidget {
+     $element['data']['#value'] = $item['data'];
+     $element['data']['#type'] = 'hidden';
+     return $element;
+-   }
+-  
++  }
++
+   /**
+    * Form element validation handler for URL alias form element.
+    *
+@@ -352,7 +347,7 @@ class VideoEmbedWidget extends FileWidget {
+       $form_state->setError($element, t('Could not find a video provider to handle the given URL.'));
+     }
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -374,34 +369,34 @@ class VideoEmbedWidget extends FileWidget {
+           $value['_original_delta'] = $delta;
+         }
+ 
+-        usort($values, function($a, $b) {
++        usort($values, function ($a, $b) {
+           return SortArray::sortByKeyInt($a, $b, '_weight');
+         });
+       }
+       // Let the widget massage the submitted values.
+-      foreach($values as $delta => &$value){
+-        if(!empty($value['value']) && empty($value['fids'])){
+-          // ready to save the file
++      foreach ($values as $delta => &$value) {
++        if (!empty($value['value']) && empty($value['fids'])) {
++          // Ready to save the file.
+           $provider_manager = \Drupal::service('video.provider_manager');
+           $allowed_providers = $this->getSetting('allowed_providers');
+           $enabled_providers = $provider_manager->loadDefinitionsFromOptionList($allowed_providers);
+           if ($provider_matches = $provider_manager->loadApplicableDefinitionMatches($enabled_providers, $value['value'])) {
+-            $definition  = $provider_matches['definition'];
++            $definition = $provider_matches['definition'];
+             $matches = $provider_matches['matches'];
+             $uri = $definition['stream_wrapper'] . '://' . $matches['id'];
+-            
++
+             $storage = \Drupal::entityTypeManager()->getStorage('file');
+             $results = $storage->getQuery()
+-                    ->condition('uri', $uri)
+-                    ->execute();
+-            if(!(count($results) > 0)){
++              ->condition('uri', $uri)
++              ->execute();
++            if (!(count($results) > 0)) {
+               $user = \Drupal::currentUser();
+               $file = File::Create([
+                 'uri' => $uri,
+                 'filemime' => $definition['mimetype'],
+                 'filesize' => 1,
+-                'uid' => $user->id()
+-                ]);
++                'uid' => $user->id(),
++              ]);
+               $file->save();
+               unset($values[$delta]);
+               $values[] = ['fids' => [$file->id()], 'data' => serialize($matches)];
+@@ -418,7 +413,7 @@ class VideoEmbedWidget extends FileWidget {
+           unset($values[$delta]);
+         }
+       }
+-      $values = $this->massageFormValues($values, $form, $form_state);      
++      $values = $this->massageFormValues($values, $form, $form_state);
+       // Assign the values and remove the empty ones.
+       $items->setValue($values);
+       $items->filterEmptyItems();
+@@ -432,4 +427,5 @@ class VideoEmbedWidget extends FileWidget {
+       static::setWidgetState($form['#parents'], $field_name, $form_state, $field_state);
+     }
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldWidget/VideoUploadWidget.php b/src/Plugin/Field/FieldWidget/VideoUploadWidget.php
+index 5b8ae3f..5e0627c 100644
+--- a/src/Plugin/Field/FieldWidget/VideoUploadWidget.php
++++ b/src/Plugin/Field/FieldWidget/VideoUploadWidget.php
+@@ -5,9 +5,7 @@ namespace Drupal\video\Plugin\Field\FieldWidget;
+ use Drupal\Component\Utility\Bytes;
+ use Drupal\Component\Render\PlainTextOutput;
+ use Drupal\Core\Field\FieldItemListInterface;
+-use Drupal\Component\Utility\NestedArray;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\file\Entity\File;
+ use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
+ use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+ 
+@@ -32,7 +30,7 @@ class VideoUploadWidget extends FileWidget {
+       'file_extensions' => 'mp4 ogv webm',
+       'file_directory' => 'videos/[date:custom:Y]-[date:custom:m]',
+       'max_filesize' => '',
+-      'uri_scheme' => 'public'
++      'uri_scheme' => 'public',
+     ] + parent::defaultSettings();
+     return $settings;
+   }
+@@ -72,12 +70,12 @@ class VideoUploadWidget extends FileWidget {
+       '#type' => 'textfield',
+       '#title' => t('Maximum upload size'),
+       '#default_value' => $settings['max_filesize'],
+-      '#description' => t('Enter a value like "512" (bytes), "80 KB" (kilobytes) or "50 MB" (megabytes) in order to restrict the allowed file size. If left empty the file sizes will be limited only by PHP\'s maximum post and file upload sizes (current limit <strong>%limit</strong>).', array('%limit' => format_size(file_upload_max_size()))),
++      '#description' => t('Enter a value like "512" (bytes), "80 KB" (kilobytes) or "50 MB" (megabytes) in order to restrict the allowed file size. If left empty the file sizes will be limited only by PHP\'s maximum post and file upload sizes (current limit <strong>%limit</strong>).', ['%limit' => format_size(file_upload_max_size())]),
+       '#size' => 10,
+       '#element_validate' => [[get_class($this), 'validateMaxFilesize']],
+       '#weight' => 5,
+     ];
+-    
++
+     $scheme_options = \Drupal::service('stream_wrapper_manager')->getNames(StreamWrapperInterface::WRITE_VISIBLE);
+     $element['uri_scheme'] = [
+       '#type' => 'radios',
+@@ -91,7 +89,7 @@ class VideoUploadWidget extends FileWidget {
+   }
+ 
+   /**
+-   * Form API callback
++   * Form API callback.
+    *
+    * Removes slashes from the beginning and end of the destination value and
+    * ensures that the file directory path is not included at the beginning of the
+@@ -150,7 +148,7 @@ class VideoUploadWidget extends FileWidget {
+    */
+   public function settingsSummary() {
+     $summary = [];
+-    $summary[] = t('Progress indicator: @progress_indicator<br/>Extensions : @file_extensions<br/>File directory : @file_directory<br/>@max_filesize', 
++    $summary[] = t('Progress indicator: @progress_indicator<br/>Extensions : @file_extensions<br/>File directory : @file_directory<br/>@max_filesize',
+     [
+       '@progress_indicator' => $this->getSetting('progress_indicator'),
+       '@file_extensions' => $this->getSetting('file_extensions'),
+@@ -275,4 +273,5 @@ class VideoUploadWidget extends FileWidget {
+   public static function process($element, FormStateInterface $form_state, $form) {
+     return parent::process($element, $form_state, $form);
+   }
++
+ }
+diff --git a/src/Plugin/video/Provider/Dailymotion.php b/src/Plugin/video/Provider/Dailymotion.php
+index 701131b..3771a76 100644
+--- a/src/Plugin/video/Provider/Dailymotion.php
++++ b/src/Plugin/video/Provider/Dailymotion.php
+@@ -17,6 +17,7 @@ use Drupal\video\ProviderPluginBase;
+  * )
+  */
+ class Dailymotion extends ProviderPluginBase {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -35,7 +36,7 @@ class Dailymotion extends ProviderPluginBase {
+       ],
+     ];
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -43,4 +44,5 @@ class Dailymotion extends ProviderPluginBase {
+     $data = $this->getVideoMetadata();
+     return 'http://www.dailymotion.com/thumbnail/video/' . $data['id'];
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/Plugin/video/Provider/Facebook.php b/src/Plugin/video/Provider/Facebook.php
+index 8cf6c00..22cf848 100644
+--- a/src/Plugin/video/Provider/Facebook.php
++++ b/src/Plugin/video/Provider/Facebook.php
+@@ -17,8 +17,8 @@ use Drupal\video\ProviderPluginBase;
+  *   stream_wrapper = "facebook"
+  * )
+  */
+-
+ class Facebook extends ProviderPluginBase {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -52,12 +52,12 @@ class Facebook extends ProviderPluginBase {
+           'class' => 'fb-video',
+           'data-href' => sprintf('https://www.facebook.com/video.php?v=%s', $data['id']),
+           'data-width' => $settings['width'],
+-          'data-autoplay' => $settings['autoplay'] ? 1 : 0
++          'data-autoplay' => $settings['autoplay'] ? 1 : 0,
+         ],
+       ],
+     ];
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -65,4 +65,5 @@ class Facebook extends ProviderPluginBase {
+     $data = $this->getVideoMetadata();
+     return 'https://graph.facebook.com/' . $data['id'] . '/picture';
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/Plugin/video/Provider/Instagram.php b/src/Plugin/video/Provider/Instagram.php
+index 9d4bc56..8f3a8b6 100644
+--- a/src/Plugin/video/Provider/Instagram.php
++++ b/src/Plugin/video/Provider/Instagram.php
+@@ -17,6 +17,7 @@ use Drupal\video\ProviderPluginBase;
+  * )
+  */
+ class Instagram extends ProviderPluginBase {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -37,16 +38,16 @@ class Instagram extends ProviderPluginBase {
+         '#type' => 'html_tag',
+         '#tag' => 'script',
+         '#attributes' => [
+-             'type' => 'text/javascript',
+-             'src' => '//platform.instagram.com/en_US/embeds.js',
+-             'async',
+-             'defer'
++          'type' => 'text/javascript',
++          'src' => '//platform.instagram.com/en_US/embeds.js',
++          'async',
++          'defer',
+         ],
+         '#value' => '',
+       ],
+     ];
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -54,4 +55,5 @@ class Instagram extends ProviderPluginBase {
+     $data = $this->getVideoMetadata();
+     return 'http://instagr.am/p/' . $data['id'] . '/media/?size=l';
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/Plugin/video/Provider/Vimeo.php b/src/Plugin/video/Provider/Vimeo.php
+index 11c909d..db595e7 100644
+--- a/src/Plugin/video/Provider/Vimeo.php
++++ b/src/Plugin/video/Provider/Vimeo.php
+@@ -16,9 +16,8 @@ use Drupal\video\ProviderPluginBase;
+  *   stream_wrapper = "vimeo"
+  * )
+  */
+-
+ class Vimeo extends ProviderPluginBase {
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -37,7 +36,7 @@ class Vimeo extends ProviderPluginBase {
+       ],
+     ];
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -49,4 +48,5 @@ class Vimeo extends ProviderPluginBase {
+     }
+     return FALSE;
+   }
++
+ }
+diff --git a/src/Plugin/video/Provider/Vine.php b/src/Plugin/video/Provider/Vine.php
+index 12e0966..bd593ad 100644
+--- a/src/Plugin/video/Provider/Vine.php
++++ b/src/Plugin/video/Provider/Vine.php
+@@ -17,6 +17,7 @@ use Drupal\video\ProviderPluginBase;
+  * )
+  */
+ class Vine extends ProviderPluginBase {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -35,7 +36,7 @@ class Vine extends ProviderPluginBase {
+       ],
+     ];
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -43,7 +44,8 @@ class Vine extends ProviderPluginBase {
+     $data = $this->getVideoMetadata();
+     $id = $data['id'];
+     $vine = file_get_contents("http://vine.co/v/{$id}");
+-      preg_match('/property="og:image" content="(.*?)"/', $vine, $matches);
+-      return ($matches[1]) ? $matches[1] : false;
++    preg_match('/property="og:image" content="(.*?)"/', $vine, $matches);
++    return ($matches[1]) ? $matches[1] : FALSE;
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/Plugin/video/Provider/YouTube.php b/src/Plugin/video/Provider/YouTube.php
+index ce13135..270f812 100644
+--- a/src/Plugin/video/Provider/YouTube.php
++++ b/src/Plugin/video/Provider/YouTube.php
+@@ -68,4 +68,5 @@ class YouTube extends ProviderPluginBase {
+     }
+     return FALSE;
+   }
++
+ }
+diff --git a/src/ProviderManager.php b/src/ProviderManager.php
+index 4237a43..f906fc9 100644
+--- a/src/ProviderManager.php
++++ b/src/ProviderManager.php
+@@ -54,7 +54,7 @@ class ProviderManager extends DefaultPluginManager implements ProviderManagerInt
+    */
+   public function loadApplicableDefinitionMatches(array $definitions, $user_input) {
+     foreach ($definitions as $definition) {
+-      foreach($definition['regular_expressions'] as $reqular_expr){
++      foreach ($definition['regular_expressions'] as $reqular_expr) {
+         if (preg_match($reqular_expr, $user_input, $matches)) {
+           return ['definition' => $definition, 'matches' => $matches];
+         }
+@@ -62,16 +62,17 @@ class ProviderManager extends DefaultPluginManager implements ProviderManagerInt
+     }
+     return FALSE;
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public function loadProviderFromStream($stream, $file, $metadata = [], $settings = []) {
+     $definitions = $this->getDefinitions();
+     foreach ($definitions as $definition) {
+-      if($definition['stream_wrapper'] == $stream){
++      if ($definition['stream_wrapper'] == $stream) {
+         return $definition ? $this->createInstance($definition['id'], ['file' => $file, 'metadata' => $metadata, 'settings' => $settings]) : FALSE;
+       }
+     }
+   }
++
+ }
+diff --git a/src/ProviderManagerInterface.php b/src/ProviderManagerInterface.php
+index c385a47..97c9131 100644
+--- a/src/ProviderManagerInterface.php
++++ b/src/ProviderManagerInterface.php
+@@ -37,7 +37,7 @@ interface ProviderManagerInterface {
+    *   The relevant plugin or FALSE on failure.
+    */
+   public function loadApplicableDefinitionMatches(array $definitions, $user_input);
+-  
++
+   /**
+    * Load a provider from stream wrapper.
+    *
+diff --git a/src/ProviderPluginBase.php b/src/ProviderPluginBase.php
+index 6fb1f7d..c0282f0 100644
+--- a/src/ProviderPluginBase.php
++++ b/src/ProviderPluginBase.php
+@@ -14,26 +14,26 @@ use Drupal\image\Entity\ImageStyle;
+ abstract class ProviderPluginBase implements ProviderPluginInterface, ContainerFactoryPluginInterface {
+ 
+   /**
+-   * File object to handle
++   * File object to handle.
+    *
+-   * @var Drupal\file\Entity\File $file
++   * @var Drupal\file\Entity\File
+    */
+   protected $file;
+ 
+   /**
+-   * Additional metadata for the embedded video object
++   * Additional metadata for the embedded video object.
+    *
+    * @var array
+    */
+   protected $metadata = [];
+ 
+   /**
+-   * Additional settings for the video widget
++   * Additional settings for the video widget.
+    *
+    * @var array
+    */
+   protected $settings = [];
+-  
++
+   /**
+    * An http client.
+    *
+@@ -47,7 +47,7 @@ abstract class ProviderPluginBase implements ProviderPluginInterface, ContainerF
+    * @param string $configuration
+    *   The configuration of the plugin.
+    * @param \GuzzleHttp\ClientInterface $http_client
+-   *    An HTTP client.
++   *   An HTTP client.
+    *
+    * @throws \Exception
+    */
+@@ -87,7 +87,7 @@ abstract class ProviderPluginBase implements ProviderPluginInterface, ContainerF
+   protected function getVideoSettings() {
+     return $this->settings;
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -129,7 +129,7 @@ abstract class ProviderPluginBase implements ProviderPluginInterface, ContainerF
+       }
+     }
+   }
+-  
++
+   /**
+    * Get the URL to the local thumbnail.
+    *
+@@ -140,7 +140,7 @@ abstract class ProviderPluginBase implements ProviderPluginInterface, ContainerF
+     $data = $this->getVideoMetadata();
+     return $this->getUploadLocation() . '/' . $data['id'] . '.png';
+   }
+-  
++
+   /**
+    * Determines the URI for a video field.
+    *
+@@ -159,4 +159,5 @@ abstract class ProviderPluginBase implements ProviderPluginInterface, ContainerF
+     $destination = PlainTextOutput::renderFromHtml(\Drupal::token()->replace($destination, $data));
+     return $settings['uri_scheme'] . '://' . $destination;
+   }
++
+ }
+diff --git a/src/ProviderPluginInterface.php b/src/ProviderPluginInterface.php
+index fb550c0..3e7546e 100644
+--- a/src/ProviderPluginInterface.php
++++ b/src/ProviderPluginInterface.php
+@@ -6,7 +6,7 @@ namespace Drupal\video;
+  * Providers an interface for embed providers.
+  */
+ interface ProviderPluginInterface {
+-  
++
+   /**
+    * Render embed code.
+    *
+@@ -17,7 +17,7 @@ interface ProviderPluginInterface {
+    *   A renderable array of the embed code.
+    */
+   public function renderEmbedCode($settings);
+-  
++
+   /**
+    * Get the URL of the remote thumbnail.
+    *
+@@ -31,5 +31,5 @@ interface ProviderPluginInterface {
+    *   The URL to the remote thumbnail file.
+    */
+   public function getRemoteThumbnailUrl();
+-  
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/StreamWrapper/DailymotionStream.php b/src/StreamWrapper/DailymotionStream.php
+index 0ed00aa..d466c4d 100644
+--- a/src/StreamWrapper/DailymotionStream.php
++++ b/src/StreamWrapper/DailymotionStream.php
+@@ -2,16 +2,13 @@
+ 
+ namespace Drupal\video\StreamWrapper;
+ 
+-use Drupal\Core\StreamWrapper\ReadOnlyStream;
+-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+-
+ /**
+  * Defines a Dailymotion (dailymotion://) stream wrapper class.
+  */
+ class DailymotionStream extends VideoRemoteStreamWrapper {
+-  
++
+   protected static $base_url = 'http://www.dailymotion.com/video';
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -25,11 +22,12 @@ class DailymotionStream extends VideoRemoteStreamWrapper {
+   public function getDescription() {
+     return t('Video served by the Dailymotion services.');
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public static function baseUrl() {
+     return self::$base_url;
+   }
++
+ }
+diff --git a/src/StreamWrapper/FacebookStream.php b/src/StreamWrapper/FacebookStream.php
+index e257633..f64fd2f 100644
+--- a/src/StreamWrapper/FacebookStream.php
++++ b/src/StreamWrapper/FacebookStream.php
+@@ -2,16 +2,13 @@
+ 
+ namespace Drupal\video\StreamWrapper;
+ 
+-use Drupal\Core\StreamWrapper\ReadOnlyStream;
+-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+-
+ /**
+  * Defines a Facebook (facebook://) stream wrapper class.
+  */
+ class FacebookStream extends VideoRemoteStreamWrapper {
+-  
++
+   protected static $base_url = 'https://www.facebook.com/video.php?v=';
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -25,11 +22,12 @@ class FacebookStream extends VideoRemoteStreamWrapper {
+   public function getDescription() {
+     return t('Video served by the Facebook services.');
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public static function baseUrl() {
+     return self::$base_url;
+   }
++
+ }
+diff --git a/src/StreamWrapper/InstagramStream.php b/src/StreamWrapper/InstagramStream.php
+index 6d54e95..a40770c 100644
+--- a/src/StreamWrapper/InstagramStream.php
++++ b/src/StreamWrapper/InstagramStream.php
+@@ -2,16 +2,13 @@
+ 
+ namespace Drupal\video\StreamWrapper;
+ 
+-use Drupal\Core\StreamWrapper\ReadOnlyStream;
+-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+-
+ /**
+  * Defines a InstagramStream (instagram://) stream wrapper class.
+  */
+ class InstagramStream extends VideoRemoteStreamWrapper {
+-  
++
+   protected static $base_url = 'https://www.instagram.com/p';
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -25,11 +22,12 @@ class InstagramStream extends VideoRemoteStreamWrapper {
+   public function getDescription() {
+     return t('Video served by the Instagram services.');
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public static function baseUrl() {
+     return self::$base_url;
+   }
++
+ }
+diff --git a/src/StreamWrapper/VideoRemoteStreamWrapper.php b/src/StreamWrapper/VideoRemoteStreamWrapper.php
+index d6593ee..6c3cae9 100644
+--- a/src/StreamWrapper/VideoRemoteStreamWrapper.php
++++ b/src/StreamWrapper/VideoRemoteStreamWrapper.php
+@@ -4,7 +4,6 @@ namespace Drupal\video\StreamWrapper;
+ 
+ use Drupal\Core\StreamWrapper\ReadOnlyStream;
+ use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+-use Drupal\Component\Utility\UrlHelper;
+ 
+ /**
+  * Defines a video read only stream wrapper class.
+@@ -13,26 +12,27 @@ use Drupal\Component\Utility\UrlHelper;
+  * interface.
+  */
+ abstract class VideoRemoteStreamWrapper extends ReadOnlyStream {
+-  
++
+   protected static $base_url = NULL;
+   protected $parameters = [];
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public static function getType() {
+     return StreamWrapperInterface::READ;
+   }
+-  
++
+   /**
+    * Finds and returns the base URL for read only stream.
++   *
+    * @return string
+    *   The external base URL
+    */
+   public static function baseUrl() {
+     return self::$base_url;
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -47,21 +47,21 @@ abstract class VideoRemoteStreamWrapper extends ReadOnlyStream {
+     $path = str_replace('\\', '/', $this->getTarget());
+     return static::baseUrl() . '/' . $path;
+   }
+-  
++
+   /**
+    * Returns the base path for stream wrapper.
+    */
+   public static function basePath(\SplString $site_path = NULL) {
+     return static::baseUrl();
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+-  function setUri($uri) {
++  public function setUri($uri) {
+     $this->uri = $uri;
+   }
+-  
++
+   /**
+    * Returns the local writable target of the resource within the stream.
+    *
+@@ -88,7 +88,7 @@ abstract class VideoRemoteStreamWrapper extends ReadOnlyStream {
+     // Remove erroneous leading or trailing, forward-slashes and backslashes.
+     return trim($target, '\/');
+   }
+-  
++
+   /**
+    * Returns the canonical absolute path of the URI, if possible.
+    *
+@@ -129,11 +129,11 @@ abstract class VideoRemoteStreamWrapper extends ReadOnlyStream {
+     }
+     return $realpath;
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+-  function realpath() {
++  public function realpath() {
+     return $this->getLocalPath();
+   }
+ 
+@@ -163,7 +163,7 @@ abstract class VideoRemoteStreamWrapper extends ReadOnlyStream {
+ 
+     return $scheme . '://' . $dirname;
+   }
+-  
++
+   /**
+    * Support for closedir().
+    *
+@@ -277,7 +277,7 @@ abstract class VideoRemoteStreamWrapper extends ReadOnlyStream {
+    * {@inheritdoc}
+    */
+   public function stream_seek($offset, $whence = SEEK_SET) {
+-    // fseek returns 0 on success and -1 on a failure.
++    // Fseek returns 0 on success and -1 on a failure.
+     // stream_seek   1 on success and  0 on a failure.
+     return !fseek($this->handle, $offset, $whence);
+   }
+@@ -319,7 +319,7 @@ abstract class VideoRemoteStreamWrapper extends ReadOnlyStream {
+   public function stream_tell() {
+     return ftell($this->handle);
+   }
+-  
++
+   /**
+    * Support for stat().
+    *
+@@ -346,4 +346,5 @@ abstract class VideoRemoteStreamWrapper extends ReadOnlyStream {
+       return stat($path);
+     }
+   }
++
+ }
+diff --git a/src/StreamWrapper/VimeoStream.php b/src/StreamWrapper/VimeoStream.php
+index d692235..67331bc 100644
+--- a/src/StreamWrapper/VimeoStream.php
++++ b/src/StreamWrapper/VimeoStream.php
+@@ -2,16 +2,13 @@
+ 
+ namespace Drupal\video\StreamWrapper;
+ 
+-use Drupal\Core\StreamWrapper\ReadOnlyStream;
+-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+-
+ /**
+  * Defines a YouTube (vimeo://) stream wrapper class.
+  */
+ class VimeoStream extends VideoRemoteStreamWrapper {
+-  
++
+   protected static $base_url = 'http://www.vimeo.com';
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -25,11 +22,12 @@ class VimeoStream extends VideoRemoteStreamWrapper {
+   public function getDescription() {
+     return t('Video served by the Vimeo services.');
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public static function baseUrl() {
+     return self::$base_url;
+   }
++
+ }
+diff --git a/src/StreamWrapper/VineStream.php b/src/StreamWrapper/VineStream.php
+index 3bd900d..3feae30 100644
+--- a/src/StreamWrapper/VineStream.php
++++ b/src/StreamWrapper/VineStream.php
+@@ -2,16 +2,13 @@
+ 
+ namespace Drupal\video\StreamWrapper;
+ 
+-use Drupal\Core\StreamWrapper\ReadOnlyStream;
+-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+-
+ /**
+  * Defines a VineStream (vine://) stream wrapper class.
+  */
+ class VineStream extends VideoRemoteStreamWrapper {
+-  
++
+   protected static $base_url = 'https://vine.co/v';
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -25,11 +22,12 @@ class VineStream extends VideoRemoteStreamWrapper {
+   public function getDescription() {
+     return t('Video served by the Vine services.');
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public static function baseUrl() {
+     return self::$base_url;
+   }
++
+ }
+diff --git a/src/StreamWrapper/YoutubeStream.php b/src/StreamWrapper/YoutubeStream.php
+index c949fa8..1ae4e8c 100644
+--- a/src/StreamWrapper/YoutubeStream.php
++++ b/src/StreamWrapper/YoutubeStream.php
+@@ -2,16 +2,13 @@
+ 
+ namespace Drupal\video\StreamWrapper;
+ 
+-use Drupal\Core\StreamWrapper\ReadOnlyStream;
+-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+-
+ /**
+  * Defines a YouTube (youtube://) stream wrapper class.
+  */
+ class YoutubeStream extends VideoRemoteStreamWrapper {
+-  
++
+   protected static $base_url = 'http://www.youtube.com/watch';
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -25,11 +22,12 @@ class YoutubeStream extends VideoRemoteStreamWrapper {
+   public function getDescription() {
+     return t('Video served by the YouTube services.');
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public static function baseUrl() {
+     return self::$base_url;
+   }
++
+ }

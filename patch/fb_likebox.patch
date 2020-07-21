@@ -1,0 +1,10 @@
+diff --git a/tests/src/Functional/FBLikeboxBlockTest.php b/tests/src/Functional/FBLikeboxBlockTest.php
+index 73c70bc..0731205 100644
+--- a/tests/src/Functional/FBLikeboxBlockTest.php
++++ b/tests/src/Functional/FBLikeboxBlockTest.php
+@@ -57,4 +57,5 @@ class FBLikeboxBlockTest extends BrowserTestBase {
+       $this->assertEqual(count($result), 1, 'Facebook Likebox block found');
+     }
+   }
++
+ }

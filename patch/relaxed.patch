@@ -1,0 +1,3842 @@
+diff --git a/css/relaxed.admin.css b/css/relaxed.admin.css
+index 3b39797..d56dc65 100644
+--- a/css/relaxed.admin.css
++++ b/css/relaxed.admin.css
+@@ -12,7 +12,7 @@
+   left: 12px; /* LTR */
+   top: 14px;
+ }
+-[dir="rtl"] .relaxed-endpoint-check__status-icon:before  {
++[dir="rtl"] .relaxed-endpoint-check__status-icon:before {
+   left: auto;
+   right: 12px;
+ }
+diff --git a/src/AllDocs/AllDocs.php b/src/AllDocs/AllDocs.php
+index f6c08ba..04bb949 100644
+--- a/src/AllDocs/AllDocs.php
++++ b/src/AllDocs/AllDocs.php
+@@ -9,6 +9,9 @@ use Drupal\workspaces\WorkspaceInterface;
+ use Symfony\Component\Serializer\SerializerInterface;
+ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+ 
++/**
++ *
++ */
+ class AllDocs implements AllDocsInterface {
+   use DependencySerializationTrait;
+ 
+@@ -38,7 +41,7 @@ class AllDocs implements AllDocsInterface {
+   protected $serializer;
+ 
+   /**
+-   * @var boolean
++   * @var bool
+    */
+   protected $includeDocs = FALSE;
+ 
+@@ -53,7 +56,7 @@ class AllDocs implements AllDocsInterface {
+   protected $skip = 0;
+ 
+   /**
+-   * @var boolean
++   * @var bool
+    */
+   protected $descending = FALSE;
+ 
+@@ -68,7 +71,7 @@ class AllDocs implements AllDocsInterface {
+   protected $endKey;
+ 
+   /**
+-   * @var boolean
++   * @var bool
+    */
+   protected $inclusiveEnd = TRUE;
+ 
+diff --git a/src/AllDocs/AllDocsInterface.php b/src/AllDocs/AllDocsInterface.php
+index 155780e..e094381 100644
+--- a/src/AllDocs/AllDocsInterface.php
++++ b/src/AllDocs/AllDocsInterface.php
+@@ -2,13 +2,13 @@
+ 
+ namespace Drupal\relaxed\AllDocs;
+ 
+-use Drupal\workspaces\WorkspaceInterface;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+-
++/**
++ *
++ */
+ interface AllDocsInterface {
+ 
+   /**
+-   * @param boolean $include_docs
++   * @param bool $include_docs
+    * @return \Drupal\relaxed\AllDocs\AllDocsInterface
+    */
+   public function includeDocs($include_docs);
+@@ -26,7 +26,7 @@ interface AllDocsInterface {
+   public function skip($skip);
+ 
+   /**
+-   * @param boolean $descending
++   * @param bool $descending
+    * @return \Drupal\relaxed\AllDocs\AllDocsInterface
+    */
+   public function descending($descending);
+@@ -44,7 +44,7 @@ interface AllDocsInterface {
+   public function endKey($key);
+ 
+   /**
+-   * @param boolean $inclusive_end
++   * @param bool $inclusive_end
+    * @return \Drupal\relaxed\AllDocs\AllDocsInterface
+    */
+   public function inclusiveEnd($inclusive_end);
+diff --git a/src/AllDocsFactory.php b/src/AllDocsFactory.php
+index 0d89785..366900c 100644
+--- a/src/AllDocsFactory.php
++++ b/src/AllDocsFactory.php
+@@ -9,6 +9,9 @@ use Drupal\multiversion\MultiversionManagerInterface;
+ use Drupal\relaxed\AllDocs\AllDocs;
+ use Symfony\Component\Serializer\SerializerInterface;
+ 
++/**
++ *
++ */
+ class AllDocsFactory implements BulkDocsFactoryInterface {
+ 
+   /**
+diff --git a/src/AllDocsFactoryInterface.php b/src/AllDocsFactoryInterface.php
+index 66ae47e..c986819 100644
+--- a/src/AllDocsFactoryInterface.php
++++ b/src/AllDocsFactoryInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\relaxed;
+ 
+ use Drupal\workspaces\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ interface AllDocsFactoryInterface {
+ 
+   /**
+diff --git a/src/Annotation/ReplicationFilter.php b/src/Annotation/ReplicationFilter.php
+index 9def844..56d1f9e 100644
+--- a/src/Annotation/ReplicationFilter.php
++++ b/src/Annotation/ReplicationFilter.php
+@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
+ /**
+  * Defines a ReplicationFilter annotation object.
+  *
+- * Plugin Namespace: Plugin\ReplicationFilter
++ * Plugin Namespace: Plugin\ReplicationFilter.
+  *
+  * For a working example, see
+  * \Drupal\relaxed\Plugin\ReplicationFilter\PublishedFilter
+diff --git a/src/BulkDocs/BulkDocs.php b/src/BulkDocs/BulkDocs.php
+index 6d2e894..5be9852 100644
+--- a/src/BulkDocs/BulkDocs.php
++++ b/src/BulkDocs/BulkDocs.php
+@@ -14,6 +14,9 @@ use Drupal\workspaces\WorkspaceInterface;
+ use Drupal\workspaces\WorkspaceManagerInterface;
+ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+ 
++/**
++ *
++ */
+ class BulkDocs implements BulkDocsInterface {
+ 
+   use DependencySerializationTrait;
+diff --git a/src/BulkDocs/BulkDocsInterface.php b/src/BulkDocs/BulkDocsInterface.php
+index a868507..5c31a01 100644
+--- a/src/BulkDocs/BulkDocsInterface.php
++++ b/src/BulkDocs/BulkDocsInterface.php
+@@ -2,10 +2,13 @@
+ 
+ namespace Drupal\relaxed\BulkDocs;
+ 
++/**
++ *
++ */
+ interface BulkDocsInterface {
+ 
+   /**
+-   * @param boolean $new_edits
++   * @param bool $new_edits
+    * @return \Drupal\relaxed\BulkDocs\BulkDocsInterface
+    */
+   public function newEdits($new_edits);
+diff --git a/src/BulkDocsFactory.php b/src/BulkDocsFactory.php
+index 932d4ee..720ef6c 100644
+--- a/src/BulkDocsFactory.php
++++ b/src/BulkDocsFactory.php
+@@ -13,6 +13,9 @@ use Drupal\workspaces\WorkspaceInterface;
+ use Drupal\workspaces\WorkspaceManagerInterface;
+ use Drupal\relaxed\BulkDocs\BulkDocs;
+ 
++/**
++ *
++ */
+ class BulkDocsFactory implements BulkDocsFactoryInterface {
+ 
+   /**
+diff --git a/src/BulkDocsFactoryInterface.php b/src/BulkDocsFactoryInterface.php
+index 3f3d1a6..9d0693c 100644
+--- a/src/BulkDocsFactoryInterface.php
++++ b/src/BulkDocsFactoryInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\relaxed;
+ 
+ use Drupal\workspaces\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ interface BulkDocsFactoryInterface {
+ 
+   /**
+diff --git a/src/Changes/Changes.php b/src/Changes/Changes.php
+index ebc0024..603bd96 100644
+--- a/src/Changes/Changes.php
++++ b/src/Changes/Changes.php
+@@ -17,7 +17,7 @@ class Changes implements ChangesInterface {
+ 
+   /**
+    * The sequence index.
+-   * 
++   *
+    * @var \Drupal\multiversion\Entity\Index\SequenceIndexInterface
+    */
+   protected $sequenceIndex;
+@@ -60,7 +60,7 @@ class Changes implements ChangesInterface {
+   /**
+    * Whether to include entities in the changeset.
+    *
+-   * @var boolean
++   * @var bool
+    */
+   protected $includeDocs = FALSE;
+ 
+@@ -74,7 +74,7 @@ class Changes implements ChangesInterface {
+   /**
+    * Number of items to return.
+    *
+-   * @var int|NULL
++   * @var int|null
+    *   The limit of items.
+    */
+   protected $limit = NULL;
+@@ -210,7 +210,7 @@ class Changes implements ChangesInterface {
+     // Now when we have rebuilt the result array we need to ensure that the
+     // results array is still sorted on the sequence key, as in the index.
+     $return = array_values($changes);
+-    usort($return, function($a, $b) {
++    usort($return, function ($a, $b) {
+       return $a['seq'] - $b['seq'];
+     });
+ 
+diff --git a/src/ChangesFactory.php b/src/ChangesFactory.php
+index 333046d..1ebb78a 100644
+--- a/src/ChangesFactory.php
++++ b/src/ChangesFactory.php
+@@ -9,6 +9,9 @@ use Drupal\relaxed\Changes\Changes;
+ use Drupal\relaxed\Plugin\ReplicationFilterManagerInterface;
+ use Symfony\Component\Serializer\SerializerInterface;
+ 
++/**
++ *
++ */
+ class ChangesFactory implements ChangesFactoryInterface {
+ 
+   /**
+diff --git a/src/ChangesFactoryInterface.php b/src/ChangesFactoryInterface.php
+index 920ed09..5ace6a1 100644
+--- a/src/ChangesFactoryInterface.php
++++ b/src/ChangesFactoryInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\relaxed;
+ 
+ use Drupal\workspaces\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ interface ChangesFactoryInterface {
+ 
+   /**
+diff --git a/src/Controller/ResourceController.php b/src/Controller/ResourceController.php
+index 92ce4dc..b7ebcc8 100644
+--- a/src/Controller/ResourceController.php
++++ b/src/Controller/ResourceController.php
+@@ -126,7 +126,7 @@ class ResourceController implements ContainerInjectionInterface {
+   }
+ 
+   /**
+-   * @param \Drupal\Core\Routing\RouteMatchInterface  $route_match
++   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+    * @param \Symfony\Component\HttpFoundation\Request $request
+    *
+    * @return \Symfony\Component\HttpFoundation\Response
+@@ -191,7 +191,7 @@ class ResourceController implements ContainerInjectionInterface {
+     try {
+       $render_context = new RenderContext();
+       /** @var \Drupal\relaxed\Http\ApiResourceResponse $response */
+-      $response = $this->renderer->executeInRenderContext($render_context, function() use ($api_resource, $method, $parameters, $entity, $request) {
++      $response = $this->renderer->executeInRenderContext($render_context, function () use ($api_resource, $method, $parameters, $entity, $request) {
+         return call_user_func_array([$api_resource, $method], array_merge($parameters, [$entity, $request]));
+       });
+ 
+@@ -211,7 +211,7 @@ class ResourceController implements ContainerInjectionInterface {
+       if ($response_data = $response_part->getResponseData()) {
+         // Collect bubbleable metadata in a render context.
+         $render_context = new RenderContext();
+-        $response_output = $this->renderer->executeInRenderContext($render_context, function() use ($serializer, $response_data, $response_format, $context) {
++        $response_output = $this->renderer->executeInRenderContext($render_context, function () use ($serializer, $response_data, $response_format, $context) {
+           return $serializer->serialize($response_data, $response_format, $context);
+         });
+ 
+@@ -359,7 +359,7 @@ class ResourceController implements ContainerInjectionInterface {
+   }
+ 
+   /**
+-   * @param Request $request
++   * @param \Symfony\Component\HttpFoundation\Request $request
+    *
+    * @return array
+    */
+diff --git a/src/CouchdbReplicator.php b/src/CouchdbReplicator.php
+index 37b7b04..2568c69 100644
+--- a/src/CouchdbReplicator.php
++++ b/src/CouchdbReplicator.php
+@@ -5,14 +5,11 @@ namespace Drupal\relaxed;
+ use Doctrine\CouchDB\CouchDBClient;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Url;
+-use Drupal\workspaces\WorkspaceInterface;
+ use Drupal\relaxed\Event\RelaxedEvents;
+ use Drupal\relaxed\Event\RelaxedReplicationFinishedEvent;
+-use Drupal\relaxed\Entity\RemoteInterface;
+ use Drupal\relaxed\Entity\ReplicationLog;
+ use Drupal\relaxed\Entity\ReplicationLogInterface;
+ use Drupal\relaxed\ReplicationTask\ReplicationTaskInterface;
+-use Drupal\workspace\Replication\ReplicationInterface;
+ use Drupal\workspace\ReplicatorInterface;
+ use Drupal\workspace\WorkspacePointerInterface;
+ use GuzzleHttp\Psr7\Uri;
+@@ -20,7 +17,10 @@ use Relaxed\Replicator\ReplicationTask as RelaxedReplicationTask;
+ use Relaxed\Replicator\Replicator;
+ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+ 
+-class CouchdbReplicator implements ReplicatorInterface{
++/**
++ *
++ */
++class CouchdbReplicator implements ReplicatorInterface {
+ 
+   /**
+    * Relaxed configuration settings.
+@@ -34,6 +34,9 @@ class CouchdbReplicator implements ReplicatorInterface{
+    */
+   protected $transformer;
+ 
++  /**
++   *
++   */
+   public function __construct(ConfigFactoryInterface $config_factory, SensitiveDataTransformer $transformer) {
+     $this->relaxedSettings = $config_factory->get('relaxed.settings');
+     $this->transformer = $transformer;
+@@ -119,16 +122,18 @@ class CouchdbReplicator implements ReplicatorInterface{
+     }
+   }
+ 
+-
++  /**
++   *
++   */
+   public function setupEndpoint(WorkspacePointerInterface $pointer) {
+     if (!empty($pointer->getWorkspaceId())) {
+       /** @var string $api_root */
+       $api_root = trim($this->relaxedSettings->get('api_root'), '/');
+-      /** @var WorkspaceInterface $workspace */
++      /** @var \Drupal\workspaces\WorkspaceInterface $workspace */
+       $workspace = $pointer->getWorkspace();
+       $url = Url::fromUri('base:/' . $api_root . '/' . $workspace->id(), []);
+       // This is a workaround for the case when the site/server is not configured
+-      // correctly and 'base:/' returns the URL with 'http' instead of 'https';
++      // correctly and 'base:/' returns the URL with 'http' instead of 'https';.
+       if ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')
+         || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) {
+         $url->setOption('https', TRUE);
+@@ -142,9 +147,9 @@ class CouchdbReplicator implements ReplicatorInterface{
+     }
+ 
+     if (!empty($pointer->get('remote_pointer')->target_id) && !empty($pointer->get('remote_database')->value)) {
+-      /** @var RemoteInterface $remote */
++      /** @var \Drupal\relaxed\Entity\RemoteInterface $remote */
+       $remote = $pointer->get('remote_pointer')->entity;
+-      /** @var Uri $uri */
++      /** @var \GuzzleHttp\Psr7\Uri $uri */
+       $uri = $remote->uri();
+       $uri = $uri->withPath($uri->getPath() . '/' . $pointer->get('remote_database')->value);
+     }
+@@ -159,17 +164,20 @@ class CouchdbReplicator implements ReplicatorInterface{
+       return CouchDBClient::create([
+         'url' => (string) $uri,
+         'port' => $port,
+-        'timeout' => 10
++        'timeout' => 10,
+       ]);
+     }
+   }
+ 
++  /**
++   *
++   */
+   protected function errorReplicationLog(WorkspacePointerInterface $source, WorkspacePointerInterface $target, ReplicationTaskInterface $task = NULL) {
+     $time = new \DateTime();
+     $history = [
+       'start_time' => $time->format('D, d M Y H:i:s e'),
+       'end_time' => $time->format('D, d M Y H:i:s e'),
+-      'session_id' => \md5((\microtime(true) * 1000000)),
++      'session_id' => \md5((\microtime(TRUE) * 1000000)),
+     ];
+     $replication_log_id = $source->generateReplicationId($target, $task);
+     /** @var \Drupal\relaxed\Entity\ReplicationLogInterface $replication_log */
+@@ -185,6 +193,9 @@ class CouchdbReplicator implements ReplicatorInterface{
+     return $replication_log;
+   }
+ 
++  /**
++   *
++   */
+   protected function dispatchReplicationFinishedEvent(WorkspacePointerInterface $source, WorkspacePointerInterface $target, ReplicationLogInterface $log) {
+     $replication_info = [
+       'source' => $source->label(),
+diff --git a/src/Encoder/StreamEncoder.php b/src/Encoder/StreamEncoder.php
+index 76b55b0..f23c8e4 100644
+--- a/src/Encoder/StreamEncoder.php
++++ b/src/Encoder/StreamEncoder.php
+@@ -6,6 +6,9 @@ use Drupal\Component\Utility\Random;
+ use Symfony\Component\Serializer\Encoder\DecoderInterface;
+ use Symfony\Component\Serializer\Encoder\EncoderInterface;
+ 
++/**
++ *
++ */
+ class StreamEncoder implements EncoderInterface, DecoderInterface {
+ 
+   /**
+@@ -18,6 +21,9 @@ class StreamEncoder implements EncoderInterface, DecoderInterface {
+    */
+   protected $random;
+ 
++  /**
++   *
++   */
+   public function __construct(Random $random = NULL) {
+     $this->random = $random ?: new Random();
+   }
+@@ -63,4 +69,5 @@ class StreamEncoder implements EncoderInterface, DecoderInterface {
+   public function supportsDecoding($format) {
+     return in_array($format, $this->formats);
+   }
++
+ }
+diff --git a/src/Entity/Remote.php b/src/Entity/Remote.php
+index 7a4ebb4..b9ba289 100644
+--- a/src/Entity/Remote.php
++++ b/src/Entity/Remote.php
+@@ -4,7 +4,6 @@ namespace Drupal\relaxed\Entity;
+ 
+ use Drupal\Core\Config\Entity\ConfigEntityBase;
+ use Drupal\Core\Entity\EntityStorageInterface;
+-use Drupal\encrypt\Entity\EncryptionProfile;
+ use GuzzleHttp\Psr7\Uri;
+ 
+ /**
+@@ -73,24 +72,37 @@ class Remote extends ConfigEntityBase implements RemoteInterface {
+    */
+   protected $uri;
+ 
++  /**
++   *
++   */
+   public function uri() {
+     $uri = \Drupal::service('relaxed.sensitive_data.transformer')->get($this->uri);
+     return new Uri($uri);
+   }
+ 
++  /**
++   *
++   */
+   public function withoutUserInfo() {
+     $user_info = $this->uri()->getUserInfo();
+     $uri = (string) $this->uri();
+     return str_replace($user_info . '@', '', $uri);
+   }
+ 
++  /**
++   *
++   */
+   public function username() {
+     $user_info = explode(':', $this->uri()->getUserInfo());
+     return $user_info[0];
+   }
+ 
++  /**
++   *
++   */
+   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+     \Drupal::service('relaxed.remote_pointer')->addPointers($this);
+     parent::postSave($storage, $update);
+   }
++
+ }
+diff --git a/src/Entity/RemoteListBuilder.php b/src/Entity/RemoteListBuilder.php
+index 737a99b..f754e49 100644
+--- a/src/Entity/RemoteListBuilder.php
++++ b/src/Entity/RemoteListBuilder.php
+@@ -86,4 +86,5 @@ class RemoteListBuilder extends ConfigEntityListBuilder {
+     }
+     return $build;
+   }
++
+ }
+diff --git a/src/Entity/ReplicationLog.php b/src/Entity/ReplicationLog.php
+index 028774a..7ea0d15 100644
+--- a/src/Entity/ReplicationLog.php
++++ b/src/Entity/ReplicationLog.php
+@@ -75,7 +75,7 @@ class ReplicationLog extends ContentEntityBase implements ReplicationLogInterfac
+   }
+ 
+   /**
+-   * @param $id string
++   * @param string $id
+    * @return \Drupal\relaxed\Entity\ReplicationLogInterface
+    */
+   public static function loadOrCreate($id) {
+@@ -139,4 +139,5 @@ class ReplicationLog extends ContentEntityBase implements ReplicationLogInterfac
+ 
+     return $fields;
+   }
++
+ }
+diff --git a/src/Entity/ReplicationLogInterface.php b/src/Entity/ReplicationLogInterface.php
+index b77a1ce..73d3d3d 100644
+--- a/src/Entity/ReplicationLogInterface.php
++++ b/src/Entity/ReplicationLogInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\relaxed\Entity;
+ 
+ use Drupal\Core\Entity\ContentEntityInterface;
+ 
++/**
++ *
++ */
+ interface ReplicationLogInterface extends ContentEntityInterface {
+ 
+   /**
+diff --git a/src/Entity/ReplicationSettings.php b/src/Entity/ReplicationSettings.php
+index 108b800..309f7da 100644
+--- a/src/Entity/ReplicationSettings.php
++++ b/src/Entity/ReplicationSettings.php
+@@ -63,4 +63,5 @@ class ReplicationSettings extends ConfigEntityBase implements ReplicationSetting
+   public function getParameters() {
+     return $this->parameters;
+   }
++
+ }
+diff --git a/src/Event/ReplicationContentDataAlterEvent.php b/src/Event/ReplicationContentDataAlterEvent.php
+index fd30d40..73056fd 100644
+--- a/src/Event/ReplicationContentDataAlterEvent.php
++++ b/src/Event/ReplicationContentDataAlterEvent.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\relaxed\Event;
+ 
+-
+ use Drupal\Core\Entity\ContentEntityInterface;
+ use Symfony\Component\EventDispatcher\Event;
+ 
+@@ -38,7 +37,7 @@ class ReplicationContentDataAlterEvent extends Event {
+   /**
+    * ReplicationContentDataAlterEvent constructor.
+    *
+-   * @param ContentEntityInterface $entity
++   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+    * @param array $data
+    * @param $format
+    * @param array $context
+@@ -71,7 +70,6 @@ class ReplicationContentDataAlterEvent extends Event {
+     return $this->context;
+   }
+ 
+-
+   /**
+    * @return array
+    */
+diff --git a/src/Form/RemoteDeleteForm.php b/src/Form/RemoteDeleteForm.php
+index 0aba341..f3025fc 100644
+--- a/src/Form/RemoteDeleteForm.php
++++ b/src/Form/RemoteDeleteForm.php
+@@ -42,7 +42,7 @@ class RemoteDeleteForm extends EntityConfirmFormBase {
+       $this->t('content @type: deleted @label.',
+         [
+           '@type' => $this->entity->bundle(),
+-          '@label' => $this->entity->label()
++          '@label' => $this->entity->label(),
+         ]
+       )
+     );
+diff --git a/src/Form/SettingsForm.php b/src/Form/SettingsForm.php
+index ffd23ed..367b644 100644
+--- a/src/Form/SettingsForm.php
++++ b/src/Form/SettingsForm.php
+@@ -278,12 +278,15 @@ class SettingsForm extends ConfigFormBase {
+       case 'uid':
+         $uid = $form_state->getValue('uid');
+         break;
++
+       case 'anonymous':
+         $uid = 0;
+         break;
++
+       case 'uid_1':
+         $uid = 1;
+         break;
++
+       default:
+         $uid = NULL;
+     }
+diff --git a/src/HttpMultipart/HttpFoundation/MultipartResponse.php b/src/HttpMultipart/HttpFoundation/MultipartResponse.php
+index 737974c..8dabcfe 100644
+--- a/src/HttpMultipart/HttpFoundation/MultipartResponse.php
++++ b/src/HttpMultipart/HttpFoundation/MultipartResponse.php
+@@ -6,6 +6,9 @@ use Drupal\relaxed\Http\ApiResourceResponse;
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\HttpFoundation\Response;
+ 
++/**
++ *
++ */
+ class MultipartResponse extends ApiResourceResponse {
+   /**
+    * @var string
+@@ -18,7 +21,7 @@ class MultipartResponse extends ApiResourceResponse {
+   public $boundary;
+ 
+   /**
+-   * @var Response[]
++   * @var \Symfony\Component\HttpFoundation\Response[]
+    */
+   protected $parts = [];
+ 
+@@ -67,7 +70,8 @@ class MultipartResponse extends ApiResourceResponse {
+   /**
+    * Sets a part of the multipart response.
+    *
+-   * @param Response $part A response object to be part of the multipart response.
++   * @param \Symfony\Component\HttpFoundation\Response $part
++   *   A response object to be part of the multipart response.
+    *
+    * @return MultipartResponse
+    */
+@@ -80,7 +84,8 @@ class MultipartResponse extends ApiResourceResponse {
+   /**
+    * Sets multiple parts of the multipart response.
+    *
+-   * @param Response[] $parts Response objects to be part of the multipart response.
++   * @param \Symfony\Component\HttpFoundation\Response[] $parts
++   *   Response objects to be part of the multipart response.
+    *
+    * @return MultipartResponse
+    */
+@@ -94,7 +99,7 @@ class MultipartResponse extends ApiResourceResponse {
+   /**
+    * Returns the parts.
+    *
+-   * @return Response[]
++   * @return \Symfony\Component\HttpFoundation\Response[]
+    */
+   public function getParts() {
+     return $this->parts;
+diff --git a/src/HttpMultipart/Message/MultipartMessageFactory.php b/src/HttpMultipart/Message/MultipartMessageFactory.php
+index d23c34c..5cf2fa4 100644
+--- a/src/HttpMultipart/Message/MultipartMessageFactory.php
++++ b/src/HttpMultipart/Message/MultipartMessageFactory.php
+@@ -4,17 +4,20 @@ namespace Drupal\relaxed\HttpMultipart\Message;
+ 
+ use GuzzleHttp\Psr7;
+ 
++/**
++ *
++ */
+ class MultipartMessageFactory {
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function createResponse($statusCode, array $headers = [], $body = null, array $options = [])
+-  {
+-    if (null !== $body) {
++  public function createResponse($statusCode, array $headers = [], $body = NULL, array $options = []) {
++    if (NULL !== $body) {
+       $body = $stream = Psr7\stream_for($body);
+     }
+ 
+     return new MultipartResponse($statusCode, $headers, $body, $options);
+   }
++
+ }
+diff --git a/src/HttpMultipart/Message/MultipartResponse.php b/src/HttpMultipart/Message/MultipartResponse.php
+index e4f81d3..11243be 100644
+--- a/src/HttpMultipart/Message/MultipartResponse.php
++++ b/src/HttpMultipart/Message/MultipartResponse.php
+@@ -6,20 +6,23 @@ use GuzzleHttp\Psr7;
+ use Psr\Http\Message\StreamInterface;
+ use Symfony\Component\HttpFoundation\Response;
+ 
+-class MultipartResponse extends Response
+-{
+-  /** @var StreamInterface[] */
++/**
++ *
++ */
++class MultipartResponse extends Response {
++  /**
++   * @var \Psr\Http\Message\StreamInterface[]*/
+   private $bodies = [];
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setBody(StreamInterface $body = null)
+-  {
+-    if (null === $body) {
++  public function setBody(StreamInterface $body = NULL) {
++    if (NULL === $body) {
+       $this->headers->remove('Content-Length');
+       $this->headers->remove('Transfer-Encoding');
+-    } else {
++    }
++    else {
+       foreach (self::parseMultipartBody($body) as $parts) {
+         $this->bodies[] = Psr7\stream_for($parts['body']);
+       }
+@@ -29,20 +32,18 @@ class MultipartResponse extends Response
+   /**
+    * {@inheritdoc}
+    */
+-  public function getBody()
+-  {
++  public function getBody() {
+     return array_shift($this->bodies);
+   }
+ 
+   /**
+    * Parses a multipart body into multiple parts.
+    *
+-   * @param StreamInterface $stream
++   * @param \Psr\Http\Message\StreamInterface $stream
+    *
+    * @return array
+    */
+-  public static function parseMultipartBody(StreamInterface $stream)
+-  {
++  public static function parseMultipartBody(StreamInterface $stream) {
+     $parts = [];
+     preg_match('/--(.*)\b/', $stream, $boundary);
+ 
+@@ -77,4 +78,5 @@ class MultipartResponse extends Response
+ 
+     return $parts;
+   }
++
+ }
+diff --git a/src/Normalizer/AllDocsNormalizer.php b/src/Normalizer/AllDocsNormalizer.php
+index 515bcf3..0c3e34c 100644
+--- a/src/Normalizer/AllDocsNormalizer.php
++++ b/src/Normalizer/AllDocsNormalizer.php
+@@ -5,6 +5,9 @@ namespace Drupal\relaxed\Normalizer;
+ use Drupal\relaxed\AllDocs\AllDocsInterface;
+ use Drupal\serialization\Normalizer\NormalizerBase;
+ 
++/**
++ *
++ */
+ class AllDocsNormalizer extends NormalizerBase {
+ 
+   protected $supportedInterfaceOrClass = [AllDocsInterface::class];
+@@ -28,11 +31,12 @@ class AllDocsNormalizer extends NormalizerBase {
+       $data['rows'][] = [
+         'id' => $key,
+         'key' => $key,
+-        'value' => $value
++        'value' => $value,
+       ];
+     }
+ 
+     $data['total_rows'] = count($rows);
+     return $data;
+   }
++
+ }
+diff --git a/src/Normalizer/AttachmentNormalizer.php b/src/Normalizer/AttachmentNormalizer.php
+index 26e8008..9ca00af 100644
+--- a/src/Normalizer/AttachmentNormalizer.php
++++ b/src/Normalizer/AttachmentNormalizer.php
+@@ -3,9 +3,11 @@
+ namespace Drupal\relaxed\Normalizer;
+ 
+ use Drupal\file\FileInterface;
+-use Drupal\multiversion\Entity\Index\UuidIndexInterface;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class AttachmentNormalizer extends ContentEntityNormalizer implements DenormalizerInterface {
+ 
+   /**
+@@ -54,11 +56,11 @@ class AttachmentNormalizer extends ContentEntityNormalizer implements Denormaliz
+     }
+     if (isset($context['uuid'])) {
+       $workspace = isset($context['workspace']) ? $context['workspace'] : NULL;
+-      /** @var UuidIndexInterface $uuid_index */
++      /** @var \Drupal\multiversion\Entity\Index\UuidIndexInterface $uuid_index */
+       $uuid_index = $this->indexFactory->get('multiversion.entity_index.uuid', $workspace);
+       $entity_info = $uuid_index->get($context['uuid']);
+       if (!empty($entity_info)) {
+-        /** @var FileInterface $file */
++        /** @var \Drupal\file\FileInterface $file */
+         $file = $this->entityManager->getStorage($entity_info['entity_type_id'])
+           ->load($entity_info['entity_id']);
+         if (!empty($file)) {
+@@ -72,6 +74,9 @@ class AttachmentNormalizer extends ContentEntityNormalizer implements Denormaliz
+     return $this->entityManager->getStorage('file')->create($file_data);
+   }
+ 
++  /**
++   *
++   */
+   public function supportsDenormalization($data, $type, $format = NULL) {
+     if ($type == FileInterface::class && in_array($format, $this->format)) {
+       return TRUE;
+diff --git a/src/Normalizer/BulkDocsNormalizer.php b/src/Normalizer/BulkDocsNormalizer.php
+index 6256d93..7c167e7 100644
+--- a/src/Normalizer/BulkDocsNormalizer.php
++++ b/src/Normalizer/BulkDocsNormalizer.php
+@@ -10,6 +10,9 @@ use Drupal\serialization\Normalizer\NormalizerBase;
+ use Symfony\Component\Serializer\Exception\LogicException;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class BulkDocsNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   protected $supportedInterfaceOrClass = [BulkDocsInterface::class];
+diff --git a/src/Normalizer/ChangesNormalizer.php b/src/Normalizer/ChangesNormalizer.php
+index 6d51c1a..98ac5b7 100644
+--- a/src/Normalizer/ChangesNormalizer.php
++++ b/src/Normalizer/ChangesNormalizer.php
+@@ -5,6 +5,9 @@ namespace Drupal\relaxed\Normalizer;
+ use Drupal\relaxed\Changes\ChangesInterface;
+ use Drupal\serialization\Normalizer\NormalizerBase;
+ 
++/**
++ *
++ */
+ class ChangesNormalizer extends NormalizerBase {
+ 
+   protected $supportedInterfaceOrClass = [ChangesInterface::class];
+diff --git a/src/Normalizer/CommentItemNormalizer.php b/src/Normalizer/CommentItemNormalizer.php
+index 69b847a..9572871 100644
+--- a/src/Normalizer/CommentItemNormalizer.php
++++ b/src/Normalizer/CommentItemNormalizer.php
+@@ -3,9 +3,12 @@
+ namespace Drupal\relaxed\Normalizer;
+ 
+ use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
+-use \Drupal\serialization\Normalizer\FieldItemNormalizer;
++use Drupal\serialization\Normalizer\FieldItemNormalizer;
+ 
+-class CommentItemNormalizer extends FieldItemNormalizer  {
++/**
++ *
++ */
++class CommentItemNormalizer extends FieldItemNormalizer {
+ 
+   /**
+    * The interface or class that this Normalizer supports.
+diff --git a/src/Normalizer/ContentEntityNormalizer.php b/src/Normalizer/ContentEntityNormalizer.php
+index 12bc6bd..302670d 100644
+--- a/src/Normalizer/ContentEntityNormalizer.php
++++ b/src/Normalizer/ContentEntityNormalizer.php
+@@ -24,6 +24,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   use FieldableEntityNormalizerTrait;
+@@ -86,7 +89,7 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+    * {@inheritdoc}
+    */
+   public function normalize($entity, $format = NULL, array $context = []) {
+-    $workspace = isset($entity->workspace->entity) ? $entity->workspace->entity : null;
++    $workspace = isset($entity->workspace->entity) ? $entity->workspace->entity : NULL;
+     $rev_tree_index = $this->indexFactory->get('multiversion.entity_index.rev.tree', $workspace);
+ 
+     $entity_type_id = $context['entity_type'] = $entity->getEntityTypeId();
+@@ -115,16 +118,16 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+       $data['_rev'] = $entity->_rev->value;
+     }
+ 
+-    // Loop through each language of the entity
++    // Loop through each language of the entity.
+     $field_definitions = $entity->getFieldDefinitions();
+     foreach ($entity_languages as $entity_language) {
+       $translation = $entity->getTranslation($entity_language->getId());
+-      // Add the default language
++      // Add the default language.
+       $data[$entity_language->getId()] =
+         [
+           '@context' => [
+             '@language' => $entity_language->getId(),
+-          ]
++          ],
+         ];
+       foreach ($translation as $name => $field) {
+         // Add data for each field (through the field's normalizer.
+@@ -177,14 +180,14 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+    * {@inheritdoc}
+    */
+   public function denormalize($data, $class, $format = NULL, array $context = []) {
+-    // Make sure these values start as NULL
++    // Make sure these values start as NULL.
+     $entity_type_id = NULL;
+     $entity_uuid = NULL;
+     $entity_id = NULL;
+ 
+-    // Get the default language of the entity
++    // Get the default language of the entity.
+     $default_langcode = $data['@context']['@language'];
+-    // Get all of the configured languages of the site
++    // Get all of the configured languages of the site.
+     $site_languages = $this->languageManager->getLanguages();
+ 
+     // Resolve the UUID.
+@@ -223,7 +226,7 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+     }
+ 
+     // Add the _rev field to the $data array.
+-    $rev = null;
++    $rev = NULL;
+     if (isset($data['_rev'])) {
+       $rev = $data['_rev'];
+     }
+@@ -262,9 +265,7 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+     // logic to the resource plugin instead.}
+     $storage = $this->entityManager->getStorage($entity_type_id);
+ 
+-
+     // @todo {@link https://www.drupal.org/node/2599926 Use the passed $class to instantiate the entity.}
+-
+     if ($entity_id) {
+       if ($entity = $storage->load($entity_id) ?: $storage->loadDeleted($entity_id)) {
+         if (!empty($translations[$entity->language()->getId()])) {
+@@ -339,7 +340,7 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    * @throws \Drupal\Core\Entity\EntityStorageException
+    */
+-  private function denormalizeTranslation($translation, $entity_id, $entity_uuid, $entity_type_id, $bundle_key, $entity_type, $id_key, $context, $rev = null, array $revisions = []) {
++  private function denormalizeTranslation($translation, $entity_id, $entity_uuid, $entity_type_id, $bundle_key, $entity_type, $id_key, $context, $rev = NULL, array $revisions = []) {
+     // Add the _rev field to the $translation array.
+     if (isset($rev)) {
+       $translation['_rev'] = [['value' => $rev]];
+@@ -417,7 +418,7 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+             $bundles = $this->entityManager->getBundleInfo($target_entity_type_id);
+             $target_bundle_id = key($bundles);
+           }
+-          $target_entity = null;
++          $target_entity = NULL;
+           $uuid_index = (isset($context['workspace']) && ($context['workspace'] instanceof WorkspaceInterface)) ? $this->indexFactory->get('multiversion.entity_index.uuid', $context['workspace']) : $this->indexFactory->get('multiversion.entity_index.uuid');
+           if ($target_entity_info = $uuid_index->get($target_entity_uuid)) {
+             $target_entity = $this->entityManager
+@@ -523,7 +524,7 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+    * This makes sure denormalization runs on field items.
+    *
+    * @param array $data
+-   * @param EntityTypeInterface $entity_type
++   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+    * @param $format
+    * @param array $context
+    *
+diff --git a/src/Normalizer/EntityReferenceItemNormalizer.php b/src/Normalizer/EntityReferenceItemNormalizer.php
+index 2513306..ac5c79a 100644
+--- a/src/Normalizer/EntityReferenceItemNormalizer.php
++++ b/src/Normalizer/EntityReferenceItemNormalizer.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Entity\FieldableEntityStorageInterface;
+ use Drupal\multiversion\EntityReferenceItem;
+ use Drupal\serialization\Normalizer\FieldItemNormalizer;
+ 
++/**
++ *
++ */
+ class EntityReferenceItemNormalizer extends FieldItemNormalizer {
+ 
+   /**
+diff --git a/src/Normalizer/FileEntityNormalizer.php b/src/Normalizer/FileEntityNormalizer.php
+index 276f48e..508c46c 100644
+--- a/src/Normalizer/FileEntityNormalizer.php
++++ b/src/Normalizer/FileEntityNormalizer.php
+@@ -14,6 +14,9 @@ use Drupal\relaxed\UsersMapping;
+ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class FileEntityNormalizer extends ContentEntityNormalizer implements DenormalizerInterface {
+ 
+   /**
+@@ -86,7 +89,7 @@ class FileEntityNormalizer extends ContentEntityNormalizer implements Denormaliz
+     $file = NULL;
+     if (!empty($data['@attachment']['uuid'])) {
+       $workspace = isset($context['workspace']) ? $context['workspace'] : NULL;
+-      /** @var FileInterface $file */
++      /** @var \Drupal\file\FileInterface $file */
+       if ($file = $this->processFileAttachment->process($data['@attachment'], 'base64_stream', $workspace)) {
+         // Update the data, because file name could change.
+         $language_code = $file->language()->getId();
+@@ -98,10 +101,13 @@ class FileEntityNormalizer extends ContentEntityNormalizer implements Denormaliz
+     return parent::denormalize($data, $class, $format, $context);
+   }
+ 
++  /**
++   *
++   */
+   public function supportsDenormalization($data, $type, $format = NULL) {
+     // We need to accept both FileInterface and ContentEntityInterface classes.
+     // File entities are treated as standard content entities.
+-    if (in_array($type, [ContentEntityInterface::class, FileInterface::class], true)) {
++    if (in_array($type, [ContentEntityInterface::class, FileInterface::class], TRUE)) {
+       // If a document has _attachment then we assume it's a file entity.
+       if (!empty($data['@attachment'])) {
+         return TRUE;
+diff --git a/src/Normalizer/LinkItemNormalizer.php b/src/Normalizer/LinkItemNormalizer.php
+index 2a610a3..e7531fa 100644
+--- a/src/Normalizer/LinkItemNormalizer.php
++++ b/src/Normalizer/LinkItemNormalizer.php
+@@ -14,6 +14,9 @@ use Drupal\multiversion\Entity\Storage\ContentEntityStorageInterface;
+ use Drupal\serialization\Normalizer\FieldItemNormalizer;
+ use Drupal\workspaces\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ class LinkItemNormalizer extends FieldItemNormalizer {
+ 
+   /**
+diff --git a/src/Normalizer/LocalSequenceItemListNormalizer.php b/src/Normalizer/LocalSequenceItemListNormalizer.php
+index fe6d972..e76d0d9 100644
+--- a/src/Normalizer/LocalSequenceItemListNormalizer.php
++++ b/src/Normalizer/LocalSequenceItemListNormalizer.php
+@@ -5,6 +5,9 @@ namespace Drupal\relaxed\Normalizer;
+ use Drupal\serialization\Normalizer\NormalizerBase;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class LocalSequenceItemListNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   /**
+@@ -25,4 +28,5 @@ class LocalSequenceItemListNormalizer extends NormalizerBase implements Denormal
+   public function denormalize($data, $class, $format = NULL, array $context = []) {
+     return [['id' => $data]];
+   }
++
+ }
+diff --git a/src/Normalizer/ParagraphNormalizer.php b/src/Normalizer/ParagraphNormalizer.php
+index 299b7e7..e7a6c6d 100644
+--- a/src/Normalizer/ParagraphNormalizer.php
++++ b/src/Normalizer/ParagraphNormalizer.php
+@@ -7,7 +7,8 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ use Drupal\paragraphs\Entity\Paragraph;
+ 
+ /**
+- * Class ParagraphNormalizer
++ * Class ParagraphNormalizer.
++ *
+  * @package Drupal\relaxed\Normalizer
+  */
+ class ParagraphNormalizer extends ContentEntityNormalizer implements DenormalizerInterface {
+@@ -93,4 +94,5 @@ class ParagraphNormalizer extends ContentEntityNormalizer implements Denormalize
+     }
+     return FALSE;
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/Normalizer/ReplicateNormalizer.php b/src/Normalizer/ReplicateNormalizer.php
+index 03bcfb7..54c064a 100644
+--- a/src/Normalizer/ReplicateNormalizer.php
++++ b/src/Normalizer/ReplicateNormalizer.php
+@@ -7,6 +7,9 @@ use Drupal\relaxed\Replicate\ReplicateInterface;
+ use Drupal\serialization\Normalizer\NormalizerBase;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class ReplicateNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   /**
+@@ -65,8 +68,8 @@ class ReplicateNormalizer extends NormalizerBase implements DenormalizerInterfac
+     if (!empty($data['parameters'])) {
+       $this->replicate->setParameters($data['parameters']);
+     }
+-    
++
+     return $this->replicate;
+   }
+-  
++
+ }
+diff --git a/src/Normalizer/ReplicationLogNormalizer.php b/src/Normalizer/ReplicationLogNormalizer.php
+index 1a596ea..ab0a9dd 100644
+--- a/src/Normalizer/ReplicationLogNormalizer.php
++++ b/src/Normalizer/ReplicationLogNormalizer.php
+@@ -10,6 +10,9 @@ use Drupal\relaxed\Entity\ReplicationLogInterface;
+ use Drupal\serialization\Normalizer\NormalizerBase;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class ReplicationLogNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   /**
+@@ -46,7 +49,7 @@ class ReplicationLogNormalizer extends NormalizerBase implements DenormalizerInt
+         '_id' => '@id',
+       ],
+       '@type' => 'replication_log',
+-      '_id' => '_local/'. $entity->uuid(),
++      '_id' => '_local/' . $entity->uuid(),
+       '_rev' => $entity->_rev->value,
+       'history' => $this->serializer->normalize($entity->get('history'), $format, $context),
+       'session_id' => $entity->getSessionId(),
+@@ -55,6 +58,7 @@ class ReplicationLogNormalizer extends NormalizerBase implements DenormalizerInt
+ 
+     return $data;
+   }
++
+   /**
+    * @inheritDoc
+    */
+@@ -77,21 +81,25 @@ class ReplicationLogNormalizer extends NormalizerBase implements DenormalizerInt
+       $entity = ReplicationLog::create($data);
+       return $entity;
+     }
+-    catch(\Exception $e) {
++    catch (\Exception $e) {
+       watchdog_exception('Relaxed', $e);
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function supportsDenormalization($data, $type, $format = NULL) {
+     // We need to accept both ReplicationLog and ContentEntityInterface classes.
+     // LocalDocResource entities are treated as standard documents (content entities)
+-    if (in_array($type, [ContentEntityInterface::class, ReplicationLog::class], true)) {
++    if (in_array($type, [ContentEntityInterface::class, ReplicationLog::class], TRUE)) {
+       // If a document doesn't have a type set, we assume it's a replication log.
+       // We also support documents specifically specified as replication logs.
+       if (!isset($data['@type']) || $data['@type'] === 'replication_log') {
+-        return true;
++        return TRUE;
+       }
+     }
+-    return false;
++    return FALSE;
+   }
++
+ }
+diff --git a/src/Normalizer/RevsDiffNormalizer.php b/src/Normalizer/RevsDiffNormalizer.php
+index ecf19de..cf632f4 100644
+--- a/src/Normalizer/RevsDiffNormalizer.php
++++ b/src/Normalizer/RevsDiffNormalizer.php
+@@ -8,6 +8,9 @@ use Drupal\serialization\Normalizer\NormalizerBase;
+ use Symfony\Component\Serializer\Exception\LogicException;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class RevsDiffNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   /**
+@@ -15,9 +18,13 @@ class RevsDiffNormalizer extends NormalizerBase implements DenormalizerInterface
+    */
+   protected $supportedInterfaceOrClass = [RevisionDiffInterface::class];
+ 
+-  /** @var  \Drupal\relaxed\RevisionDiffFactoryInterface */
++  /**
++   * @var  \Drupal\relaxed\RevisionDiffFactoryInterface*/
+   protected $revisionDiffFactory;
+ 
++  /**
++   *
++   */
+   public function __construct(RevisionDiffFactoryInterface $revisiondiff_factory) {
+     $this->revisionDiffFactory = $revisiondiff_factory;
+   }
+diff --git a/src/Normalizer/TaxonomyTermNormalizer.php b/src/Normalizer/TaxonomyTermNormalizer.php
+index 9e52633..8b6931e 100644
+--- a/src/Normalizer/TaxonomyTermNormalizer.php
++++ b/src/Normalizer/TaxonomyTermNormalizer.php
+@@ -4,6 +4,9 @@ namespace Drupal\relaxed\Normalizer;
+ 
+ use Drupal\taxonomy\TermInterface;
+ 
++/**
++ *
++ */
+ class TaxonomyTermNormalizer extends ContentEntityNormalizer {
+ 
+   /**
+diff --git a/src/Normalizer/WorkspaceNormalizer.php b/src/Normalizer/WorkspaceNormalizer.php
+index 78dfb55..9f1c442 100644
+--- a/src/Normalizer/WorkspaceNormalizer.php
++++ b/src/Normalizer/WorkspaceNormalizer.php
+@@ -67,4 +67,5 @@ class WorkspaceNormalizer extends NormalizerBase implements DenormalizerInterfac
+     }
+     return $this->entityTypeManager->getStorage('workspace')->create($data);
+   }
++
+ }
+diff --git a/src/ParamConverter/DbConverter.php b/src/ParamConverter/DbConverter.php
+index e8ca17a..3eb653b 100644
+--- a/src/ParamConverter/DbConverter.php
++++ b/src/ParamConverter/DbConverter.php
+@@ -7,6 +7,9 @@ use Drupal\workspaces\WorkspaceManagerInterface;
+ use Drupal\Core\ParamConverter\ParamConverterInterface;
+ use Symfony\Component\Routing\Route;
+ 
++/**
++ *
++ */
+ class DbConverter implements ParamConverterInterface {
+ 
+   /**
+diff --git a/src/ParamConverter/DocIdConverter.php b/src/ParamConverter/DocIdConverter.php
+index a37a34e..4338e69 100644
+--- a/src/ParamConverter/DocIdConverter.php
++++ b/src/ParamConverter/DocIdConverter.php
+@@ -9,6 +9,9 @@ use Drupal\multiversion\Entity\Index\RevisionTreeIndexInterface;
+ use Drupal\multiversion\Entity\Index\UuidIndexInterface;
+ use Symfony\Component\Routing\Route;
+ 
++/**
++ *
++ */
+ class DocIdConverter implements ParamConverterInterface {
+ 
+   /**
+@@ -45,7 +48,7 @@ class DocIdConverter implements ParamConverterInterface {
+   }
+ 
+   /**
+-   * Converts a UUID into an existing entity.   *
++   * Converts a UUID into an existing entity.   *.
+    *
+    * @param mixed $uuid
+    *   The raw value.
+@@ -59,6 +62,7 @@ class DocIdConverter implements ParamConverterInterface {
+    * @return string | \Drupal\Core\Entity\EntityInterface[]
+    *   An array of the entity or entity revisions that was requested, if
+    *   existing, or else the original UUID string.
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    * @todo {@link https://www.drupal.org/node/2600374 Add test to make sure empty arrays are never returned.}
+diff --git a/src/ParamConverter/EntityUuidConverter.php b/src/ParamConverter/EntityUuidConverter.php
+index 788673e..ca490b8 100644
+--- a/src/ParamConverter/EntityUuidConverter.php
++++ b/src/ParamConverter/EntityUuidConverter.php
+@@ -7,6 +7,9 @@ use Drupal\Core\ParamConverter\ParamConverterInterface;
+ use Drupal\multiversion\Entity\Index\UuidIndex;
+ use Symfony\Component\Routing\Route;
+ 
++/**
++ *
++ */
+ class EntityUuidConverter implements ParamConverterInterface {
+ 
+   /**
+@@ -42,6 +45,7 @@ class EntityUuidConverter implements ParamConverterInterface {
+    *
+    * @return string | \Drupal\Core\Entity\EntityInterface
+    *   The entity if it exists in the database or else the original UUID string.
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    */
+diff --git a/src/Plugin/ApiResource/AllDbsApiResource.php b/src/Plugin/ApiResource/AllDbsApiResource.php
+index 653ab3d..d4a8f54 100644
+--- a/src/Plugin/ApiResource/AllDbsApiResource.php
++++ b/src/Plugin/ApiResource/AllDbsApiResource.php
+@@ -7,7 +7,7 @@ use Drupal\relaxed\Http\ApiResourceResponse;
+ use Drupal\workspaces\Entity\Workspace;
+ 
+ /**
+- * Implements http://docs.couchdb.org/en/latest/api/server/common.html#all-dbs
++ * Implements http://docs.couchdb.org/en/latest/api/server/common.html#all-dbs.
+  */
+ 
+ /**
+diff --git a/src/Plugin/ApiResource/ApiResourceBase.php b/src/Plugin/ApiResource/ApiResourceBase.php
+index 819d3cf..a1e6cbb 100644
+--- a/src/Plugin/ApiResource/ApiResourceBase.php
++++ b/src/Plugin/ApiResource/ApiResourceBase.php
+@@ -21,7 +21,7 @@ abstract class ApiResourceBase extends PluginBase implements ApiResourceInterfac
+   /**
+    * Validates a content entity.
+    *
+-   * @param ContentEntityInterface $entity
++   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+    */
+   protected function validate(ContentEntityInterface $entity) {
+     $violations = $entity->validate();
+diff --git a/src/Plugin/ApiResource/AttachmentApiResource.php b/src/Plugin/ApiResource/AttachmentApiResource.php
+index c6fbb16..8f69052 100644
+--- a/src/Plugin/ApiResource/AttachmentApiResource.php
++++ b/src/Plugin/ApiResource/AttachmentApiResource.php
+@@ -33,7 +33,7 @@ class AttachmentApiResource extends ApiResourceBase {
+    * @param string | \Drupal\workspaces\WorkspaceInterface $workspace
+    * @param string | \Drupal\Core\Entity\ContentEntityInterface $entity
+    * @param string $field_name
+-   * @param integer $delta
++   * @param int $delta
+    * @param string | \Drupal\file\FileInterface $file
+    * @param string $scheme
+    * @param string $filename
+@@ -60,7 +60,7 @@ class AttachmentApiResource extends ApiResourceBase {
+    * @param string | \Drupal\workspaces\WorkspaceInterface $workspace
+    * @param string | \Drupal\Core\Entity\EntityInterface $entity
+    * @param string $field_name
+-   * @param integer $delta
++   * @param int $delta
+    * @param string | \Drupal\file\FileInterface $file
+    * @param string $scheme
+    * @param string $filename
+@@ -86,7 +86,7 @@ class AttachmentApiResource extends ApiResourceBase {
+    * @param string | \Drupal\workspaces\WorkspaceInterface $workspace
+    * @param string | \Drupal\Core\Entity\EntityInterface $entity
+    * @param string $field_name
+-   * @param integer $delta
++   * @param int $delta
+    * @param string | \Drupal\file\FileInterface $existing_file
+    * @param string $scheme
+    * @param string $filename
+@@ -136,7 +136,7 @@ class AttachmentApiResource extends ApiResourceBase {
+    * @param string | \Drupal\workspaces\WorkspaceInterface $workspace
+    * @param string | \Drupal\Core\Entity\EntityInterface $entity
+    * @param string $field_name
+-   * @param integer $delta
++   * @param int $delta
+    * @param string | \Drupal\file\FileInterface $file
+    * @param string $scheme
+    * @param string $filename
+@@ -181,6 +181,7 @@ class AttachmentApiResource extends ApiResourceBase {
+    * @param \Drupal\file\FileInterface $file
+    * @param array $headers_to_include
+    * @param int $rev
++   *
+    * @return array
+    */
+   protected function responseHeaders(FileInterface $file, $headers_to_include = [], $rev = NULL) {
+diff --git a/src/Plugin/ApiResource/BulkDocsApiResource.php b/src/Plugin/ApiResource/BulkDocsApiResource.php
+index 37a0dbe..7cfc5f1 100644
+--- a/src/Plugin/ApiResource/BulkDocsApiResource.php
++++ b/src/Plugin/ApiResource/BulkDocsApiResource.php
+@@ -32,4 +32,5 @@ class BulkDocsApiResource extends ApiResourceBase {
+     $bulk_docs->save();
+     return new ApiResourceResponse($bulk_docs, 201);
+   }
++
+ }
+diff --git a/src/Plugin/ApiResource/ChangesApiResource.php b/src/Plugin/ApiResource/ChangesApiResource.php
+index c1414a5..4eda043 100644
+--- a/src/Plugin/ApiResource/ChangesApiResource.php
++++ b/src/Plugin/ApiResource/ChangesApiResource.php
+@@ -5,7 +5,6 @@ namespace Drupal\relaxed\Plugin\ApiResource;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Drupal\workspaces\WorkspaceInterface;
+ use Drupal\relaxed\Http\ApiResourceResponse;
+-use Drupal\relaxed\Changes\ChangesInterface;
+ use Drupal\relaxed\ChangesFactoryInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\HttpFoundation\Request;
+@@ -43,7 +42,7 @@ class ChangesApiResource extends ApiResourceBase implements ContainerFactoryPlug
+    * @param \Psr\Log\LoggerInterface $logger
+    *   A logger instance.
+    * @param \Drupal\relaxed\ChangesFactoryInterface $changes_factory
+-   *  The ChangesFactory service.
++   *   The ChangesFactory service.
+    */
+   public function __construct(array $configuration, $plugin_id, $plugin_definition, ChangesFactoryInterface $changes_factory) {
+     parent::__construct($configuration, $plugin_id, $plugin_definition);
+@@ -63,12 +62,15 @@ class ChangesApiResource extends ApiResourceBase implements ContainerFactoryPlug
+     );
+   }
+ 
++  /**
++   *
++   */
+   public function get($workspace) {
+     if (!$workspace instanceof WorkspaceInterface) {
+       throw new NotFoundHttpException();
+     }
+ 
+-    /** @var ChangesInterface $changes */
++    /** @var \Drupal\relaxed\Changes\ChangesInterface $changes */
+     $changes = $this->changesFactory->get($workspace);
+ 
+     $request = Request::createFromGlobals();
+diff --git a/src/Plugin/ApiResource/DbApiResource.php b/src/Plugin/ApiResource/DbApiResource.php
+index 62a6547..23f99ec 100644
+--- a/src/Plugin/ApiResource/DbApiResource.php
++++ b/src/Plugin/ApiResource/DbApiResource.php
+@@ -29,7 +29,7 @@ class DbApiResource extends ApiResourceBase {
+   /**
+    * @param $entity
+    *
+-   * @return ApiResourceResponse
++   * @return \Drupal\relaxed\Http\ApiResourceResponse
+    * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+    */
+   public function head($entity) {
+@@ -45,7 +45,7 @@ class DbApiResource extends ApiResourceBase {
+   /**
+    * @param $entity
+    *
+-   * @return ApiResourceResponse
++   * @return \Drupal\relaxed\Http\ApiResourceResponse
+    * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+    */
+   public function get($entity) {
+@@ -53,7 +53,7 @@ class DbApiResource extends ApiResourceBase {
+       throw new NotFoundHttpException();
+     }
+     // @todo: {@link https://www.drupal.org/node/2600382 Access check.}
+-    $response =  new ApiResourceResponse($entity, 200);
++    $response = new ApiResourceResponse($entity, 200);
+     $response->addCacheableDependency($entity);
+     return $response;
+   }
+@@ -61,7 +61,7 @@ class DbApiResource extends ApiResourceBase {
+   /**
+    * @param $entity
+    *
+-   * @return ApiResourceResponse
++   * @return \Drupal\relaxed\Http\ApiResourceResponse
+    * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+    * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+    * @throws \Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException
+@@ -92,9 +92,9 @@ class DbApiResource extends ApiResourceBase {
+ 
+   /**
+    * @param $workspace
+-   * @param ContentEntityInterface $entity
++   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+    *
+-   * @return ApiResourceResponse
++   * @return \Drupal\relaxed\Http\ApiResourceResponse
+    * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+    * @throws \Symfony\Component\HttpKernel\Exception\ConflictHttpException
+    * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+@@ -144,9 +144,9 @@ class DbApiResource extends ApiResourceBase {
+   }
+ 
+   /**
+-   * @param WorkspaceInterface $entity
++   * @param \Drupal\workspaces\WorkspaceInterface $entity
+    *
+-   * @return ApiResourceResponse
++   * @return \Drupal\relaxed\Http\ApiResourceResponse
+    * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+    */
+   public function delete(WorkspaceInterface $entity) {
+diff --git a/src/Plugin/ApiResource/DocApiResource.php b/src/Plugin/ApiResource/DocApiResource.php
+index 0d0588f..d3a9393 100644
+--- a/src/Plugin/ApiResource/DocApiResource.php
++++ b/src/Plugin/ApiResource/DocApiResource.php
+@@ -139,7 +139,6 @@ class DocApiResource extends ApiResourceBase {
+ 
+     // @todo {@link https://www.drupal.org/node/2600440 Ensure $received_entity
+     // is saved with UUID from $existing_entity}
+-
+     if (!is_string($existing_entity) && $received_entity->_rev->value != $existing_entity->_rev->value) {
+       throw new ConflictHttpException();
+     }
+diff --git a/src/Plugin/ApiResource/EnsureFullCommitApiResource.php b/src/Plugin/ApiResource/EnsureFullCommitApiResource.php
+index 7b1003c..cb66118 100644
+--- a/src/Plugin/ApiResource/EnsureFullCommitApiResource.php
++++ b/src/Plugin/ApiResource/EnsureFullCommitApiResource.php
+@@ -96,6 +96,9 @@ class EnsureFullCommitApiResource extends ApiResourceBase implements ContainerFa
+     );
+   }
+ 
++  /**
++   *
++   */
+   public function post($workspace) {
+     if (!$workspace instanceof WorkspaceInterface) {
+       throw new BadRequestHttpException(t('Workspace does not exist'));
+@@ -123,4 +126,5 @@ class EnsureFullCommitApiResource extends ApiResourceBase implements ContainerFa
+ 
+     return new ApiResourceResponse($response_data, 201);
+   }
++
+ }
+diff --git a/src/Plugin/ApiResource/ReplicateApiResource.php b/src/Plugin/ApiResource/ReplicateApiResource.php
+index 6d15033..e861795 100644
+--- a/src/Plugin/ApiResource/ReplicateApiResource.php
++++ b/src/Plugin/ApiResource/ReplicateApiResource.php
+@@ -26,4 +26,5 @@ class ReplicateApiResource extends ApiResourceBase {
+ 
+     return new ApiResourceResponse($replicate, 200);
+   }
++
+ }
+diff --git a/src/Plugin/ApiResource/RootApiResource.php b/src/Plugin/ApiResource/RootApiResource.php
+index 690d494..e63abbb 100644
+--- a/src/Plugin/ApiResource/RootApiResource.php
++++ b/src/Plugin/ApiResource/RootApiResource.php
+@@ -14,14 +14,14 @@ use Drupal\relaxed\Http\ApiResourceResponse;
+ class RootApiResource extends ApiResourceBase {
+ 
+   /**
+-   * @return ApiResourceResponse
++   * @return \Drupal\relaxed\Http\ApiResourceResponse
+    */
+   public function get() {
+     $request = \Drupal::request();
+     return new ApiResourceResponse(
+       [
+         'couchdb' => t('Welcome'),
+-        'uuid' => MD5($request->getHost() . $request->getPort()),
++        'uuid' => md5($request->getHost() . $request->getPort()),
+         'vendor' => [
+           'name' => 'Drupal',
+           'version' => \Drupal::VERSION,
+@@ -31,4 +31,5 @@ class RootApiResource extends ApiResourceBase {
+       200
+     );
+   }
++
+ }
+diff --git a/src/Plugin/ApiResourceManagerInterface.php b/src/Plugin/ApiResourceManagerInterface.php
+index 340ca55..d6952e3 100644
+--- a/src/Plugin/ApiResourceManagerInterface.php
++++ b/src/Plugin/ApiResourceManagerInterface.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\relaxed\Plugin\ApiResourceManagerInterface.
+- */
+-
+ namespace Drupal\relaxed\Plugin;
+ 
+ use Drupal\Component\Plugin\PluginManagerInterface;
+diff --git a/src/Plugin/ApiResourceRouteGenerator.php b/src/Plugin/ApiResourceRouteGenerator.php
+index 3c24610..065bd43 100644
+--- a/src/Plugin/ApiResourceRouteGenerator.php
++++ b/src/Plugin/ApiResourceRouteGenerator.php
+@@ -89,7 +89,7 @@ class ApiResourceRouteGenerator implements ApiResourceRouteGeneratorInterface {
+ 
+   /**
+    * @param ApiResourceInterface $api_resource
+-   * @return RouteCollection
++   * @return \Symfony\Component\Routing\RouteCollection
+    */
+   public function routes(ApiResourceInterface $api_resource) {
+     $collection = new RouteCollection();
+@@ -119,7 +119,7 @@ class ApiResourceRouteGenerator implements ApiResourceRouteGeneratorInterface {
+         '_permission' => $permissions,
+         // @todo We might want to remove this so any format will always return the same...
+         // Add all formats we have to allowed responses on the route.
+-        //'_format' => implode('|', $this->availableFormats()),
++        // '_format' => implode('|', $this->availableFormats()),
+       ],
+         [
+           'no_cache' => isset($definition['no_cache']) ? $definition['no_cache'] : FALSE,
+@@ -131,8 +131,7 @@ class ApiResourceRouteGenerator implements ApiResourceRouteGeneratorInterface {
+       );
+ 
+       $route->setOption('_auth', $this->authenticationProviders());
+-      //$route->addRequirements(['_content_type_format' => implode('|', $this->availableFormats($api_resource))]);
+-
++      // $route->addRequirements(['_content_type_format' => implode('|', $this->availableFormats($api_resource))]);
+       // @todo {@link https://www.drupal.org/node/2600450 Move this parameter
+       // logic to a generic route enhancer instead.}
+       $parameters = [];
+diff --git a/src/Plugin/Field/FieldType/ReplicationHistoryItemList.php b/src/Plugin/Field/FieldType/ReplicationHistoryItemList.php
+index 7f202a1..6522f7b 100644
+--- a/src/Plugin/Field/FieldType/ReplicationHistoryItemList.php
++++ b/src/Plugin/Field/FieldType/ReplicationHistoryItemList.php
+@@ -4,4 +4,7 @@ namespace Drupal\relaxed\Plugin\Field\FieldType;
+ 
+ use Drupal\Core\Field\FieldItemList;
+ 
++/**
++ *
++ */
+ class ReplicationHistoryItemList extends FieldItemList {}
+diff --git a/src/Plugin/FormatNegotiator/JsonNegotiator.php b/src/Plugin/FormatNegotiator/JsonNegotiator.php
+index 767cb97..a786c27 100644
+--- a/src/Plugin/FormatNegotiator/JsonNegotiator.php
++++ b/src/Plugin/FormatNegotiator/JsonNegotiator.php
+@@ -2,10 +2,8 @@
+ 
+ namespace Drupal\relaxed\Plugin\FormatNegotiator;
+ 
+-
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+-use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\Serializer\Serializer;
+ 
+ /**
+diff --git a/src/Plugin/FormatNegotiator/NegotiatorBase.php b/src/Plugin/FormatNegotiator/NegotiatorBase.php
+index ded4c57..8899ffd 100644
+--- a/src/Plugin/FormatNegotiator/NegotiatorBase.php
++++ b/src/Plugin/FormatNegotiator/NegotiatorBase.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Cache\Cache;
+ use Drupal\Core\Plugin\PluginBase;
+ use Drupal\relaxed\Plugin\FormatNegotiatorInterface;
+ 
++/**
++ *
++ */
+ abstract class NegotiatorBase extends PluginBase implements FormatNegotiatorInterface {
+ 
+   /**
+diff --git a/src/Plugin/FormatNegotiator/StreamNegotiator.php b/src/Plugin/FormatNegotiator/StreamNegotiator.php
+index 8260f4f..01a0fe3 100644
+--- a/src/Plugin/FormatNegotiator/StreamNegotiator.php
++++ b/src/Plugin/FormatNegotiator/StreamNegotiator.php
+@@ -2,10 +2,8 @@
+ 
+ namespace Drupal\relaxed\Plugin\FormatNegotiator;
+ 
+-
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+-use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\Serializer\Serializer;
+ 
+ /**
+diff --git a/src/Plugin/FormatNegotiatorInterface.php b/src/Plugin/FormatNegotiatorInterface.php
+index 235b9f8..bc37f9a 100644
+--- a/src/Plugin/FormatNegotiatorInterface.php
++++ b/src/Plugin/FormatNegotiatorInterface.php
+@@ -1,14 +1,8 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\relaxed\Plugin\FormatNegotiatorInterface.
+- */
+-
+ namespace Drupal\relaxed\Plugin;
+ 
+ use Drupal\Core\Cache\CacheableDependencyInterface;
+-use \Symfony\Component\HttpFoundation\Request;
+ 
+ /**
+  * Contract for format negotiator plugins.
+diff --git a/src/Plugin/FormatNegotiatorManagerInterface.php b/src/Plugin/FormatNegotiatorManagerInterface.php
+index c93635b..c4a9467 100644
+--- a/src/Plugin/FormatNegotiatorManagerInterface.php
++++ b/src/Plugin/FormatNegotiatorManagerInterface.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\relaxed\Plugin\FormatNegotiatorManagerInterface.
+- */
+-
+ namespace Drupal\relaxed\Plugin;
+ 
+ use Drupal\Component\Plugin\PluginManagerInterface;
+@@ -15,14 +10,14 @@ use Drupal\Component\Plugin\PluginManagerInterface;
+ interface FormatNegotiatorManagerInterface extends PluginManagerInterface {
+ 
+   /**
+-   * Selects an appropriate negotiator
++   * Selects an appropriate negotiator.
+    *
+    * @param string $format
+    * @param string $method
+    * @param string $type
+    *   Either 'request' or 'response'.
+    *
+-   * @return \Drupal\relaxed\Plugin\FormatNegotiatorInterface|NULL
++   * @return \Drupal\relaxed\Plugin\FormatNegotiatorInterface|null
+    */
+   public function select($format, $method, $type);
+ 
+diff --git a/src/Plugin/RemoteCheck/Ping.php b/src/Plugin/RemoteCheck/Ping.php
+index 33adaa8..6493833 100644
+--- a/src/Plugin/RemoteCheck/Ping.php
++++ b/src/Plugin/RemoteCheck/Ping.php
+@@ -11,7 +11,7 @@ use Drupal\relaxed\Plugin\RemoteCheckBase;
+  *   label = "Ping remote"
+  * )
+  */
+-Class Ping extends RemoteCheckBase {
++class Ping extends RemoteCheckBase {
+ 
+   /**
+    * {@inheritdoc}
+@@ -22,7 +22,7 @@ Class Ping extends RemoteCheckBase {
+     try {
+       $response = $client->request('GET', $url);
+       if ($response->getStatusCode() === 200) {
+-        $this->result = true;
++        $this->result = TRUE;
+         $this->message = t('Remote is reachable.');
+       }
+       else {
+@@ -34,4 +34,5 @@ Class Ping extends RemoteCheckBase {
+       watchdog_exception('relaxed', $e);
+     }
+   }
++
+ }
+diff --git a/src/Plugin/RemoteCheck/ValidRemote.php b/src/Plugin/RemoteCheck/ValidRemote.php
+index f9343f8..cf38142 100644
+--- a/src/Plugin/RemoteCheck/ValidRemote.php
++++ b/src/Plugin/RemoteCheck/ValidRemote.php
+@@ -11,8 +11,11 @@ use Drupal\relaxed\Plugin\RemoteCheckBase;
+  *   label = "Valid remote"
+  * )
+  */
+-Class ValidRemote extends RemoteCheckBase {
++class ValidRemote extends RemoteCheckBase {
+ 
++  /**
++   *
++   */
+   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+     parent::__construct($configuration, $plugin_id, $plugin_definition);
+   }
+@@ -44,4 +47,5 @@ Class ValidRemote extends RemoteCheckBase {
+       watchdog_exception('relaxed', $e);
+     }
+   }
++
+ }
+diff --git a/src/Plugin/RemoteCheckBase.php b/src/Plugin/RemoteCheckBase.php
+index 12b872d..70d8a8b 100644
+--- a/src/Plugin/RemoteCheckBase.php
++++ b/src/Plugin/RemoteCheckBase.php
+@@ -12,7 +12,7 @@ abstract class RemoteCheckBase extends PluginBase implements RemoteCheckInterfac
+   /**
+    * @var bool
+    */
+-  protected $result = false;
++  protected $result = FALSE;
+ 
+   /**
+    * @var string
+diff --git a/src/Plugin/RemoteCheckInterface.php b/src/Plugin/RemoteCheckInterface.php
+index 4476c3c..c1f2e23 100644
+--- a/src/Plugin/RemoteCheckInterface.php
++++ b/src/Plugin/RemoteCheckInterface.php
+@@ -14,6 +14,7 @@ interface RemoteCheckInterface extends PluginInspectionInterface {
+    * Process the check based on the given Remote.
+    *
+    * @param \Drupal\relaxed\Entity\RemoteInterface $remote
++   *
+    * @return mixed
+    */
+   public function execute(RemoteInterface $remote);
+@@ -21,7 +22,7 @@ interface RemoteCheckInterface extends PluginInspectionInterface {
+   /**
+    * Return true if check passes.
+    *
+-   * @return boolean
++   * @return bool
+    */
+   public function getResult();
+ 
+diff --git a/src/Plugin/RemoteCheckManager.php b/src/Plugin/RemoteCheckManager.php
+index 14cf9ef..c8e2f3f 100644
+--- a/src/Plugin/RemoteCheckManager.php
++++ b/src/Plugin/RemoteCheckManager.php
+@@ -50,6 +50,7 @@ class RemoteCheckManager extends DefaultPluginManager {
+    * Runs checks on given Remote.
+    *
+    * @param \Drupal\relaxed\Entity\RemoteInterface $remote
++   *
+    * @return array
+    */
+   public function run(RemoteInterface $remote) {
+@@ -66,4 +67,5 @@ class RemoteCheckManager extends DefaultPluginManager {
+ 
+     return $results;
+   }
++
+ }
+diff --git a/src/Plugin/ReplicationFilter/EntityTypeFilter.php b/src/Plugin/ReplicationFilter/EntityTypeFilter.php
+index 3383f72..95f2f0f 100644
+--- a/src/Plugin/ReplicationFilter/EntityTypeFilter.php
++++ b/src/Plugin/ReplicationFilter/EntityTypeFilter.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\relaxed\Plugin\ReplicationFilter;
+ 
+ use Drupal\Core\Entity\EntityInterface;
+-use Drupal\relaxed\Plugin\ReplicationFilter\ReplicationFilterBase;
+ 
+ /**
+  * Provides a filter based on entity type.
+diff --git a/src/Plugin/ReplicationFilter/PublishedFilter.php b/src/Plugin/ReplicationFilter/PublishedFilter.php
+index f138923..f056b1c 100644
+--- a/src/Plugin/ReplicationFilter/PublishedFilter.php
++++ b/src/Plugin/ReplicationFilter/PublishedFilter.php
+@@ -5,7 +5,6 @@ namespace Drupal\relaxed\Plugin\ReplicationFilter;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+-use Drupal\relaxed\Plugin\ReplicationFilter\ReplicationFilterBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+diff --git a/src/Plugin/ReplicationFilter/UuidFilter.php b/src/Plugin/ReplicationFilter/UuidFilter.php
+index 7c7083f..1ae6339 100644
+--- a/src/Plugin/ReplicationFilter/UuidFilter.php
++++ b/src/Plugin/ReplicationFilter/UuidFilter.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\relaxed\Plugin\ReplicationFilter;
+ 
+ use Drupal\Core\Entity\EntityInterface;
+-use Drupal\relaxed\Plugin\ReplicationFilter\ReplicationFilterBase;
+ 
+ /**
+  * Provides filtering by UUID.
+diff --git a/src/Plugin/ReplicationFilterInterface.php b/src/Plugin/ReplicationFilterInterface.php
+index 78376e1..79a97ad 100644
+--- a/src/Plugin/ReplicationFilterInterface.php
++++ b/src/Plugin/ReplicationFilterInterface.php
+@@ -31,7 +31,7 @@ interface ReplicationFilterInterface extends PluginInspectionInterface, Configur
+   /**
+    * Filter the given entity.
+    *
+-   * @param EntityInterface $entity
++   * @param \Drupal\Core\Entity\EntityInterface $entity
+    *   The entity to filter.
+    *
+    * @return bool
+diff --git a/src/Plugin/ReplicationFilterManager.php b/src/Plugin/ReplicationFilterManager.php
+index 8aa7795..01ae9db 100644
+--- a/src/Plugin/ReplicationFilterManager.php
++++ b/src/Plugin/ReplicationFilterManager.php
+@@ -5,7 +5,6 @@ namespace Drupal\relaxed\Plugin;
+ use Drupal\Core\Cache\CacheBackendInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Plugin\DefaultPluginManager;
+-use Drupal\relaxed\Plugin\ReplicationFilterManagerInterface;
+ 
+ /**
+  * {@inheritdoc}
+diff --git a/src/ProcessFileAttachment.php b/src/ProcessFileAttachment.php
+index f7119f0..7602e2d 100644
+--- a/src/ProcessFileAttachment.php
++++ b/src/ProcessFileAttachment.php
+@@ -8,18 +8,27 @@ use Drupal\file\FileInterface;
+ use Drupal\multiversion\Entity\Index\MultiversionIndexFactory;
+ use Drupal\workspaces\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ class ProcessFileAttachment {
+ 
+-  /** @var \Drupal\Core\Session\AccountProxyInterface  */
++  /**
++   * @var \Drupal\Core\Session\AccountProxyInterface*/
+   protected $current_user;
+ 
+-  /** @var  \Drupal\Core\Entity\EntityTypeManagerInterface */
++  /**
++   * @var  \Drupal\Core\Entity\EntityTypeManagerInterface*/
+   protected $entity_type_manager;
+ 
+-  /** @var \Drupal\multiversion\Entity\Index\MultiversionIndexFactory  */
++  /**
++   * @var \Drupal\multiversion\Entity\Index\MultiversionIndexFactory*/
+   protected $index_factory;
+ 
+-  function __construct(AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, MultiversionIndexFactory $index_factory) {
++  /**
++   *
++   */
++  public function __construct(AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, MultiversionIndexFactory $index_factory) {
+     $this->current_user = $current_user;
+     $this->entity_type_manager = $entity_type_manager;
+     $this->index_factory = $index_factory;
+@@ -34,9 +43,9 @@ class ProcessFileAttachment {
+    * @param string $format
+    * @param \Drupal\workspaces\WorkspaceInterface $workspace
+    *
+-   * @return \Drupal\file\FileInterface|NULL
++   * @return \Drupal\file\FileInterface|null
+    */
+-  public function process($data, $format, WorkspaceInterface $workspace = null) {
++  public function process($data, $format, WorkspaceInterface $workspace = NULL) {
+     $current_user_id = $this->current_user->id();
+     $uri = $data['uri'];
+     $file_uuid = $data['uuid'];
+@@ -45,7 +54,7 @@ class ProcessFileAttachment {
+     $uuid_index = $this->index_factory->get('multiversion.entity_index.uuid', $workspace);
+     $entity_info = $uuid_index->get($file_uuid);
+     if (!empty($entity_info)) {
+-      /** @var FileInterface $file */
++      /** @var \Drupal\file\FileInterface $file */
+       $file = $this->entity_type_manager->getStorage($entity_info['entity_type_id'])
+         ->load($entity_info['entity_id']);
+       if (!$file || !is_file($file->getFileUri())) {
+diff --git a/src/RemotePointer.php b/src/RemotePointer.php
+index 4588762..88966b9 100644
+--- a/src/RemotePointer.php
++++ b/src/RemotePointer.php
+@@ -9,12 +9,17 @@ use Drupal\workspace\Entity\WorkspacePointer;
+ use Drupal\workspace\WorkspacePointerInterface;
+ use GuzzleHttp\ClientInterface;
+ 
++/**
++ *
++ */
+ class RemotePointer implements RemotePointerInterface {
+ 
+-  /** @var \GuzzleHttp\ClientInterface  */
++  /**
++   * @var \GuzzleHttp\ClientInterface*/
+   protected $httpClient;
+ 
+-  /** @var \Drupal\Core\Entity\EntityTypeManagerInterface  */
++  /**
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface*/
+   protected $entityTypeManager;
+ 
+   /**
+@@ -26,6 +31,9 @@ class RemotePointer implements RemotePointerInterface {
+     $this->entityTypeManager = $entity_type_manager;
+   }
+ 
++  /**
++   *
++   */
+   public function loadOrCreate(RemoteInterface $remote, $database) {
+     /** @var \Drupal\workspace\WorkspacePointerInterface $pointer */
+     $pointers = $this->entityTypeManager
+@@ -78,4 +86,5 @@ class RemotePointer implements RemotePointerInterface {
+       $this->addPointers($remote);
+     }
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/RemotePointerInterface.php b/src/RemotePointerInterface.php
+index 66cb963..6f2f2ee 100644
+--- a/src/RemotePointerInterface.php
++++ b/src/RemotePointerInterface.php
+@@ -2,15 +2,18 @@
+ 
+ namespace Drupal\relaxed;
+ 
+-
+ use Drupal\relaxed\Entity\RemoteInterface;
+ 
++/**
++ *
++ */
+ interface RemotePointerInterface {
+ 
+   /**
+    * Gets databases from remote.
+    *
+    * @param \Drupal\relaxed\Entity\RemoteInterface $remote
++   *
+    * @return array
+    */
+   public function getRemoteDatabases(RemoteInterface $remote);
+@@ -26,4 +29,5 @@ interface RemotePointerInterface {
+    * Adds pointers for all remotes.
+    */
+   public function addAllPointers();
++
+ }
+diff --git a/src/Replicate/Replicate.php b/src/Replicate/Replicate.php
+index 1ae8d2b..6121b9c 100644
+--- a/src/Replicate/Replicate.php
++++ b/src/Replicate/Replicate.php
+@@ -6,6 +6,9 @@ use Doctrine\CouchDB\CouchDBClient;
+ use Relaxed\Replicator\ReplicationTask;
+ use Relaxed\Replicator\Replicator;
+ 
++/**
++ *
++ */
+ class Replicate implements ReplicateInterface {
+ 
+   /**
+@@ -49,7 +52,7 @@ class Replicate implements ReplicateInterface {
+   protected $createTarget = FALSE;
+ 
+   /**
+-   * @var array|NULL
++   * @var array|null
+    */
+   protected $docIds = NULL;
+ 
+diff --git a/src/Replicate/ReplicateInterface.php b/src/Replicate/ReplicateInterface.php
+index 9d68cb5..adbd9a2 100644
+--- a/src/Replicate/ReplicateInterface.php
++++ b/src/Replicate/ReplicateInterface.php
+@@ -2,12 +2,16 @@
+ 
+ namespace Drupal\relaxed\Replicate;
+ 
++/**
++ *
++ */
+ interface ReplicateInterface {
+ 
+   /**
+    * Set the source database.
+    *
+    * @param array $info
++   *
+    * @return \Drupal\relaxed\Replicate\ReplicateInterface
+    */
+   public function setSource($info);
+@@ -16,6 +20,7 @@ interface ReplicateInterface {
+    * Set the target database.
+    *
+    * @param array $info
++   *
+    * @return \Drupal\relaxed\Replicate\ReplicateInterface
+    */
+   public function setTarget($info);
+@@ -59,6 +64,7 @@ interface ReplicateInterface {
+    * Set doc IDs for replication.
+    *
+    * @param array $doc_ids
++   *
+    * @return \Drupal\relaxed\Replicate\ReplicateInterface
+    */
+   public function setDocIds(array $doc_ids);
+@@ -77,7 +83,7 @@ interface ReplicateInterface {
+   /**
+    * Set the parameters for the filter plugin.
+    *
+-   * @param array|NULL $parameters
++   * @param array|null $parameters
+    *   An associative array of name-value parameters.
+    *
+    * @return \Drupal\relaxed\Replicate\ReplicateInterface
+@@ -99,5 +105,5 @@ interface ReplicateInterface {
+    *   Returns $this.
+    */
+   public function setParameter($name, $value);
+-  
++
+ }
+diff --git a/src/ReplicationTask/ReplicationTaskInterface.php b/src/ReplicationTask/ReplicationTaskInterface.php
+index c41c826..bc7cc9b 100644
+--- a/src/ReplicationTask/ReplicationTaskInterface.php
++++ b/src/ReplicationTask/ReplicationTaskInterface.php
+@@ -35,7 +35,7 @@ interface ReplicationTaskInterface {
+   /**
+    * Set the parameters for the filter plugin.
+    *
+-   * @param array|NULL $parameters
++   * @param array|null $parameters
+    *   An associative array of name-value parameters.
+    *
+    * @return ReplicationTaskInterface
+@@ -167,12 +167,12 @@ interface ReplicationTaskInterface {
+   public function setHeartbeat($heartbeat);
+ 
+   /**
+-   * @return boolean
++   * @return bool
+    */
+   public function getCreateTarget();
+ 
+   /**
+-   * @param boolean $createTarget
++   * @param bool $createTarget
+    */
+   public function setCreateTarget($createTarget);
+ 
+diff --git a/src/RevisionDiff/RevisionDiff.php b/src/RevisionDiff/RevisionDiff.php
+index 105ceab..9a85644 100644
+--- a/src/RevisionDiff/RevisionDiff.php
++++ b/src/RevisionDiff/RevisionDiff.php
+@@ -5,6 +5,9 @@ namespace Drupal\relaxed\RevisionDiff;
+ use Drupal\multiversion\Entity\Index\RevisionIndexInterface;
+ use Drupal\workspaces\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ class RevisionDiff implements RevisionDiffInterface {
+ 
+   /**
+diff --git a/src/RevisionDiff/RevisionDiffInterface.php b/src/RevisionDiff/RevisionDiffInterface.php
+index 00cfbcf..795c3d8 100644
+--- a/src/RevisionDiff/RevisionDiffInterface.php
++++ b/src/RevisionDiff/RevisionDiffInterface.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\relaxed\RevisionDiff;
+ 
++/**
++ *
++ */
+ interface RevisionDiffInterface {
+ 
+   /**
+@@ -16,6 +19,7 @@ interface RevisionDiffInterface {
+ 
+   /**
+    * Returns missing revisions ids.
++   *
+    * @return array
+    */
+   public function getMissing();
+diff --git a/src/RevisionDiffFactory.php b/src/RevisionDiffFactory.php
+index d668317..a09d595 100644
+--- a/src/RevisionDiffFactory.php
++++ b/src/RevisionDiffFactory.php
+@@ -6,6 +6,9 @@ use Drupal\multiversion\Entity\Index\RevisionIndexInterface;
+ use Drupal\workspaces\WorkspaceInterface;
+ use Drupal\relaxed\RevisionDiff\RevisionDiff;
+ 
++/**
++ *
++ */
+ class RevisionDiffFactory implements RevisionDiffFactoryInterface {
+ 
+   /**
+diff --git a/src/RevisionDiffFactoryInterface.php b/src/RevisionDiffFactoryInterface.php
+index 9ea81e3..f8c58ee 100644
+--- a/src/RevisionDiffFactoryInterface.php
++++ b/src/RevisionDiffFactoryInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\relaxed;
+ 
+ use Drupal\workspaces\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ interface RevisionDiffFactoryInterface {
+ 
+   /**
+diff --git a/src/Routing/ApiResourceRoutes.php b/src/Routing/ApiResourceRoutes.php
+index 62f0737..1357777 100644
+--- a/src/Routing/ApiResourceRoutes.php
++++ b/src/Routing/ApiResourceRoutes.php
+@@ -6,7 +6,6 @@ use Drupal\Core\Logger\LoggerChannelInterface;
+ use Drupal\Core\Routing\RouteSubscriberBase;
+ use Drupal\relaxed\Plugin\ApiResourceManagerInterface;
+ use Drupal\relaxed\Plugin\ApiResourceRouteGeneratorInterface;
+-use Symfony\Component\Routing\Route;
+ use Symfony\Component\Routing\RouteCollection;
+ 
+ /**
+@@ -56,6 +55,7 @@ class ApiResourceRoutes extends RouteSubscriberBase {
+    *
+    * @param \Symfony\Component\Routing\RouteCollection $collection
+    *   The route collection for adding routes.
++   *
+    * @return array
+    */
+   protected function alterRoutes(RouteCollection $collection) {
+diff --git a/src/StackMiddleware/RequestFormatSetter.php b/src/StackMiddleware/RequestFormatSetter.php
+index d3f5469..14a0fb0 100644
+--- a/src/StackMiddleware/RequestFormatSetter.php
++++ b/src/StackMiddleware/RequestFormatSetter.php
+@@ -65,7 +65,7 @@ class RequestFormatSetter implements HttpKernelInterface {
+    * @return string
+    */
+   protected function getFormat(Request $request) {
+-     // Check the format from the 'Accept' header.
++    // Check the format from the 'Accept' header.
+     count(array_filter($request->getAcceptableContentTypes(), function ($accept) {
+       if (strpos($accept, 'application/json') === 0) {
+         return 'json';
+diff --git a/src/UsersMapping.php b/src/UsersMapping.php
+index 4b343b5..2405fd8 100644
+--- a/src/UsersMapping.php
++++ b/src/UsersMapping.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\user\UserInterface;
+ 
++/**
++ *
++ */
+ class UsersMapping {
+ 
+   /**
+@@ -18,7 +21,10 @@ class UsersMapping {
+    */
+   protected $entityTypeManager;
+ 
+-  function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
++  /**
++   *
++   */
++  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
+     $this->configFactory = $config_factory;
+     $this->entityTypeManager = $entity_type_manager;
+   }
+diff --git a/src/Workspace/RelaxedWorkspaceNegotiator.php b/src/Workspace/RelaxedWorkspaceNegotiator.php
+index 85b85d1..5760f67 100644
+--- a/src/Workspace/RelaxedWorkspaceNegotiator.php
++++ b/src/Workspace/RelaxedWorkspaceNegotiator.php
+@@ -10,6 +10,9 @@ use Drupal\workspaces\Entity\Workspace;
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+ 
++/**
++ *
++ */
+ class RelaxedWorkspaceNegotiator implements WorkspaceNegotiatorInterface {
+ 
+   /**
+diff --git a/tests/fixtures/generate.php b/tests/fixtures/generate.php
+index 518971f..8fffd4f 100644
+--- a/tests/fixtures/generate.php
++++ b/tests/fixtures/generate.php
+@@ -13,6 +13,9 @@ define('DOCUMENTS', './documents.txt');
+ define('FILE1', './file1.txt');
+ define('FILEID', '6f9e1f07-e713-4840-bf95-8326c8317800');
+ 
++/**
++ *
++ */
+ function _file_info($filename) {
+   $contents = file_get_contents($filename);
+   return [
+@@ -30,7 +33,7 @@ $docs = [
+   [
+     '@context' => [
+       '_id' => '@id',
+-      '@language' => 'en'
++      '@language' => 'en',
+     ],
+     '@type' => 'taxonomy_term',
+     '_id' => '95615828-70db-v26b-9057-f6cc905dcn6h',
+@@ -43,7 +46,7 @@ $docs = [
+   [
+     '@context' => [
+       '_id' => '@id',
+-      '@language' => 'en'
++      '@language' => 'en',
+     ],
+     '@type' => 'entity_test_mulrev',
+     '_id' => '549dab6c-8e85-48d4-994d-b023ff6f22f6',
+@@ -60,7 +63,7 @@ $docs = [
+   [
+     '@context' => [
+       '_id' => '@id',
+-      '@language' => 'en'
++      '@language' => 'en',
+     ],
+     '@type' => 'entity_test_mulrev',
+     '_id' => 'f98c1d30-2db1-4628-a497-eba5e900d47e',
+@@ -68,7 +71,7 @@ $docs = [
+       'type' => [['value' => 'entity_test_mulrev']],
+       'user_id' => [['target_uuid' => '43155828-70db-486b-9057-f6cc905d8470']],
+       'tags_list' => [['target_uuid' => '77545828-70db-95gb-9057-f6553218dcn6']],
+-    ]
++    ],
+   ],
+   // Entity with non-existing user reference and without taxonomy_term reference.
+   // Referenced user entities are not handled as multiversionable entities, the
+@@ -77,7 +80,7 @@ $docs = [
+   [
+     '@context' => [
+       '_id' => '@id',
+-      '@language' => 'en'
++      '@language' => 'en',
+     ],
+     '@type' => 'entity_test_mulrev',
+     '_id' => '966f2c87-e0f0-4ca4-80f3-f271e797b31e',
+@@ -95,7 +98,7 @@ $docs = [
+   [
+     '@context' => [
+       '_id' => '@id',
+-      '@language' => 'en'
++      '@language' => 'en',
+     ],
+     '@type' => 'entity_test_mulrev',
+     '_id' => '52ff018d-8834-4a3f-bcdc-1db1a264f734',
+@@ -109,7 +112,7 @@ $docs = [
+   [
+     '@context' => [
+       '_id' => '@id',
+-      '@language' => 'en'
++      '@language' => 'en',
+     ],
+     '@type' => 'taxonomy_term',
+     '_id' => '77545828-70db-95gb-9057-f6553218dcn6',
+@@ -122,7 +125,7 @@ $docs = [
+   [
+     '@context' => [
+       '_id' => '@id',
+-      '@language' => 'en'
++      '@language' => 'en',
+     ],
+     '@type' => 'entity_test_mulrev',
+     '_id' => '1da2a674-4740-4edb-ad3d-2e243c9e6821',
+@@ -151,7 +154,7 @@ $docs = [
+   [
+     '@context' => [
+       '_id' => '@id',
+-      '@language' => 'en'
++      '@language' => 'en',
+     ],
+     '@type' => 'entity_test_mulrev',
+     '_id' => 'ad3d5c67-e82a-4faf-a7fd-c5ad3975b622',
+diff --git a/tests/modules/relaxed_alter_test/src/Event/ContentEntityTestAlterSubscriber.php b/tests/modules/relaxed_alter_test/src/Event/ContentEntityTestAlterSubscriber.php
+index b0cb965..ef8b370 100644
+--- a/tests/modules/relaxed_alter_test/src/Event/ContentEntityTestAlterSubscriber.php
++++ b/tests/modules/relaxed_alter_test/src/Event/ContentEntityTestAlterSubscriber.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\relaxed_alter_test\Event;
+ 
+-
+ use Drupal\relaxed\Event\ReplicationContentDataAlterEvent;
+ use Drupal\relaxed\Event\ReplicationDataEvents;
+ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+@@ -24,7 +23,7 @@ class ContentEntityTestAlterSubscriber implements EventSubscriberInterface {
+   /**
+    * Alter content normalization data.
+    *
+-   * @param ReplicationContentDataAlterEvent $event
++   * @param \Drupal\relaxed\Event\ReplicationContentDataAlterEvent $event
+    */
+   public function onAlterContentData(ReplicationContentDataAlterEvent $event) {
+     // Add some data under a '_test' key.
+diff --git a/tests/modules/relaxed_test/src/Entity/EntityTestLocal.php b/tests/modules/relaxed_test/src/Entity/EntityTestLocal.php
+index d802745..42c8865 100644
+--- a/tests/modules/relaxed_test/src/Entity/EntityTestLocal.php
++++ b/tests/modules/relaxed_test/src/Entity/EntityTestLocal.php
+@@ -25,4 +25,4 @@ use Drupal\entity_test\Entity\EntityTestRev;
+  *   local = TRUE,
+  * )
+  */
+-class EntityTestLocal extends EntityTestRev { }
++class EntityTestLocal extends EntityTestRev {}
+diff --git a/tests/pouchdb/test.js b/tests/pouchdb/test.js
+index 88a55ec..500701d 100644
+--- a/tests/pouchdb/test.js
++++ b/tests/pouchdb/test.js
+@@ -1,11 +1,11 @@
+ var baseUrl = 'http://replicator:replicator@localhost:8080';
+ // PouchDB.debug.enable('*');
+ 
+-var getFixtures = function(url, successHandler, errorHandler) {
++var getFixtures = function (url, successHandler, errorHandler) {
+   var xhr = new XMLHttpRequest();
+   xhr.open('get', url, true);
+   xhr.responseType = 'text';
+-  xhr.onload = function() {
++  xhr.onload = function () {
+     if (xhr.status == 200) {
+       // Parse the response into an array of JSON fixtures.
+       var fixtures = [];
+@@ -27,7 +27,7 @@ describe('Test replication', function () {
+   it('Test basic push replication', function (done) {
+     var db = new PouchDB('pouch_to_drupal');
+     var remote = new PouchDB(baseUrl + '/relaxed/live');
+-    getFixtures(baseUrl + '/documents.txt', function(docs) {
++    getFixtures(baseUrl + '/documents.txt', function (docs) {
+       // Starting with PouchDB version 5.* to put a new doc with _rev we should set new_edits = false for each doc.
+       // And we can't do bulkDocs() if we have both docs with _rev and without _rev.
+       for (var i in docs) {
+@@ -51,7 +51,7 @@ describe('Test replication', function () {
+   it('Test basic pull replication', function (done) {
+     var db = new PouchDB('drupal_to_pouch');
+     var remote = new PouchDB(baseUrl + '/relaxed/live');
+-    getFixtures(baseUrl + '/documents.txt', function(docs) {
++    getFixtures(baseUrl + '/documents.txt', function (docs) {
+       db.replicate.from(remote, {}, function (err, result) {
+         result.ok.should.equal(true);
+         result.doc_write_failures.should.equal(0);
+diff --git a/tests/src/Functional/AllDbsResourceTest.php b/tests/src/Functional/AllDbsResourceTest.php
+index 9be74e7..844e80e 100644
+--- a/tests/src/Functional/AllDbsResourceTest.php
++++ b/tests/src/Functional/AllDbsResourceTest.php
+@@ -12,6 +12,9 @@ use Drupal\workspaces\Entity\Workspace;
+  */
+ class AllDbsResourceTest extends ResourceTestBase {
+ 
++  /**
++   *
++   */
+   public function testGet() {
+     // Create a user with the correct permissions.
+     $permissions[] = 'perform pull replication';
+diff --git a/tests/src/Functional/AllDocsResourceTest.php b/tests/src/Functional/AllDocsResourceTest.php
+index 540186a..e3e5217 100644
+--- a/tests/src/Functional/AllDocsResourceTest.php
++++ b/tests/src/Functional/AllDocsResourceTest.php
+@@ -11,6 +11,9 @@ use Drupal\Component\Serialization\Json;
+  */
+ class AllDocsResourceTest extends ResourceTestBase {
+ 
++  /**
++   *
++   */
+   public function testGet() {
+     $serializer = \Drupal::service('relaxed.serializer');
+ 
+@@ -44,7 +47,7 @@ class AllDocsResourceTest extends ResourceTestBase {
+         ],
+       ];
+     }
+-    usort($rows, function($a, $b) {
++    usort($rows, function ($a, $b) {
+       return ($a['id'] > $b['id']) ? +1 : -1;
+     });
+     $expected = [
+@@ -57,7 +60,7 @@ class AllDocsResourceTest extends ResourceTestBase {
+     $this->assertEquals('200', $response->getStatusCode(), 'HTTP response code is correct.');
+     $this->assertEquals($this->defaultMimeType, $response->getHeader('content-type')[0]);
+     $data = Json::decode($response->getBody());
+-    usort($data['rows'], function($a, $b) {
++    usort($data['rows'], function ($a, $b) {
+       return ($a['id'] > $b['id']) ? +1 : -1;
+     });
+     $this->assertEquals($expected['offset'], $data['offset'], "Correct value for offset key when not including docs.");
+@@ -80,7 +83,7 @@ class AllDocsResourceTest extends ResourceTestBase {
+         ],
+       ];
+     }
+-    usort($rows, function($a, $b) {
++    usort($rows, function ($a, $b) {
+       return ($a['id'] > $b['id']) ? +1 : -1;
+     });
+     $expected = [
+@@ -93,7 +96,7 @@ class AllDocsResourceTest extends ResourceTestBase {
+     $this->assertEquals('200', $response->getStatusCode(), 'HTTP response code is correct.');
+     $this->assertEquals($this->defaultMimeType, $response->getHeader('content-type')[0]);
+     $data = Json::decode($response->getBody());
+-    usort($data['rows'], function($a, $b) {
++    usort($data['rows'], function ($a, $b) {
+       return ($a['id'] > $b['id']) ? +1 : -1;
+     });
+     $this->assertEquals($expected['offset'], $data['offset'], "Correct value for offset key when including docs.");
+diff --git a/tests/src/Functional/AttachmentResourceTest.php b/tests/src/Functional/AttachmentResourceTest.php
+index 376d7d8..29957e4 100644
+--- a/tests/src/Functional/AttachmentResourceTest.php
++++ b/tests/src/Functional/AttachmentResourceTest.php
+@@ -18,7 +18,7 @@ class AttachmentResourceTest extends ResourceTestBase {
+   public static $modules = [
+     'entity_test',
+     'file',
+-    'image'
++    'image',
+   ];
+ 
+   /**
+@@ -31,6 +31,9 @@ class AttachmentResourceTest extends ResourceTestBase {
+    */
+   protected $entity;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+@@ -47,22 +50,22 @@ class AttachmentResourceTest extends ResourceTestBase {
+ 
+     // Create a File field for testing.
+     FieldStorageConfig::create([
+-        'field_name' => 'field_test_file',
+-        'entity_type' => 'entity_test_rev',
+-        'type' => 'file',
+-        'cardinality' => 4,
+-        'translatable' => FALSE,
+-      ])->save();
++      'field_name' => 'field_test_file',
++      'entity_type' => 'entity_test_rev',
++      'type' => 'file',
++      'cardinality' => 4,
++      'translatable' => FALSE,
++    ])->save();
+     FieldConfig::create([
+-        'entity_type' => 'entity_test_rev',
+-        'field_name' => 'field_test_file',
+-        'bundle' => 'entity_test_rev',
+-        'label' => 'Test file-field',
+-        'widget' => [
+-          'type' => 'file',
+-          'weight' => 0,
+-        ],
+-      ])->save();
++      'entity_type' => 'entity_test_rev',
++      'field_name' => 'field_test_file',
++      'bundle' => 'entity_test_rev',
++      'label' => 'Test file-field',
++      'widget' => [
++        'type' => 'file',
++        'weight' => 0,
++      ],
++    ])->save();
+     file_put_contents('public://example1.txt', $this->randomMachineName());
+     $this->files['1'] = File::create(['uri' => 'public://example1.txt']);
+     $this->files['1']->save();
+@@ -121,6 +124,9 @@ class AttachmentResourceTest extends ResourceTestBase {
+     $this->entity->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testHead() {
+     $file_contents = file_get_contents($this->files['1']->getFileUri());
+     $encoded_digest = base64_encode(md5($file_contents));
+@@ -156,6 +162,9 @@ class AttachmentResourceTest extends ResourceTestBase {
+     $this->assertHeader('content-md5', $encoded_digest);
+   }
+ 
++  /**
++   *
++   */
+   public function testGet() {
+     $file_contents = file_get_contents($this->files['1']->getFileUri());
+     $encoded_digest = base64_encode(md5($file_contents));
+@@ -194,6 +203,9 @@ class AttachmentResourceTest extends ResourceTestBase {
+     $this->assertHeader('content-md5', $encoded_digest);
+   }
+ 
++  /**
++   *
++   */
+   public function testPut() {
+     $serializer = $this->container->get('relaxed.serializer');
+     $file_uri = 'public://new_example.txt';
+@@ -218,6 +230,9 @@ class AttachmentResourceTest extends ResourceTestBase {
+     $this->assertEquals($entity->{$field_name}->get(0)->target_id, $file->id(), 'File was attached to the entity.');
+   }
+ 
++  /**
++   *
++   */
+   public function testDelete() {
+     $field_name = 'field_test_file';
+     $attachment_info = $field_name . '/1/' . $this->files['2']->uuid() . '/public/' . $this->files['2']->getFileName();
+diff --git a/tests/src/Functional/BulkDocsResourceTest.php b/tests/src/Functional/BulkDocsResourceTest.php
+index a56615d..929a575 100644
+--- a/tests/src/Functional/BulkDocsResourceTest.php
++++ b/tests/src/Functional/BulkDocsResourceTest.php
+@@ -11,6 +11,9 @@ use Drupal\Component\Serialization\Json;
+  */
+ class BulkDocsResourceTest extends ResourceTestBase {
+ 
++  /**
++   *
++   */
+   public function testPostCreate() {
+     $entity_types = ['entity_test_rev'];
+     foreach ($entity_types as $entity_type) {
+@@ -33,12 +36,15 @@ class BulkDocsResourceTest extends ResourceTestBase {
+       $data = Json::decode($response->getBody());
+       $this->assertTrue(is_array($data), 'Data format is correct.');
+       foreach ($data as $key => $entity_info) {
+-        $entity_number = $key+1;
++        $entity_number = $key + 1;
+         $this->assertTrue(isset($entity_info['rev']), "POST request returned a revision hash for entity number $entity_number.");
+       }
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function testPostUpdate() {
+     /** @var \Symfony\Component\Serializer\SerializerInterface $serializer */
+     $serializer = $this->container->get('relaxed.serializer');
+@@ -80,14 +86,14 @@ class BulkDocsResourceTest extends ResourceTestBase {
+     $output = Json::decode($response->getBody());
+     $this->assertTrue(is_array($output), 'Data format is correct.');
+     foreach ($output as $key => $value) {
+-      $entity_number = $key+1;
++      $entity_number = $key + 1;
+       $this->assertTrue(isset($value['rev']), "POST request returned a revision hash for entity number $entity_number.");
+       $this->assertEquals($value['id'], $entities[$key]->uuid->value, "POST request returned correct ID for entity number $entity_number.");
+     }
+ 
+     foreach ($input['docs'] as $key => $value) {
+       $value = Json::decode($value);
+-      $entity_number = $key+1;
++      $entity_number = $key + 1;
+       $entity = $this->entityRepository->loadEntityByUuid($entity_type, $value['_id']);
+       if ($key == 1) {
+         $this->assertEquals($entity, NULL, "Entity number $entity_number has been deleted.");
+@@ -129,7 +135,7 @@ class BulkDocsResourceTest extends ResourceTestBase {
+     $this->assertTrue(is_array($data), 'Data format is correct.');
+ 
+     foreach ($data as $key => $entity_info) {
+-      $entity_number = $key+1;
++      $entity_number = $key + 1;
+       $this->assertTrue(isset($entity_info['rev']), "POST request returned a revision hash for entity number $entity_number.");
+       $new_rev = $entity_info['rev'];
+       $old_rev = $patched_entities['docs'][$key]->_rev->value;
+diff --git a/tests/src/Functional/ChangesResourceTest.php b/tests/src/Functional/ChangesResourceTest.php
+index 3cfdd25..145eb65 100644
+--- a/tests/src/Functional/ChangesResourceTest.php
++++ b/tests/src/Functional/ChangesResourceTest.php
+@@ -11,6 +11,9 @@ use Drupal\Component\Serialization\Json;
+  */
+ class ChangesResourceTest extends ResourceTestBase {
+ 
++  /**
++   *
++   */
+   public function testGet() {
+     $serializer = \Drupal::service('relaxed.serializer');
+ 
+@@ -49,7 +52,7 @@ class ChangesResourceTest extends ResourceTestBase {
+       'changes' => [['rev' => $entity->_rev->value]],
+       'id' => $entity->uuid(),
+       'seq' => $first_seq,
+-      'doc' => $serializer->normalize($entity)
++      'doc' => $serializer->normalize($entity),
+     ];
+ 
+     // Create a new entity.
+@@ -67,14 +70,14 @@ class ChangesResourceTest extends ResourceTestBase {
+       'changes' => [['rev' => $entity->_rev->value]],
+       'id' => $entity->uuid(),
+       'seq' => $second_seq,
+-      'deleted' => true,
++      'deleted' => TRUE,
+     ];
+     $expected_with_docs['results'][] = [
+       'changes' => [['rev' => $entity->_rev->value]],
+       'id' => $entity->uuid(),
+       'seq' => $second_seq,
+       'doc' => $serializer->normalize($entity),
+-      'deleted' => true,
++      'deleted' => TRUE,
+     ];
+ 
+     $expected_with_docs['last_seq'] = $expected_without_docs['last_seq'] = $this->multiversionManager->lastSequenceId();
+diff --git a/tests/src/Functional/DbResourceTest.php b/tests/src/Functional/DbResourceTest.php
+index fd7789e..a56076f 100644
+--- a/tests/src/Functional/DbResourceTest.php
++++ b/tests/src/Functional/DbResourceTest.php
+@@ -11,9 +11,11 @@ use Drupal\Component\Serialization\Json;
+  */
+ class DbResourceTest extends ResourceTestBase {
+ 
++  /**
++   *
++   */
+   public function testHead() {
+     // HEAD and GET is handled by the same resource.
+-
+     // Create a user with the 'perform pull replication' permission and test the
+     // response code. It should be 200.
+     $account = $this->drupalCreateUser(['perform pull replication']);
+@@ -32,6 +34,9 @@ class DbResourceTest extends ResourceTestBase {
+     $this->assertSame($this->defaultMimeType, $response->getHeader('content-type')[0]);
+   }
+ 
++  /**
++   *
++   */
+   public function testGet() {
+     // Create a user with the correct permissions.
+     $permissions[] = 'administer workspaces';
+@@ -70,6 +75,9 @@ class DbResourceTest extends ResourceTestBase {
+     $this->assertSame($this->defaultMimeType, $response->getHeader('content-type')[0]);
+   }
+ 
++  /**
++   *
++   */
+   public function testPut() {
+     // Create a user with the correct permissions.
+     $permissions[] = 'administer workspaces';
+@@ -77,7 +85,7 @@ class DbResourceTest extends ResourceTestBase {
+     $account = $this->drupalCreateUser($permissions);
+     $this->drupalLogin($account);
+ 
+-    // Test using an invalid machine name
++    // Test using an invalid machine name.
+     $id = 'A!"£%^&*{}#~@?';
+     $response = $this->httpRequest($id, 'PUT', NULL);
+     $this->assertSame($response->getStatusCode(), 400, 'HTTP response code is correct for missing database.');
+@@ -120,6 +128,9 @@ class DbResourceTest extends ResourceTestBase {
+     $this->assertSame($this->defaultMimeType, $response->getHeader('content-type')[0]);
+   }
+ 
++  /**
++   *
++   */
+   public function testPost() {
+     $serializer = $this->container->get('relaxed.serializer');
+ 
+@@ -165,6 +176,9 @@ class DbResourceTest extends ResourceTestBase {
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function testDelete() {
+     // Create a user with the correct permissions.
+     $permissions[] = 'administer workspaces';
+diff --git a/tests/src/Functional/DocResourceTest.php b/tests/src/Functional/DocResourceTest.php
+index 91129e8..8456235 100644
+--- a/tests/src/Functional/DocResourceTest.php
++++ b/tests/src/Functional/DocResourceTest.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\Tests\relaxed\Functional;
+ 
+ use Drupal\Component\Serialization\Json;
+-use Drupal\entity_test\Entity\EntityTestRev;
+ use Drupal\relaxed\HttpMultipart\Message\MultipartResponse;
+ use GuzzleHttp\Psr7;
+ 
+@@ -15,6 +14,9 @@ use GuzzleHttp\Psr7;
+  */
+ class DocResourceTest extends ResourceTestBase {
+ 
++  /**
++   *
++   */
+   public function testHead() {
+     // HEAD and GET is handled by the same resource.
+     $entity_types = ['entity_test_rev'];
+@@ -219,6 +221,9 @@ class DocResourceTest extends ResourceTestBase {
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function testPut() {
+     $serializer = $this->container->get('relaxed.serializer');
+     $entity_types = ['entity_test_rev'];
+@@ -272,6 +277,9 @@ class DocResourceTest extends ResourceTestBase {
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function testDelete() {
+     $entity_types = ['entity_test_rev'];
+     foreach ($entity_types as $entity_type) {
+@@ -338,6 +346,9 @@ class DocResourceTest extends ResourceTestBase {
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function testStub() {
+     $serializer = $this->container->get('relaxed.serializer');
+     $entity_types = ['entity_test_rev'];
+@@ -360,7 +371,7 @@ class DocResourceTest extends ResourceTestBase {
+       $normalized = [
+         '@context' => [
+           '@id' => '_id',
+-          '@language' => 'en'
++          '@language' => 'en',
+         ],
+         '@type' => $entity_type_id,
+         '_id' => $entity_uuid,
+@@ -372,7 +383,8 @@ class DocResourceTest extends ResourceTestBase {
+           'tags_list' => [[
+             'entity_type_id' => 'taxonomy_term',
+             'target_uuid' => $reference_uuid,
+-          ]],
++          ],
++          ],
+         ],
+       ];
+ 
+diff --git a/tests/src/Functional/EnsureFullCommitResourceTest.php b/tests/src/Functional/EnsureFullCommitResourceTest.php
+index 4633f11..3c473ff 100644
+--- a/tests/src/Functional/EnsureFullCommitResourceTest.php
++++ b/tests/src/Functional/EnsureFullCommitResourceTest.php
+@@ -11,6 +11,9 @@ use Drupal\Component\Serialization\Json;
+  */
+ class EnsureFullCommitResourceTest extends ResourceTestBase {
+ 
++  /**
++   *
++   */
+   public function testPost() {
+     // Create a user with the correct permissions.
+     $permissions[] = 'administer workspaces';
+diff --git a/tests/src/Functional/Entity/EntityAccessTest.php b/tests/src/Functional/Entity/EntityAccessTest.php
+index e14bae0..62e0af7 100644
+--- a/tests/src/Functional/Entity/EntityAccessTest.php
++++ b/tests/src/Functional/Entity/EntityAccessTest.php
+@@ -12,14 +12,14 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group relaxed
+  */
+-class EntityAccessTest extends BrowserTestBase  {
++class EntityAccessTest extends BrowserTestBase {
+ 
+   public static $modules = [
+     'entity_test',
+     'file',
+     'multiversion',
+     'relaxed',
+-    'relaxed_test'
++    'relaxed_test',
+   ];
+ 
+   protected $strictConfigSchema = FALSE;
+@@ -27,7 +27,7 @@ class EntityAccessTest extends BrowserTestBase  {
+   /**
+    * Asserts entity access correctly grants or denies access.
+    */
+-  function assertEntityAccess($ops, AccessibleInterface $object, AccountInterface $account = NULL) {
++  public function assertEntityAccess($ops, AccessibleInterface $object, AccountInterface $account = NULL) {
+     foreach ($ops as $op => $result) {
+       $message = format_string("Entity access returns @result with operation '@op'.", [
+         '@result' => !isset($result) ? 'null' : ($result ? 'true' : 'false'),
+@@ -41,7 +41,7 @@ class EntityAccessTest extends BrowserTestBase  {
+   /**
+    * Ensures entity and field access is properly working.
+    */
+-  function testEntityAndFieldAccess() {
++  public function testEntityAndFieldAccess() {
+     // Test entity access with 'perform pull replication' permission.
+     $account = $this->drupalCreateUser(['perform pull replication']);
+     $this->drupalLogin($account);
+diff --git a/tests/src/Functional/LocalDocResourceTest.php b/tests/src/Functional/LocalDocResourceTest.php
+index 9fb2650..34e6bca 100644
+--- a/tests/src/Functional/LocalDocResourceTest.php
++++ b/tests/src/Functional/LocalDocResourceTest.php
+@@ -9,6 +9,9 @@ namespace Drupal\Tests\relaxed\Functional;
+  */
+ class LocalDocResourceTest extends ResourceTestBase {
+ 
++  /**
++   *
++   */
+   public function testHead() {
+     // HEAD and GET is handled by the same resource.
+     $entity_types = ['entity_test_local'];
+@@ -39,6 +42,9 @@ class LocalDocResourceTest extends ResourceTestBase {
+     $this->assertEquals('400', $response->getStatusCode(), 'HTTP response code is correct.');
+   }
+ 
++  /**
++   *
++   */
+   public function testGet() {
+     $entity_types = ['entity_test_local'];
+     foreach ($entity_types as $entity_type) {
+@@ -66,6 +72,9 @@ class LocalDocResourceTest extends ResourceTestBase {
+     $this->assertEquals('400', $response->getStatusCode(), 'HTTP response code is correct.');
+   }
+ 
++  /**
++   *
++   */
+   public function testPut() {
+     $serializer = $this->container->get('relaxed.serializer');
+ 
+diff --git a/tests/src/Functional/ProcessFileAttachmentTest.php b/tests/src/Functional/ProcessFileAttachmentTest.php
+index 7e788e0..f75f462 100644
+--- a/tests/src/Functional/ProcessFileAttachmentTest.php
++++ b/tests/src/Functional/ProcessFileAttachmentTest.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\Tests\relaxed\Functional;
+ 
+-use Drupal\file\FileInterface;
+ use Drupal\workspaces\Entity\Workspace;
+ use Drupal\Tests\BrowserTestBase;
+ 
+@@ -15,6 +14,9 @@ use Drupal\Tests\BrowserTestBase;
+  */
+ class ProcessFileAttachmentTest extends BrowserTestBase {
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $permissions = array_intersect([
+@@ -46,12 +48,12 @@ class ProcessFileAttachmentTest extends BrowserTestBase {
+       'uri' => 'public://file1.txt',
+       'uuid' => '6f9e1f07-e713-4840-bf95-8326c8317800',
+     ];
+-    /** @var FileInterface $file1 */
++    /** @var \Drupal\file\FileInterface $file1 */
+     $file1 = \Drupal::service('relaxed.process_file_attachment')->process($data, 'base64_stream');
+     $file1->save();
+     $this->assertEquals('6f9e1f07-e713-4840-bf95-8326c8317800', $file1->uuid(), 'The file has the expected UUID.');
+ 
+-    /** @var FileInterface $file2 */
++    /** @var \Drupal\file\FileInterface $file2 */
+     $file2 = \Drupal::service('relaxed.process_file_attachment')->process($data, 'base64_stream');
+     $file2->save();
+     $this->assertEquals('6f9e1f07-e713-4840-bf95-8326c8317800', $file2->uuid(), 'The file has the expected UUID.');
+@@ -62,7 +64,7 @@ class ProcessFileAttachmentTest extends BrowserTestBase {
+     $this->assertFalse(is_file($file2->getFileUri()));
+     $this->assertFalse(is_file($file1->getFileUri()));
+ 
+-    /** @var FileInterface $file3 */
++    /** @var \Drupal\file\FileInterface $file3 */
+     $file3 = \Drupal::service('relaxed.process_file_attachment')->process($data, 'base64_stream');
+     $file3->save();
+     $this->assertEquals('6f9e1f07-e713-4840-bf95-8326c8317800', $file3->uuid(), 'The file has the expected UUID.');
+@@ -71,4 +73,5 @@ class ProcessFileAttachmentTest extends BrowserTestBase {
+     $this->assertEquals($file2->id(), $file3->id(), 'The two files have the same id.');
+     $this->assertTrue(is_file($file3->getFileUri()));
+   }
++
+ }
+diff --git a/tests/src/Functional/RelaxedEncryptTest.php b/tests/src/Functional/RelaxedEncryptTest.php
+index 3b26133..54f988d 100644
+--- a/tests/src/Functional/RelaxedEncryptTest.php
++++ b/tests/src/Functional/RelaxedEncryptTest.php
+@@ -23,7 +23,7 @@ class RelaxedEncryptTest extends BrowserTestBase {
+     'encrypt_test',
+     'relaxed',
+     'rest',
+-    'basic_auth'
++    'basic_auth',
+   ];
+ 
+   /**
+diff --git a/tests/src/Functional/RemoteConfigurationTest.php b/tests/src/Functional/RemoteConfigurationTest.php
+index da2dff4..99449c8 100644
+--- a/tests/src/Functional/RemoteConfigurationTest.php
++++ b/tests/src/Functional/RemoteConfigurationTest.php
+@@ -22,7 +22,7 @@ class RemoteConfigurationTest extends BrowserTestBase {
+     'workspaces',
+     'multiversion',
+     'relaxed',
+-    'relaxed_test'
++    'relaxed_test',
+   ];
+ 
+   protected $strictConfigSchema = FALSE;
+@@ -30,12 +30,12 @@ class RemoteConfigurationTest extends BrowserTestBase {
+   /**
+    * Tests configuration of Remotes through administration interface.
+    */
+-  function testRemoteConfiguration() {
++  public function testRemoteConfiguration() {
+     // Create a user with permission to view the Remote administration pages.
+     $user = $this->drupalCreateUser(['administer site configuration', 'administer workspaces', 'access administration pages']);
+     $this->drupalLogin($user);
+ 
+-    // Set default replicator credentials
++    // Set default replicator credentials.
+     $edit = [];
+     $edit['username'] = 'user';
+     $edit['password'] = 'pass';
+diff --git a/tests/src/Functional/ResourceTestBase.php b/tests/src/Functional/ResourceTestBase.php
+index 46f8a05..e67b309 100644
+--- a/tests/src/Functional/ResourceTestBase.php
++++ b/tests/src/Functional/ResourceTestBase.php
+@@ -7,6 +7,9 @@ use Drupal\workspaces\Entity\Workspace;
+ use Drupal\Tests\BrowserTestBase;
+ use GuzzleHttp\RequestOptions;
+ 
++/**
++ *
++ */
+ abstract class ResourceTestBase extends BrowserTestBase {
+ 
+   public static $modules = [
+@@ -78,6 +81,9 @@ abstract class ResourceTestBase extends BrowserTestBase {
+    */
+   protected $entityRepository;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->defaultFormat = 'json';
+@@ -263,14 +269,15 @@ abstract class ResourceTestBase extends BrowserTestBase {
+    * {@inheritdoc}
+    */
+   protected function entityPermissions($entity_type, $operation) {
+-    if (in_array($entity_type, array('entity_test_rev', 'entity_test_mulrev', 'entity_test_local'))) {
++    if (in_array($entity_type, ['entity_test_rev', 'entity_test_mulrev', 'entity_test_local'])) {
+       switch ($operation) {
+         case 'view':
+-          return array('view test entity');
++          return ['view test entity'];
++
+         case 'create':
+         case 'update':
+         case 'delete':
+-          return array('administer entity_test content');
++          return ['administer entity_test content'];
+       }
+     }
+ 
+diff --git a/tests/src/Functional/RevsDiffResourceTest.php b/tests/src/Functional/RevsDiffResourceTest.php
+index eb5cf7e..5b0bcf6 100644
+--- a/tests/src/Functional/RevsDiffResourceTest.php
++++ b/tests/src/Functional/RevsDiffResourceTest.php
+@@ -11,6 +11,9 @@ use Drupal\Component\Serialization\Json;
+  */
+ class RevsDiffResourceTest extends ResourceTestBase {
+ 
++  /**
++   *
++   */
+   public function testPostNoMissingRevisions() {
+     $entity_types = ['entity_test_rev'];
+     foreach ($entity_types as $entity_type) {
+@@ -56,6 +59,9 @@ class RevsDiffResourceTest extends ResourceTestBase {
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function testPostMissingRevisions() {
+     $entity_types = ['entity_test_rev'];
+     foreach ($entity_types as $entity_type) {
+@@ -82,7 +88,7 @@ class RevsDiffResourceTest extends ResourceTestBase {
+       $entity->set('name', [['value' => $this->randomString(25), 'format' => 'plain_text']]);
+       $entity->save();
+ 
+-      $data =[];
++      $data = [];
+       $id = $entity->uuid();
+       $revs = $this->revTree->getDefaultBranch($id);
+       foreach ($revs as $rev => $status) {
+@@ -92,7 +98,7 @@ class RevsDiffResourceTest extends ResourceTestBase {
+       // Add invalid revision to test missing
+       // revisions for the first entity.
+       $data[$id] = $missing_keys[$id] = [
+-        '11-1214293f06b11ea6da4c9da0591111zz'
++        '11-1214293f06b11ea6da4c9da0591111zz',
+       ];
+ 
+       // Create a second new test entity.
+diff --git a/tests/src/Functional/RootResourceTest.php b/tests/src/Functional/RootResourceTest.php
+index 9335bd7..d125810 100644
+--- a/tests/src/Functional/RootResourceTest.php
++++ b/tests/src/Functional/RootResourceTest.php
+@@ -11,6 +11,9 @@ use Drupal\Component\Serialization\Json;
+  */
+ class RootResourceTest extends ResourceTestBase {
+ 
++  /**
++   *
++   */
+   public function testGet() {
+     // Create a user with the correct permissions.
+     $permissions[] = 'perform pull replication';
+@@ -23,7 +26,7 @@ class RootResourceTest extends ResourceTestBase {
+     $data = Json::decode($response->getBody());
+ 
+     $request = \Drupal::request();
+-    $uuid = MD5($request->getHost() . $request->getPort());
++    $uuid = md5($request->getHost() . $request->getPort());
+     $expected = [
+       'couchdb' => 'Welcome',
+       'uuid' => $uuid,
+diff --git a/tests/src/Functional/SessionResourceTest.php b/tests/src/Functional/SessionResourceTest.php
+index c4f2e4e..ba65543 100644
+--- a/tests/src/Functional/SessionResourceTest.php
++++ b/tests/src/Functional/SessionResourceTest.php
+@@ -11,6 +11,9 @@ use Drupal\Component\Serialization\Json;
+  */
+ class SessionResourceTest extends ResourceTestBase {
+ 
++  /**
++   *
++   */
+   public function testGet() {
+     // Create a user with the correct permissions and admin role.
+     $permissions = [
+diff --git a/tests/src/Functional/StubTest.php b/tests/src/Functional/StubTest.php
+index d375b52..1945b76 100644
+--- a/tests/src/Functional/StubTest.php
++++ b/tests/src/Functional/StubTest.php
+@@ -27,7 +27,7 @@ class StubTest extends BrowserTestBase {
+   public static $modules = [
+     'node',
+     'entity_test',
+-    'relaxed'
++    'relaxed',
+   ];
+ 
+   /**
+@@ -35,6 +35,9 @@ class StubTest extends BrowserTestBase {
+    */
+   protected $serializer;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+@@ -42,6 +45,9 @@ class StubTest extends BrowserTestBase {
+     $this->createEntityReferenceField($entity_type_id, $entity_type_id, 'field_ref', 'Reference', $entity_type_id);
+   }
+ 
++  /**
++   *
++   */
+   public function testStubCreation() {
+     $entity_type_id = 'entity_test_mulrev';
+ 
+@@ -68,8 +74,9 @@ class StubTest extends BrowserTestBase {
+         'default_langcode' => [['value' => TRUE]],
+         'field_ref' => [[
+           'entity_type_id' => $entity_type_id,
+-          'target_uuid' => '0aec21a0-8e36-11e5-8994-feff819cdc9f'
+-        ]],
++          'target_uuid' => '0aec21a0-8e36-11e5-8994-feff819cdc9f',
++        ],
++        ],
+       ],
+     ];
+ 
+diff --git a/tests/src/Integration/ReplicationTestBase.php b/tests/src/Integration/ReplicationTestBase.php
+index 7cb0177..8682e98 100644
+--- a/tests/src/Integration/ReplicationTestBase.php
++++ b/tests/src/Integration/ReplicationTestBase.php
+@@ -3,11 +3,13 @@
+ namespace Drupal\Tests\relaxed\Integration;
+ 
+ use Drupal\KernelTests\KernelTestBase;
+-use Drupal\workspaces\Entity\Workspace;
+ use Doctrine\CouchDB\CouchDBClient;
+ use Relaxed\Replicator\ReplicationTask;
+ use Relaxed\Replicator\Replicator;
+ 
++/**
++ *
++ */
+ class ReplicationTestBase extends KernelTestBase {
+ 
+   protected $strictConfigSchema = FALSE;
+@@ -109,7 +111,8 @@ class ReplicationTestBase extends KernelTestBase {
+ 
+       fclose($handle);
+       curl_close($curl);
+-    } else {
++    }
++    else {
+       $this->fail("Error when reading documents.txt");
+     }
+   }
+@@ -194,21 +197,27 @@ class ReplicationTestBase extends KernelTestBase {
+       case 200:
+         $this->assertTrue(TRUE, 'Replication request successfully completed.');
+         break;
++
+       case 202:
+         $this->assertTrue(TRUE, 'Continuous replication request has been accepted.');
+         break;
++
+       case 400:
+         $this->assertTrue(FALSE, 'Invalid JSON data.');
+         break;
++
+       case 401:
+         $this->assertTrue(FALSE, 'CouchDB Server Administrator privileges required.');
+         break;
++
+       case 404:
+         $this->assertTrue(FALSE, 'Either the source or target DB is not found or attempt to cancel unknown replication task.');
+         break;
++
+       case 500:
+         $this->assertTrue(FALSE, "Server error: $response");
+         break;
++
+       default:
+         $this->assertTrue(FALSE, "Error: $code");
+     }
+@@ -221,7 +230,7 @@ class ReplicationTestBase extends KernelTestBase {
+    * Replicates content from source to target using the PHP replicator.
+    */
+   protected function phpReplicate($data) {
+-    $json = json_decode($data, true);
++    $json = json_decode($data, TRUE);
+     if (json_last_error() != JSON_ERROR_NONE) {
+       throw new Exception('Invalid JSON.');
+     }
+@@ -229,7 +238,7 @@ class ReplicationTestBase extends KernelTestBase {
+     $source = CouchDBClient::create($json['source']);
+     $target = CouchDBClient::create($json['target']);
+ 
+-    $task = new ReplicationTask(null, false, null, null, false, null, 10000, 10000, false, "all_docs", 0, 2, 2);
++    $task = new ReplicationTask(NULL, FALSE, NULL, NULL, FALSE, NULL, 10000, 10000, FALSE, "all_docs", 0, 2, 2);
+     $replicator = new Replicator($source, $target, $task);
+ 
+     return $replicator->startReplication();
+@@ -278,6 +287,7 @@ class ReplicationTestBase extends KernelTestBase {
+    * Getsl all docs from a database.
+    *
+    * @param $db_url
++   *
+    * @return mixed
+    */
+   protected function getAllDocs($db_url) {
+diff --git a/tests/src/Kernel/AllDocsFactoryTest.php b/tests/src/Kernel/AllDocsFactoryTest.php
+index 99ae4c3..302167a 100644
+--- a/tests/src/Kernel/AllDocsFactoryTest.php
++++ b/tests/src/Kernel/AllDocsFactoryTest.php
+@@ -7,7 +7,7 @@ use Drupal\workspaces\Entity\Workspace;
+ use Drupal\relaxed\AllDocs\AllDocsInterface;
+ 
+ /**
+- * Tests the AllDocsFactory
++ * Tests the AllDocsFactory.
+  *
+  * @group relaxed
+  */
+@@ -24,9 +24,13 @@ class AllDocsFactoryTest extends KernelTestBase {
+     'relaxed',
+   ];
+ 
+-  /** @var  Workspace */
++  /**
++   * @var  \Drupal\workspaces\Entity\Workspace*/
+   protected $workspace;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('user');
+@@ -43,6 +47,9 @@ class AllDocsFactoryTest extends KernelTestBase {
+     $this->workspace->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testAllDocsFactory() {
+     $all_docs = \Drupal::service('relaxed.alldocs_factory')->get($this->workspace);
+     $this->assertTrue(($all_docs instanceof AllDocsInterface));
+diff --git a/tests/src/Kernel/BulkDocsFactoryTest.php b/tests/src/Kernel/BulkDocsFactoryTest.php
+index 159a259..a737dc1 100644
+--- a/tests/src/Kernel/BulkDocsFactoryTest.php
++++ b/tests/src/Kernel/BulkDocsFactoryTest.php
+@@ -7,7 +7,7 @@ use Drupal\workspaces\Entity\Workspace;
+ use Drupal\relaxed\BulkDocs\BulkDocsInterface;
+ 
+ /**
+- * Tests the AllDocsFactory
++ * Tests the AllDocsFactory.
+  *
+  * @group relaxed
+  */
+@@ -24,9 +24,13 @@ class BulkDocsFactoryTest extends KernelTestBase {
+     'relaxed',
+   ];
+ 
+-  /** @var  Workspace */
++  /**
++   * @var  \Drupal\workspaces\Entity\Workspace*/
+   protected $workspace;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('user');
+@@ -43,6 +47,9 @@ class BulkDocsFactoryTest extends KernelTestBase {
+     $this->workspace->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testBulkDocsFactory() {
+     $bulk_docs = \Drupal::service('relaxed.bulkdocs_factory')->get($this->workspace);
+     $this->assertTrue(($bulk_docs instanceof BulkDocsInterface));
+diff --git a/tests/src/Kernel/ChangesFactoryTest.php b/tests/src/Kernel/ChangesFactoryTest.php
+index 9ce8027..c962e54 100644
+--- a/tests/src/Kernel/ChangesFactoryTest.php
++++ b/tests/src/Kernel/ChangesFactoryTest.php
+@@ -24,9 +24,13 @@ class ChangesFactoryTest extends KernelTestBase {
+     'relaxed',
+   ];
+ 
+-  /** @var  \Drupal\workspaces\WorkspaceInterface */
++  /**
++   * @var  \Drupal\workspaces\WorkspaceInterface*/
+   protected $workspace;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('user');
+@@ -43,6 +47,9 @@ class ChangesFactoryTest extends KernelTestBase {
+     $this->workspace->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testChangesFactory() {
+     $changes = \Drupal::service('relaxed.changes_factory')->get($this->workspace);
+     $this->assertTrue(($changes instanceof ChangesInterface));
+diff --git a/tests/src/Kernel/Encoder/StreamEncoderTest.php b/tests/src/Kernel/Encoder/StreamEncoderTest.php
+index 5e8f5cd..2350e8a 100644
+--- a/tests/src/Kernel/Encoder/StreamEncoderTest.php
++++ b/tests/src/Kernel/Encoder/StreamEncoderTest.php
+@@ -19,11 +19,17 @@ class StreamEncoderTest extends KernelTestBase {
+    */
+   protected $encoder;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->encoder = new StreamEncoder();
+   }
+ 
++  /**
++   *
++   */
+   public function testEncode() {
+     $a_string = 'foo';
+     $a = fopen('php://memory', 'w+b');
+@@ -39,6 +45,9 @@ class StreamEncoderTest extends KernelTestBase {
+     $this->assertEquals(base64_encode($b_string), $this->encoder->encode($b, 'base64_stream'));
+   }
+ 
++  /**
++   *
++   */
+   public function testDencode() {
+     $a_string = 'foo';
+     $a = $this->encoder->decode($a_string, 'stream');
+diff --git a/tests/src/Kernel/LinkStubReplicationTest.php b/tests/src/Kernel/LinkStubReplicationTest.php
+index 896e349..48313ac 100644
+--- a/tests/src/Kernel/LinkStubReplicationTest.php
++++ b/tests/src/Kernel/LinkStubReplicationTest.php
+@@ -134,7 +134,7 @@ class LinkStubReplicationTest extends KernelTestBase {
+           ['@language' => 'en'],
+         'langcode' =>
+           [
+-            ['value' => 'en',],
++            ['value' => 'en'],
+           ],
+         'type' => [
+           ['target_id' => 'article_with_link'],
+diff --git a/tests/src/Kernel/Normalizer/AttachmentNormalizerTest.php b/tests/src/Kernel/Normalizer/AttachmentNormalizerTest.php
+index a9adce4..6af7405 100644
+--- a/tests/src/Kernel/Normalizer/AttachmentNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/AttachmentNormalizerTest.php
+@@ -37,6 +37,9 @@ class AttachmentNormalizerTest extends NormalizerTestBase {
+    */
+   protected $fileEntity;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+@@ -49,6 +52,9 @@ class AttachmentNormalizerTest extends NormalizerTestBase {
+     $this->fileEntity = File::create(['uri' => $meta['uri']]);
+   }
+ 
++  /**
++   *
++   */
+   public function testNormalizer() {
+     // Test normalize.
+     $normalized = $this->serializer->normalize($this->fileEntity);
+diff --git a/tests/src/Kernel/Normalizer/BulkDocsNormalizerTest.php b/tests/src/Kernel/Normalizer/BulkDocsNormalizerTest.php
+index 51e85b6..fc289fe 100644
+--- a/tests/src/Kernel/Normalizer/BulkDocsNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/BulkDocsNormalizerTest.php
+@@ -40,6 +40,9 @@ class BulkDocsNormalizerTest extends NormalizerTestBase {
+    */
+   protected $testValuesNumber = 3;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->testEntities = $this->createTestEntities('entity_test_mulrev', $this->testValuesNumber);
+@@ -52,6 +55,9 @@ class BulkDocsNormalizerTest extends NormalizerTestBase {
+     $this->bulkDocs->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testNormalizer() {
+     // Test normalize.
+     $expected = [];
+@@ -90,7 +96,7 @@ class BulkDocsNormalizerTest extends NormalizerTestBase {
+     $bulk_docs = $this->serializer->denormalize($data, 'Drupal\relaxed\BulkDocs\BulkDocs', 'json', $context);
+     $this->assertTrue($bulk_docs instanceof BulkDocsInterface, 'Denormalized data is an instance of the correct interface.');
+     foreach ($bulk_docs->getEntities() as $key => $entity) {
+-      $entity_number = $key+1;
++      $entity_number = $key + 1;
+       $this->assertTrue($entity instanceof $this->entityClass, new FormattableMarkup("Denormalized entity number $entity_number is an instance of @class", ['@class' => $this->entityClass]));
+       $this->assertSame($entity->getEntityTypeId(), $this->testEntities[$key]->getEntityTypeId(), "Expected entity type foundfor entity number $entity_number.");
+       $this->assertSame($entity->bundle(), $this->testEntities[$key]->bundle(), "Expected entity bundle found for entity number $entity_number.");
+@@ -100,6 +106,9 @@ class BulkDocsNormalizerTest extends NormalizerTestBase {
+     // @todo {@link https://www.drupal.org/node/2600460 Test context switches.}
+   }
+ 
++  /**
++   *
++   */
+   protected function createTestEntities($entity_type, $number = 3) {
+     $entities = [];
+     $entity_type_manager = \Drupal::entityTypeManager();
+diff --git a/tests/src/Kernel/Normalizer/ContentEntityNormalizerAlterTest.php b/tests/src/Kernel/Normalizer/ContentEntityNormalizerAlterTest.php
+index 921fafb..4d451f7 100644
+--- a/tests/src/Kernel/Normalizer/ContentEntityNormalizerAlterTest.php
++++ b/tests/src/Kernel/Normalizer/ContentEntityNormalizerAlterTest.php
+@@ -37,6 +37,9 @@ class ContentEntityNormalizerAlterTest extends NormalizerTestBase {
+    */
+   protected $entityClass = EntityTest::class;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+@@ -60,7 +63,7 @@ class ContentEntityNormalizerAlterTest extends NormalizerTestBase {
+   public function testNormalizerAlterEvent() {
+     $normalized = $this->serializer->normalize($this->entity);
+     // The '_test' key should be added in
+-    // \Drupal\relaxed_alter_test\Event\ContentEntityTestAlterSubscriber::onAlterContentData
++    // \Drupal\relaxed_alter_test\Event\ContentEntityTestAlterSubscriber::onAlterContentData.
+     $this->assertSame(['foo' => 'bar'], $normalized['_test']);
+   }
+ 
+diff --git a/tests/src/Kernel/Normalizer/ContentEntityNormalizerTest.php b/tests/src/Kernel/Normalizer/ContentEntityNormalizerTest.php
+index e6386fd..8ed781a 100644
+--- a/tests/src/Kernel/Normalizer/ContentEntityNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/ContentEntityNormalizerTest.php
+@@ -15,6 +15,9 @@ class ContentEntityNormalizerTest extends NormalizerTestBase {
+ 
+   protected $entityClass = 'Drupal\entity_test\Entity\EntityTestMulRev';
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+@@ -54,13 +57,16 @@ class ContentEntityNormalizerTest extends NormalizerTestBase {
+     $this->romanian = $entity->getTranslation('ro');
+   }
+ 
++  /**
++   *
++   */
+   public function testNormalizer() {
+     $revs = EntityTestMulRev::load($this->entity->id())->_rev->revisions;
+     // Test normalize.
+     $expected = [
+       '@context' => [
+         '_id' => '@id',
+-        '@language' => 'en'
++        '@language' => 'en',
+       ],
+       '@type' => 'entity_test_mulrev',
+       'en' => [
+@@ -101,10 +107,10 @@ class ContentEntityNormalizerTest extends NormalizerTestBase {
+         ],
+         'non_mul_field' => [],
+         'revision_default' => [
+-          ['value' => TRUE]
++          ['value' => TRUE],
+         ],
+         'revision_translation_affected' => [
+-          ['value' => TRUE]
++          ['value' => TRUE],
+         ],
+       ],
+       'ro' => [
+@@ -145,10 +151,10 @@ class ContentEntityNormalizerTest extends NormalizerTestBase {
+         ],
+         'non_mul_field' => [],
+         'revision_default' => [
+-          ['value' => TRUE]
++          ['value' => TRUE],
+         ],
+         'revision_translation_affected' => [
+-          ['value' => TRUE]
++          ['value' => TRUE],
+         ],
+       ],
+       '_id' => $this->entity->uuid(),
+@@ -182,7 +188,6 @@ class ContentEntityNormalizerTest extends NormalizerTestBase {
+     $this->assertEquals(array_diff_key($normalized, $expected), [], 'No unexpected data is added to the normalized array.');
+ 
+     // @todo {@link https://www.drupal.org/node/2600460 Test context switches.}
+-
+     // Test serialize.
+     $normalized = $this->serializer->normalize($this->entity);
+     $expected = json_encode($normalized);
+diff --git a/tests/src/Kernel/Normalizer/EntityReferenceItemNormalizerTest.php b/tests/src/Kernel/Normalizer/EntityReferenceItemNormalizerTest.php
+index 8d9a117..40cd218 100644
+--- a/tests/src/Kernel/Normalizer/EntityReferenceItemNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/EntityReferenceItemNormalizerTest.php
+@@ -53,7 +53,7 @@ class EntityReferenceItemNormalizerTest extends NormalizerTestBase {
+     $expected = [
+       '@context' => [
+         '_id' => '@id',
+-        '@language' => 'en'
++        '@language' => 'en',
+       ],
+       '@type' => 'entity_test_mulrev',
+       'en' => [
+@@ -97,10 +97,10 @@ class EntityReferenceItemNormalizerTest extends NormalizerTestBase {
+         ],
+         'non_mul_field' => [],
+         'revision_default' => [
+-          ['value' => TRUE]
++          ['value' => TRUE],
+         ],
+         'revision_translation_affected' => [
+-          ['value' => TRUE]
++          ['value' => TRUE],
+         ],
+       ],
+       '_id' => $entity->uuid(),
+diff --git a/tests/src/Kernel/Normalizer/FileEntityNormalizerTest.php b/tests/src/Kernel/Normalizer/FileEntityNormalizerTest.php
+index 4e5a5df..55788a0 100644
+--- a/tests/src/Kernel/Normalizer/FileEntityNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/FileEntityNormalizerTest.php
+@@ -10,7 +10,7 @@ use Drupal\file\Entity\File;
+  *
+  * @group relaxed
+  */
+-class FileEntityNormalizerTest extends NormalizerTestBase{
++class FileEntityNormalizerTest extends NormalizerTestBase {
+ 
+   public static $modules = [
+     'serialization',
+@@ -30,6 +30,9 @@ class FileEntityNormalizerTest extends NormalizerTestBase{
+ 
+   protected $entityClass = 'Drupal\file\Entity\File';
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('file');
+@@ -62,7 +65,7 @@ class FileEntityNormalizerTest extends NormalizerTestBase{
+     $expected = [
+       '@context' => [
+         '_id' => '@id',
+-        '@language' => 'en'
++        '@language' => 'en',
+       ],
+       '@type' => 'file',
+       'en' => [
+@@ -109,7 +112,6 @@ class FileEntityNormalizerTest extends NormalizerTestBase{
+       ],
+     ];
+ 
+-
+     $normalized = $this->serializer->normalize($file);
+ 
+     // Get the minor version only from the \Drupal::VERSION string.
+diff --git a/tests/src/Kernel/Normalizer/LinkItemNormalizerTest.php b/tests/src/Kernel/Normalizer/LinkItemNormalizerTest.php
+index de323c7..b5d8744 100644
+--- a/tests/src/Kernel/Normalizer/LinkItemNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/LinkItemNormalizerTest.php
+@@ -16,6 +16,9 @@ class LinkItemNormalizerTest extends NormalizerTestBase {
+ 
+   protected $entityClass = 'Drupal\entity_test\Entity\EntityTest';
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+@@ -85,7 +88,7 @@ class LinkItemNormalizerTest extends NormalizerTestBase {
+     $expected = [
+       '@context' => [
+         '_id' => '@id',
+-        '@language' => 'en'
++        '@language' => 'en',
+       ],
+       '@type' => 'entity_test_mulrev',
+       'en' => [
+@@ -145,10 +148,10 @@ class LinkItemNormalizerTest extends NormalizerTestBase {
+         ],
+         'non_mul_field' => [],
+         'revision_default' => [
+-          ['value' => TRUE]
++          ['value' => TRUE],
+         ],
+         'revision_translation_affected' => [
+-          ['value' => TRUE]
++          ['value' => TRUE],
+         ],
+       ],
+       '_id' => $this->entity->uuid(),
+diff --git a/tests/src/Kernel/Normalizer/NormalizerTestBase.php b/tests/src/Kernel/Normalizer/NormalizerTestBase.php
+index f5b2306..1673110 100644
+--- a/tests/src/Kernel/Normalizer/NormalizerTestBase.php
++++ b/tests/src/Kernel/Normalizer/NormalizerTestBase.php
+@@ -7,6 +7,9 @@ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\workspaces\Entity\Workspace;
+ 
++/**
++ *
++ */
+ abstract class NormalizerTestBase extends KernelTestBase {
+ 
+   /**
+@@ -42,6 +45,9 @@ abstract class NormalizerTestBase extends KernelTestBase {
+    */
+   protected $workspaceManager;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('entity_test_mulrev');
+diff --git a/tests/src/Kernel/Normalizer/ReplicationLogNormalizerTest.php b/tests/src/Kernel/Normalizer/ReplicationLogNormalizerTest.php
+index 4fbe0f1..421854e 100644
+--- a/tests/src/Kernel/Normalizer/ReplicationLogNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/ReplicationLogNormalizerTest.php
+@@ -13,11 +13,17 @@ class ReplicationLogNormalizerTest extends NormalizerTestBase {
+ 
+   protected $entityClass = ReplicationLog::class;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->entity = ReplicationLog::create(['source_last_seq' => 99]);
+   }
+ 
++  /**
++   *
++   */
+   public function testNormalizer() {
+     // Test normalize.
+     $expected = [
+diff --git a/tests/src/Kernel/Normalizer/WorkspaceNormalizerTest.php b/tests/src/Kernel/Normalizer/WorkspaceNormalizerTest.php
+index 68d26ab..ac25cba 100644
+--- a/tests/src/Kernel/Normalizer/WorkspaceNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/WorkspaceNormalizerTest.php
+@@ -14,6 +14,9 @@ class WorkspaceNormalizerTest extends NormalizerTestBase {
+ 
+   protected $entityClass = 'Drupal\workspaces\Entity\Workspace';
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $name = $this->randomMachineName();
+@@ -21,6 +24,9 @@ class WorkspaceNormalizerTest extends NormalizerTestBase {
+     $this->entity->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testNormalizer() {
+     // Test normalize.
+     $expected = [
+diff --git a/tests/src/Kernel/Plugin/ReplicationFilter/PublishedFilterTest.php b/tests/src/Kernel/Plugin/ReplicationFilter/PublishedFilterTest.php
+index 53e0365..6bac7b1 100644
+--- a/tests/src/Kernel/Plugin/ReplicationFilter/PublishedFilterTest.php
++++ b/tests/src/Kernel/Plugin/ReplicationFilter/PublishedFilterTest.php
+@@ -75,9 +75,9 @@ class PublishedFilterTest extends KernelTestBase {
+     ];
+     $filter = $filter_manager->createInstance('published', $configuration);
+     $entity = $this->container
+-        ->get('entity_type.manager')
+-        ->getStorage($entity_type_id)
+-        ->create($entity_values);
++      ->get('entity_type.manager')
++      ->getStorage($entity_type_id)
++      ->create($entity_values);
+ 
+     $value = $filter->filter($entity);
+ 
+@@ -92,9 +92,9 @@ class PublishedFilterTest extends KernelTestBase {
+     $filter_manager = $this->container->get('plugin.manager.replication_filter');
+     $filter = $filter_manager->createInstance('published');
+     $entity = $this->container
+-        ->get('entity_type.manager')
+-        ->getStorage('block_content')
+-        ->create(['type' => 'test']);
++      ->get('entity_type.manager')
++      ->getStorage('block_content')
++      ->create(['type' => 'test']);
+ 
+     $value = $filter->filter($entity);
+ 
+diff --git a/tests/src/Kernel/ReplicationLogTest.php b/tests/src/Kernel/ReplicationLogTest.php
+index a613d39..2fe0507 100644
+--- a/tests/src/Kernel/ReplicationLogTest.php
++++ b/tests/src/Kernel/ReplicationLogTest.php
+@@ -22,8 +22,11 @@ class ReplicationLogTest extends KernelTestBase {
+     'workspaces',
+     'multiversion',
+     'relaxed',
+-    ];
++  ];
+ 
++  /**
++   *
++   */
+   public function testOperations() {
+     $this->installEntitySchema('replication_log');
+     $entityTypeManager = $this->container->get('entity_type.manager');
+@@ -31,7 +34,7 @@ class ReplicationLogTest extends KernelTestBase {
+     $this->assertTrue($entity instanceof ReplicationLog, 'Replication Log entity was created.');
+ 
+     // Set required fields.
+-    /** @var ReplicationLog $entity */
++    /** @var \Drupal\relaxed\Entity\ReplicationLog $entity */
+     $entity = $entityTypeManager->getStorage('replication_log')->create();
+     $seq_id = \Drupal::service('multiversion.manager')->newSequenceId();
+     $entity->source_last_seq->value = $seq_id;
+@@ -62,7 +65,7 @@ class ReplicationLogTest extends KernelTestBase {
+       $saved = (bool) $entity->save();
+       $this->assertTrue($saved, 'Entity was saved.');
+     }
+-    catch(EntityStorageException $e) {
++    catch (EntityStorageException $e) {
+       $this->fail('Fail, trying to save entity with incorrect data format or length for history fields.');
+     }
+   }
+diff --git a/tests/src/Kernel/RevisionDiffFactoryTest.php b/tests/src/Kernel/RevisionDiffFactoryTest.php
+index 6df8d03..c2b62e3 100644
+--- a/tests/src/Kernel/RevisionDiffFactoryTest.php
++++ b/tests/src/Kernel/RevisionDiffFactoryTest.php
+@@ -24,9 +24,13 @@ class RevisionDiffFactoryTest extends KernelTestBase {
+     'relaxed',
+   ];
+ 
+-  /** @var  Workspace */
++  /**
++   * @var  \Drupal\workspaces\Entity\Workspace*/
+   protected $workspace;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('user');
+@@ -42,6 +46,9 @@ class RevisionDiffFactoryTest extends KernelTestBase {
+     $this->workspace->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testChangesFactory() {
+     $changes = \Drupal::service('relaxed.revisiondiff_factory')->get($this->workspace);
+     $this->assertTrue(($changes instanceof RevisionDiffInterface));
+diff --git a/tests/src/TestSuites/TestSuiteBase.php b/tests/src/TestSuites/TestSuiteBase.php
+index 9fe8968..a28fe9d 100644
+--- a/tests/src/TestSuites/TestSuiteBase.php
++++ b/tests/src/TestSuites/TestSuiteBase.php
+@@ -2,8 +2,7 @@
+ 
+ namespace Drupal\Tests\relaxed\TestSuites;
+ 
+-//require_once __DIR__ . '/../../../../../core/tests/TestSuites/TestSuiteBase.php';
+-
++// require_once __DIR__ . '/../../../../../core/tests/TestSuites/TestSuiteBase.php';
+ // For TravisCI.
+ require_once __DIR__ . '/../../../../../../www/core/tests/TestSuites/TestSuiteBase.php';
+ 
+diff --git a/tests/src/Unit/RemoteTest.php b/tests/src/Unit/RemoteTest.php
+index fe2bb1d..fc944e2 100644
+--- a/tests/src/Unit/RemoteTest.php
++++ b/tests/src/Unit/RemoteTest.php
+@@ -5,7 +5,6 @@ namespace Drupal\Tests\relaxed\Unit;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\workspaces\Entity\Workspace;
+ use Drupal\relaxed\Entity\Remote;
+-use GuzzleHttp\Psr7\Uri;
+ 
+ /**
+  * @group relaxed
+@@ -33,17 +32,17 @@ class RemoteTest extends KernelTestBase {
+   }
+ 
+   /**
+-   * Test the workspace plugin
++   * Test the workspace plugin.
+    */
+   public function testRemoteEntity() {
+-    /** @var Remote $remote */
++    /** @var \Drupal\relaxed\Entity\Remote $remote */
+     $remote = Remote::create([
+       'id' => 'production',
+       'label' => 'Production',
+       'uri' => base64_encode('http://admin:admin@example.com/relaxed/default'),
+     ]);
+ 
+-    /** @var Uri $uri */
++    /** @var \GuzzleHttp\Psr7\Uri $uri */
+     $uri = $remote->uri();
+     $this->assertEquals('http', $uri->getScheme());
+     $this->assertEquals('admin:admin@example.com', $uri->getAuthority());

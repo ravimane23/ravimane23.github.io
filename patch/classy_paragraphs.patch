@@ -1,0 +1,105 @@
+diff --git a/src/ClassyParagraphsAccessControlHandler.php b/src/ClassyParagraphsAccessControlHandler.php
+index 7c38acc..0b8d395 100644
+--- a/src/ClassyParagraphsAccessControlHandler.php
++++ b/src/ClassyParagraphsAccessControlHandler.php
+@@ -26,4 +26,5 @@ class ClassyParagraphsAccessControlHandler extends EntityAccessControlHandler {
+ 
+     return parent::checkAccess($entity, $operation, $account);
+   }
++
+ }
+diff --git a/src/ClassyParagraphsStyleListBuilder.php b/src/ClassyParagraphsStyleListBuilder.php
+index eba8c8d..ede0ba4 100644
+--- a/src/ClassyParagraphsStyleListBuilder.php
++++ b/src/ClassyParagraphsStyleListBuilder.php
+@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityInterface;
+  * Provides a listing of Classy paragraphs style entities.
+  */
+ class ClassyParagraphsStyleListBuilder extends ConfigEntityListBuilder {
++
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/Entity/ClassyParagraphsStyle.php b/src/Entity/ClassyParagraphsStyle.php
+index 560b9aa..cb2c784 100644
+--- a/src/Entity/ClassyParagraphsStyle.php
++++ b/src/Entity/ClassyParagraphsStyle.php
+@@ -55,7 +55,7 @@ class ClassyParagraphsStyle extends ConfigEntityBase implements ClassyParagraphs
+    * An array of CSS classes
+    * In the format:
+    * btn
+-   * btn-default
++   * btn-default.
+    *
+    * @var array
+    */
+diff --git a/src/Form/ClassyParagraphsStyleDeleteForm.php b/src/Form/ClassyParagraphsStyleDeleteForm.php
+index e2fcdde..ae571a4 100644
+--- a/src/Form/ClassyParagraphsStyleDeleteForm.php
++++ b/src/Form/ClassyParagraphsStyleDeleteForm.php
+@@ -10,6 +10,7 @@ use Drupal\Core\Url;
+  * Builds the form to delete Classy paragraphs style entities.
+  */
+ class ClassyParagraphsStyleDeleteForm extends EntityConfirmFormBase {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -41,7 +42,7 @@ class ClassyParagraphsStyleDeleteForm extends EntityConfirmFormBase {
+       $this->t('Deleted the %label style.',
+         [
+           '@type' => $this->entity->bundle(),
+-          '%label' => $this->entity->label()
++          '%label' => $this->entity->label(),
+         ]
+         )
+     );
+diff --git a/src/Form/ClassyParagraphsStyleForm.php b/src/Form/ClassyParagraphsStyleForm.php
+index caea28c..9f01f2d 100644
+--- a/src/Form/ClassyParagraphsStyleForm.php
++++ b/src/Form/ClassyParagraphsStyleForm.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\classy_paragraphs\Form;
+ 
+-use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityForm;
+ use Drupal\Core\Form\FormStateInterface;
+ 
+@@ -12,6 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
+  * @package Drupal\classy_paragraphs\Form
+  */
+ class ClassyParagraphsStyleForm extends EntityForm {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -37,7 +37,7 @@ class ClassyParagraphsStyleForm extends EntityForm {
+       ],
+       '#disabled' => !$style->isNew(),
+     ];
+-    
++
+     $form['classes'] = [
+       '#title' => $this->t('Classes'),
+       '#type' => 'textarea',
+diff --git a/src/Tests/ClassyParagraphsTest.php b/src/Tests/ClassyParagraphsTest.php
+index 7e57ca9..0723f67 100644
+--- a/src/Tests/ClassyParagraphsTest.php
++++ b/src/Tests/ClassyParagraphsTest.php
+@@ -28,7 +28,8 @@ class ClassyParagraphsTest extends BrowserTestBase {
+ 
+     $admin_user = $this->drupalCreateUser(['access content',
+       'access administration pages', 'administer site configuration',
+-      'administer nodes', 'administer paragraphs types', 'administer content types']);
++      'administer nodes', 'administer paragraphs types', 'administer content types',
++    ]);
+     $this->drupalLogin($admin_user);
+   }
+ 
+@@ -99,4 +100,5 @@ class ClassyParagraphsTest extends BrowserTestBase {
+     $class = $this->xpath('//*[contains(@class, "' . $style_css . '")]');
+     $this->assertTrue(count($class) == 1, $style_css . ' class found.');
+   }
++
+ }

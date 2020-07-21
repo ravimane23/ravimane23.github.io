@@ -1,0 +1,378 @@
+diff --git a/src/EntityClone/Config/ConfigEntityCloneFormBase.php b/src/EntityClone/Config/ConfigEntityCloneFormBase.php
+index 6ebcc19..c01013c 100644
+--- a/src/EntityClone/Config/ConfigEntityCloneFormBase.php
++++ b/src/EntityClone/Config/ConfigEntityCloneFormBase.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\entity_clone\EntityClone\Config;
+ 
+-use Drupal\Core\Config\Entity\ConfigEntityStorage;
+ use Drupal\Core\Entity\EntityHandlerInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+diff --git a/src/EntityClone/Config/MenuEntityCloneForm.php b/src/EntityClone/Config/MenuEntityCloneForm.php
+index 4df8778..172108d 100644
+--- a/src/EntityClone/Config/MenuEntityCloneForm.php
++++ b/src/EntityClone/Config/MenuEntityCloneForm.php
+@@ -21,6 +21,6 @@ class MenuEntityCloneForm extends ConfigEntityCloneFormBase {
+       'replace' => '-',
+     ];
+     return $form;
+- }
++  }
+ 
+ }
+diff --git a/src/EntityClone/Content/ContentEntityCloneFormBase.php b/src/EntityClone/Content/ContentEntityCloneFormBase.php
+index 0aef96b..4fc0745 100644
+--- a/src/EntityClone/Content/ContentEntityCloneFormBase.php
++++ b/src/EntityClone/Content/ContentEntityCloneFormBase.php
+@@ -178,9 +178,9 @@ class ContentEntityCloneFormBase implements EntityHandlerInterface, EntityCloneF
+           '#access' => $referenced_entity->access('view label'),
+         ];
+ 
+-      if ($this->entityCloneSettingsManager->getDisableValue($referenced_entity->getEntityTypeId())) {
+-        $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone']['#attributes'] = [
+-          'disabled' => TRUE,
++        if ($this->entityCloneSettingsManager->getDisableValue($referenced_entity->getEntityTypeId())) {
++          $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone']['#attributes'] = [
++            'disabled' => TRUE,
+           ];
+           $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone']['#value'] = $form_element[$field_definition->id()]['references'][$referenced_entity->id()]['clone']['#default_value'];
+         }
+diff --git a/tests/src/Functional/EntityCloneActionTest.php b/tests/src/Functional/EntityCloneActionTest.php
+index 601dd9b..548e541 100644
+--- a/tests/src/Functional/EntityCloneActionTest.php
++++ b/tests/src/Functional/EntityCloneActionTest.php
+@@ -20,7 +20,8 @@ class EntityCloneActionTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'action'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneBlockTest.php b/tests/src/Functional/EntityCloneBlockTest.php
+index 139c528..05245db 100644
+--- a/tests/src/Functional/EntityCloneBlockTest.php
++++ b/tests/src/Functional/EntityCloneBlockTest.php
+@@ -20,7 +20,8 @@ class EntityCloneBlockTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'block'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneCommentTest.php b/tests/src/Functional/EntityCloneCommentTest.php
+index 7470142..1ca129d 100644
+--- a/tests/src/Functional/EntityCloneCommentTest.php
++++ b/tests/src/Functional/EntityCloneCommentTest.php
+@@ -31,7 +31,8 @@ class EntityCloneCommentTest extends CommentTestBase {
+   ];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneContactTest.php b/tests/src/Functional/EntityCloneContactTest.php
+index 1d29611..98d6848 100644
+--- a/tests/src/Functional/EntityCloneContactTest.php
++++ b/tests/src/Functional/EntityCloneContactTest.php
+@@ -20,7 +20,8 @@ class EntityCloneContactTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'contact'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneContentRecursiveCircularTest.php b/tests/src/Functional/EntityCloneContentRecursiveCircularTest.php
+index 71f37d8..5de7127 100644
+--- a/tests/src/Functional/EntityCloneContentRecursiveCircularTest.php
++++ b/tests/src/Functional/EntityCloneContentRecursiveCircularTest.php
+@@ -23,7 +23,8 @@ class EntityCloneContentRecursiveCircularTest extends NodeTestBase {
+   public static $modules = ['entity_clone', 'block', 'node', 'datetime'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+@@ -147,6 +148,9 @@ class EntityCloneContentRecursiveCircularTest extends NodeTestBase {
+     $this->assertInstanceOf(Node::class, $node, 'Test original node 2 found in database.');
+   }
+ 
++  /**
++   *
++   */
+   public function testContentWithTwoSameEntityReference() {
+     $child_node1_title = $this->randomMachineName(8);
+     $child_node1 = Node::create([
+diff --git a/tests/src/Functional/EntityCloneContentRecursiveTest.php b/tests/src/Functional/EntityCloneContentRecursiveTest.php
+index 872b7a6..bc09af5 100644
+--- a/tests/src/Functional/EntityCloneContentRecursiveTest.php
++++ b/tests/src/Functional/EntityCloneContentRecursiveTest.php
+@@ -21,7 +21,8 @@ class EntityCloneContentRecursiveTest extends NodeTestBase {
+   public static $modules = ['entity_clone', 'block', 'node', 'datetime'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneContentTest.php b/tests/src/Functional/EntityCloneContentTest.php
+index 384e951..0b229eb 100644
+--- a/tests/src/Functional/EntityCloneContentTest.php
++++ b/tests/src/Functional/EntityCloneContentTest.php
+@@ -23,7 +23,8 @@ class EntityCloneContentTest extends NodeTestBase {
+   public static $modules = ['entity_clone', 'block', 'node', 'datetime', 'taxonomy'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+@@ -78,6 +79,9 @@ class EntityCloneContentTest extends NodeTestBase {
+     $this->assertInstanceOf(Node::class, $node, 'Test node cloned found in database.');
+   }
+ 
++  /**
++   *
++   */
+   public function testContentReferenceConfigEntity() {
+     $this->createEntityReferenceField('node', 'page', 'config_field_reference', 'Config field reference', 'taxonomy_vocabulary');
+ 
+@@ -85,7 +89,7 @@ class EntityCloneContentTest extends NodeTestBase {
+     $node = Node::create([
+       'type' => 'page',
+       'title' => $node_title,
+-      'config_field_reference' => 'tags'
++      'config_field_reference' => 'tags',
+     ]);
+     $node->save();
+ 
+diff --git a/tests/src/Functional/EntityCloneCustomBlockTest.php b/tests/src/Functional/EntityCloneCustomBlockTest.php
+index 34292d3..3b54e1b 100644
+--- a/tests/src/Functional/EntityCloneCustomBlockTest.php
++++ b/tests/src/Functional/EntityCloneCustomBlockTest.php
+@@ -23,7 +23,8 @@ class EntityCloneCustomBlockTest extends BlockContentTestBase {
+   public static $modules = ['entity_clone', 'block', 'block_content'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneDateFormatTest.php b/tests/src/Functional/EntityCloneDateFormatTest.php
+index 34acea6..ea46705 100644
+--- a/tests/src/Functional/EntityCloneDateFormatTest.php
++++ b/tests/src/Functional/EntityCloneDateFormatTest.php
+@@ -20,7 +20,8 @@ class EntityCloneDateFormatTest extends BrowserTestBase {
+   public static $modules = ['entity_clone'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneEntityFormModeTest.php b/tests/src/Functional/EntityCloneEntityFormModeTest.php
+index a310ab0..9b69518 100644
+--- a/tests/src/Functional/EntityCloneEntityFormModeTest.php
++++ b/tests/src/Functional/EntityCloneEntityFormModeTest.php
+@@ -20,7 +20,8 @@ class EntityCloneEntityFormModeTest extends BrowserTestBase {
+   public static $modules = ['entity_clone'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneEntityViewModeTest.php b/tests/src/Functional/EntityCloneEntityViewModeTest.php
+index a06b4e7..683792d 100644
+--- a/tests/src/Functional/EntityCloneEntityViewModeTest.php
++++ b/tests/src/Functional/EntityCloneEntityViewModeTest.php
+@@ -20,7 +20,8 @@ class EntityCloneEntityViewModeTest extends BrowserTestBase {
+   public static $modules = ['entity_clone'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneFileTest.php b/tests/src/Functional/EntityCloneFileTest.php
+index b6e6882..031dc07 100644
+--- a/tests/src/Functional/EntityCloneFileTest.php
++++ b/tests/src/Functional/EntityCloneFileTest.php
+@@ -20,7 +20,8 @@ class EntityCloneFileTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'file'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneFilterFormatTest.php b/tests/src/Functional/EntityCloneFilterFormatTest.php
+index 03411ec..ad00680 100644
+--- a/tests/src/Functional/EntityCloneFilterFormatTest.php
++++ b/tests/src/Functional/EntityCloneFilterFormatTest.php
+@@ -20,7 +20,8 @@ class EntityCloneFilterFormatTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'filter'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneImageStyleTest.php b/tests/src/Functional/EntityCloneImageStyleTest.php
+index 30ebf2f..f7cb18e 100644
+--- a/tests/src/Functional/EntityCloneImageStyleTest.php
++++ b/tests/src/Functional/EntityCloneImageStyleTest.php
+@@ -20,7 +20,8 @@ class EntityCloneImageStyleTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'image'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneLanguageTest.php b/tests/src/Functional/EntityCloneLanguageTest.php
+index 0b3a416..3f07074 100644
+--- a/tests/src/Functional/EntityCloneLanguageTest.php
++++ b/tests/src/Functional/EntityCloneLanguageTest.php
+@@ -20,7 +20,8 @@ class EntityCloneLanguageTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'language'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneMenuTest.php b/tests/src/Functional/EntityCloneMenuTest.php
+index 3a67d1b..44c284a 100644
+--- a/tests/src/Functional/EntityCloneMenuTest.php
++++ b/tests/src/Functional/EntityCloneMenuTest.php
+@@ -20,7 +20,8 @@ class EntityCloneMenuTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'menu_ui'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneResponsiveImageStyleTest.php b/tests/src/Functional/EntityCloneResponsiveImageStyleTest.php
+index b3880c7..24d886f 100644
+--- a/tests/src/Functional/EntityCloneResponsiveImageStyleTest.php
++++ b/tests/src/Functional/EntityCloneResponsiveImageStyleTest.php
+@@ -20,7 +20,8 @@ class EntityCloneResponsiveImageStyleTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'responsive_image'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneRoleTest.php b/tests/src/Functional/EntityCloneRoleTest.php
+index 45fb551..35d64f0 100644
+--- a/tests/src/Functional/EntityCloneRoleTest.php
++++ b/tests/src/Functional/EntityCloneRoleTest.php
+@@ -20,7 +20,8 @@ class EntityCloneRoleTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'user'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneSearchPageTest.php b/tests/src/Functional/EntityCloneSearchPageTest.php
+index 56d6688..efcca92 100644
+--- a/tests/src/Functional/EntityCloneSearchPageTest.php
++++ b/tests/src/Functional/EntityCloneSearchPageTest.php
+@@ -20,7 +20,8 @@ class EntityCloneSearchPageTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'search', 'node'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneShortcutSetTest.php b/tests/src/Functional/EntityCloneShortcutSetTest.php
+index 017d267..664fd45 100644
+--- a/tests/src/Functional/EntityCloneShortcutSetTest.php
++++ b/tests/src/Functional/EntityCloneShortcutSetTest.php
+@@ -20,7 +20,8 @@ class EntityCloneShortcutSetTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'shortcut'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneUserTest.php b/tests/src/Functional/EntityCloneUserTest.php
+index 330ff04..341f9b5 100644
+--- a/tests/src/Functional/EntityCloneUserTest.php
++++ b/tests/src/Functional/EntityCloneUserTest.php
+@@ -20,7 +20,8 @@ class EntityCloneUserTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'user'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';
+diff --git a/tests/src/Functional/EntityCloneViewTest.php b/tests/src/Functional/EntityCloneViewTest.php
+index be26c1b..577fa38 100644
+--- a/tests/src/Functional/EntityCloneViewTest.php
++++ b/tests/src/Functional/EntityCloneViewTest.php
+@@ -20,7 +20,8 @@ class EntityCloneViewTest extends BrowserTestBase {
+   public static $modules = ['entity_clone', 'views'];
+ 
+   /**
+-   * Theme to enable by default
++   * Theme to enable by default.
++   *
+    * @var string
+    */
+   protected $defaultTheme = 'classy';

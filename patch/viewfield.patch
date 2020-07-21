@@ -1,0 +1,231 @@
+diff --git a/js/disable-form-elements.js b/js/disable-form-elements.js
+index 3df0064..8fd3b46 100644
+--- a/js/disable-form-elements.js
++++ b/js/disable-form-elements.js
+@@ -1,8 +1,8 @@
+-(function($, Drupal) {
++(function ($, Drupal) {
+ 
+   Drupal.behaviors.viewfield = {
+ 
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+       $(Drupal.ajax.instances).once('disableFormElementsDuringAjaxCallback').each(function (index, instance) {
+         if ($.inArray('ajaxGetDisplayOptions', instance.callback) !== -1) {
+           instance.options.beforeSubmit = $.fn.ajaxDisableElements;
+@@ -28,4 +28,4 @@
+       .attr('disabled', false);
+   };
+ 
+-})(jQuery, Drupal);
+\ No newline at end of file
++})(jQuery, Drupal);
+diff --git a/src/Plugin/Field/FieldFormatter/ViewfieldFormatterDefault.php b/src/Plugin/Field/FieldFormatter/ViewfieldFormatterDefault.php
+index 5423e23..673f042 100644
+--- a/src/Plugin/Field/FieldFormatter/ViewfieldFormatterDefault.php
++++ b/src/Plugin/Field/FieldFormatter/ViewfieldFormatterDefault.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\viewfield\Plugin\Field\FieldFormatter;
+ 
++use Drupal\views\Plugin\views\pager\None;
+ use Drupal\Core\Entity\FieldableEntityInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Form\FormStateInterface;
+@@ -150,7 +151,7 @@ class ViewfieldFormatterDefault extends FormatterBase {
+           continue;
+         }
+ 
+-        // Set arguments if they exist
++        // Set arguments if they exist.
+         if (!empty($arguments)) {
+           $view->setArguments($arguments);
+         }
+@@ -158,7 +159,7 @@ class ViewfieldFormatterDefault extends FormatterBase {
+         $view->setDisplay($display_id);
+ 
+         // Override items to display if set.
+-        if(!empty($items_to_display)) {
++        if (!empty($items_to_display)) {
+           $view->setItemsPerPage($items_to_display);
+         }
+ 
+@@ -167,7 +168,7 @@ class ViewfieldFormatterDefault extends FormatterBase {
+ 
+         // Disable pager, if items_to_display was set.
+         if (!empty($items_to_display)) {
+-          $view->pager = new \Drupal\views\Plugin\views\pager\None([], '', []);
++          $view->pager = new None([], '', []);
+           $view->pager->init($view, $view->display_handler);
+           $view->pager->setItemsPerPage($items_to_display);
+         }
+diff --git a/src/Plugin/Field/FieldType/ViewfieldItem.php b/src/Plugin/Field/FieldType/ViewfieldItem.php
+index d3a3813..2afd82e 100644
+--- a/src/Plugin/Field/FieldType/ViewfieldItem.php
++++ b/src/Plugin/Field/FieldType/ViewfieldItem.php
+@@ -2,10 +2,8 @@
+ 
+ namespace Drupal\viewfield\Plugin\Field\FieldType;
+ 
+-use Drupal\Core\Entity\ContentEntityStorageInterface;
+ use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
+ use Drupal\Core\Field\FieldStorageDefinitionInterface;
+-use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\TypedData\DataDefinition;
+ use Drupal\Core\Field\FieldFilteredMarkup;
+diff --git a/src/Plugin/Field/FieldWidget/ViewfieldWidgetSelect.php b/src/Plugin/Field/FieldWidget/ViewfieldWidgetSelect.php
+index 9536b65..c804f07 100644
+--- a/src/Plugin/Field/FieldWidget/ViewfieldWidgetSelect.php
++++ b/src/Plugin/Field/FieldWidget/ViewfieldWidgetSelect.php
+@@ -89,7 +89,7 @@ class ViewfieldWidgetSelect extends OptionsSelectWidget {
+     $display_id_class = $this->createDisplayClass($form_state_keys);
+ 
+     // Use primary target_id field to control visibility of secondary ones.
+-    $field_key =  $form_state_keys[0] . '[' . implode('][', array_slice($form_state_keys, 1)) . ']';
++    $field_key = $form_state_keys[0] . '[' . implode('][', array_slice($form_state_keys, 1)) . ']';
+     $primary_field_name = $field_key . '[target_id]';
+     $primary_field_visible_test = [':input[name="' . $primary_field_name . '"]' => ['!value' => '_none']];
+ 
+@@ -108,12 +108,12 @@ class ViewfieldWidgetSelect extends OptionsSelectWidget {
+       '#type' => 'details',
+       '#title' => $this->t('Advanced options'),
+       '#weight' => 20,
+-      '#open' => false,
++      '#open' => FALSE,
+       '#parents' => $form_state_keys,
+       '#states' => [
+         'open' => [
+-          [':input[name="' . $field_key .'[arguments]"]' => ['filled' => TRUE]],
+-          [':input[name="' . $field_key .'[items_to_display]"]' => ['filled' => TRUE]],
++          [':input[name="' . $field_key . '[arguments]"]' => ['filled' => TRUE]],
++          [':input[name="' . $field_key . '[items_to_display]"]' => ['filled' => TRUE]],
+         ],
+         'visible' => $primary_field_visible_test,
+       ],
+@@ -160,7 +160,7 @@ class ViewfieldWidgetSelect extends OptionsSelectWidget {
+ 
+     return $element;
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -241,8 +241,12 @@ class ViewfieldWidgetSelect extends OptionsSelectWidget {
+     $form_state->setValueForElement($element, $target_id);
+   }
+ 
++  /**
++   *
++   */
+   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+-    $values = parent::massageFormValues($values, $form, $form_state); // TODO: Change the autogenerated stub
++    // TODO: Change the autogenerated stub.
++    $values = parent::massageFormValues($values, $form, $form_state);
+     foreach ($values as $key => $value) {
+     }
+     return $values;
+diff --git a/src/ViewfieldServiceProvider.php b/src/ViewfieldServiceProvider.php
+index 307ddd5..a098e8d 100644
+--- a/src/ViewfieldServiceProvider.php
++++ b/src/ViewfieldServiceProvider.php
+@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\Definition;
+ use Symfony\Component\DependencyInjection\Reference;
+ 
+ /**
+- * Service Provider for Viewfield
++ * Service Provider for Viewfield.
+  */
+ class ViewfieldServiceProvider extends ServiceProviderBase {
+ 
+@@ -19,13 +19,13 @@ class ViewfieldServiceProvider extends ServiceProviderBase {
+     $modules = $container->getParameter('container.modules');
+     if (isset($modules['hal'])) {
+       // Hal module is enabled, add our new normalizer for viewfield items.
+-      $service_definition = new Definition('Drupal\viewfield\Normalizer\ViewfieldNormalizer', array(
++      $service_definition = new Definition('Drupal\viewfield\Normalizer\ViewfieldNormalizer', [
+         new Reference('hal.link_manager'),
+         new Reference('serializer.entity_resolver'),
+-      ));
+-      $service_definition->addTag('normalizer', array('priority' => 20));
++      ]);
++      $service_definition->addTag('normalizer', ['priority' => 20]);
+       $container->setDefinition('serializer.normalizer.viewfield_item', $service_definition);
+     }
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/tests/src/FunctionalJavascript/ViewfieldFunctionalTestBase.php b/tests/src/FunctionalJavascript/ViewfieldFunctionalTestBase.php
+index 38c0911..e527c45 100644
+--- a/tests/src/FunctionalJavascript/ViewfieldFunctionalTestBase.php
++++ b/tests/src/FunctionalJavascript/ViewfieldFunctionalTestBase.php
+@@ -164,5 +164,4 @@ abstract class ViewfieldFunctionalTestBase extends WebDriverTestBase {
+     \Drupal::service('router.builder')->rebuild();
+   }
+ 
+-
+ }
+diff --git a/tests/src/FunctionalJavascript/ViewfieldWidgetTest.php b/tests/src/FunctionalJavascript/ViewfieldWidgetTest.php
+index 20e846a..d3cdcdf 100644
+--- a/tests/src/FunctionalJavascript/ViewfieldWidgetTest.php
++++ b/tests/src/FunctionalJavascript/ViewfieldWidgetTest.php
+@@ -55,4 +55,4 @@ class ViewfieldWidgetTest extends ViewfieldFunctionalTestBase {
+     $session->responseContains('article_test');
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/tests/src/Kernel/ViewfieldKernelTest.php b/tests/src/Kernel/ViewfieldKernelTest.php
+index 21c08c9..ec5520e 100644
+--- a/tests/src/Kernel/ViewfieldKernelTest.php
++++ b/tests/src/Kernel/ViewfieldKernelTest.php
+@@ -28,8 +28,12 @@ class ViewfieldKernelTest extends FieldKernelTestBase {
+    */
+   protected $defaultTheme = 'stark';
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+-    parent::setUp(); // TODO: Change the autogenerated stub
++    // TODO: Change the autogenerated stub.
++    parent::setUp();
+ 
+     FieldStorageConfig::create([
+       'field_name' => 'field_test',
+@@ -56,25 +60,23 @@ class ViewfieldKernelTest extends FieldKernelTestBase {
+     ])->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testViewfieldItem() {
+     // Create the test entity.
+-
+     // Set field values.
+-
+     // Save the test entity.
+-
+     // Verify entity creation.
+-
+     // Test field creation.
+-
+     // Test field value save.
+-
+     // Verify changing field values.
+-
+     // Read changed entity and verify new values.
+-
+   }
+ 
++  /**
++   *
++   */
+   public function testViewfieldItemDefaultValue() {
+ 
+   }

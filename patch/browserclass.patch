@@ -1,0 +1,65 @@
+diff --git a/js/browserclass.js b/js/browserclass.js
+index 1ecb7a5..b5bed87 100755
+--- a/js/browserclass.js
++++ b/js/browserclass.js
+@@ -1,6 +1,6 @@
+-(function($) {
++(function ($) {
+   var BrowserClass = {
+-    init: function() {
++    init: function () {
+       this.classes = [];
+       this.agent = navigator.userAgent.toLowerCase();
+       this.checkBrowser();
+@@ -12,7 +12,7 @@
+       }
+     },
+ 
+-    checkBrowser: function() {
++    checkBrowser: function () {
+       var matches = Array();
+       var aresult = '';
+       var aversion = '';
+@@ -142,7 +142,7 @@
+       }
+     },
+ 
+-    checkPlatform: function() {
++    checkPlatform: function () {
+       if (this.agent.match(/windows/)) {
+         this.classes.push('win');
+       }
+@@ -192,11 +192,11 @@
+       }
+     },
+ 
+-    isMobile: function(classes) {
++    isMobile: function (classes) {
+       var mobile_devices = ['ipad', 'ipod', 'iphone', 'android', 'blackberry', 'operamini'];
+       var mobile_devices_test = false;
+ 
+-      $.each(mobile_devices, function(index, value) {
++      $.each(mobile_devices, function (index, value) {
+         if ($.inArray(value, classes) != -1) {
+           mobile_devices_test = true;
+ 
+@@ -210,15 +210,15 @@
+       }
+     },
+ 
+-    clearVersion: function(version) {
++    clearVersion: function (version) {
+       version = version.replace('/[^0-9,.,a-z,A-Z-]/', '');
+       var find = (version + '').indexOf('.');
+       return version.substr(0, find);
+     },
+ 
+-    stristr: function(haystack, needle, bool) {
+-      // Finds first occurrence of a string within another, case insensitive  
+-      // 
++    stristr: function (haystack, needle, bool) {
++      // Finds first occurrence of a string within another, case insensitive
++      //
+       // version: 1103.1210
+       // discuss at: http://phpjs.org/functions/stristr
+       // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)

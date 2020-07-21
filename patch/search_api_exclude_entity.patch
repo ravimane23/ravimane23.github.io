@@ -1,0 +1,146 @@
+diff --git a/src/Plugin/Field/FieldType/SearchApiExcludeEntityFieldItem.php b/src/Plugin/Field/FieldType/SearchApiExcludeEntityFieldItem.php
+index 224cb32..43e06e4 100644
+--- a/src/Plugin/Field/FieldType/SearchApiExcludeEntityFieldItem.php
++++ b/src/Plugin/Field/FieldType/SearchApiExcludeEntityFieldItem.php
+@@ -34,14 +34,14 @@ class SearchApiExcludeEntityFieldItem extends FieldItemBase {
+    * {@inheritdoc}
+    */
+   public static function schema(FieldStorageDefinitionInterface $field_definition) {
+-    return array(
+-      'columns' => array(
+-        'value' => array(
++    return [
++      'columns' => [
++        'value' => [
+           'type' => 'int',
+           'size' => 'tiny',
+-        ),
+-      ),
+-    );
++        ],
++      ],
++    ];
+   }
+ 
+ }
+diff --git a/src/Plugin/Field/FieldWidget/SearchApiExcludeEntityFieldWidget.php b/src/Plugin/Field/FieldWidget/SearchApiExcludeEntityFieldWidget.php
+index 24bdbfd..a6fb33f 100644
+--- a/src/Plugin/Field/FieldWidget/SearchApiExcludeEntityFieldWidget.php
++++ b/src/Plugin/Field/FieldWidget/SearchApiExcludeEntityFieldWidget.php
+@@ -24,24 +24,24 @@ class SearchApiExcludeEntityFieldWidget extends WidgetBase {
+    * {@inheritdoc}
+    */
+   public static function defaultSettings() {
+-    return array(
++    return [
+       'field_label' => new TranslatableMarkup('Yes, exclude this entity from the search indexes.'),
+-    ) + parent::defaultSettings();
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+-    $element += array(
++    $element += [
+       '#type' => 'details',
+-      '#group' => 'advanced'
+-    );
+-    $element['value'] = array(
++      '#group' => 'advanced',
++    ];
++    $element['value'] = [
+       '#type' => 'checkbox',
+       '#default_value' => !empty($items[0]->value),
+       '#title' => $this->getSetting('field_label'),
+-    );
++    ];
+     return $element;
+   }
+ 
+@@ -51,12 +51,12 @@ class SearchApiExcludeEntityFieldWidget extends WidgetBase {
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+     $elements = parent::settingsForm($form, $form_state);
+ 
+-    $elements['field_label'] = array(
++    $elements['field_label'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Checkbox label'),
+       '#description' => $this->t('Text used as label next to the field checkbox.'),
+       '#default_value' => $this->getSetting('field_label'),
+-    );
++    ];
+ 
+     return $elements;
+   }
+@@ -65,11 +65,11 @@ class SearchApiExcludeEntityFieldWidget extends WidgetBase {
+    * {@inheritdoc}
+    */
+   public function settingsSummary() {
+-    $summary = array();
++    $summary = [];
+ 
+     $field_label = $this->getSetting('field_label');
+     if (!empty($field_label)) {
+-      $summary[] = $this->t('Checkbox label: @field_label', array('@field_label' => $field_label));
++      $summary[] = $this->t('Checkbox label: @field_label', ['@field_label' => $field_label]);
+     }
+ 
+     return $summary;
+diff --git a/src/Plugin/search_api/processor/SearchApiExcludeEntityProcessor.php b/src/Plugin/search_api/processor/SearchApiExcludeEntityProcessor.php
+index db8fd30..9d4f6c3 100644
+--- a/src/Plugin/search_api/processor/SearchApiExcludeEntityProcessor.php
++++ b/src/Plugin/search_api/processor/SearchApiExcludeEntityProcessor.php
+@@ -71,9 +71,9 @@ class SearchApiExcludeEntityProcessor extends ProcessorPluginBase implements Plu
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    return array(
+-      'fields' => array(),
+-    );
++    return [
++      'fields' => [],
++    ];
+   }
+ 
+   /**
+@@ -86,14 +86,14 @@ class SearchApiExcludeEntityProcessor extends ProcessorPluginBase implements Plu
+       $datasource_id_expl = explode(':', $datasource_id);
+       $entity_type = next($datasource_id_expl);
+ 
+-      $form['fields'][$entity_type] = array(
++      $form['fields'][$entity_type] = [
+         '#type' => 'checkboxes',
+-        '#title' => $this->t('Fields entity type: %type', array('%type' => $datasource->label())),
++        '#title' => $this->t('Fields entity type: %type', ['%type' => $datasource->label()]),
+         '#description' => $this->t('Choose the Search API Exclude fields that should be used to exclude entities in this index.'),
+-        '#default_value' => isset($fields_config[$entity_type]) ? $fields_config[$entity_type] : array(),
++        '#default_value' => isset($fields_config[$entity_type]) ? $fields_config[$entity_type] : [],
+         '#options' => $this->getFieldOptions($entity_type, $datasource),
+         '#multiple' => TRUE,
+-      );
++      ];
+     }
+ 
+     return $form;
+@@ -131,11 +131,11 @@ class SearchApiExcludeEntityProcessor extends ProcessorPluginBase implements Plu
+     $field_map = $this->getEntityFieldManager()->getFieldMapByFieldType('search_api_exclude_entity');
+     $bundles = $datasource->getBundles();
+ 
+-    $options = array();
++    $options = [];
+ 
+     if (isset($field_map[$entity_type])) {
+       foreach ($field_map[$entity_type] as $field_id => $field) {
+-        $bundles_filtered = array();
++        $bundles_filtered = [];
+         foreach ($field['bundles'] as $field_bundle) {
+           if (isset($bundles[$field_bundle])) {
+             $bundles_filtered[] = $field_bundle;
+@@ -208,4 +208,5 @@ class SearchApiExcludeEntityProcessor extends ProcessorPluginBase implements Plu
+       }
+     }
+   }
++
+ }

@@ -1,0 +1,49 @@
+diff --git a/src/Form/EntityLogConfigForm.php b/src/Form/EntityLogConfigForm.php
+index 638e076..9537846 100644
+--- a/src/Form/EntityLogConfigForm.php
++++ b/src/Form/EntityLogConfigForm.php
+@@ -40,18 +40,18 @@ class EntityLogConfigForm extends ConfigFormBase {
+    */
+   protected $bundleInfo;
+ 
+-    /**
+-     * EntityLogConfigForm constructor.
+-     *
+-     * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+-     *   ConfigFactory.
+-     * @param EntityTypeManagerInterface $entity_type_manager
+-     *   EntityTypeManager.
+-     * @param EntityFieldManagerInterface $entity_field_manager
+-     *   EntityFieldManager.
+-     * @param EntityTypeBundleInfoInterface $entityTypeBundleInfo
+-     *   EntityTypeBundleInfo.
+-     */
++  /**
++   * EntityLogConfigForm constructor.
++   *
++   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
++   *   ConfigFactory.
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
++   *   EntityTypeManager.
++   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
++   *   EntityFieldManager.
++   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entityTypeBundleInfo
++   *   EntityTypeBundleInfo.
++   */
+   public function __construct(
+     ConfigFactoryInterface $config_factory,
+     EntityTypeManagerInterface $entity_type_manager,
+@@ -96,11 +96,11 @@ class EntityLogConfigForm extends ConfigFormBase {
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     $all_bundles_info = $this->bundleInfo->getAllBundleInfo();
+-    $form['entity_log_config'] = array(
++    $form['entity_log_config'] = [
+       '#title' => $this->t('Entity log'),
+       '#description' => $this->t('Select on which fields you want to log changes on'),
+       '#type' => 'vertical_tabs',
+-    );
++    ];
+     /* @var \Drupal\Core\Config\Entity\ConfigEntityType $configEntityType */
+     foreach ($all_bundles_info as $entity => $bundle_array) {
+       try {

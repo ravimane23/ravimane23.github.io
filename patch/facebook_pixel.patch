@@ -1,0 +1,14 @@
+diff --git a/modules/facebook_pixel_commerce/src/EventSubscriber/CartSubscriber.php b/modules/facebook_pixel_commerce/src/EventSubscriber/CartSubscriber.php
+index 63141d3..4006458 100644
+--- a/modules/facebook_pixel_commerce/src/EventSubscriber/CartSubscriber.php
++++ b/modules/facebook_pixel_commerce/src/EventSubscriber/CartSubscriber.php
+@@ -10,6 +10,9 @@ use Drupal\facebook_pixel_commerce\FacebookCommerceInterface;
+ use Drupal\state_machine\Event\WorkflowTransitionEvent;
+ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+ 
++/**
++ *
++ */
+ class CartSubscriber implements EventSubscriberInterface {
+ 
+   /**

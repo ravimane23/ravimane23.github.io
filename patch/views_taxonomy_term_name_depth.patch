@@ -1,0 +1,12 @@
+diff --git a/src/Plugin/views/argument/IndexNameDepth.php b/src/Plugin/views/argument/IndexNameDepth.php
+index c6d99b0..0f4dc60 100644
+--- a/src/Plugin/views/argument/IndexNameDepth.php
++++ b/src/Plugin/views/argument/IndexNameDepth.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\views_taxonomy_term_name_depth\Plugin\views\argument;
+ 
+ use Drupal\Core\Database\Connection;
+-use Drupal\Core\Database\Database;
+ use Drupal\Core\Database\Query\Condition;
+ use Drupal\Core\Entity\EntityStorageInterface;
+ use Drupal\Core\Form\FormStateInterface;

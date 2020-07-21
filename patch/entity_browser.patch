@@ -1,0 +1,14 @@
+diff --git a/tests/fixtures/update/entity_browser.update-hook-test.php b/tests/fixtures/update/entity_browser.update-hook-test.php
+index 215f7a5..bf30577 100644
+--- a/tests/fixtures/update/entity_browser.update-hook-test.php
++++ b/tests/fixtures/update/entity_browser.update-hook-test.php
+@@ -1,7 +1,8 @@
+ <?php
+ 
+ /**
+- * @file Contains entity_browser.update-hook-test.php.
++ * @file
++ * Contains entity_browser.update-hook-test.php.
+  *
+  * Adds some configs to allow testing update hook.
+  */

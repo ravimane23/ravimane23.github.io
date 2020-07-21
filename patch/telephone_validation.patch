@@ -1,0 +1,29 @@
+diff --git a/tests/src/Kernel/ConfigTest.php b/tests/src/Kernel/ConfigTest.php
+index 1bd0587..ec3c084 100644
+--- a/tests/src/Kernel/ConfigTest.php
++++ b/tests/src/Kernel/ConfigTest.php
+@@ -3,7 +3,7 @@
+ namespace Drupal\Tests\telephone_validation\Kernel;
+ 
+ use Drupal\field\Entity\FieldConfig;
+-use \Drupal\Tests\telephone\Kernel\TelephoneItemTest as BaseItemTest;
++use Drupal\Tests\telephone\Kernel\TelephoneItemTest as BaseItemTest;
+ 
+ /**
+  * @group telephone
+diff --git a/tests/src/Kernel/TelephoneItemTest.php b/tests/src/Kernel/TelephoneItemTest.php
+index 3ee4c50..fe2e14d 100644
+--- a/tests/src/Kernel/TelephoneItemTest.php
++++ b/tests/src/Kernel/TelephoneItemTest.php
+@@ -4,10 +4,9 @@ namespace Drupal\Tests\telephone_validation\Kernel;
+ 
+ use Drupal\entity_test\Entity\EntityTest;
+ use Drupal\field\Entity\FieldConfig;
+-use \Drupal\Tests\telephone\Kernel\TelephoneItemTest as BaseItemTest;
++use Drupal\Tests\telephone\Kernel\TelephoneItemTest as BaseItemTest;
+ use libphonenumber\PhoneNumberFormat;
+ 
+-
+ /**
+  * Test entity validation.
+  *

@@ -1,0 +1,44 @@
+diff --git a/schema_place/src/Plugin/metatag/Tag/SchemaPlaceTelephone.php b/schema_place/src/Plugin/metatag/Tag/SchemaPlaceTelephone.php
+index c72a2c6..3998639 100644
+--- a/schema_place/src/Plugin/metatag/Tag/SchemaPlaceTelephone.php
++++ b/schema_place/src/Plugin/metatag/Tag/SchemaPlaceTelephone.php
+@@ -23,7 +23,6 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
+  *   multiple = TRUE
+  * )
+  */
+-class SchemaPlaceTelephone extends SchemaNameBase
+-{
+-    // Nothing here yet. Just a placeholder class for a plugin.
++class SchemaPlaceTelephone extends SchemaNameBase {
++  // Nothing here yet. Just a placeholder class for a plugin.
+ }
+diff --git a/schema_special_announcement/src/Plugin/metatag/Tag/SchemaSpecialAnnouncementAnnouncementLocation.php b/schema_special_announcement/src/Plugin/metatag/Tag/SchemaSpecialAnnouncementAnnouncementLocation.php
+index 589e9a9..9959f8d 100644
+--- a/schema_special_announcement/src/Plugin/metatag/Tag/SchemaSpecialAnnouncementAnnouncementLocation.php
++++ b/schema_special_announcement/src/Plugin/metatag/Tag/SchemaSpecialAnnouncementAnnouncementLocation.php
+@@ -21,4 +21,3 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaPlaceBase;
+  */
+ class SchemaSpecialAnnouncementAnnouncementLocation extends SchemaPlaceBase {
+ }
+-
+diff --git a/schema_special_announcement/src/Plugin/metatag/Tag/SchemaSpecialAnnouncementSpatialCoverage.php b/schema_special_announcement/src/Plugin/metatag/Tag/SchemaSpecialAnnouncementSpatialCoverage.php
+index 64abda7..6197cb8 100644
+--- a/schema_special_announcement/src/Plugin/metatag/Tag/SchemaSpecialAnnouncementSpatialCoverage.php
++++ b/schema_special_announcement/src/Plugin/metatag/Tag/SchemaSpecialAnnouncementSpatialCoverage.php
+@@ -21,4 +21,3 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaPlaceBase;
+  */
+ class SchemaSpecialAnnouncementSpatialCoverage extends SchemaPlaceBase {
+ }
+-
+diff --git a/src/Plugin/metatag/Tag/SchemaGovernmentServiceTrait.php b/src/Plugin/metatag/Tag/SchemaGovernmentServiceTrait.php
+index 7ed8a54..e988ed2 100644
+--- a/src/Plugin/metatag/Tag/SchemaGovernmentServiceTrait.php
++++ b/src/Plugin/metatag/Tag/SchemaGovernmentServiceTrait.php
+@@ -112,7 +112,6 @@ trait SchemaGovernmentServiceTrait {
+     $form['provider'] = $this->personOrgForm($input_values);
+     $form['provider']['#states'] = $visibility;
+ 
+-
+     $keys = static::governmentServiceFormKeys();
+     foreach ($keys as $key) {
+       if ($key != '@type') {

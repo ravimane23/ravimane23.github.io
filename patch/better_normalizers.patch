@@ -1,0 +1,126 @@
+diff --git a/src/BetterNormalizersServiceProvider.php b/src/BetterNormalizersServiceProvider.php
+index d7bd8fb..5b1f2ad 100644
+--- a/src/BetterNormalizersServiceProvider.php
++++ b/src/BetterNormalizersServiceProvider.php
+@@ -17,33 +17,33 @@ class BetterNormalizersServiceProvider extends ServiceProviderBase {
+    */
+   public function alter(ContainerBuilder $container) {
+     // Add a normalizer service for file entities.
+-    $service_definition = new Definition('Drupal\better_normalizers\Normalizer\FileEntityNormalizer', array(
++    $service_definition = new Definition('Drupal\better_normalizers\Normalizer\FileEntityNormalizer', [
+       new Reference('hal.link_manager'),
+       new Reference('entity_type.manager'),
+       new Reference('module_handler'),
+       new Reference('entity_type.repository'),
+       new Reference('entity_field.manager'),
+       new Reference('file_system'),
+-    ));
++    ]);
+     // The priority must be higher than that of
+     // serializer.normalizer.file_entity.hal in hal.services.yml.
+-    $service_definition->addTag('normalizer', array('priority' => 30));
++    $service_definition->addTag('normalizer', ['priority' => 30]);
+     $container->setDefinition('serializer.normalizer.entity.file_entity', $service_definition);
+ 
+     // Add a normalizer service for file fields.
+-    $service_definition = new Definition('Drupal\better_normalizers\Normalizer\FileItemNormalizer', array(
++    $service_definition = new Definition('Drupal\better_normalizers\Normalizer\FileItemNormalizer', [
+       new Reference('hal.link_manager'),
+       new Reference('serializer.entity_resolver'),
+       new Reference('entity_type.manager'),
+-    ));
++    ]);
+     // Supersede EntityReferenceItemNormalizer.
+-    $service_definition->addTag('normalizer', array('priority' => 20));
++    $service_definition->addTag('normalizer', ['priority' => 20]);
+     $container->setDefinition('serializer.normalizer.entity_reference_item.file_entity', $service_definition);
+ 
+     $modules = $container->getParameter('container.modules');
+     if (isset($modules['menu_link_content'])) {
+       // Add a normalizer service for menu-link-content entities.
+-      $service_definition = new Definition('Drupal\better_normalizers\Normalizer\MenuLinkContentNormalizer', array(
++      $service_definition = new Definition('Drupal\better_normalizers\Normalizer\MenuLinkContentNormalizer', [
+         new Reference('hal.link_manager'),
+         new Reference('entity_type.manager'),
+         new Reference('module_handler'),
+@@ -51,11 +51,11 @@ class BetterNormalizersServiceProvider extends ServiceProviderBase {
+         new Reference('entity_field.manager'),
+         new Reference('serializer.normalizer.entity_reference_item.hal'),
+         new Reference('entity.repository'),
+-      ));
++      ]);
+       // The priority must be higher than that of
+       // serializer.normalizer.entity.hal in hal.services.yml, but lower than
+       // better_normalizers.normalizer.menu_link_content.hal.
+-      $service_definition->addTag('normalizer', array('priority' => 30));
++      $service_definition->addTag('normalizer', ['priority' => 30]);
+       $container->setDefinition('serializer.normalizer.menu_link_content.hal', $service_definition);
+     }
+ 
+diff --git a/src/Normalizer/FileEntityNormalizer.php b/src/Normalizer/FileEntityNormalizer.php
+index 6b96a8f..80a05b5 100644
+--- a/src/Normalizer/FileEntityNormalizer.php
++++ b/src/Normalizer/FileEntityNormalizer.php
+@@ -38,14 +38,14 @@ class FileEntityNormalizer extends ContentEntityNormalizer {
+   /**
+    * {@inheritdoc}
+    */
+-  public function normalize($entity, $format = NULL, array $context = array()) {
++  public function normalize($entity, $format = NULL, array $context = []) {
+     $data = parent::normalize($entity, $format, $context);
+     if (!isset($context['included_fields']) || in_array('data', $context['included_fields'])) {
+       // Save base64-encoded file contents to the "data" property.
+       $file_data = base64_encode(file_get_contents($entity->getFileUri()));
+-      $data += array(
+-        'data' => array(array('value' => $file_data)),
+-      );
++      $data += [
++        'data' => [['value' => $file_data]],
++      ];
+     }
+     return $data;
+   }
+@@ -53,7 +53,7 @@ class FileEntityNormalizer extends ContentEntityNormalizer {
+   /**
+    * {@inheritdoc}
+    */
+-  public function denormalize($data, $class, $format = NULL, array $context = array()) {
++  public function denormalize($data, $class, $format = NULL, array $context = []) {
+     // Avoid 'data' being treated as a field.
+     $file_data = $data['data'][0]['value'];
+     unset($data['data']);
+diff --git a/src/Normalizer/FileItemNormalizer.php b/src/Normalizer/FileItemNormalizer.php
+index 63e668d..634e063 100644
+--- a/src/Normalizer/FileItemNormalizer.php
++++ b/src/Normalizer/FileItemNormalizer.php
+@@ -31,7 +31,7 @@ class FileItemNormalizer extends EntityReferenceItemNormalizer {
+   /**
+    * {@inheritdoc}
+    */
+-  public function normalize($field_item, $format = NULL, array $context = array()) {
++  public function normalize($field_item, $format = NULL, array $context = []) {
+     /** @var \Drupal\file\Plugin\Field\FieldType\FileItem $field_item */
+ 
+     $data = parent::normalize($field_item, $format, $context);
+diff --git a/src/Normalizer/MenuLinkContentNormalizer.php b/src/Normalizer/MenuLinkContentNormalizer.php
+index 999b025..cb0adb8 100644
+--- a/src/Normalizer/MenuLinkContentNormalizer.php
++++ b/src/Normalizer/MenuLinkContentNormalizer.php
+@@ -64,7 +64,7 @@ class MenuLinkContentNormalizer extends ContentEntityNormalizer {
+   /**
+    * {@inheritdoc}
+    */
+-  public function normalize($entity, $format = NULL, array $context = array()) {
++  public function normalize($entity, $format = NULL, array $context = []) {
+     $normalized = parent::normalize($entity, $format, $context);
+     if (isset($normalized['link']) && is_array($normalized['link'])) {
+       foreach ($normalized['link'] as $key => $link) {
+@@ -111,7 +111,7 @@ class MenuLinkContentNormalizer extends ContentEntityNormalizer {
+   /**
+    * {@inheritdoc}
+    */
+-  public function denormalize($data, $class, $format = NULL, array $context = array()) {
++  public function denormalize($data, $class, $format = NULL, array $context = []) {
+     if (isset($data['link']) && is_array($data['link'])) {
+       foreach ($data['link'] as $key => $link) {
+         try {

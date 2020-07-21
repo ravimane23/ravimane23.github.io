@@ -1,0 +1,71 @@
+diff --git a/js/infinite-scroll.js b/js/infinite-scroll.js
+index d601d38..0a66527 100644
+--- a/js/infinite-scroll.js
++++ b/js/infinite-scroll.js
+@@ -73,14 +73,14 @@
+    *   During `unload` remove the scroll event binding.
+    */
+   Drupal.behaviors.views_infinite_scroll_automatic = {
+-    attach : function(context, settings) {
+-      $(context).find(automaticPagerSelector).once('infinite-scroll').each(function() {
++    attach : function (context, settings) {
++      $(context).find(automaticPagerSelector).once('infinite-scroll').each(function () {
+         var $pager = $(this);
+         $pager.addClass('visually-hidden');
+-        var isLoadNeeded = function(){
++        var isLoadNeeded = function () {
+           return window.innerHeight + window.pageYOffset > $pager.offset().top - scrollThreshold;
+         };
+-        $window.on(scrollEvent, debounce(function() {
++        $window.on(scrollEvent, debounce(function () {
+           if (isLoadNeeded()) {
+             $pager.find('[rel=next]').click();
+             $window.off(scrollEvent);
+diff --git a/src/EventSubscriber/AjaxResponseSubscriber.php b/src/EventSubscriber/AjaxResponseSubscriber.php
+index 65a4b0f..040410e 100644
+--- a/src/EventSubscriber/AjaxResponseSubscriber.php
++++ b/src/EventSubscriber/AjaxResponseSubscriber.php
+@@ -51,7 +51,7 @@ class AjaxResponseSubscriber implements EventSubscriberInterface {
+     // to move beyond page 0.
+     if ($view->getPager()->getPluginId() !== 'infinite_scroll' || $event->getRequest()->query->get('page') == 0) {
+       // When the current page is 0 it might be the case that there where no
+-      // additional items in this case we want to still append the empty result
++      // additional items in this case we want to still append the empty result.
+       return;
+     }
+ 
+diff --git a/src/Plugin/views/pager/InfiniteScroll.php b/src/Plugin/views/pager/InfiniteScroll.php
+index 4f0ff12..d1b7ffe 100644
+--- a/src/Plugin/views/pager/InfiniteScroll.php
++++ b/src/Plugin/views/pager/InfiniteScroll.php
+@@ -122,7 +122,7 @@ class InfiniteScroll extends SqlBase {
+   /**
+    * {@inheritdoc}
+    */
+-  function query() {
++  public function query() {
+     // Run the pant method which is sufficient if we're on the first page.
+     parent::query();
+     // If configured, for pages beyond the first, we want to show all items up
+@@ -130,7 +130,7 @@ class InfiniteScroll extends SqlBase {
+     if ($this->options['views_infinite_scroll']['initially_load_all_pages'] && !\Drupal::request()->isXmlHttpRequest() && $this->current_page > 0) {
+       $limit = ($this->current_page + 1) * $this->options['items_per_page'];
+       $offset = $this->options['offset'];
+-          $this->view->query->setLimit($limit);
++      $this->view->query->setLimit($limit);
+       $this->view->query->setOffset($offset);
+     }
+   }
+diff --git a/tests/src/FunctionalJavascript/InfiniteScrollTest.php b/tests/src/FunctionalJavascript/InfiniteScrollTest.php
+index a9000ce..4687b2f 100644
+--- a/tests/src/FunctionalJavascript/InfiniteScrollTest.php
++++ b/tests/src/FunctionalJavascript/InfiniteScrollTest.php
+@@ -64,7 +64,7 @@ class InfiniteScrollTest extends WebDriverTestBase {
+     $this->assertSession()->waitForElement('css', '.node--type-page:nth-child(4)');
+     $this->assertTotalNodes(6);
+ 
+-    // Test loading a page past the first
++    // Test loading a page past the first.
+     $this->createView('initially-load-all', [
+       'button_text' => 'Load More',
+       'automatically_load_content' => FALSE,

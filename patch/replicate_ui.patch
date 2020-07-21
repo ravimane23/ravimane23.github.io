@@ -1,0 +1,226 @@
+diff --git a/replicate_ui.views.inc b/replicate_ui.views.inc
+index acbc0c2..c993ce2 100644
+--- a/replicate_ui.views.inc
++++ b/replicate_ui.views.inc
+@@ -1,4 +1,9 @@
+ <?php
++
++/**
++ * @file
++ */
++
+ use Drupal\Core\Entity\ContentEntityTypeInterface;
+ 
+ /**
+diff --git a/src/Form/ReplicateConfirmForm.php b/src/Form/ReplicateConfirmForm.php
+index c0a5dad..ab50f3b 100644
+--- a/src/Form/ReplicateConfirmForm.php
++++ b/src/Form/ReplicateConfirmForm.php
+@@ -9,6 +9,9 @@ use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class ReplicateConfirmForm extends ContentEntityConfirmFormBase {
+ 
+   /**
+@@ -129,7 +132,6 @@ class ReplicateConfirmForm extends ContentEntityConfirmFormBase {
+     return t('Are you sure you want to replicate %type entity id %id?', ['%type' => $this->getEntityTypeId(), '%id' => $this->getEntity()->id()]);
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/Form/ReplicateUISettingsForm.php b/src/Form/ReplicateUISettingsForm.php
+index fa8d532..45edc11 100644
+--- a/src/Form/ReplicateUISettingsForm.php
++++ b/src/Form/ReplicateUISettingsForm.php
+@@ -12,6 +12,9 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Routing\RouteBuilderInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class ReplicateUISettingsForm extends ConfigFormBase {
+ 
+   /**
+@@ -76,7 +79,7 @@ class ReplicateUISettingsForm extends ConfigFormBase {
+     $content_entity_types = array_filter($this->entityTypeManager->getDefinitions(), function (EntityTypeInterface $entity_type) {
+       return $entity_type instanceof ContentEntityTypeInterface;
+     });
+-    $form['entity_types']  = [
++    $form['entity_types'] = [
+       '#type' => 'checkboxes',
+       '#title' => $this->t('Replicate entity types'),
+       '#description' => $this->t('Enable replicate for the following entity types'),
+diff --git a/src/Plugin/Derivative/EntityReplicateActions.php b/src/Plugin/Derivative/EntityReplicateActions.php
+index e41abf9..3afcd5d 100644
+--- a/src/Plugin/Derivative/EntityReplicateActions.php
++++ b/src/Plugin/Derivative/EntityReplicateActions.php
+@@ -10,6 +10,9 @@ use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class EntityReplicateActions extends DeriverBase implements ContainerDeriverInterface {
+ 
+   use StringTranslationTrait;
+@@ -63,7 +66,7 @@ class EntityReplicateActions extends DeriverBase implements ContainerDeriverInte
+           'label' => $this->t('Delete @entity_type', ['@entity_type' => $entity_type->getLabel()]),
+           'type' => $entity_type_id,
+           'config_form_route_name' => "entity.$entity_type_id.replicate",
+-          ] + $base_plugin_definition;
++        ] + $base_plugin_definition;
+       }
+     }
+     return parent::getDerivativeDefinitions($base_plugin_definition);
+diff --git a/src/Plugin/Derivative/ReplicateUILocalTasks.php b/src/Plugin/Derivative/ReplicateUILocalTasks.php
+index 382d2f2..f4ec7f6 100644
+--- a/src/Plugin/Derivative/ReplicateUILocalTasks.php
++++ b/src/Plugin/Derivative/ReplicateUILocalTasks.php
+@@ -10,6 +10,9 @@ use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class ReplicateUILocalTasks extends DeriverBase implements ContainerDeriverInterface {
+ 
+   use StringTranslationTrait;
+diff --git a/src/Plugin/RulesAction/EntityReplicateAction.php b/src/Plugin/RulesAction/EntityReplicateAction.php
+index 45e1b39..33f75a7 100644
+--- a/src/Plugin/RulesAction/EntityReplicateAction.php
++++ b/src/Plugin/RulesAction/EntityReplicateAction.php
+@@ -1,6 +1,7 @@
+ <?php
+ 
+ namespace Drupal\replicate_ui\Plugin\RulesAction;
++
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Drupal\replicate\Replicator;
+@@ -42,7 +43,6 @@ class EntityReplicateAction extends RulesActionBase implements ContainerFactoryP
+     $this->replicator = $replicator;
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -59,7 +59,7 @@ class EntityReplicateAction extends RulesActionBase implements ContainerFactoryP
+    * Deletes the Entity.
+    *
+    * @param \Drupal\Core\Entity\EntityInterface $entity
+-   *    The entity to be deleted.
++   *   The entity to be deleted.
+    */
+   protected function doExecute(EntityInterface $entity) {
+     $this->replicator->replicateEntity($entity);
+diff --git a/src/Plugin/views/field/ReplicateUILink.php b/src/Plugin/views/field/ReplicateUILink.php
+index e35c2bf..94ab7d5 100644
+--- a/src/Plugin/views/field/ReplicateUILink.php
++++ b/src/Plugin/views/field/ReplicateUILink.php
+@@ -5,7 +5,7 @@ namespace Drupal\replicate_ui\Plugin\views\field;
+ use Drupal\views\Plugin\views\field\EntityLink;
+ 
+ /**
+- * Provides a entity replicate link
++ * Provides a entity replicate link.
+  *
+  * @ingroup views_field_handlers
+  *
+diff --git a/src/ReplicateAccessChecker.php b/src/ReplicateAccessChecker.php
+index 81903c2..5f63f70 100644
+--- a/src/ReplicateAccessChecker.php
++++ b/src/ReplicateAccessChecker.php
+@@ -35,6 +35,9 @@ class ReplicateAccessChecker implements AccessInterface {
+     $this->entityAccessChecker = $entityAccessChecker;
+   }
+ 
++  /**
++   *
++   */
+   public function access(Route $route, RouteMatchInterface $route_match, AccountInterface $account) {
+     $create_fake_route = clone $route;
+     $create_fake_route->setRequirement('_entity_access', $route->getDefault('entity_type_id') . '.create');
+@@ -53,5 +56,4 @@ class ReplicateAccessChecker implements AccessInterface {
+   public function applies(Route $route) {
+   }
+ 
+-
+ }
+diff --git a/src/RouteSubscriber.php b/src/RouteSubscriber.php
+index 24db509..e278b2d 100644
+--- a/src/RouteSubscriber.php
++++ b/src/RouteSubscriber.php
+@@ -10,6 +10,9 @@ use Drupal\Core\Routing\RoutingEvents;
+ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+ use Symfony\Component\Routing\Route;
+ 
++/**
++ *
++ */
+ class RouteSubscriber implements EventSubscriberInterface {
+ 
+   /**
+@@ -35,11 +38,14 @@ class RouteSubscriber implements EventSubscriberInterface {
+     $this->configFactory = $config_factory;
+   }
+ 
++  /**
++   *
++   */
+   public function onRouteBuild(RouteBuildEvent $event) {
+     $config = $this->configFactory->get('replicate_ui.settings');
+     $collection = $event->getRouteCollection();
+     foreach ($this->entityTypeManager->getDefinitions() as $entity_type_id => $entity_type) {
+-      if ($entity_type instanceof ContentEntityTypeInterface && in_array($entity_type_id, (array) $config->get('entity_types')) && $entity_type->hasLinkTemplate('canonical') ) {
++      if ($entity_type instanceof ContentEntityTypeInterface && in_array($entity_type_id, (array) $config->get('entity_types')) && $entity_type->hasLinkTemplate('canonical')) {
+         $base_path = $entity_type->getLinkTemplate('canonical');
+         $path = $base_path . '/replicate';
+ 
+diff --git a/tests/src/Functional/ReplicateUISettingsTest.php b/tests/src/Functional/ReplicateUISettingsTest.php
+index d05e214..f199e3e 100644
+--- a/tests/src/Functional/ReplicateUISettingsTest.php
++++ b/tests/src/Functional/ReplicateUISettingsTest.php
+@@ -21,6 +21,9 @@ class ReplicateUISettingsTest extends BrowserTestBase {
+    */
+   protected $defaultTheme = 'stark';
+ 
++  /**
++   *
++   */
+   public function testSettings() {
+     $this->drupalGet('/admin/config/content/replicate');
+     $this->assertSession()->statusCodeEquals(403);
+diff --git a/tests/src/Unit/RouteSubscriberTest.php b/tests/src/Unit/RouteSubscriberTest.php
+index ab40e4e..704dc62 100644
+--- a/tests/src/Unit/RouteSubscriberTest.php
++++ b/tests/src/Unit/RouteSubscriberTest.php
+@@ -61,6 +61,9 @@ class RouteSubscriberTest extends UnitTestCase {
+     $this->assertTrue($routes->get('entity.entity_test_2.replicate')->getOption('_admin_route'));
+   }
+ 
++  /**
++   *
++   */
+   protected function setupEntityManager() {
+     $entity_manager = $this->prophesize(EntityTypeManagerInterface::class);
+     $entity_manager->getDefinitions()->willReturn([
+@@ -81,6 +84,9 @@ class RouteSubscriberTest extends UnitTestCase {
+     return $entity_manager;
+   }
+ 
++  /**
++   *
++   */
+   protected function setupRouteCollection() {
+     $route_collection = new RouteCollection();
+     $route_collection->add('entity.entity_test_1.canonical', new Route('/entity_test_1/{entity_test_1}'));

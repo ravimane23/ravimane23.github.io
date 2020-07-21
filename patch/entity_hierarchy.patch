@@ -1,0 +1,164 @@
+diff --git a/modules/entity_hierarchy_microsite/src/EntityHooks.php b/modules/entity_hierarchy_microsite/src/EntityHooks.php
+index 157ae9a..47ad4da 100644
+--- a/modules/entity_hierarchy_microsite/src/EntityHooks.php
++++ b/modules/entity_hierarchy_microsite/src/EntityHooks.php
+@@ -135,7 +135,7 @@ class EntityHooks implements ContainerInjectionInterface {
+         }
+         if ($microsites = $this->childOfMicrositeLookup->findMicrositesForNodeAndField($original, $field)) {
+           // This item is no longer in the microsite, so we need to trigger
+-          // its removal
++          // its removal.
+           $plugin_id = 'entity_hierarchy_microsite:' . $original->uuid();
+           if ($this->menuLinkManager->hasDefinition($plugin_id)) {
+             $this->menuLinkManager->removeDefinition($plugin_id);
+diff --git a/modules/entity_hierarchy_workbench_access/src/Plugin/AccessControlHierarchy/EntityHierarchy.php b/modules/entity_hierarchy_workbench_access/src/Plugin/AccessControlHierarchy/EntityHierarchy.php
+index 743eaba..1b451ee 100644
+--- a/modules/entity_hierarchy_workbench_access/src/Plugin/AccessControlHierarchy/EntityHierarchy.php
++++ b/modules/entity_hierarchy_workbench_access/src/Plugin/AccessControlHierarchy/EntityHierarchy.php
+@@ -118,6 +118,9 @@ class EntityHierarchy extends AccessControlHierarchyBase implements ContainerFac
+     );
+   }
+ 
++  /**
++   *
++   */
+   public function defaultConfiguration() {
+     return parent::defaultConfiguration() + [
+       'bundles' => [],
+@@ -195,7 +198,7 @@ class EntityHierarchy extends AccessControlHierarchyBase implements ContainerFac
+             'description' => '',
+           ];
+           $tree[$parent][$id] = $entry;
+-          $this->cacheBackend->set($cid, $entry,Cache::PERMANENT, $entry_tags);
++          $this->cacheBackend->set($cid, $entry, Cache::PERMANENT, $entry_tags);
+           $tags = array_merge($tags, $entry_tags);
+         }
+       }
+@@ -387,4 +390,5 @@ class EntityHierarchy extends AccessControlHierarchyBase implements ContainerFac
+     $this->configuration['bundles'] = $bundles;
+     return $changed;
+   }
++
+ }
+diff --git a/modules/entity_hierarchy_workbench_access/src/Plugin/Validation/Constraint/ValidEntityHierarchySection.php b/modules/entity_hierarchy_workbench_access/src/Plugin/Validation/Constraint/ValidEntityHierarchySection.php
+index ca37c8b..0cf4402 100644
+--- a/modules/entity_hierarchy_workbench_access/src/Plugin/Validation/Constraint/ValidEntityHierarchySection.php
++++ b/modules/entity_hierarchy_workbench_access/src/Plugin/Validation/Constraint/ValidEntityHierarchySection.php
+@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraint;
+  *   label = @Translation("Valid hierarchy selection", context = "Validation"),
+  * )
+  */
+-class ValidEntityHierarchySection extends Constraint  {
++class ValidEntityHierarchySection extends Constraint {
+ 
+   /**
+    * Violation message. Use the same message as FormValidator.
+diff --git a/modules/entity_hierarchy_workbench_access/tests/src/Kernel/EntityHierarchyWorkbenchAccessTest.php b/modules/entity_hierarchy_workbench_access/tests/src/Kernel/EntityHierarchyWorkbenchAccessTest.php
+index 624c0bc..408b2d6 100644
+--- a/modules/entity_hierarchy_workbench_access/tests/src/Kernel/EntityHierarchyWorkbenchAccessTest.php
++++ b/modules/entity_hierarchy_workbench_access/tests/src/Kernel/EntityHierarchyWorkbenchAccessTest.php
+@@ -11,7 +11,6 @@ use Drupal\node\Entity\Node;
+ use Drupal\Tests\entity_hierarchy\Kernel\EntityHierarchyKernelTestBase;
+ use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
+ use Drupal\workbench_access\Entity\AccessScheme;
+-use Drupal\workbench_access\WorkbenchAccessManagerInterface;
+ 
+ /**
+  * Tests interaction between entity_hierarchy and workbench_access.
+@@ -74,7 +73,7 @@ class EntityHierarchyWorkbenchAccessTest extends EntityHierarchyKernelTestBase {
+     $this->installConfig(['node', 'workbench_access']);
+     $this->installSchema('node', ['node_access']);
+     $this->parentNodeType = $this->createContentType(['type' => 'section']);
+-    $this->childNodeType =  $this->createContentType(['type' => 'children']);
++    $this->childNodeType = $this->createContentType(['type' => 'children']);
+     // Only the child has the field.
+     $this->setupEntityHierarchyField(static::ENTITY_TYPE, $this->childNodeType->id(), static::FIELD_NAME);
+     $this->scheme = AccessScheme::create([
+diff --git a/src/Commands/EntityHierarchyCommands.php b/src/Commands/EntityHierarchyCommands.php
+index ee3c18b..20b8140 100644
+--- a/src/Commands/EntityHierarchyCommands.php
++++ b/src/Commands/EntityHierarchyCommands.php
+@@ -31,9 +31,9 @@ class EntityHierarchyCommands extends DrushCommands {
+    * Rebuild tree.
+    *
+    * @param string $field_name
+-   *   Field machine name
++   *   Field machine name.
+    * @param string $entity_type_id
+-   *   Entity type id
++   *   Entity type id.
+    *
+    * @usage drush entity-hierarchy:rebuild-tree field_parents node
+    *   Rebuild tree for node field named field_parents.
+diff --git a/src/Form/HierarchyChildrenForm.php b/src/Form/HierarchyChildrenForm.php
+index fc94005..a6c7d77 100644
+--- a/src/Form/HierarchyChildrenForm.php
++++ b/src/Form/HierarchyChildrenForm.php
+@@ -4,14 +4,9 @@ namespace Drupal\entity_hierarchy\Form;
+ 
+ use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Entity\ContentEntityInterface;
+-use Drupal\Core\Entity\EntityManagerInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Render\Element;
+ use Drupal\Core\StringTranslation\TranslatableMarkup;
+-use Drupal\entity_hierarchy\Information\ParentCandidateInterface;
+-use Drupal\entity_hierarchy\Storage\EntityTreeNodeMapperInterface;
+-use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
+-use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
+ use Drupal\Core\Entity\ContentEntityForm;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+@@ -227,16 +222,16 @@ class HierarchyChildrenForm extends ContentEntityForm {
+       $handler = new $handlerClass();
+ 
+       $links = [];
+-      foreach($childBundles[$fieldName] as $id => $info) {
++      foreach ($childBundles[$fieldName] as $id => $info) {
+         $url = $handler->getAddChildUrl($entityType, $this->entity, $id, $fieldName);
+-        if($url->access()) {
++        if ($url->access()) {
+           $links[$id] = [
+             'title' => $this->t('Create new @bundle', ['@bundle' => $info['label']]),
+-            'url' => $url
++            'url' => $url,
+           ];
+         }
+       }
+-      if(count($links) > 1) {
++      if (count($links) > 1) {
+         $actions['add_child'] = [
+           '#type' => 'dropbutton',
+           '#links' => $links,
+diff --git a/src/Plugin/EntityReferenceSelection/EntityHierarchy.php b/src/Plugin/EntityReferenceSelection/EntityHierarchy.php
+index acb3577..fe26458 100644
+--- a/src/Plugin/EntityReferenceSelection/EntityHierarchy.php
++++ b/src/Plugin/EntityReferenceSelection/EntityHierarchy.php
+@@ -3,14 +3,8 @@
+ namespace Drupal\entity_hierarchy\Plugin\EntityReferenceSelection;
+ 
+ use Drupal\Component\Utility\Html;
+-use Drupal\Core\Entity\EntityManagerInterface;
+ use Drupal\Core\Entity\Plugin\EntityReferenceSelection\DefaultSelection;
+-use Drupal\Core\Extension\ModuleHandlerInterface;
+-use Drupal\Core\Session\AccountInterface;
+ use Drupal\entity_hierarchy\Information\AncestryLabelTrait;
+-use Drupal\entity_hierarchy\Storage\EntityTreeNodeMapperInterface;
+-use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
+-use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+diff --git a/src/Plugin/views/argument/HierarchyIsSiblingOfEntity.php b/src/Plugin/views/argument/HierarchyIsSiblingOfEntity.php
+index b3a37bd..1d8f84b 100644
+--- a/src/Plugin/views/argument/HierarchyIsSiblingOfEntity.php
++++ b/src/Plugin/views/argument/HierarchyIsSiblingOfEntity.php
+@@ -37,7 +37,7 @@ class HierarchyIsSiblingOfEntity extends EntityHierarchyArgumentPluginBase {
+           $depth_token => $node->getDepth() + 1,
+         ];
+         if (!$this->options['show_self']) {
+-          $self_token = ':self'  . $this->tableAlias;
++          $self_token = ':self' . $this->tableAlias;
+           $expression .= " AND $this->tableAlias.id != {$self_token}";
+           $arguments[$self_token] = $stub->getId();
+         }

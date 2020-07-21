@@ -1,0 +1,98 @@
+diff --git a/css/jsonapi_extras.expandable_rows_table.css b/css/jsonapi_extras.expandable_rows_table.css
+index 4f81413..8444434 100644
+--- a/css/jsonapi_extras.expandable_rows_table.css
++++ b/css/jsonapi_extras.expandable_rows_table.css
+@@ -1,33 +1,33 @@
+ .advanced-opts {
+-    display: none;
+-    background-color: rgba(0, 0, 0, 0.05);
++  display: none;
++  background-color: rgba(0, 0, 0, 0.05);
+ }
+ 
+ .advanced-opts td:nth-child(2) {
+-    font-weight: bold;
++  font-weight: bold;
+ }
+ 
+ .toggle-expanded span {
+-    color: #000;
+-    display: inline-block;
++  color: #000;
++  display: inline-block;
+ }
+ 
+ .toggle-expanded {
+-    cursor: pointer;
++  cursor: pointer;
+ }
+ 
+ .toggle-expanded span:hover {
+-    text-decoration: none;
++  text-decoration: none;
+ }
+ 
+ .toggle-expanded span::before {
+-    margin-right: 0.3em;
++  margin-right: 0.3em;
+ }
+ 
+ .toggle-expanded.content-collapsed span::before {
+-    content: "▸";
++  content: "▸";
+ }
+ 
+ .toggle-expanded.content-expanded span::before {
+-    content: "▾";
++  content: "▾";
+ }
+diff --git a/js/jsonapi_extras.admin.js b/js/jsonapi_extras.admin.js
+index 2211406..e15c391 100644
+--- a/js/jsonapi_extras.admin.js
++++ b/js/jsonapi_extras.admin.js
+@@ -40,8 +40,8 @@
+     }
+   };
+ 
+-  $.expr[":"].contains = $.expr.createPseudo(function(arg) {
+-    return function( elem ) {
++  $.expr[":"].contains = $.expr.createPseudo(function (arg) {
++    return function ( elem ) {
+       return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+     };
+   });
+diff --git a/src/Plugin/ResourceFieldEnhancerInterface.php b/src/Plugin/ResourceFieldEnhancerInterface.php
+index 8a76748..4e24470 100644
+--- a/src/Plugin/ResourceFieldEnhancerInterface.php
++++ b/src/Plugin/ResourceFieldEnhancerInterface.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\jsonapi_extras\Plugin;
+ 
+-use Drupal\Component\Plugin\ConfigurablePluginInterface;
+ use Shaper\DataAdaptor\ReversibleTransformationInterface;
+ use Shaper\DataAdaptor\ReversibleTransformationValidationInterface;
+ use Shaper\Transformation\TransformationInterface;
+diff --git a/src/Plugin/jsonapi/FieldEnhancer/JSONFieldEnhancer.php b/src/Plugin/jsonapi/FieldEnhancer/JSONFieldEnhancer.php
+index 61436f8..2715875 100644
+--- a/src/Plugin/jsonapi/FieldEnhancer/JSONFieldEnhancer.php
++++ b/src/Plugin/jsonapi/FieldEnhancer/JSONFieldEnhancer.php
+@@ -8,7 +8,6 @@ use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Shaper\Util\Context;
+ 
+-
+ /**
+  * Perform additional manipulations to JSON fields.
+  *
+@@ -73,8 +72,8 @@ class JSONFieldEnhancer extends ResourceFieldEnhancerBase implements ContainerFa
+       'oneOf' => [
+         ['type' => 'object'],
+         ['type' => 'array'],
+-        ['type' => 'null']
+-      ]
++        ['type' => 'null'],
++      ],
+     ];
+   }
+ 

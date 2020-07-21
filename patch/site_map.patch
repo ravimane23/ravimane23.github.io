@@ -1,0 +1,1479 @@
+diff --git a/site_map.theme.inc b/site_map.theme.inc
+index 626558a..519f459 100644
+--- a/site_map.theme.inc
++++ b/site_map.theme.inc
+@@ -15,15 +15,15 @@ use Drupal\Core\Url;
+ function theme_site_map_rss_legend() {
+   $output = '';
+   $output .= '<p><strong>' . t('Legend:') . '</strong><br />';
+-  $feed_icon_node = array(
++  $feed_icon_node = [
+     '#theme' => 'site_map_feed_icon',
+     '#type' => 'node',
+-  );
++  ];
+   $output .= '<span class="rss">' . drupal_render($feed_icon_node) . '</span> ' . t('Link to a content RSS feed');
+-  $feed_icon_comment = array(
++  $feed_icon_comment = [
+     '#theme' => 'site_map_feed_icon',
+     '#type' => 'comment',
+-  );
++  ];
+   $output .= '<br /><span class="rss">' . drupal_render($feed_icon_comment) . '</span> ' . t('Link to a comment RSS feed');
+   $output .= '</p>';
+ 
+@@ -40,41 +40,40 @@ function theme_site_map_rss_legend() {
+  *   - type: The type of feed icon.
+  *
+  * @return array $variables
+- *
+  */
+ function template_preprocess_site_map_feed_icon(array &$variables) {
+   $output = '';
+ 
+   switch ($variables['type']) {
+     case 'node':
+-      $image = array(
++      $image = [
+         '#theme' => 'image',
+         '#uri' => drupal_get_path('module', 'site_map') . '/images/feed-small.png',
+         '#title' => t('Syndicated feed icon'),
+         '#alt' => t('Syndicated feed icon'),
+-      );
++      ];
+       $output = drupal_render($image);
+       break;
+ 
+     case 'comment':
+-      $image = array(
++      $image = [
+         '#theme' => 'image',
+         '#uri' => drupal_get_path('module', 'site_map') . '/images/feed-small-comment.png',
+         '#title' => t('Syndicated feed icon'),
+         '#alt' => t('Syndicated feed icon'),
+-      );
++      ];
+       $output = drupal_render($image);
+       break;
+   }
+ 
+   if (!empty($variables['url'])) {
+-    $output = \Drupal::l($output, Url::fromUri('base://' . $variables['url'], array(
+-      'attributes' => array(
++    $output = \Drupal::l($output, Url::fromUri('base://' . $variables['url'], [
++      'attributes' => [
+         'class' => 'feed-link',
+         'title' => t('Syndicated feed for') . ' ' . $variables['name'],
+-      ),
++      ],
+       'html' => TRUE,
+-    )));
++    ]));
+   }
+ 
+   $variables['icon'] = $output;
+@@ -142,7 +141,6 @@ function theme_site_map_menu_link(array $variables) {
+   return '<li' . new Attribute($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
+ }
+ 
+-
+ /**
+  * Preprocesses the variables for site-map.html.twig.
+  *
+@@ -157,9 +155,9 @@ function template_preprocess_site_map(array &$variables) {
+   }
+ 
+   if (($config->get('show_rss_links') != 0) && \Drupal::service('module_handler')->moduleExists('commentrss') && \Drupal::config('commentrss.settings')->get('commentrss_site')) {
+-    $rss_legend = array(
++    $rss_legend = [
+       '#theme' => 'site_map_rss_legend',
+-    );
++    ];
+     $variables['rss_legend'] = drupal_render($rss_legend);
+   }
+ 
+@@ -197,7 +195,7 @@ function template_preprocess_site_map(array &$variables) {
+       case 'menus':
+         $menus = array_filter($config->get('show_menus'));
+         if (!empty($menus[$id])) {
+-          $variables['site_map_items']['menus'][] = array('#markup' => _site_map_menus($id));
++          $variables['site_map_items']['menus'][] = ['#markup' => _site_map_menus($id)];
+         }
+         break;
+ 
+@@ -235,31 +233,31 @@ function theme_site_map_order(array $variables) {
+   $element = $variables['element'];
+ 
+   // Site map order (tabledrag).
+-  $rows = array();
++  $rows = [];
+   foreach (Element::children($element, TRUE) as $name) {
+     $element[$name]['weight']['#attributes']['class'][] = 'site-map-order-weight';
+-    $rows[] = array(
+-      'data' => array(
++    $rows[] = [
++      'data' => [
+         drupal_render($element[$name]['content']),
+         drupal_render($element[$name]['weight']),
+-      ),
+-      'class' => array('draggable'),
+-    );
++      ],
++      'class' => ['draggable'],
++    ];
+   }
+   $output = drupal_render_children($element);
+-  $table = array(
++  $table = [
+     '#type' => 'table',
+     '#rows' => $rows,
+-    '#attributes' => array('id' => 'site-map-order'),
+-    '#tabledrag' => array(
+-      array(
++    '#attributes' => ['id' => 'site-map-order'],
++    '#tabledrag' => [
++      [
+         'action' => 'order',
+         'relationship' => 'sibling',
+         'group' => 'site-map-order-weight',
+         'hidden' => TRUE,
+-      ),
+-    ),
+-  );
++      ],
++    ],
++  ];
+   $output .= drupal_render($table);
+ 
+   return $output;
+diff --git a/src/Controller/SitemapController.php b/src/Controller/SitemapController.php
+index 8c989b7..b1d2012 100644
+--- a/src/Controller/SitemapController.php
++++ b/src/Controller/SitemapController.php
+@@ -44,15 +44,15 @@ class SitemapController implements ContainerInjectionInterface {
+    *   Renderable string.
+    */
+   public function buildPage() {
+-    $site_map = array(
++    $site_map = [
+       '#theme' => 'site_map',
+-    );
++    ];
+ 
+     $config = \Drupal::config('site_map.settings');
+     if ($config->get('css') != 1) {
+-      $site_map['#attached']['library'] = array(
++      $site_map['#attached']['library'] = [
+         'site_map/site_map.theme',
+-      );
++      ];
+     }
+ 
+     return $site_map;
+diff --git a/src/Form/SitemapSettingsForm.php b/src/Form/SitemapSettingsForm.php
+index edc4bbf..74bde06 100644
+--- a/src/Form/SitemapSettingsForm.php
++++ b/src/Form/SitemapSettingsForm.php
+@@ -81,223 +81,223 @@ class SitemapSettingsForm extends ConfigFormBase {
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     $config = $this->configFactory->get('site_map.settings');
+ 
+-    $form['page_title'] = array(
++    $form['page_title'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Page title'),
+       '#default_value' => $config->get('page_title'),
+-      '#description' => $this->t('Page title that will be used on the @link.', array('@link' => $this->l($this->t('site map page'), Url::fromRoute('site_map.page')))),
+-    );
++      '#description' => $this->t('Page title that will be used on the @link.', ['@link' => $this->l($this->t('site map page'), Url::fromRoute('site_map.page'))]),
++    ];
+ 
+     $site_map_message = $config->get('message');
+-    $form['message'] = array(
++    $form['message'] = [
+       '#type' => 'text_format',
+       '#format' => isset($site_map_message['format']) ? $site_map_message['format'] : NULL,
+       '#title' => $this->t('Site map message'),
+       '#default_value' => $site_map_message['value'],
+       '#description' => $this->t('Define a message to be displayed above the site map.'),
+-    );
++    ];
+ 
+-    $form['site_map_content'] = array(
++    $form['site_map_content'] = [
+       '#type' => 'details',
+       '#title' => $this->t('Site map content'),
+       '#open' => TRUE,
+-    );
+-    $site_map_ordering = array();
+-    $form['site_map_content']['show_front'] = array(
++    ];
++    $site_map_ordering = [];
++    $form['site_map_content']['show_front'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Show front page'),
+       '#default_value' => $config->get('show_front'),
+       '#description' => $this->t('When enabled, this option will include the front page in the site map.'),
+-    );
++    ];
+     $site_map_ordering['front'] = t('Front page');
+-    $form['site_map_content']['show_titles'] = array(
++    $form['site_map_content']['show_titles'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Show titles'),
+       '#default_value' => $config->get('show_titles'),
+       '#description' => $this->t('When enabled, this option will show titles. Disable to not show section titles.'),
+-    );
++    ];
+ 
+     if ($this->moduleHandler->moduleExists('blog')) {
+-      $form['site_map_content']['show_blogs'] = array(
++      $form['site_map_content']['show_blogs'] = [
+         '#type' => 'checkbox',
+         '#title' => t('Show active blog authors'),
+         '#default_value' => $config->get('show_blogs'),
+         '#description' => t('When enabled, this option will show the 10 most active blog authors.'),
+-      );
++      ];
+       $site_map_ordering['blogs'] = t('Active blog authors');
+     }
+ 
+     if ($this->moduleHandler->moduleExists('book')) {
+-      $book_options = array();
++      $book_options = [];
+       foreach ($this->bookManager->getAllBooks() as $book) {
+         $book_options[$book['bid']] = $book['title'];
+       }
+-      $form['site_map_content']['show_books'] = array(
++      $form['site_map_content']['show_books'] = [
+         '#type' => 'checkboxes',
+         '#title' => $this->t('Books to include in the site map'),
+         '#default_value' => $config->get('show_books'),
+         '#options' => $book_options,
+         '#multiple' => TRUE,
+-      );
+-      $form['site_map_content']['books_expanded'] = array(
++      ];
++      $form['site_map_content']['books_expanded'] = [
+         '#type' => 'checkbox',
+         '#title' => $this->t('Show books expanded'),
+         '#default_value' => $config->get('books_expanded'),
+         '#description' => $this->t('When enabled, this option will show all children pages for each book.'),
+-      );
++      ];
+       $site_map_ordering['books'] = t('Books');
+     }
+ 
+-    $menu_options = array();
++    $menu_options = [];
+     $menus = Menu::loadMultiple();
+     foreach ($menus as $id => $menu) {
+       $menu_options[$id] = $menu->label();
+       $site_map_ordering['menus_' . $id] = $menu->label();
+     }
+-    $form['site_map_content']['show_menus'] = array(
++    $form['site_map_content']['show_menus'] = [
+       '#type' => 'checkboxes',
+       '#title' => $this->t('Menus to include in the site map'),
+       '#default_value' => $config->get('show_menus'),
+       '#options' => $menu_options,
+-    );
++    ];
+     // Thanks for fix by zhuber at
+     // https://drupal.org/node/1331104#comment-5200266.
+-    $form['site_map_content']['show_menus_hidden'] = array(
++    $form['site_map_content']['show_menus_hidden'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Show disabled menu items'),
+       '#default_value' => $config->get('show_menus_hidden'),
+       '#description' => $this->t('When enabled, hidden menu links will also be shown.'),
+-    );
++    ];
+ 
+     if ($this->moduleHandler->moduleExists('faq')) {
+-      $form['site_map_content']['show_faq'] = array(
++      $form['site_map_content']['show_faq'] = [
+         '#type' => 'checkbox',
+         '#title' => $this->t('Show FAQ content'),
+         '#default_value' => $config->get('show_faq'),
+         '#description' => $this->t('When enabled, this option will include the content from the FAQ module in the site map.'),
+-      );
++      ];
+       $site_map_ordering['faq'] = t('FAQ content');
+     }
+ 
+     if ($this->moduleHandler->moduleExists('taxonomy')) {
+-      $vocab_options = array();
++      $vocab_options = [];
+       foreach (taxonomy_vocabulary_load_multiple() as $vocabulary) {
+         $vocab_options[$vocabulary->id()] = $vocabulary->label();
+         $site_map_ordering['vocabularies_' . $vocabulary->id()] = $vocabulary->label();
+       }
+-      $form['site_map_content']['show_vocabularies'] = array(
++      $form['site_map_content']['show_vocabularies'] = [
+         '#type' => 'checkboxes',
+         '#title' => $this->t('Vocabularies to include in the site map'),
+         '#default_value' => $config->get('show_vocabularies'),
+         '#options' => $vocab_options,
+         '#multiple' => TRUE,
+-      );
++      ];
+     }
+ 
+-    $form['site_map_content']['order'] = array(
++    $form['site_map_content']['order'] = [
+       '#type' => 'item',
+       '#title' => t('Site map order'),
+       '#theme' => 'site_map_order',
+-    );
++    ];
+     $site_map_order_defaults = $config->get('order');
+     foreach ($site_map_ordering as $content_id => $content_title) {
+-      $form['site_map_content']['order'][$content_id] = array(
+-        'content' => array(
++      $form['site_map_content']['order'][$content_id] = [
++        'content' => [
+           '#markup' => $content_title,
+-        ),
+-        'weight' => array(
++        ],
++        'weight' => [
+           '#type' => 'weight',
+-          '#title' => t('Weight for @title', array('@title' => $content_title)),
++          '#title' => t('Weight for @title', ['@title' => $content_title]),
+           '#title_display' => 'invisible',
+           '#delta' => 50,
+           '#default_value' => isset($site_map_order_defaults[$content_id]) ? $site_map_order_defaults[$content_id] : -50,
+-          '#parents' => array('order', $content_id),
+-        ),
++          '#parents' => ['order', $content_id],
++        ],
+         '#weight' => isset($site_map_order_defaults[$content_id]) ? $site_map_order_defaults[$content_id] : -50,
+-      );
++      ];
+     }
+ 
+-    $form['site_map_taxonomy_options'] = array(
++    $form['site_map_taxonomy_options'] = [
+       '#type' => 'details',
+       '#title' => $this->t('Taxonomy settings'),
+-    );
+-    $form['site_map_taxonomy_options']['show_description'] = array(
++    ];
++    $form['site_map_taxonomy_options']['show_description'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Show vocabulary description'),
+       '#default_value' => $config->get('show_description'),
+       '#description' => $this->t('When enabled, this option will show the vocabulary description.'),
+-    );
+-    $form['site_map_taxonomy_options']['show_count'] = array(
++    ];
++    $form['site_map_taxonomy_options']['show_count'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Show node counts by taxonomy terms'),
+       '#default_value' => $config->get('show_count'),
+       '#description' => $this->t('When enabled, this option will show the number of nodes in each taxonomy term.'),
+-    );
+-    $form['site_map_taxonomy_options']['vocabulary_depth'] = array(
++    ];
++    $form['site_map_taxonomy_options']['vocabulary_depth'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Vocabulary depth'),
+       '#default_value' => $config->get('vocabulary_depth'),
+       '#size' => 3,
+       '#maxlength' => 10,
+       '#description' => $this->t('Specify how many levels taxonomy terms should be included. Enter "-1" to include all terms, "0" not to include terms at all, or "1" to only include top-level terms.'),
+-    );
+-    $form['site_map_taxonomy_options']['term_threshold'] = array(
++    ];
++    $form['site_map_taxonomy_options']['term_threshold'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Term count threshold'),
+       '#default_value' => $config->get('term_threshold'),
+       '#size' => 3,
+       '#description' => $this->t('Only show taxonomy terms whose node counts are greater than this threshold. Set to -1 to disable.'),
+-    );
++    ];
+     if ($this->moduleHandler->moduleExists('forum')) {
+-      $form['site_map_taxonomy_options']['forum_threshold'] = array(
++      $form['site_map_taxonomy_options']['forum_threshold'] = [
+         '#type' => 'textfield',
+         '#title' => $this->t('Forum count threshold'),
+         '#default_value' => $config->get('forum_threshold'),
+         '#size' => 3,
+         '#description' => $this->t('Only show forums whose node counts are greater than this threshold. Set to -1 to disable.'),
+-      );
++      ];
+     }
+ 
+-    $form['site_map_rss_options'] = array(
++    $form['site_map_rss_options'] = [
+       '#type' => 'details',
+       '#title' => $this->t('RSS settings'),
+-    );
+-    $form['site_map_rss_options']['rss_front'] = array(
++    ];
++    $form['site_map_rss_options']['rss_front'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('RSS feed for front page'),
+       '#default_value' => $config->get('rss_front'),
+       '#description' => $this->t('The RSS feed for the front page, default is rss.xml.'),
+-    );
+-    $form['site_map_rss_options']['show_rss_links'] = array(
++    ];
++    $form['site_map_rss_options']['show_rss_links'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Include RSS links'),
+       '#default_value' => $config->get('show_rss_links'),
+-      '#options' => array(
++      '#options' => [
+         0 => $this->t('None'),
+         1 => $this->t('Include on the right side'),
+         2 => $this->t('Include on the left side'),
+-      ),
++      ],
+       '#description' => $this->t('When enabled, this option will show links to the RSS feeds for the front page and taxonomy terms, if enabled.'),
+-    );
+-    $form['site_map_rss_options']['rss_taxonomy'] = array(
++    ];
++    $form['site_map_rss_options']['rss_taxonomy'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('RSS depth for vocabularies'),
+       '#default_value' => $config->get('rss_taxonomy'),
+       '#size' => 3,
+       '#maxlength' => 10,
+       '#description' => $this->t('Specify how many RSS feed links should be displayed with taxonomy terms. Enter "-1" to include with all terms, "0" not to include with any terms, or "1" to show only for top-level taxonomy terms.'),
+-    );
++    ];
+ 
+-    $form['site_map_css_options'] = array(
++    $form['site_map_css_options'] = [
+       '#type' => 'details',
+       '#title' => $this->t('CSS settings'),
+-    );
+-    $form['site_map_css_options']['css'] = array(
++    ];
++    $form['site_map_css_options']['css'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Do not include site map CSS file'),
+       '#default_value' => $config->get('css'),
+       '#description' => $this->t("If you don't want to load the included CSS file you can check this box."),
+-    );
++    ];
+ 
+     // Make use of the Checkall module if it's installed.
+     if ($this->moduleHandler->moduleExists('checkall')) {
+@@ -322,10 +322,10 @@ class SitemapSettingsForm extends ConfigFormBase {
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+     $config = $this->configFactory->getEditable('site_map.settings');
+ 
+-    $keys = array(
++    $keys = [
+       'page_title',
+-      array('message', 'value'),
+-      array('message', 'format'),
++      ['message', 'value'],
++      ['message', 'format'],
+       'show_front',
+       'show_titles',
+       'show_menus',
+@@ -341,7 +341,7 @@ class SitemapSettingsForm extends ConfigFormBase {
+       'rss_taxonomy',
+       'css',
+       'order',
+-    );
++    ];
+ 
+     if ($this->moduleHandler->moduleExists('book')) {
+       $keys[] = 'show_books';
+diff --git a/src/Menu/MenuLinkTree.php b/src/Menu/MenuLinkTree.php
+index 396800f..299c3e8 100644
+--- a/src/Menu/MenuLinkTree.php
++++ b/src/Menu/MenuLinkTree.php
+@@ -30,8 +30,8 @@ class MenuLinkTree extends CoreMenuLinkTree {
+    */
+   public function buildForSiteMap(array $tree) {
+     $config = \Drupal::config('site_map.settings');
+-    $build = array();
+-    $items = array();
++    $build = [];
++    $items = [];
+ 
+     // Pull out just the menu links we are going to render so that we
+     // get an accurate count for the first/last classes.
+@@ -47,7 +47,7 @@ class MenuLinkTree extends CoreMenuLinkTree {
+ 
+     $num_items = count($items);
+     foreach ($items as $i => $data) {
+-      $class = array();
++      $class = [];
+       if ($i == 0) {
+         $class[] = 'first';
+       }
+@@ -67,7 +67,7 @@ class MenuLinkTree extends CoreMenuLinkTree {
+       else {
+         $class[] = 'leaf';
+       }
+-      $localized_options = array();
++      $localized_options = [];
+       // Set a class if the link is in the active trail.
+       if ($data->inActiveTrail) {
+         $class[] = 'active-trail';
+@@ -87,7 +87,7 @@ class MenuLinkTree extends CoreMenuLinkTree {
+       $element['#title'] = $link->getTitle();
+       $element['#url'] = $link->getUrlObject();
+       $element['#localized_options'] = $localized_options;
+-      $element['#below'] = $data->subtree ? $this->buildForSiteMap($data->subtree) : array();
++      $element['#below'] = $data->subtree ? $this->buildForSiteMap($data->subtree) : [];
+       if (isset($data->options)) {
+         $element['#url']->setOptions(NestedArray::mergeDeep($element['#url']->getOptions(), $data->options));
+       }
+diff --git a/src/Plugin/Block/SitemapSyndicateBlock.php b/src/Plugin/Block/SitemapSyndicateBlock.php
+index c8c2492..9a5fbbd 100644
+--- a/src/Plugin/Block/SitemapSyndicateBlock.php
++++ b/src/Plugin/Block/SitemapSyndicateBlock.php
+@@ -22,12 +22,12 @@ class SitemapSyndicateBlock extends BlockBase {
+    * {@inheritdoc}
+    */
+   public function defaultConfiguration() {
+-    return array(
+-      'cache' => array(
++    return [
++      'cache' => [
+         // No caching.
+         'max_age' => 0,
+-      ),
+-    );
++      ],
++    ];
+   }
+ 
+   /**
+@@ -45,9 +45,9 @@ class SitemapSyndicateBlock extends BlockBase {
+     $route_name = \Drupal::routeMatch()->getRouteName();
+ 
+     if ($route_name == 'blog.user_rss') {
+-      $feedurl = Url::fromRoute('blog.user_rss', array(
++      $feedurl = Url::fromRoute('blog.user_rss', [
+         'user' => \Drupal::routeMatch()->getParameter('user'),
+-      ));
++      ]);
+     }
+     elseif ($route_name == 'blog.blog_rss') {
+       $feedurl = Url::fromRoute('blog.blog_rss');
+@@ -56,24 +56,24 @@ class SitemapSyndicateBlock extends BlockBase {
+       $feedurl = $config->get('rss_front');
+     }
+ 
+-    $feed_icon = array(
++    $feed_icon = [
+       '#theme' => 'feed_icon',
+       '#url' => $feedurl,
+       '#title' => t('Syndicate'),
+-    );
++    ];
+     $output = drupal_render($feed_icon);
+     // Re-use drupal core's render element.
+-    $more_link = array(
++    $more_link = [
+       '#type' => 'more_link',
+       '#url' => Url::fromRoute('site_map.page'),
+-      '#attributes' => array('title' => t('View the site map to see more RSS feeds.')),
+-    );
++      '#attributes' => ['title' => t('View the site map to see more RSS feeds.')],
++    ];
+     $output .= drupal_render($more_link);
+ 
+-    return array(
++    return [
+       '#type' => 'markup',
+       '#markup' => $output,
+-    );
++    ];
+   }
+ 
+ }
+diff --git a/src/SiteMapHelper.php b/src/SiteMapHelper.php
+index 2c7a2b1..e553ce9 100644
+--- a/src/SiteMapHelper.php
++++ b/src/SiteMapHelper.php
+@@ -60,10 +60,10 @@ class SiteMapHelper {
+    */
+   public function getTerms($voc) {
+     $output = '';
+-    $options = array();
++    $options = [];
+ 
+     if (\Drupal::moduleHandler()->moduleExists('taxonomy') && !empty($voc)) {
+-      //@TODO: Test translations in core
++      // @TODO: Test translations in core
+       if (\Drupal::moduleHandler()->moduleExists('i18n_taxonomy')) {
+         $voc->name = i18n_taxonomy_vocabulary_name($voc, $GLOBALS['language']->language);
+       }
+@@ -90,12 +90,12 @@ class SiteMapHelper {
+    */
+   public function getTaxonomyTree($vid, $name = NULL, $description = NULL) {
+     $output = '';
+-    $options = array();
+-    $class = array();
++    $options = [];
++    $class = [];
+     $config = \Drupal::config('site_map.settings');
+ 
+     if (\Drupal::service('module_handler')->moduleExists('forum') && $vid == \Drupal::config('forum.settings')->get('forum_nav_vocabulary')) {
+-      //@TODO: Forum support
++      // @TODO: Forum support
+       $title = \Drupal::l($name, Url::fromRoute('forum.index'));
+       $threshold = $config->get('forum_threshold');
+       $forum_link = TRUE;
+@@ -106,14 +106,14 @@ class SiteMapHelper {
+       $forum_link = FALSE;
+     }
+ 
+-    //@TODO: Remove unused code
++    // @TODO: Remove unused code
+     if (\Drupal::service('module_handler')->moduleExists('commentrss') && \Drupal::config('commentrss.settings')->get('commentrss_term')) {
+-      $feed_icon = array(
++      $feed_icon = [
+         '#theme' => 'site_map_feed_icon',
+         '#url' => "crss/vocab/$vid",
+         '#name' => $name,
+         '#type' => 'comment',
+-      );
++      ];
+       $title .= ' ' . drupal_render($feed_icon);
+     }
+ 
+@@ -155,16 +155,16 @@ class SiteMapHelper {
+       $output .= "\n<li>";
+       $term_item = '';
+       if ($forum_link) {
+-        $term_item .= \Drupal::l($term->name, Url::fromRoute('forum.page', array('taxonomy_term' => $term->tid), array('attributes' => array('title' => $term->description__value))));
++        $term_item .= \Drupal::l($term->name, Url::fromRoute('forum.page', ['taxonomy_term' => $term->tid], ['attributes' => ['title' => $term->description__value]]));
+       }
+       elseif ($term->count) {
+-        $term_item .= \Drupal::l($term->name, Url::fromRoute('entity.taxonomy_term.canonical', array('taxonomy_term' => $term->tid), array('attributes' => array('title' => $term->description__value))));
++        $term_item .= \Drupal::l($term->name, Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $term->tid], ['attributes' => ['title' => $term->description__value]]));
+       }
+       else {
+         $term_item .= $term->name;
+       }
+       if ($config->get('show_count')) {
+-        //@TODO figure out updated implementation of format_plural
++        // @TODO figure out updated implementation of format_plural
+         // $span_title = format_plural($term->count, '1 item has this term', '@count items have this term')
+         $span_title = '';
+         $term_item .= " <span title=\"" . $span_title . "\">(" . $term->count . ")</span>";
+@@ -173,21 +173,21 @@ class SiteMapHelper {
+       // RSS depth.
+       $rss_depth = $config->get('rss_taxonomy');
+       if ($config->get('show_rss_links') != 0 && ($rss_depth == -1 || $term->depth < $rss_depth)) {
+-        $feed_icon = array(
++        $feed_icon = [
+           '#theme' => 'site_map_feed_icon',
+           '#url' => 'taxonomy/term/' . $term->tid . '/feed',
+           '#name' => $term->name,
+-        );
++        ];
+         $rss_link = drupal_render($feed_icon);
+ 
+         // @TODO: Cleanup unused code
+         if (\Drupal::service('module_handler')->moduleExists('commentrss') && \Drupal::config('commentrss.settings')->get('commentrss_term')) {
+-          $feed_icon = array(
++          $feed_icon = [
+             '#theme' => 'site_map_feed_icon',
+             '#url' => "crss/term/$term->tid",
+             '#type' => 'comment',
+             '#name' => $term->name . ' comments',
+-          );
++          ];
+           $rss_link .= drupal_render($feed_icon);
+         }
+         if ($config->get('show_rss_links') == 1) {
+@@ -200,7 +200,7 @@ class SiteMapHelper {
+       }
+ 
+       // Add an alter hook for modules to manipulate the taxonomy term output.
+-      \Drupal::moduleHandler()->alter(array('site_map_taxonomy_term', 'site_map_taxonomy_term_' . $term->tid), $term_item, $term);
++      \Drupal::moduleHandler()->alter(['site_map_taxonomy_term', 'site_map_taxonomy_term_' . $term->tid], $term_item, $term);
+ 
+       $output .= $term_item;
+ 
+@@ -218,15 +218,15 @@ class SiteMapHelper {
+ 
+     $class[] = 'site-map-box-terms';
+     $class[] = 'site-map-box-terms-' . $vid;
+-    $attributes = array('class' => $class);
++    $attributes = ['class' => $class];
+ 
+-    $site_map_box = array(
++    $site_map_box = [
+       '#theme' => 'site_map_box',
+       '#title' => $title,
+-      '#content' => array('#markup' => $output),
++      '#content' => ['#markup' => $output],
+       '#attributes' => $attributes,
+       '#options' => $options,
+-    );
++    ];
+ 
+     return $site_map_box;
+   }
+diff --git a/src/Tests/SiteMapCategoriesTest.php b/src/Tests/SiteMapCategoriesTest.php
+index ff6da70..3814020 100644
+--- a/src/Tests/SiteMapCategoriesTest.php
++++ b/src/Tests/SiteMapCategoriesTest.php
+@@ -21,9 +21,9 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+ 
+     // Configure module to show categories.
+     $vid = $this->vocabulary->id();
+-    $edit = array(
++    $edit = [
+       "show_vocabularies[$vid]" => $vid,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+   }
+ 
+@@ -36,9 +36,9 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+     $this->assertText($this->vocabulary->description, 'Category description is included.');
+ 
+     // Configure module not to show category description.
+-    $edit = array(
++    $edit = [
+       'show_description' => FALSE,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that category description is not included in the site map.
+@@ -52,12 +52,12 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+   public function testNodeCountsByCategory() {
+     // Create dummy node.
+     $title = $this->randomString();
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $title,
+       'menu[enabled]' => TRUE,
+       'menu[title]' => $title,
+       $this->field_tags_name => implode(',', $this->tags),
+-    );
++    ];
+     $this->drupalPostForm('node/add/article', $edit, t('Save and publish'));
+ 
+     // Assert that node counts are included in the site map by default.
+@@ -65,9 +65,9 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+     $this->assertEqual(substr_count($this->getTextContent(), '(1)'), 3, 'Node counts are included');
+ 
+     // Configure module to hide node counts.
+-    $edit = array(
++    $edit = [
+       'show_count' => FALSE,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that node counts are not included in the site map.
+@@ -80,7 +80,7 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+    */
+   public function testCategoriesDepth() {
+     $terms = $this->createTerms($this->vocabulary);
+-    $tags = array();
++    $tags = [];
+ 
+     // Get tags from terms.
+     foreach ($terms as $term) {
+@@ -95,18 +95,18 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+ 
+     // Create dummy node.
+     $title = $this->randomString();
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $title,
+       'menu[enabled]' => TRUE,
+       'menu[title]' => $title,
+       $this->field_tags_name => implode(',', $tags),
+-    );
++    ];
+     $this->drupalPostForm('node/add/article', $edit, t('Save and publish'));
+ 
+     // Change vocabulary depth to -1.
+-    $edit = array(
++    $edit = [
+       'vocabulary_depth' => -1,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that all tags are listed in the site map.
+@@ -116,9 +116,9 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+     }
+ 
+     // Change vocabulary depth to 0.
+-    $edit = array(
++    $edit = [
+       'vocabulary_depth' => 0,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that no tags are listed in the site map.
+@@ -128,9 +128,9 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+     }
+ 
+     // Change vocabulary depth to 1.
+-    $edit = array(
++    $edit = [
+       'vocabulary_depth' => 1,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that only tag 1 is listed in the site map.
+@@ -140,9 +140,9 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+     $this->assertNoLink($tags[2]);
+ 
+     // Change vocabulary depth to 2.
+-    $edit = array(
++    $edit = [
+       'vocabulary_depth' => 2,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that tag 1 and tag 2 are listed in the site map.
+@@ -152,9 +152,9 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+     $this->assertNoLink($tags[2]);
+ 
+     // Change vocabulary depth to 3.
+-    $edit = array(
++    $edit = [
+       'vocabulary_depth' => 3,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that all tags are listed in the site map.
+@@ -174,7 +174,7 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+    */
+   public function testCategoryCountThreshold() {
+     $terms = $this->createTerms($this->vocabulary);
+-    $tags = array();
++    $tags = [];
+ 
+     // Get tags from terms.
+     foreach ($terms as $term) {
+@@ -191,12 +191,12 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+     // + tag 1 (1)
+     // |-- tag 2 (0)
+     // |---- tag 3 (1)
+-    $this->createNode(array($tags[0], $tags[2]));
++    $this->createNode([$tags[0], $tags[2]]);
+ 
+     // Change category count threshold to -1.
+-    $edit = array(
++    $edit = [
+       'term_threshold' => -1,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that all tags are listed in the site map.
+@@ -207,9 +207,9 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+     $this->assertLink($tags[2]);
+ 
+     // Change category count threshold to 0.
+-    $edit = array(
++    $edit = [
+       'term_threshold' => 0,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that all tags are listed in the site map.
+@@ -219,9 +219,9 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+     $this->assertNoText($tags[2]);
+ 
+     // Change category count threshold to 1.
+-    $edit = array(
++    $edit = [
+       'term_threshold' => 1,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that only tag 1 is listed in the site map.
+@@ -243,9 +243,9 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+     $this->assertNoText($tags[2]);
+ 
+     // Change category count threshold to 2.
+-    $edit = array(
++    $edit = [
+       'term_threshold' => 2,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that no tags are listed in the site map.
+@@ -261,13 +261,14 @@ class SiteMapCategoriesTest extends SiteMapTestBase {
+    * @param array $tags
+    *   Tags to assign to node.
+    */
+-  protected function createNode($tags = array()) {
++  protected function createNode($tags = []) {
+     $title = $this->randomString();
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $title,
+       'menu[title]' => $title,
+       $this->field_tags_name => implode(',', $tags),
+-    );
++    ];
+     $this->drupalPostForm('node/add/article', $edit, t('Save and publish'));
+   }
++
+ }
+diff --git a/src/Tests/SiteMapContentTest.php b/src/Tests/SiteMapContentTest.php
+index 139e148..185fd43 100644
+--- a/src/Tests/SiteMapContentTest.php
++++ b/src/Tests/SiteMapContentTest.php
+@@ -19,9 +19,9 @@ class SiteMapContentTest extends SiteMapTestBase {
+ 
+     // Change page title.
+     $new_title = $this->randomMachineName();
+-    $edit = array(
++    $edit = [
+       'page_title' => $new_title,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that page title is changed.
+@@ -40,9 +40,9 @@ class SiteMapContentTest extends SiteMapTestBase {
+ 
+     // Change site map message.
+     $new_message = $this->randomMachineName(16);
+-    $edit = array(
++    $edit = [
+       'message[value]' => $new_message,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert site map message is included in the site map.
+@@ -61,9 +61,9 @@ class SiteMapContentTest extends SiteMapTestBase {
+     $this->assertEqual(count($elements), 1, 'Front page is included.');
+ 
+     // Configure module to hide front page.
+-    $edit = array(
++    $edit = [
+       'show_front' => FALSE,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that front page is not included in the site map.
+@@ -82,9 +82,9 @@ class SiteMapContentTest extends SiteMapTestBase {
+     $this->assertTrue(count($elements) > 0, 'Titles are included.');
+ 
+     // Configure module to hide titles.
+-    $edit = array(
++    $edit = [
+       'show_titles' => FALSE,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that titles are not included in the site map.
+@@ -103,41 +103,41 @@ class SiteMapContentTest extends SiteMapTestBase {
+     $this->assertEqual(count($elements), 0, 'Main menu is not included.');
+ 
+     // Configure module to show main menu, with enabled menu items only.
+-    $edit = array(
++    $edit = [
+       'show_menus[main]' => 'main',
+       'show_menus_hidden' => FALSE,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Create dummy node with enabled menu item.
+     $node_1_title = $this->randomString();
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $node_1_title,
+       'menu[enabled]' => TRUE,
+       'menu[title]' => $node_1_title,
+       // In oder to make main navigation menu displayed, there must be at least
+       // one child menu item of that menu.
+       'menu[menu_parent]' => 'main:',
+-    );
++    ];
+     $this->drupalPostForm('node/add/article', $edit, t('Save and publish'));
+ 
+     // Create dummy node with disabled menu item.
+     $node_2_title = $this->randomString();
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $node_2_title,
+       'menu[enabled]' => TRUE,
+       'menu[title]' => $node_2_title,
+       'menu[menu_parent]' => 'main:',
+-    );
++    ];
+     $this->drupalPostForm('node/add/article', $edit, t('Save and publish'));
+ 
+     // Disable menu item.
+-    $menu_links = entity_load_multiple_by_properties('menu_link_content', array('title' => $node_2_title));
++    $menu_links = entity_load_multiple_by_properties('menu_link_content', ['title' => $node_2_title]);
+     $menu_link = reset($menu_links);
+     $mlid = $menu_link->id();
+-    $edit = array(
++    $edit = [
+       'enabled[value]' => FALSE,
+-    );
++    ];
+     $this->drupalPostForm("admin/structure/menu/item/$mlid/edit", $edit, t('Save'));
+ 
+     // Assert that main menu is included in the site map.
+@@ -150,9 +150,9 @@ class SiteMapContentTest extends SiteMapTestBase {
+     $this->assertNoLink($node_2_title);
+ 
+     // Configure module to show all menu items.
+-    $edit = array(
++    $edit = [
+       'show_menus_hidden' => TRUE,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that both node 1 and node 2 are listed in the site map.
+@@ -181,19 +181,19 @@ class SiteMapContentTest extends SiteMapTestBase {
+ 
+     // Configure module to show categories.
+     $vid = $vocabulary->id();
+-    $edit = array(
++    $edit = [
+       "show_vocabularies[$vid]" => $vid,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Create dummy node.
+     $title = $this->randomString();
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $title,
+       'menu[enabled]' => TRUE,
+       'menu[title]' => $title,
+       $field_tags_name => implode(',', $tags),
+-    );
++    ];
+     $this->drupalPostForm('node/add/article', $edit, t('Save and publish'));
+ 
+     // Assert that the category is included in the site map.
+@@ -206,4 +206,5 @@ class SiteMapContentTest extends SiteMapTestBase {
+       $this->assertLink($tag);
+     }
+   }
++
+ }
+diff --git a/src/Tests/SiteMapCssTest.php b/src/Tests/SiteMapCssTest.php
+index df49b44..fa6dd26 100644
+--- a/src/Tests/SiteMapCssTest.php
++++ b/src/Tests/SiteMapCssTest.php
+@@ -16,7 +16,7 @@ class SiteMapCssTest extends WebTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array('site_map', 'filter');
++  public static $modules = ['site_map', 'filter'];
+ 
+   /**
+    * {@inheritdoc}
+@@ -25,10 +25,10 @@ class SiteMapCssTest extends WebTestBase {
+     parent::setUp();
+ 
+     // Create user then login.
+-    $this->user = $this->drupalCreateUser(array(
++    $this->user = $this->drupalCreateUser([
+       'administer site configuration',
+       'access site map',
+-    ));
++    ]);
+     $this->drupalLogin($this->user);
+   }
+ 
+@@ -41,16 +41,17 @@ class SiteMapCssTest extends WebTestBase {
+     $this->assertRaw('site_map.theme.css');
+ 
+     // Change module not to include css file.
+-    $edit = array(
++    $edit = [
+       'css' => TRUE,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Clearing the cache is needed for the test.
+-    $this->drupalPostForm('admin/config/development/performance', array(), 'Clear all caches');
++    $this->drupalPostForm('admin/config/development/performance', [], 'Clear all caches');
+ 
+     // Assert that css file is not included.
+     $this->drupalGet('/sitemap');
+     $this->assertNoRaw('site_map.theme.css');
+   }
++
+ }
+diff --git a/src/Tests/SiteMapRssTest.php b/src/Tests/SiteMapRssTest.php
+index 83a84dd..ef373b3 100644
+--- a/src/Tests/SiteMapRssTest.php
++++ b/src/Tests/SiteMapRssTest.php
+@@ -22,9 +22,9 @@ class SiteMapRssTest extends SiteMapTestBase {
+ 
+     // Configure module to show categories.
+     $vid = $this->vocabulary->id();
+-    $edit = array(
++    $edit = [
+       "show_vocabularies[$vid]" => $vid,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+   }
+ 
+@@ -38,9 +38,9 @@ class SiteMapRssTest extends SiteMapTestBase {
+ 
+     // Change RSS feed for front page.
+     $href = Unicode::strtolower($this->randomMachineName());
+-    $edit = array(
++    $edit = [
+       'rss_front' => $href,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that RSS feed for front page has been changed.
+@@ -54,7 +54,7 @@ class SiteMapRssTest extends SiteMapTestBase {
+   public function testIncludeRssLinks() {
+     $terms = $this->createTerms($this->vocabulary);
+     $feed = '/taxonomy/term/@term/feed';
+-    $tags = array();
++    $tags = [];
+ 
+     // Get tags from terms.
+     foreach ($terms as $term) {
+@@ -63,12 +63,12 @@ class SiteMapRssTest extends SiteMapTestBase {
+ 
+     // Create dummy node.
+     $title = $this->randomString();
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $title,
+       'menu[enabled]' => TRUE,
+       'menu[title]' => $title,
+       $this->field_tags_name => implode(',', $tags),
+-    );
++    ];
+     $this->drupalPostForm('node/add/article', $edit, t('Save and publish'));
+ 
+     // Assert that RSS link for front page is included in the site map.
+@@ -77,13 +77,13 @@ class SiteMapRssTest extends SiteMapTestBase {
+ 
+     // Assert that RSS links are included in the site map.
+     foreach ($terms as $term) {
+-      $this->assertLinkByHref(format_string($feed, array('@term' => $term->id())));
++      $this->assertLinkByHref(format_string($feed, ['@term' => $term->id()]));
+     }
+ 
+     // Change module not to include RSS links.
+-    $edit = array(
++    $edit = [
+       'show_rss_links' => 0,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that RSS link for front page is not included in the site map.
+@@ -92,7 +92,7 @@ class SiteMapRssTest extends SiteMapTestBase {
+ 
+     // Assert that RSS links are not included in the site map.
+     foreach ($terms as $term) {
+-      $this->assertNoLinkByHref(format_string($feed, array('@term' => $term->id())));
++      $this->assertNoLinkByHref(format_string($feed, ['@term' => $term->id()]));
+     }
+   }
+ 
+@@ -102,7 +102,7 @@ class SiteMapRssTest extends SiteMapTestBase {
+   public function testRssFeedDepth() {
+     $terms = $this->createTerms($this->vocabulary);
+     $feed = '/taxonomy/term/@term/feed';
+-    $tags = array();
++    $tags = [];
+ 
+     // Get tags from terms.
+     foreach ($terms as $term) {
+@@ -112,78 +112,79 @@ class SiteMapRssTest extends SiteMapTestBase {
+     // Assert that all RSS links are not included in the site map.
+     $this->drupalGet('sitemap');
+     foreach ($terms as $term) {
+-      $this->assertNoLinkByHref(format_string($feed, array('@term' => $term->id())));
++      $this->assertNoLinkByHref(format_string($feed, ['@term' => $term->id()]));
+     }
+ 
+     // Create dummy node.
+     $title = $this->randomString();
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $title,
+       'menu[enabled]' => TRUE,
+       'menu[title]' => $title,
+       $this->field_tags_name => implode(',', $tags),
+-    );
++    ];
+     $this->drupalPostForm('node/add/article', $edit, t('Save and publish'));
+ 
+     // Change RSS feed depth to -1.
+-    $edit = array(
++    $edit = [
+       'rss_depth' => -1,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that all RSS links are included in the site map.
+     $this->drupalGet('sitemap');
+     foreach ($terms as $term) {
+-      $this->assertLinkByHref(format_string($feed, array('@term' => $term->id())));
++      $this->assertLinkByHref(format_string($feed, ['@term' => $term->id()]));
+     }
+ 
+     // Change RSS feed depth to 0.
+-    $edit = array(
++    $edit = [
+       'rss_depth' => 0,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that RSS links are not included in the site map.
+     $this->drupalGet('sitemap');
+     foreach ($terms as $term) {
+-      $this->assertNoLinkByHref(format_string($feed, array('@term' => $term->id())));
++      $this->assertNoLinkByHref(format_string($feed, ['@term' => $term->id()]));
+     }
+ 
+     // Change RSS feed depth to 1.
+-    $edit = array(
++    $edit = [
+       'rss_depth' => 1,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that only RSS feed link for term 1 is included in the site map.
+     $this->drupalGet('sitemap');
+-    $this->assertLinkByHref(format_string($feed, array('@term' => $terms[0]->id())));
+-    $this->assertNoLinkByHref(format_string($feed, array('@term' => $terms[1]->id())));
+-    $this->assertNoLinkByHref(format_string($feed, array('@term' => $terms[2]->id())));
++    $this->assertLinkByHref(format_string($feed, ['@term' => $terms[0]->id()]));
++    $this->assertNoLinkByHref(format_string($feed, ['@term' => $terms[1]->id()]));
++    $this->assertNoLinkByHref(format_string($feed, ['@term' => $terms[2]->id()]));
+ 
+     // Change RSS feed depth to 2.
+-    $edit = array(
++    $edit = [
+       'rss_depth' => 2,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that RSS feed link for term 1 and term 2 is included in the site
+     // map.
+     $this->drupalGet('sitemap');
+-    $this->assertLinkByHref(format_string($feed, array('@term' => $terms[0]->id())));
+-    $this->assertLinkByHref(format_string($feed, array('@term' => $terms[1]->id())));
+-    $this->assertNoLinkByHref(format_string($feed, array('@term' => $terms[2]->id())));
++    $this->assertLinkByHref(format_string($feed, ['@term' => $terms[0]->id()]));
++    $this->assertLinkByHref(format_string($feed, ['@term' => $terms[1]->id()]));
++    $this->assertNoLinkByHref(format_string($feed, ['@term' => $terms[2]->id()]));
+ 
+     // Change RSS feed depth to 3.
+-    $edit = array(
++    $edit = [
+       'rss_depth' => 3,
+-    );
++    ];
+     $this->drupalPostForm('admin/config/search/sitemap', $edit, t('Save configuration'));
+ 
+     // Assert that all RSS links are included in the site map.
+     $this->drupalGet('sitemap');
+     foreach ($terms as $term) {
+-      $this->assertLinkByHref(format_string($feed, array('@term' => $term->id())));
++      $this->assertLinkByHref(format_string($feed, ['@term' => $term->id()]));
+     }
+   }
++
+ }
+diff --git a/src/Tests/SiteMapTestBase.php b/src/Tests/SiteMapTestBase.php
+index b5a2bba..cd7c543 100644
+--- a/src/Tests/SiteMapTestBase.php
++++ b/src/Tests/SiteMapTestBase.php
+@@ -16,7 +16,7 @@ abstract class SiteMapTestBase extends TaxonomyTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array('site_map', 'node', 'menu_ui');
++  public static $modules = ['site_map', 'node', 'menu_ui'];
+ 
+   /**
+    * {@inheritdoc}
+@@ -25,35 +25,35 @@ abstract class SiteMapTestBase extends TaxonomyTestBase {
+     parent::setUp();
+ 
+     // Create filter format.
+-    $restricted_html_format = entity_create('filter_format', array(
++    $restricted_html_format = entity_create('filter_format', [
+       'format' => 'restricted_html',
+       'name' => 'Restricted HTML',
+-      'filters' => array(
+-        'filter_html' => array(
++      'filters' => [
++        'filter_html' => [
+           'status' => TRUE,
+           'weight' => -10,
+-          'settings' => array(
++          'settings' => [
+             'allowed_html' => '<p> <br /> <strong> <a> <em> <h4>',
+-          ),
+-        ),
+-        'filter_autop' => array(
++          ],
++        ],
++        'filter_autop' => [
+           'status' => TRUE,
+           'weight' => 0,
+-        ),
+-        'filter_url' => array(
++        ],
++        'filter_url' => [
+           'status' => TRUE,
+           'weight' => 0,
+-        ),
+-        'filter_htmlcorrector' => array(
++        ],
++        'filter_htmlcorrector' => [
+           'status' => TRUE,
+           'weight' => 10,
+-        ),
+-      ),
+-    ));
++        ],
++      ],
++    ]);
+     $restricted_html_format->save();
+ 
+     // Create user then login.
+-    $this->user = $this->drupalCreateUser(array(
++    $this->user = $this->drupalCreateUser([
+       'administer site configuration',
+       'access site map',
+       'administer menu',
+@@ -61,7 +61,7 @@ abstract class SiteMapTestBase extends TaxonomyTestBase {
+       'create article content',
+       'administer taxonomy',
+       $restricted_html_format->getPermissionName(),
+-    ));
++    ]);
+     $this->drupalLogin($this->user);
+   }
+ 
+@@ -72,11 +72,11 @@ abstract class SiteMapTestBase extends TaxonomyTestBase {
+    *   List of tags.
+    */
+   protected function getTags() {
+-    return array(
++    return [
+       $this->randomMachineName(),
+       $this->randomMachineName(),
+       $this->randomMachineName(),
+-    );
++    ];
+   }
+ 
+   /**
+@@ -89,14 +89,14 @@ abstract class SiteMapTestBase extends TaxonomyTestBase {
+    *   List of tags.
+    */
+   protected function createTerms($vocabulary) {
+-    $terms = array(
++    $terms = [
+       $this->createTerm($vocabulary),
+       $this->createTerm($vocabulary),
+       $this->createTerm($vocabulary),
+-    );
++    ];
+ 
+     // Make term 2 child of term 1, term 3 child of term 2.
+-    $edit = array(
++    $edit = [
+       // Term 1.
+       'terms[tid:' . $terms[0]->id() . ':0][term][tid]' => $terms[0]->id(),
+       'terms[tid:' . $terms[0]->id() . ':0][term][parent]' => 0,
+@@ -114,7 +114,7 @@ abstract class SiteMapTestBase extends TaxonomyTestBase {
+       'terms[tid:' . $terms[2]->id() . ':0][term][parent]' => $terms[1]->id(),
+       'terms[tid:' . $terms[2]->id() . ':0][term][depth]' => 2,
+       'terms[tid:' . $terms[2]->id() . ':0][weight]' => 0,
+-    );
++    ];
+     $this->drupalPostForm('admin/structure/taxonomy/manage/' . $vocabulary->get('vid') . '/overview', $edit, t('Save'));
+ 
+     return $terms;
+@@ -131,34 +131,34 @@ abstract class SiteMapTestBase extends TaxonomyTestBase {
+    */
+   protected function createTaxonomyTermReferenceField($vocabulary) {
+     $field_tags_name = Unicode::strtolower($this->randomMachineName());
+-    $field_storage = entity_create('field_storage_config', array(
++    $field_storage = entity_create('field_storage_config', [
+       'field_name' => $field_tags_name,
+       'entity_type' => 'node',
+       'type' => 'taxonomy_term_reference',
+       'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
+-      'settings' => array(
+-        'allowed_values' => array(
+-          array(
++      'settings' => [
++        'allowed_values' => [
++          [
+             'vocabulary' => $vocabulary->id(),
+             'parent' => '0',
+-          ),
+-        ),
+-      ),
+-    ));
++          ],
++        ],
++      ],
++    ]);
+     $field_storage->save();
+-    entity_create('field_config', array(
++    entity_create('field_config', [
+       'field_storage' => $field_storage,
+       'bundle' => 'article',
+-    ))->save();
++    ])->save();
+     entity_get_form_display('node', 'article', 'default')
+-      ->setComponent($field_tags_name, array(
++      ->setComponent($field_tags_name, [
+         'type' => 'taxonomy_autocomplete',
+-      ))
++      ])
+       ->save();
+     entity_get_display('node', 'article', 'full')
+-      ->setComponent($field_tags_name, array(
++      ->setComponent($field_tags_name, [
+         'type' => 'taxonomy_term_reference_link',
+-      ))
++      ])
+       ->save();
+ 
+     return $field_tags_name;

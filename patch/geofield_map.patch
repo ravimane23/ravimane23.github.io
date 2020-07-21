@@ -1,0 +1,177 @@
+diff --git a/css/geofield_google_map.css b/css/geofield_google_map.css
+index 3aa3d74..828fe2d 100644
+--- a/css/geofield_google_map.css
++++ b/css/geofield_google_map.css
+@@ -46,7 +46,9 @@
+   margin: 4px 0 4px 0;
+ }
+ /* line 40, ../sass/geofield_google_map.scss */
+-.gm-style .gm-style-iw p:first-child, .gm-style .gm-style-iw div:first-child, .gm-style .gm-style-iw .field:first-child {
++.gm-style .gm-style-iw p:first-child,
++.gm-style .gm-style-iw div:first-child,
++.gm-style .gm-style-iw .field:first-child {
+   padding: 2px 0;
+ }
+ /* line 43, ../sass/geofield_google_map.scss */
+diff --git a/css/geofield_map_gmap_formatter.css b/css/geofield_map_gmap_formatter.css
+index 3aa3d74..828fe2d 100644
+--- a/css/geofield_map_gmap_formatter.css
++++ b/css/geofield_map_gmap_formatter.css
+@@ -46,7 +46,9 @@
+   margin: 4px 0 4px 0;
+ }
+ /* line 40, ../sass/geofield_google_map.scss */
+-.gm-style .gm-style-iw p:first-child, .gm-style .gm-style-iw div:first-child, .gm-style .gm-style-iw .field:first-child {
++.gm-style .gm-style-iw p:first-child,
++.gm-style .gm-style-iw div:first-child,
++.gm-style .gm-style-iw .field:first-child {
+   padding: 2px 0;
+ }
+ /* line 43, ../sass/geofield_google_map.scss */
+diff --git a/css/geofield_map_widget.css b/css/geofield_map_widget.css
+index cd5ce0d..487dfe8 100644
+--- a/css/geofield_map_widget.css
++++ b/css/geofield_map_widget.css
+@@ -3,7 +3,8 @@
+   z-index: 1;
+ }
+ /* line 4, ../sass/geofield_map_widget.scss */
+-.geofield-map-widget.leaflet-container .leaflet-top, .geofield-map-widget.leaflet-container .leaflet-bottom {
++.geofield-map-widget.leaflet-container .leaflet-top,
++.geofield-map-widget.leaflet-container .leaflet-bottom {
+   z-index: 400;
+ }
+ 
+diff --git a/js/geofield_map.geocoder.js b/js/geofield_map.geocoder.js
+index 3ea94ca..7d36d7e 100644
+--- a/js/geofield_map.geocoder.js
++++ b/js/geofield_map.geocoder.js
+@@ -1,6 +1,6 @@
+-(function($, Drupal, drupalSettings) {
++(function ($, Drupal, drupalSettings) {
+ 
+-  Drupal.geoFieldMap.query_url_serialize = function(obj, prefix) {
++  Drupal.geoFieldMap.query_url_serialize = function (obj, prefix) {
+     let str = [], p;
+     for (p in obj) {
+       if (obj.hasOwnProperty(p)) {
+@@ -14,31 +14,31 @@
+     return str.join("&");
+   };
+ 
+-  Drupal.geoFieldMap.geocoder_geocode = function(address, providers, options) {
++  Drupal.geoFieldMap.geocoder_geocode = function (address, providers, options) {
+     let base_url = drupalSettings.path.baseUrl;
+     let geocode_path = base_url + 'geocoder/api/geocode';
+     options = Drupal.geoFieldMap.query_url_serialize(options);
+     return $.ajax({
+-      url: geocode_path + '?address=' +  encodeURIComponent(address) + '&geocoder=' + providers + '&' + options,
++      url: geocode_path + '?address=' + encodeURIComponent(address) + '&geocoder=' + providers + '&' + options,
+       type:"GET",
+       contentType:"application/json; charset=utf-8",
+       dataType: "json",
+     });
+   };
+ 
+-  Drupal.geoFieldMap.geocoder_reverse_geocode = function(latlng, providers, options) {
++  Drupal.geoFieldMap.geocoder_reverse_geocode = function (latlng, providers, options) {
+     let base_url = drupalSettings.path.baseUrl;
+     let reverse_geocode_path = base_url + 'geocoder/api/reverse_geocode';
+     options = Drupal.geoFieldMap.query_url_serialize(options);
+     return $.ajax({
+-      url: reverse_geocode_path + '?latlng=' +  latlng + '&geocoder=' + providers + '&' + options,
++      url: reverse_geocode_path + '?latlng=' + latlng + '&geocoder=' + providers + '&' + options,
+       type:"GET",
+       contentType:"application/json; charset=utf-8",
+       dataType: "json",
+     });
+   };
+ 
+-  Drupal.geoFieldMap.map_geocoder_control = function(controlDiv, mapid) {
++  Drupal.geoFieldMap.map_geocoder_control = function (controlDiv, mapid) {
+     let geocoder_settings = drupalSettings.geofield_google_map[mapid].map_settings.map_geocoder.settings;
+     let controlUI = document.createElement('div');
+     controlUI.id = mapid + '--geofield-map--geocoder-control--container';
+@@ -61,7 +61,7 @@
+     return controlSearch;
+   };
+ 
+-  Drupal.geoFieldMap.map_geocoder_control.autocomplete = function(mapid, geocoder_settings, selector, type, map_library) {
++  Drupal.geoFieldMap.map_geocoder_control.autocomplete = function (mapid, geocoder_settings, selector, type, map_library) {
+     let providers = geocoder_settings.providers.toString();
+     let options = geocoder_settings.options;
+     selector.autocomplete({
+@@ -84,8 +84,8 @@
+             }));
+           },
+           // On Reject/Error.
+-          function() {
+-            response(function(){
++          function () {
++            response(function () {
+               return false;
+             });
+           }));
+diff --git a/js/geofield_map_gmap_formatter.js b/js/geofield_map_gmap_formatter.js
+index 3fd8bba..b5accb8 100644
+--- a/js/geofield_map_gmap_formatter.js
++++ b/js/geofield_map_gmap_formatter.js
+@@ -109,7 +109,7 @@
+       let self = this;
+       // Wait until the window load event to try to use the maps library.
+       $(document).ready(function (e) {
+-        _.each(self.googleCallbacks, function(callback) {
++        _.each(self.googleCallbacks, function (callback) {
+           callback.callback();
+         });
+         self.googleCallbacks = [];
+diff --git a/js/geofield_map_widget.js b/js/geofield_map_widget.js
+index b31359a..a68cfde 100644
+--- a/js/geofield_map_widget.js
++++ b/js/geofield_map_widget.js
+@@ -81,7 +81,7 @@
+       let self = this;
+       // Wait until the window load event to try to use the maps library.
+       $(document).ready(function (e) {
+-        _.each(self.googleCallbacks, function(callback) {
++        _.each(self.googleCallbacks, function (callback) {
+           callback.callback();
+         });
+         self.googleCallbacks = [];
+diff --git a/js/geolocation.js b/js/geolocation.js
+index 79d9210..2307813 100755
+--- a/js/geolocation.js
++++ b/js/geolocation.js
+@@ -51,6 +51,4 @@
+     }
+   };
+ 
+-
+ })(jQuery, Drupal);
+-
+diff --git a/js/google_map_markecluster.js b/js/google_map_markecluster.js
+index caf8e63..6e551cc 100644
+--- a/js/google_map_markecluster.js
++++ b/js/google_map_markecluster.js
+@@ -84,7 +84,7 @@
+       let self = this;
+       // Wait until the window load event to try to use the maps library.
+       $(document).ready(function (e) {
+-        _.each(self.googleCallbacks, function(callback) {
++        _.each(self.googleCallbacks, function (callback) {
+           callback.callback();
+         });
+         self.googleCallbacks = [];
+diff --git a/src/Plugin/views/style/GeofieldGoogleMapViewStyle.php b/src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+index 8b19b7d..4bd36d4 100644
+--- a/src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
++++ b/src/Plugin/views/style/GeofieldGoogleMapViewStyle.php
+@@ -944,7 +944,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
+                   $renderedRow = [
+                     $this->view->rowPlugin->render($result),
+                   ];
+-                  $description[]= $this->renderer->renderPlain($renderedRow);
++                  $description[] = $this->renderer->renderPlain($renderedRow);
+                   break;
+ 
+                 case '#rendered_entity_ajax':

@@ -1,0 +1,95 @@
+diff --git a/css/default_paragraphs.widget.css b/css/default_paragraphs.widget.css
+index fc6f5b5..282e15b 100644
+--- a/css/default_paragraphs.widget.css
++++ b/css/default_paragraphs.widget.css
+@@ -1,43 +1,43 @@
+ .field--widget-default-paragraphs th .paragraphs-actions {
+-    float: right;
+-    margin-right: -11px;
++  float: right;
++  margin-right: -11px;
+ }
+ 
+ .field--widget-default-paragraphs .paragraphs-dropbutton-wrapper {
+-    display: inline-flex;
++  display: inline-flex;
+ }
+ 
+ .field--widget-default-paragraphs .dropbutton-wrapper {
+-    width: auto;
+-    margin-right: 0;
+-    padding-right: 0;
++  width: auto;
++  margin-right: 0;
++  padding-right: 0;
+ }
+ 
+ .field--widget-default-paragraphs .dropbutton-widget {
+-    position: static;
++  position: static;
+ }
+ 
+ .field--widget-default-paragraphs .field-multiple-table {
+-    margin-bottom: 10px;
++  margin-bottom: 10px;
+ }
+ 
+ .field--widget-default-paragraphs td {
+-    padding: 10px 0;
++  padding: 10px 0;
+ }
+ 
+ .field--widget-default-paragraphs .field-multiple-drag {
+-    vertical-align: top;
++  vertical-align: top;
+ }
+ 
+ .field--widget-default-paragraphs .draggable .tabledrag-handle {
+-    margin-left: 0;
++  margin-left: 0;
+ }
+ 
+ .field--widget-default-paragraphs .tabledrag-handle .handle {
+-    height: 22px;
++  height: 22px;
+ }
+ 
+ .field--widget-default-paragraphs .delta-order {
+-    padding-right: 10px;
+-    text-align: right;
++  padding-right: 10px;
++  text-align: right;
+ }
+diff --git a/src/Plugin/Field/FieldWidget/DefaultParagraphsWidget.php b/src/Plugin/Field/FieldWidget/DefaultParagraphsWidget.php
+index 28c1cfd..31dcfc6 100644
+--- a/src/Plugin/Field/FieldWidget/DefaultParagraphsWidget.php
++++ b/src/Plugin/Field/FieldWidget/DefaultParagraphsWidget.php
+@@ -71,7 +71,7 @@ class DefaultParagraphsWidget extends ParagraphsWidget implements ContainerFacto
+    *   Event dispatcher service.
+    * @param \Drupal\Core\Entity\EntityDisplayRepositoryInterface $entity_display_repository
+    *   The entity display repository.
+-   * @param \Drupal\Core\Utility\Token $token_service.
++   * @param \Drupal\Core\Utility\Token $token_service
+    *   Token service.
+    */
+   public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EventDispatcherInterface $event_dispatcher, EntityDisplayRepositoryInterface $entity_display_repository, Token $token_service) {
+@@ -190,8 +190,8 @@ class DefaultParagraphsWidget extends ParagraphsWidget implements ContainerFacto
+         ],
+       ],
+       '#element_validate' => [
+-        [$this,  'settingsFormDefaultParagraphsValidate']
+-      ]
++        [$this, 'settingsFormDefaultParagraphsValidate'],
++      ],
+     ];
+ 
+     // We iterate over the allowed paragraph types, if nothing is selected yet.
+@@ -276,7 +276,7 @@ class DefaultParagraphsWidget extends ParagraphsWidget implements ContainerFacto
+         if ($default_paragraph_count > $cardinality) {
+           $form_state->setErrorByName('default_paragraph_types', t('@field field allows you to select not more than @total paragraph types as default.', [
+             '@field' => $field_label,
+-            '@total' => $cardinality
++            '@total' => $cardinality,
+           ]));
+         }
+       }

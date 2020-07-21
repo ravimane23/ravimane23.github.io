@@ -1,0 +1,38 @@
+diff --git a/src/Plugin/better_exposed_filters/filter/DefaultWidget.php b/src/Plugin/better_exposed_filters/filter/DefaultWidget.php
+index 2a5ec2a..7c23f7c 100644
+--- a/src/Plugin/better_exposed_filters/filter/DefaultWidget.php
++++ b/src/Plugin/better_exposed_filters/filter/DefaultWidget.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\better_exposed_filters\Plugin\better_exposed_filters\filter;
+ 
+-use Drupal\Core\Form\FormStateInterface;
+-
+ /**
+  * Default widget implementation.
+  *
+diff --git a/src/Plugin/views/exposed_form/BetterExposedFilters.php b/src/Plugin/views/exposed_form/BetterExposedFilters.php
+index 710e43a..e1c20da 100644
+--- a/src/Plugin/views/exposed_form/BetterExposedFilters.php
++++ b/src/Plugin/views/exposed_form/BetterExposedFilters.php
+@@ -479,7 +479,7 @@ class BetterExposedFilters extends InputRequired {
+       }
+ 
+       // Alter the list of available widgets for this filter.
+-     $this->moduleHandler->alter('better_exposed_filters_display_options', $options, $filter);
++      $this->moduleHandler->alter('better_exposed_filters_display_options', $options, $filter);
+ 
+       // Get a descriptive label for the filter.
+       $label = $this->t('Exposed filter @filter', [
+diff --git a/tests/src/Kernel/BetterExposedFiltersKernelTest.php b/tests/src/Kernel/BetterExposedFiltersKernelTest.php
+index 3bae009..b79e3b6 100644
+--- a/tests/src/Kernel/BetterExposedFiltersKernelTest.php
++++ b/tests/src/Kernel/BetterExposedFiltersKernelTest.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\Tests\better_exposed_filters\Kernel;
+ 
+-use Drupal\Tests\better_exposed_filters\Kernel\BetterExposedFiltersKernelTestBase;
+ use Drupal\views\Views;
+ 
+ /**

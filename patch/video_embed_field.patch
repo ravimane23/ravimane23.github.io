@@ -1,0 +1,173 @@
+diff --git a/js/video-embed-field.colorbox.js b/js/video-embed-field.colorbox.js
+index 76b3809..dd8cb27 100644
+--- a/js/video-embed-field.colorbox.js
++++ b/js/video-embed-field.colorbox.js
+@@ -3,10 +3,10 @@
+  * The video_embed_field colorbox integration.
+  */
+ 
+-(function($) {
++(function ($) {
+   Drupal.behaviors.video_embed_field_colorbox = {
+     attach: function (context, settings) {
+-      $('.video-embed-field-launch-modal', context).once().click(function(e) {
++      $('.video-embed-field-launch-modal', context).once().click(function (e) {
+         // Allow the thumbnail that launches the modal to link to other places
+         // such as video URL, so if the modal is sidestepped things degrade
+         // gracefully.
+diff --git a/js/video-embed-field.lazyLoad.js b/js/video-embed-field.lazyLoad.js
+index b222920..08f79ce 100644
+--- a/js/video-embed-field.lazyLoad.js
++++ b/js/video-embed-field.lazyLoad.js
+@@ -3,10 +3,10 @@
+  * The video_embed_field lazy loading videos.
+  */
+ 
+-(function($) {
++(function ($) {
+   Drupal.behaviors.video_embed_field_lazyLoad = {
+     attach: function (context, settings) {
+-      $('.video-embed-field-lazy', context).once().click(function(e) {
++      $('.video-embed-field-lazy', context).once().click(function (e) {
+         // Swap the lightweight image for the heavy JavaScript.
+         e.preventDefault();
+         var $el = $(this);
+diff --git a/modules/video_embed_media/tests/src/Kernel/DefaultNameTest.php b/modules/video_embed_media/tests/src/Kernel/DefaultNameTest.php
+index 7150373..9e9e077 100644
+--- a/modules/video_embed_media/tests/src/Kernel/DefaultNameTest.php
++++ b/modules/video_embed_media/tests/src/Kernel/DefaultNameTest.php
+@@ -22,7 +22,7 @@ class DefaultNameTest extends MediaKernelTestBase {
+   /**
+    * The created media type.
+    *
+-   * @var \Drupal\media\Entity\MediaType;
++   * @var \Drupal\media\Entity\MediaType
+    */
+   protected $entityType;
+ 
+diff --git a/modules/video_embed_media/tests/src/Kernel/ProvidedFieldsTest.php b/modules/video_embed_media/tests/src/Kernel/ProvidedFieldsTest.php
+index b7ef9e8..def2a90 100644
+--- a/modules/video_embed_media/tests/src/Kernel/ProvidedFieldsTest.php
++++ b/modules/video_embed_media/tests/src/Kernel/ProvidedFieldsTest.php
+@@ -23,7 +23,7 @@ class ProvidedFieldsTest extends MediaKernelTestBase {
+   /**
+    * The created media type.
+    *
+-   * @var \Drupal\media\Entity\MediaType;
++   * @var \Drupal\media\Entity\MediaType
+    */
+   protected $entityType;
+ 
+diff --git a/src/Plugin/Field/FieldFormatter/LazyLoad.php b/src/Plugin/Field/FieldFormatter/LazyLoad.php
+index 5bba79a..1311246 100644
+--- a/src/Plugin/Field/FieldFormatter/LazyLoad.php
++++ b/src/Plugin/Field/FieldFormatter/LazyLoad.php
+@@ -109,7 +109,7 @@ class LazyLoad extends FormatterBase implements ContainerFactoryPluginInterface
+         '#type' => 'html_tag',
+         '#tag' => 'button',
+         '#attributes' => [
+-          'class' => ['video-embed-field-lazy-play']
++          'class' => ['video-embed-field-lazy-play'],
+         ],
+       ];
+       $element[$delta] = [
+diff --git a/src/Plugin/video_embed_field/Provider/Vimeo.php b/src/Plugin/video_embed_field/Provider/Vimeo.php
+index 70c7f6b..863725a 100644
+--- a/src/Plugin/video_embed_field/Provider/Vimeo.php
++++ b/src/Plugin/video_embed_field/Provider/Vimeo.php
+@@ -66,7 +66,7 @@ class Vimeo extends ProviderPluginBase {
+   /**
+    * Get the time index from the URL.
+    *
+-   * @return string|FALSE
++   * @return string|false
+    *   A time index parameter to pass to the frame or FALSE if none is found.
+    */
+   protected function getTimeIndex() {
+diff --git a/src/Plugin/video_embed_field/Provider/YouTube.php b/src/Plugin/video_embed_field/Provider/YouTube.php
+index 224edd2..b7bacd8 100644
+--- a/src/Plugin/video_embed_field/Provider/YouTube.php
++++ b/src/Plugin/video_embed_field/Provider/YouTube.php
+@@ -59,7 +59,7 @@ class YouTube extends ProviderPluginBase {
+   /**
+    * Extract the language preference from the URL for use in closed captioning.
+    *
+-   * @return string|FALSE
++   * @return string|false
+    *   The language preference if one exists or FALSE if one could not be found.
+    */
+   protected function getLanguagePreference() {
+diff --git a/src/ProviderPluginBase.php b/src/ProviderPluginBase.php
+index c3c4b0d..ea4c110 100644
+--- a/src/ProviderPluginBase.php
++++ b/src/ProviderPluginBase.php
+@@ -56,7 +56,7 @@ abstract class ProviderPluginBase extends PluginBase implements ProviderPluginIn
+    * @param array $plugin_definition
+    *   The plugin definition.
+    * @param \GuzzleHttp\ClientInterface $http_client
+-   *    An HTTP client.
++   *   An HTTP client.
+    *
+    * @throws \Exception
+    */
+diff --git a/src/ProviderPluginInterface.php b/src/ProviderPluginInterface.php
+index 863feeb..55dd767 100644
+--- a/src/ProviderPluginInterface.php
++++ b/src/ProviderPluginInterface.php
+@@ -1,6 +1,7 @@
+ <?php
+ 
+ namespace Drupal\video_embed_field;
++
+ use Drupal\Component\Plugin\PluginInspectionInterface;
+ 
+ /**
+diff --git a/tests/src/Functional/AutoplayPermissionTest.php b/tests/src/Functional/AutoplayPermissionTest.php
+index e66e038..8cd42ad 100644
+--- a/tests/src/Functional/AutoplayPermissionTest.php
++++ b/tests/src/Functional/AutoplayPermissionTest.php
+@@ -1,6 +1,7 @@
+ <?php
+ 
+ namespace Drupal\Tests\video_embed_field\Functional;
++
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+diff --git a/tests/src/Functional/EntityDisplaySetupTrait.php b/tests/src/Functional/EntityDisplaySetupTrait.php
+index 1673e7a..810ee70 100644
+--- a/tests/src/Functional/EntityDisplaySetupTrait.php
++++ b/tests/src/Functional/EntityDisplaySetupTrait.php
+@@ -1,6 +1,7 @@
+ <?php
+ 
+ namespace Drupal\Tests\video_embed_field\Functional;
++
+ use Drupal\field\Entity\FieldConfig;
+ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
+diff --git a/tests/src/Kernel/FieldOutputTest.php b/tests/src/Kernel/FieldOutputTest.php
+index e3bf7f2..52fc0b9 100644
+--- a/tests/src/Kernel/FieldOutputTest.php
++++ b/tests/src/Kernel/FieldOutputTest.php
+@@ -442,7 +442,7 @@ class FieldOutputTest extends KernelTestBase {
+           '#attributes' => [
+             'class' => [
+               'video-embed-field-provider-vimeo',
+-              'video-embed-field-responsive-video'
++              'video-embed-field-responsive-video',
+             ],
+           ],
+           'children' => [
+diff --git a/tests/src/Kernel/KernelTestBase.php b/tests/src/Kernel/KernelTestBase.php
+index 3276290..8efea60 100644
+--- a/tests/src/Kernel/KernelTestBase.php
++++ b/tests/src/Kernel/KernelTestBase.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\Tests\video_embed_field\Kernel;
+ 
+ use Drupal\Core\Entity\Entity\EntityViewDisplay;
+-use Drupal\Core\File\FileSystemInterface;
+ use Drupal\field\Entity\FieldConfig;
+ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\KernelTests\KernelTestBase as CoreKernelTestBase;

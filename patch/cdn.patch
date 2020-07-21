@@ -1,0 +1,112 @@
+diff --git a/src/CdnFarfutureController.php b/src/CdnFarfutureController.php
+index 5ac6dc9..0d48ee0 100644
+--- a/src/CdnFarfutureController.php
++++ b/src/CdnFarfutureController.php
+@@ -14,6 +14,9 @@ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\HttpFoundation\Response;
+ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+ 
++/**
++ *
++ */
+ class CdnFarfutureController {
+ 
+   /**
+diff --git a/src/EventSubscriber/HtmlResponseSubscriber.php b/src/EventSubscriber/HtmlResponseSubscriber.php
+index f49cbd0..b3af6b9 100644
+--- a/src/EventSubscriber/HtmlResponseSubscriber.php
++++ b/src/EventSubscriber/HtmlResponseSubscriber.php
+@@ -8,6 +8,9 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+ use Symfony\Component\HttpKernel\KernelEvents;
+ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+ 
++/**
++ *
++ */
+ class HtmlResponseSubscriber implements EventSubscriberInterface {
+ 
+   /**
+diff --git a/tests/src/Kernel/CdnStreamWrapperConstraintValidatorTest.php b/tests/src/Kernel/CdnStreamWrapperConstraintValidatorTest.php
+index 17e3ebb..3d0f00f 100644
+--- a/tests/src/Kernel/CdnStreamWrapperConstraintValidatorTest.php
++++ b/tests/src/Kernel/CdnStreamWrapperConstraintValidatorTest.php
+@@ -50,6 +50,9 @@ class CdnStreamWrapperConstraintValidatorTest extends KernelTestBase {
+     $validate->validate($value, $constraint);
+   }
+ 
++  /**
++   *
++   */
+   public function provideTestValidate() {
+     $data = [];
+ 
+diff --git a/tests/src/Unit/CdnSettingsTest.php b/tests/src/Unit/CdnSettingsTest.php
+index 9d5f8b4..2b35e75 100644
+--- a/tests/src/Unit/CdnSettingsTest.php
++++ b/tests/src/Unit/CdnSettingsTest.php
+@@ -25,6 +25,9 @@ class CdnSettingsTest extends UnitTestCase {
+     $this->assertSame($raw_config['scheme'], $cdn_settings->getScheme());
+   }
+ 
++  /**
++   *
++   */
+   public function settingsProvider() {
+     return [
+       'simple, on, no conditions, scheme-relative' => [
+diff --git a/tests/src/Unit/File/FileUrlGeneratorTest.php b/tests/src/Unit/File/FileUrlGeneratorTest.php
+index 7c16ea7..06e5bad 100644
+--- a/tests/src/Unit/File/FileUrlGeneratorTest.php
++++ b/tests/src/Unit/File/FileUrlGeneratorTest.php
+@@ -81,6 +81,9 @@ class FileUrlGeneratorTest extends UnitTestCase {
+     $this->assertSame($expected_result, $gen->generate($uri));
+   }
+ 
++  /**
++   *
++   */
+   public function urlProvider() {
+     $cases_root = [
+       'absolute URL' => ['http://example.com/llama.jpg', FALSE],
+diff --git a/tests/src/Unit/Plugin/Validation/Constraint/CdnDomainConstraintValidatorTest.php b/tests/src/Unit/Plugin/Validation/Constraint/CdnDomainConstraintValidatorTest.php
+index 86d3bad..2f4cfea 100644
+--- a/tests/src/Unit/Plugin/Validation/Constraint/CdnDomainConstraintValidatorTest.php
++++ b/tests/src/Unit/Plugin/Validation/Constraint/CdnDomainConstraintValidatorTest.php
+@@ -45,6 +45,9 @@ class CdnDomainConstraintValidatorTest extends UnitTestCase {
+     $validate->validate($value, $constraint);
+   }
+ 
++  /**
++   *
++   */
+   public function provideTestValidate() {
+     $data = [];
+ 
+diff --git a/tests/src/Unit/Plugin/Validation/Constraint/CdnSchemeConstraintValidatorTest.php b/tests/src/Unit/Plugin/Validation/Constraint/CdnSchemeConstraintValidatorTest.php
+index 6d21e8b..ff77042 100644
+--- a/tests/src/Unit/Plugin/Validation/Constraint/CdnSchemeConstraintValidatorTest.php
++++ b/tests/src/Unit/Plugin/Validation/Constraint/CdnSchemeConstraintValidatorTest.php
+@@ -45,6 +45,9 @@ class CdnSchemeConstraintValidatorTest extends UnitTestCase {
+     $validate->validate($value, $constraint);
+   }
+ 
++  /**
++   *
++   */
+   public function provideTestValidate() {
+     $data = [];
+ 
+diff --git a/tests/src/Unit/StackMiddleware/DuplicateContentPreventionMiddlewareTest.php b/tests/src/Unit/StackMiddleware/DuplicateContentPreventionMiddlewareTest.php
+index 3f26176..2a7ebc2 100644
+--- a/tests/src/Unit/StackMiddleware/DuplicateContentPreventionMiddlewareTest.php
++++ b/tests/src/Unit/StackMiddleware/DuplicateContentPreventionMiddlewareTest.php
+@@ -62,6 +62,9 @@ class DuplicateContentPreventionMiddlewareTest extends UnitTestCase {
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function duplicateContentPreventionProvider() {
+     // @codingStandardsIgnoreStart
+     return [

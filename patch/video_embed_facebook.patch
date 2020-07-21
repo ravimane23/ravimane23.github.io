@@ -1,0 +1,19 @@
+diff --git a/tests/src/Unit/ProviderUrlParseTest.php b/tests/src/Unit/ProviderUrlParseTest.php
+index 649cfc6..3a2855c 100755
+--- a/tests/src/Unit/ProviderUrlParseTest.php
++++ b/tests/src/Unit/ProviderUrlParseTest.php
+@@ -51,7 +51,7 @@ class ProviderUrlParseTest extends UnitTestCase {
+       ],
+       [
+         'https://www.facebook.com/Departement.Gironde/videos/1112970215438894',
+-        '1112970215438894'
++        '1112970215438894',
+       ],
+       [
+         'https://www.facebook.com/CoD3Rs/videos/123123',
+@@ -79,4 +79,5 @@ class ProviderUrlParseTest extends UnitTestCase {
+       ],
+     ];
+   }
++
+ }

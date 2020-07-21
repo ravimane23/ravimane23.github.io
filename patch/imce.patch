@@ -1,0 +1,331 @@
+diff --git a/css/imce.css b/css/imce.css
+index cc9a2f3..517c582 100644
+--- a/css/imce.css
++++ b/css/imce.css
+@@ -626,7 +626,7 @@
+   display: flex;
+ }
+ 
+-.thumbnail-grid .imce-content-header .imce-item > *{
++.thumbnail-grid .imce-content-header .imce-item > * {
+   float: none;
+   text-align: left;
+   display: inline-block;
+@@ -644,7 +644,7 @@
+   margin-right: auto;
+ }
+ 
+-.thumbnail-grid .imce-content-header .imce-item .imce-item-name::before{
++.thumbnail-grid .imce-content-header .imce-item .imce-item-name::before {
+   content: "Sort by:   ";
+   color: black;
+   margin-right: 3px;
+@@ -667,14 +667,14 @@
+   padding: 1px 2px;
+ }
+ 
+-.thumbnail-grid .imce-folder-content .imce-item .imce-item-height{
++.thumbnail-grid .imce-folder-content .imce-item .imce-item-height {
+   display: inline-block;
+ }
+ 
+-.thumbnail-grid .imce-folder-content .imce-item .imce-item-height::after{
++.thumbnail-grid .imce-folder-content .imce-item .imce-item-height::after {
+   content: " X ";
+ }
+ 
+-.thumbnail-grid .imce-folder-content .imce-item .imce-item-width{
++.thumbnail-grid .imce-folder-content .imce-item .imce-item-width {
+   display: inline-block;
+ }
+diff --git a/css/imce.icons.css b/css/imce.icons.css
+index bc32d5e..45d0607 100644
+--- a/css/imce.icons.css
++++ b/css/imce.icons.css
+@@ -2,9 +2,9 @@
+   font-family: 'imce-icons';
+   src:url('fonts/imce-icons.eot?-7jpipx');
+   src:url('fonts/imce-icons.eot?#iefix-7jpipx') format('embedded-opentype'),
+-    url('fonts/imce-icons.woff?-7jpipx') format('woff'),
+-    url('fonts/imce-icons.ttf?-7jpipx') format('truetype'),
+-    url('fonts/imce-icons.svg?-7jpipx#imce-icons') format('svg');
++  url('fonts/imce-icons.woff?-7jpipx') format('woff'),
++  url('fonts/imce-icons.ttf?-7jpipx') format('truetype'),
++  url('fonts/imce-icons.svg?-7jpipx#imce-icons') format('svg');
+   font-weight: normal;
+   font-style: normal;
+ }
+diff --git a/js/imce.Folder.js b/js/imce.Folder.js
+index 40c54c2..11e97dc 100644
+--- a/js/imce.Folder.js
++++ b/js/imce.Folder.js
+@@ -743,7 +743,6 @@
+     return size;
+   };
+ 
+-
+   /**
+    * Click event for branch name.
+    */
+@@ -752,7 +751,6 @@
+     return false;
+   };
+ 
+-
+   /**
+    * Click event for branch toggle.
+    */
+diff --git a/js/imce.Item.js b/js/imce.Item.js
+index 522c101..cadeeb0 100644
+--- a/js/imce.Item.js
++++ b/js/imce.Item.js
+@@ -377,7 +377,6 @@
+     this.heightEl.title = height;
+   };
+ 
+-
+   /**
+    * Creates preview element.
+    */
+@@ -470,11 +469,10 @@
+   /**
+    * Check if the item can be used as an image source.
+    */
+-  Item.isImageSource = function() {
++  Item.isImageSource = function () {
+     return this.width || this.ext && this.ext.toLowerCase() === 'svg';
+   };
+ 
+-
+   /**
+    * Mousedown event for items.
+    */
+diff --git a/js/imce.Tbb.js b/js/imce.Tbb.js
+index dc68b96..55dac53 100644
+--- a/js/imce.Tbb.js
++++ b/js/imce.Tbb.js
+@@ -177,7 +177,6 @@
+     }
+   };
+ 
+-
+   /**
+    * Click event for toolbar buttons.
+    */
+diff --git a/js/imce.filefield.js b/js/imce.filefield.js
+index 3bb349e..76a7fd2 100644
+--- a/js/imce.filefield.js
++++ b/js/imce.filefield.js
+@@ -74,7 +74,6 @@
+     win.close();
+   };
+ 
+-
+   /**
+    * Returns allowed extensions for a field.
+    */
+diff --git a/js/imce.input.js b/js/imce.input.js
+index 4e2ac2f..0e19864 100644
+--- a/js/imce.input.js
++++ b/js/imce.input.js
+@@ -14,7 +14,7 @@
+       $('.imce-url-input', context).not('.imce-url-processed').addClass('imce-url-processed').each(imceInput.processUrlInput);
+     }
+   };
+-  
++
+   /**
+    * Global container for integration helpers.
+    */
+@@ -23,7 +23,7 @@
+     /**
+      * Processes an url input.
+      */
+-    processUrlInput: function(i, el) {
++    processUrlInput: function (i, el) {
+       var button = imceInput.createUrlButton(el.id, el.getAttribute('data-imce-type'));
+       el.parentNode.insertBefore(button, el);
+     },
+@@ -31,7 +31,7 @@
+     /**
+      * Creates an url input button.
+      */
+-    createUrlButton: function(inputId, inputType) {
++    createUrlButton: function (inputId, inputType) {
+       var button = document.createElement('a');
+       button.href = '#';
+       button.className = 'imce-url-button';
+@@ -45,7 +45,7 @@
+     /**
+      * Click event of an url button.
+      */
+-    urlButtonClick: function(e) {
++    urlButtonClick: function (e) {
+       var url = Drupal.url('imce');
+       url += (url.indexOf('?') === -1 ? '?' : '&') + 'sendto=imceInput.urlSendto&inputId=' + this.InputId + '&type=' + this.InputType;
+       // Focus on input before opening the window
+@@ -57,7 +57,7 @@
+     /**
+      * Sendto handler for an url input.
+      */
+-    urlSendto: function(File, win) {
++    urlSendto: function (File, win) {
+       var url = File.getUrl();
+       var el = $('#' + win.imce.getQuery('inputId'))[0];
+       win.close();
+@@ -65,7 +65,7 @@
+         $(el).val(url).change().focus();
+       }
+     }
+-  
++
+   };
+ 
+ })(jQuery, Drupal);
+diff --git a/js/imce.js b/js/imce.js
+index 82e942a..17055b5 100644
+--- a/js/imce.js
++++ b/js/imce.js
+@@ -274,7 +274,6 @@
+     return value == null ? defaultValue : value;
+   };
+ 
+-
+   /**
+    * Returns a copy of selected items.
+    */
+@@ -390,7 +389,7 @@
+     }
+     // Load missing uuids
+     return imce.ajaxItems('uuid', missing, {
+-      customComplete: function(xhr, status) {
++      customComplete: function (xhr, status) {
+         var path;
+         var Item;
+         var response = this.response;
+@@ -521,7 +520,6 @@
+     }
+   };
+ 
+-
+   /**
+    * Updates the active sort state in the content header.
+    */
+@@ -589,7 +587,6 @@
+     }
+   };
+ 
+-
+   /**
+    * Returns name filtering regexp.
+    */
+@@ -761,7 +758,6 @@
+     return true;
+   };
+ 
+-
+   /**
+    * Keydown event for the file manager.
+    */
+@@ -1057,7 +1053,6 @@
+     }
+   };
+ 
+-
+   /**
+    * Binds an handler by type.
+    */
+@@ -1106,7 +1101,6 @@
+     return ret;
+   };
+ 
+-
+   /**
+    * Adds a shortcut handler to an area.
+    */
+@@ -1167,7 +1161,6 @@
+     return imce.shortcuts[area];
+   };
+ 
+-
+   /**
+    * Builds a shortcut string from an event.
+    */
+@@ -1242,7 +1235,6 @@
+     return (0 in arguments) ? symbols[key] : symbols;
+   };
+ 
+-
+   /**
+    * Creates an ajax request for a specific operation.
+    */
+@@ -1440,7 +1432,6 @@
+     return Item.getPath();
+   };
+ 
+-
+   /**
+    * Set a status message.
+    */
+@@ -1562,7 +1553,6 @@
+     return el;
+   };
+ 
+-
+   /**
+    * Checks a permission in a folder conf.
+    */
+@@ -1942,7 +1932,6 @@
+     }
+   };
+ 
+-
+   /**
+    * Bind drag drop callbacks to the document
+    */
+diff --git a/js/plugins/ckeditor/imce.ckeditor.js b/js/plugins/ckeditor/imce.ckeditor.js
+index 7dc94be..7d6a0f9 100644
+--- a/js/plugins/ckeditor/imce.ckeditor.js
++++ b/js/plugins/ckeditor/imce.ckeditor.js
+@@ -85,7 +85,7 @@
+       }
+       var selection = imce.getSelection();
+       var is_img = imce.getQuery('type') === 'image';
+-      var process = function() {
++      var process = function () {
+         var i;
+         var text;
+         var lines = [];
+diff --git a/js/plugins/imce/imce.UploadQueue.js b/js/plugins/imce/imce.UploadQueue.js
+index 17b89e2..fb19fb9 100644
+--- a/js/plugins/imce/imce.UploadQueue.js
++++ b/js/plugins/imce/imce.UploadQueue.js
+@@ -203,7 +203,6 @@
+     });
+   };
+ 
+-
+   /**
+    * Upload queue item constructor.
+    */
+@@ -330,7 +329,6 @@
+     $(this.el).find('.imce-uqi-percent').text(Drupal.t('!percent%', {'!percent': percent * 1})).end().find('.imce-uqi-bar').css('width', percent * 1 + '%');
+   };
+ 
+-
+   /**
+    * Change event of upload queue input
+    */
+diff --git a/tests/src/Kernel/Form/ImceSettingsFormTest.php b/tests/src/Kernel/Form/ImceSettingsFormTest.php
+index 8a0e63b..f6b2226 100644
+--- a/tests/src/Kernel/Form/ImceSettingsFormTest.php
++++ b/tests/src/Kernel/Form/ImceSettingsFormTest.php
+@@ -80,7 +80,7 @@ class ImceSettingsFormTest extends KernelTestBase {
+    */
+   public function testBuildRolesProfilesTable() {
+     $this->assertTrue(is_array(
+-      $this->imceSettingsForm->buildRolesProfilesTable($this->imceConfig->get('roles_profiles')  ?: [])
++      $this->imceSettingsForm->buildRolesProfilesTable($this->imceConfig->get('roles_profiles') ?: [])
+     ));
+   }
+ 

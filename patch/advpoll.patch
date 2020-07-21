@@ -1,0 +1,117 @@
+diff --git a/src/AdvPollPostRenderCache.php b/src/AdvPollPostRenderCache.php
+index 7c153fc..5599763 100644
+--- a/src/AdvPollPostRenderCache.php
++++ b/src/AdvPollPostRenderCache.php
+@@ -53,13 +53,14 @@ class AdvPollPostRenderCache {
+         $poll_type = $poll->field_poll_type->value;
+       }
+ 
+-      switch($poll_type) {
++      switch ($poll_type) {
+         case 'approval':
+           $form_object = \Drupal::service('class_resolver')->getInstanceFromDefinition('Drupal\advpoll\Form\ApprovalPollViewForm');
+           break;
++
+         default:
+-      $form_object = \Drupal::service('class_resolver')->getInstanceFromDefinition('Drupal\poll\Form\PollViewForm');
+-        break;
++          $form_object = \Drupal::service('class_resolver')->getInstanceFromDefinition('Drupal\poll\Form\PollViewForm');
++          break;
+       }
+       $form_object->setPoll($poll);
+       return \Drupal::formBuilder()->getForm($form_object, \Drupal::request(), $view_mode);
+diff --git a/src/Form/ApprovalPollViewForm.php b/src/Form/ApprovalPollViewForm.php
+index cba3295..118bb1e 100644
+--- a/src/Form/ApprovalPollViewForm.php
++++ b/src/Form/ApprovalPollViewForm.php
+@@ -3,11 +3,7 @@
+ namespace Drupal\advpoll\Form;
+ 
+ use Drupal\poll\Form\PollViewForm;
+-use Drupal\Core\Ajax\AjaxResponse;
+-use Drupal\Core\Ajax\ReplaceCommand;
+ use Drupal\Core\Form\BaseFormIdInterface;
+-use Drupal\Core\Form\FormBase;
+-use Drupal\Core\Form\FormBuilderInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\poll\PollInterface;
+ use Symfony\Component\HttpFoundation\Request;
+@@ -85,12 +81,12 @@ class ApprovalPollViewForm extends PollViewForm implements BaseFormIdInterface {
+     else {
+       $options = $this->poll->getOptions();
+       if ($options) {
+-        $form['choice'] = array(
++        $form['choice'] = [
+           '#type' => 'checkboxes',
+           '#title' => t('Choices'),
+           '#title_display' => 'invisible',
+           '#options' => $options,
+-        );
++        ];
+       }
+       $form['#theme'] = 'poll_vote';
+       $form['#entity'] = $this->poll;
+@@ -109,14 +105,13 @@ class ApprovalPollViewForm extends PollViewForm implements BaseFormIdInterface {
+ 
+     $form['actions'] = $this->actions($form, $form_state, $this->poll);
+ 
+-    $form['#cache'] = array(
++    $form['#cache'] = [
+       'tags' => $this->poll->getCacheTags(),
+-    );
++    ];
+ 
+     return $form;
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -124,9 +119,6 @@ class ApprovalPollViewForm extends PollViewForm implements BaseFormIdInterface {
+ 
+   }
+ 
+-
+-
+-
+   /**
+    * Cancel vote submit function.
+    *
+@@ -139,10 +131,10 @@ class ApprovalPollViewForm extends PollViewForm implements BaseFormIdInterface {
+     /** @var \Drupal\poll\PollVoteStorageInterface $vote_storage */
+     $vote_storage = \Drupal::service('poll_vote.storage');
+     $vote_storage->cancelVote($this->poll, $this->currentUser());
+-    \Drupal::logger('poll')->notice('%user\'s vote in Poll #%poll deleted.', array(
++    \Drupal::logger('poll')->notice('%user\'s vote in Poll #%poll deleted.', [
+       '%user' => $this->currentUser()->id(),
+       '%poll' => $this->poll->id(),
+-    ));
++    ]);
+     drupal_set_message($this->t('Your vote was cancelled.'));
+ 
+     // In case of an ajax submission, trigger a form rebuild so that we can
+@@ -159,13 +151,13 @@ class ApprovalPollViewForm extends PollViewForm implements BaseFormIdInterface {
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+    */
+   public function save(array $form, FormStateInterface $form_state) {
+-    $options = array();
++    $options = [];
+     $choices = $form_state->getValue('choice');
+     // Save vote.
+     /** @var \Drupal\poll\PollVoteStorage $vote_storage */
+     $vote_storage = \Drupal::service('poll_vote.storage');
+ 
+-    foreach($choices as $index => $choice) {
++    foreach ($choices as $index => $choice) {
+       if ($choice) {
+         $options['chid'] = $index;
+         $options['uid'] = $this->currentUser()->id();
+@@ -173,7 +165,6 @@ class ApprovalPollViewForm extends PollViewForm implements BaseFormIdInterface {
+         $options['hostname'] = \Drupal::request()->getClientIp();
+         $options['timestamp'] = time();
+ 
+-
+         $vote_storage->saveVote($options);
+       }
+     }

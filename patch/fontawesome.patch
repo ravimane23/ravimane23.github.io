@@ -1,0 +1,13 @@
+diff --git a/js/plugins/drupalfontawesome/plugin.es6.js b/js/plugins/drupalfontawesome/plugin.es6.js
+index 169f681..978109d 100644
+--- a/js/plugins/drupalfontawesome/plugin.es6.js
++++ b/js/plugins/drupalfontawesome/plugin.es6.js
+@@ -57,7 +57,7 @@
+           };
+ 
+           // Open the dialog for the edit form.
+-          Drupal.ckeditor.openDialog(execEditor, Drupal.url(`fontawesome/dialog/icon/${execEditor.config.drupal.format}`), {}, saveCallback, dialogSettings);
++          Drupal.ckeditor.openDialog(execEditor, Drupal.url(`fontawesome / dialog / icon / ${execEditor.config.drupal.format}`), {}, saveCallback, dialogSettings);
+         },
+       });
+ 

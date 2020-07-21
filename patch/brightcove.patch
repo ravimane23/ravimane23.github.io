@@ -1,0 +1,51 @@
+diff --git a/js/video.js b/js/video.js
+index b28b056..1902148 100644
+--- a/js/video.js
++++ b/js/video.js
+@@ -9,19 +9,19 @@
+       var submitButtons = $('input[type="submit"]');
+       var isFileField = false;
+ 
+-      $('input[type="file"]').mousedown(function() {
++      $('input[type="file"]').mousedown(function () {
+         isFileField = true;
+       });
+ 
+       // Disable buttons while the uploading is running.
+-      $(document).ajaxStart(function(event) {
++      $(document).ajaxStart(function (event) {
+         if (isFileField) {
+           submitButtons.prop('disabled', true);
+         }
+       });
+ 
+       // Enable buttons after the upload is finished.
+-      $(document).ajaxStop(function() {
++      $(document).ajaxStop(function () {
+         if (isFileField) {
+           submitButtons.prop('disabled', false);
+           isFileField = false;
+diff --git a/src/Entity/BrightcovePlaylist.php b/src/Entity/BrightcovePlaylist.php
+index b1502cd..602aa7d 100644
+--- a/src/Entity/BrightcovePlaylist.php
++++ b/src/Entity/BrightcovePlaylist.php
+@@ -808,7 +808,6 @@ class BrightcovePlaylist extends BrightcoveVideoPlaylistCmsEntity implements Bri
+         $playlist_entity->setVideos($videos);
+       }
+       // @TODO: State/published.
+-
+       $playlist_entity->save();
+     }
+   }
+diff --git a/src/Entity/BrightcoveVideo.php b/src/Entity/BrightcoveVideo.php
+index 99f5da2..5c5fec5 100644
+--- a/src/Entity/BrightcoveVideo.php
++++ b/src/Entity/BrightcoveVideo.php
+@@ -1252,7 +1252,6 @@ class BrightcoveVideo extends BrightcoveVideoPlaylistCmsEntity implements Bright
+       ->setDisplayConfigurable('view', TRUE);
+ 
+     // @TODO: Folder
+-
+     $fields['video_file'] = BaseFieldDefinition::create('file')
+       ->setLabel(t('Video source'))
+       ->setSettings([

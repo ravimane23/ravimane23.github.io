@@ -1,0 +1,76 @@
+diff --git a/js/entity_embed.dialog.js b/js/entity_embed.dialog.js
+index 42a94b0..695deae 100644
+--- a/js/entity_embed.dialog.js
++++ b/js/entity_embed.dialog.js
+@@ -47,7 +47,7 @@
+       $(this).attr('target', '_blank');
+       window.open(this.href, 'entityPreview', 'toolbar=0,scrollbars=1,location=1,statusbar=1,menubar=0,resizable=1');
+     },
+-    selectionCompleted: function(event, uuid, entities) {
++    selectionCompleted: function (event, uuid, entities) {
+       $('.entity-select-dialog .js-button-next').click();
+     }
+   };
+diff --git a/js/plugins/drupalentity/plugin.js b/js/plugins/drupalentity/plugin.js
+index aa620e6..67c04ed 100644
+--- a/js/plugins/drupalentity/plugin.js
++++ b/js/plugins/drupalentity/plugin.js
+@@ -203,7 +203,7 @@
+           }
+         },
+ 
+-        destroy: function() {
++        destroy: function () {
+           this._tearDownDynamicEditables();
+         },
+ 
+@@ -322,7 +322,7 @@
+           jQuery.get({
+             url: Drupal.url('entity-embed/preview/' + editor.config.drupal.format + '?text=' + encodeURIComponent(this.downcast().getOuterHtml())),
+             dataType: 'html',
+-          }).done(function(previewHtml) {
++          }).done(function (previewHtml) {
+             widget.element.setHtml(previewHtml);
+             callback(widget);
+           });
+@@ -353,7 +353,7 @@
+             label: button.label,
+             data: button,
+             allowedContent: 'drupal-entity[!data-entity-type,!data-entity-uuid,!data-entity-embed-display,!data-entity-embed-display-settings,!data-align,!data-caption,!data-embed-button,!data-langcode,!alt,!title]',
+-            click: function(editor) {
++            click: function (editor) {
+               editor.execCommand('editdrupalentity', this.data);
+             },
+             icon: button.image,
+@@ -379,7 +379,7 @@
+           });
+         }
+ 
+-        editor.contextMenu.addListener(function(element) {
++        editor.contextMenu.addListener(function (element) {
+           if (isEditableEntityWidget(editor, element)) {
+             var button_id = element.getFirst().getAttribute('data-embed-button');
+             var returnData = {};
+@@ -416,7 +416,7 @@
+    * @param {CKEDITOR.editor} editor
+    * @param {CKEDITOR.htmlParser.element} element
+    */
+-  function isEditableEntityWidget (editor, element) {
++  function isEditableEntityWidget(editor, element) {
+     var widget = editor.widgets.getByElement(element, true);
+     if (!widget || widget.name !== 'drupalentity') {
+       return false;
+diff --git a/tests/src/FunctionalJavascript/SortableTestTrait.php b/tests/src/FunctionalJavascript/SortableTestTrait.php
+index 3d1891a..d2f85c1 100644
+--- a/tests/src/FunctionalJavascript/SortableTestTrait.php
++++ b/tests/src/FunctionalJavascript/SortableTestTrait.php
+@@ -118,6 +118,9 @@ JS;
+     $this->sortableUpdate($item, $from);
+   }
+ 
++  /**
++   *
++   */
+   protected function doLegacyDrag($item, $target) {
+     $assert_session = $this->assertSession();
+     $target = $assert_session->elementExists('css', $target);

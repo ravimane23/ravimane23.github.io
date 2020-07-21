@@ -1,0 +1,1654 @@
+diff --git a/css/jquery.treetable.css b/css/jquery.treetable.css
+index 4e95bfd..5485c58 100644
+--- a/css/jquery.treetable.css
++++ b/css/jquery.treetable.css
+@@ -3,19 +3,16 @@ table.treetable span.indenter {
+   margin: 0;
+   padding: 0;
+   text-align: right;
+-
+   /* Disable text selection of nodes (for better D&D UX) */
+   user-select: none;
+   -khtml-user-select: none;
+   -moz-user-select: none;
+   -o-user-select: none;
+   -webkit-user-select: none;
+-
+   /* Force content-box box model for indenter (Bootstrap compatibility) */
+   -webkit-box-sizing: content-box;
+   -moz-box-sizing: content-box;
+   box-sizing: content-box;
+-
+   width: 19px;
+ }
+ 
+diff --git a/css/token.css b/css/token.css
+index ca201b8..069e207 100644
+--- a/css/token.css
++++ b/css/token.css
+@@ -13,7 +13,8 @@
+   margin-left: 0;
+ }
+ 
+-.token-tree td, .token-tree th {
++.token-tree td,
++.token-tree th {
+   padding-top: 0;
+   padding-bottom: 0;
+ }
+diff --git a/js/jquery.treetable.js b/js/jquery.treetable.js
+index ac9d90a..5899646 100644
+--- a/js/jquery.treetable.js
++++ b/js/jquery.treetable.js
+@@ -5,10 +5,10 @@
+  * Copyright 2013, Ludo van den Boom
+  * Dual licensed under the MIT or GPL Version 2 licenses.
+  */
+-(function($) {
++(function ($) {
+   var Node, Tree, methods;
+ 
+-  Node = (function() {
++  Node = (function () {
+     function Node(row, tree, settings) {
+       var parentId;
+ 
+@@ -33,11 +33,11 @@
+       this.treeCell.prepend(this.indenter);
+     }
+ 
+-    Node.prototype.addChild = function(child) {
++    Node.prototype.addChild = function (child) {
+       return this.children.push(child);
+     };
+ 
+-    Node.prototype.ancestors = function() {
++    Node.prototype.ancestors = function () {
+       var ancestors, node;
+       node = this;
+       ancestors = [];
+@@ -47,7 +47,7 @@
+       return ancestors;
+     };
+ 
+-    Node.prototype.collapse = function() {
++    Node.prototype.collapse = function () {
+       if (this.collapsed()) {
+         return this;
+       }
+@@ -64,13 +64,13 @@
+       return this;
+     };
+ 
+-    Node.prototype.collapsed = function() {
++    Node.prototype.collapsed = function () {
+       return this.row.hasClass("collapsed");
+     };
+ 
+     // TODO destroy: remove event handlers, expander, indenter, etc.
+ 
+-    Node.prototype.expand = function() {
++    Node.prototype.expand = function () {
+       if (this.expanded()) {
+         return this;
+       }
+@@ -90,17 +90,17 @@
+       return this;
+     };
+ 
+-    Node.prototype.expanded = function() {
++    Node.prototype.expanded = function () {
+       return this.row.hasClass("expanded");
+     };
+ 
+-    Node.prototype.hide = function() {
++    Node.prototype.hide = function () {
+       this._hideChildren();
+       this.row.hide();
+       return this;
+     };
+ 
+-    Node.prototype.isBranchNode = function() {
++    Node.prototype.isBranchNode = function () {
+       if(this.children.length > 0 || this.row.data(this.settings.branchAttr) === true) {
+         return true;
+       } else {
+@@ -108,17 +108,17 @@
+       }
+     };
+ 
+-    Node.prototype.updateBranchLeafClass = function(){
++    Node.prototype.updateBranchLeafClass = function () {
+       this.row.removeClass('branch');
+       this.row.removeClass('leaf');
+       this.row.addClass(this.isBranchNode() ? 'branch' : 'leaf');
+     };
+ 
+-    Node.prototype.level = function() {
++    Node.prototype.level = function () {
+       return this.ancestors().length;
+     };
+ 
+-    Node.prototype.parentNode = function() {
++    Node.prototype.parentNode = function () {
+       if (this.parentId != null) {
+         return this.tree[this.parentId];
+       } else {
+@@ -126,18 +126,18 @@
+       }
+     };
+ 
+-    Node.prototype.removeChild = function(child) {
++    Node.prototype.removeChild = function (child) {
+       var i = $.inArray(child, this.children);
+       return this.children.splice(i, 1)
+     };
+ 
+-    Node.prototype.render = function() {
++    Node.prototype.render = function () {
+       var handler,
+           settings = this.settings,
+           target;
+ 
+       if (settings.expandable === true && this.isBranchNode()) {
+-        handler = function(e) {
++        handler = function (e) {
+           $(this).parents("table").treetable("node", $(this).parents("tr").data(settings.nodeIdAttr)).toggle();
+           return e.preventDefault();
+         };
+@@ -146,7 +146,7 @@
+         target = settings.clickableNodeNames === true ? this.treeCell : this.expander;
+ 
+         target.off("click.treetable").on("click.treetable", handler);
+-        target.off("keydown.treetable").on("keydown.treetable", function(e) {
++        target.off("keydown.treetable").on("keydown.treetable", function (e) {
+           if (e.keyCode == 13) {
+             handler.apply(this, [e]);
+           }
+@@ -158,14 +158,14 @@
+       return this;
+     };
+ 
+-    Node.prototype.reveal = function() {
++    Node.prototype.reveal = function () {
+       if (this.parentId != null) {
+         this.parentNode().reveal();
+       }
+       return this.expand();
+     };
+ 
+-    Node.prototype.setParent = function(node) {
++    Node.prototype.setParent = function (node) {
+       if (this.parentId != null) {
+         this.tree[this.parentId].removeChild(this);
+       }
+@@ -174,7 +174,7 @@
+       return node.addChild(this);
+     };
+ 
+-    Node.prototype.show = function() {
++    Node.prototype.show = function () {
+       if (!this.initialized) {
+         this._initialize();
+       }
+@@ -185,7 +185,7 @@
+       return this;
+     };
+ 
+-    Node.prototype.toggle = function() {
++    Node.prototype.toggle = function () {
+       if (this.expanded()) {
+         this.collapse();
+       } else {
+@@ -194,7 +194,7 @@
+       return this;
+     };
+ 
+-    Node.prototype._hideChildren = function() {
++    Node.prototype._hideChildren = function () {
+       var child, _i, _len, _ref, _results;
+       _ref = this.children;
+       _results = [];
+@@ -205,7 +205,7 @@
+       return _results;
+     };
+ 
+-    Node.prototype._initialize = function() {
++    Node.prototype._initialize = function () {
+       var settings = this.settings;
+ 
+       this.render();
+@@ -223,7 +223,7 @@
+       return this.initialized = true;
+     };
+ 
+-    Node.prototype._showChildren = function() {
++    Node.prototype._showChildren = function () {
+       var child, _i, _len, _ref, _results;
+       _ref = this.children;
+       _results = [];
+@@ -237,7 +237,7 @@
+     return Node;
+   })();
+ 
+-  Tree = (function() {
++  Tree = (function () {
+     function Tree(table, settings) {
+       this.table = table;
+       this.settings = settings;
+@@ -248,7 +248,7 @@
+       this.roots = [];
+     }
+ 
+-    Tree.prototype.collapseAll = function() {
++    Tree.prototype.collapseAll = function () {
+       var node, _i, _len, _ref, _results;
+       _ref = this.nodes;
+       _results = [];
+@@ -259,7 +259,7 @@
+       return _results;
+     };
+ 
+-    Tree.prototype.expandAll = function() {
++    Tree.prototype.expandAll = function () {
+       var node, _i, _len, _ref, _results;
+       _ref = this.nodes;
+       _results = [];
+@@ -278,7 +278,7 @@
+       }
+     };
+ 
+-    Tree.prototype.loadRows = function(rows) {
++    Tree.prototype.loadRows = function (rows) {
+       var node, row, i;
+ 
+       if (rows != null) {
+@@ -306,7 +306,7 @@
+       return this;
+     };
+ 
+-    Tree.prototype.move = function(node, destination) {
++    Tree.prototype.move = function (node, destination) {
+       // Conditions:
+       // 1: +node+ should not be inserted as a child of +node+ itself.
+       // 2: +destination+ should not be the same as +node+'s current parent (this
+@@ -336,7 +336,7 @@
+       return this;
+     };
+ 
+-    Tree.prototype.removeNode = function(node) {
++    Tree.prototype.removeNode = function (node) {
+       // Recursively remove all descendants of +node+
+       this.unloadBranch(node);
+ 
+@@ -355,7 +355,7 @@
+       return this;
+     }
+ 
+-    Tree.prototype.render = function() {
++    Tree.prototype.render = function () {
+       var root, _i, _len, _ref;
+       _ref = this.roots;
+       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+@@ -368,7 +368,7 @@
+       return this;
+     };
+ 
+-    Tree.prototype.sortBranch = function(node, sortFun) {
++    Tree.prototype.sortBranch = function (node, sortFun) {
+       // First sort internal array of children
+       node.children.sort(sortFun);
+ 
+@@ -378,7 +378,7 @@
+       return this;
+     };
+ 
+-    Tree.prototype.unloadBranch = function(node) {
++    Tree.prototype.unloadBranch = function (node) {
+       // Use a copy of the children array to not have other functions interfere
+       // with this function if they manipulate the children array
+       // (eg removeNode).
+@@ -397,7 +397,7 @@
+       return this;
+     };
+ 
+-    Tree.prototype._moveRows = function(node, destination) {
++    Tree.prototype._moveRows = function (node, destination) {
+       var children = node.children, i;
+ 
+       node.row.insertAfter(destination.row);
+@@ -411,7 +411,7 @@
+     };
+ 
+     // Special _moveRows case, move children to itself to force sorting
+-    Tree.prototype._sortChildRows = function(parentNode) {
++    Tree.prototype._sortChildRows = function (parentNode) {
+       return this._moveRows(parentNode, parentNode);
+     };
+ 
+@@ -420,7 +420,7 @@
+ 
+   // jQuery Plugin
+   methods = {
+-    init: function(options, force) {
++    init: function (options, force) {
+       var settings;
+ 
+       settings = $.extend({
+@@ -445,7 +445,7 @@
+         onNodeInitialized: null
+       }, options);
+ 
+-      return this.each(function() {
++      return this.each(function () {
+         var el = $(this), tree;
+ 
+         if (force || el.data("treetable") === undefined) {
+@@ -463,18 +463,18 @@
+       });
+     },
+ 
+-    destroy: function() {
+-      return this.each(function() {
++    destroy: function () {
++      return this.each(function () {
+         return $(this).removeData("treetable").removeClass("treetable");
+       });
+     },
+ 
+-    collapseAll: function() {
++    collapseAll: function () {
+       this.data("treetable").collapseAll();
+       return this;
+     },
+ 
+-    collapseNode: function(id) {
++    collapseNode: function (id) {
+       var node = this.data("treetable").tree[id];
+ 
+       if (node) {
+@@ -486,12 +486,12 @@
+       return this;
+     },
+ 
+-    expandAll: function() {
++    expandAll: function () {
+       this.data("treetable").expandAll();
+       return this;
+     },
+ 
+-    expandNode: function(id) {
++    expandNode: function (id) {
+       var node = this.data("treetable").tree[id];
+ 
+       if (node) {
+@@ -507,7 +507,7 @@
+       return this;
+     },
+ 
+-    loadBranch: function(node, rows) {
++    loadBranch: function (node, rows) {
+       var settings = this.data("treetable").settings,
+           tree = this.data("treetable").tree;
+ 
+@@ -524,7 +524,7 @@
+       this.data("treetable").loadRows(rows);
+ 
+       // Make sure nodes are properly initialized
+-      rows.filter("tr").each(function() {
++      rows.filter("tr").each(function () {
+         tree[$(this).data(settings.nodeIdAttr)].show();
+       });
+ 
+@@ -536,7 +536,7 @@
+       return this;
+     },
+ 
+-    move: function(nodeId, destinationId) {
++    move: function (nodeId, destinationId) {
+       var destination, node;
+ 
+       node = this.data("treetable").tree[nodeId];
+@@ -546,11 +546,11 @@
+       return this;
+     },
+ 
+-    node: function(id) {
++    node: function (id) {
+       return this.data("treetable").tree[id];
+     },
+ 
+-    removeNode: function(id) {
++    removeNode: function (id) {
+       var node = this.data("treetable").tree[id];
+ 
+       if (node) {
+@@ -562,7 +562,7 @@
+       return this;
+     },
+ 
+-    reveal: function(id) {
++    reveal: function (id) {
+       var node = this.data("treetable").tree[id];
+ 
+       if (node) {
+@@ -574,7 +574,7 @@
+       return this;
+     },
+ 
+-    sortBranch: function(node, columnOrFunction) {
++    sortBranch: function (node, columnOrFunction) {
+       var settings = this.data("treetable").settings,
+           prepValue,
+           sortFun;
+@@ -583,10 +583,10 @@
+       sortFun = columnOrFunction;
+ 
+       if ($.isNumeric(columnOrFunction)) {
+-        sortFun = function(a, b) {
++        sortFun = function (a, b) {
+           var extractValue, valA, valB;
+ 
+-          extractValue = function(node) {
++          extractValue = function (node) {
+             var val = node.row.find("td:eq(" + columnOrFunction + ")").text();
+             // Ignore trailing/leading whitespace and use uppercase values for
+             // case insensitive ordering
+@@ -596,8 +596,10 @@
+           valA = extractValue(a);
+           valB = extractValue(b);
+ 
+-          if (valA < valB) return -1;
+-          if (valA > valB) return 1;
++          if (valA < valB) { return -1;
++          }
++          if (valA > valB) { return 1;
++          }
+           return 0;
+         };
+       }
+@@ -606,13 +608,13 @@
+       return this;
+     },
+ 
+-    unloadBranch: function(node) {
++    unloadBranch: function (node) {
+       this.data("treetable").unloadBranch(node);
+       return this;
+     }
+   };
+ 
+-  $.fn.treetable = function(method) {
++  $.fn.treetable = function (method) {
+     if (methods[method]) {
+       return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+     } else if (typeof method === 'object' || !method) {
+diff --git a/js/token.js b/js/token.js
+index 3a41d62..6105339 100644
+--- a/js/token.js
++++ b/js/token.js
+@@ -1,4 +1,3 @@
+-
+ (function ($, Drupal, drupalSettings) {
+ 
+   'use strict';
+diff --git a/src/Controller/TokenAutocompleteController.php b/src/Controller/TokenAutocompleteController.php
+index 979f832..1b2ff69 100644
+--- a/src/Controller/TokenAutocompleteController.php
++++ b/src/Controller/TokenAutocompleteController.php
+@@ -18,6 +18,9 @@ class TokenAutocompleteController extends ControllerBase {
+    */
+   protected $treeBuilder;
+ 
++  /**
++   *
++   */
+   public function __construct(TreeBuilderInterface $tree_builder) {
+     $this->treeBuilder = $tree_builder;
+   }
+diff --git a/src/Controller/TokenDevelController.php b/src/Controller/TokenDevelController.php
+index 332bad2..ba3511c 100644
+--- a/src/Controller/TokenDevelController.php
++++ b/src/Controller/TokenDevelController.php
+@@ -24,6 +24,9 @@ class TokenDevelController extends ControllerBase {
+    */
+   protected $entityMapper;
+ 
++  /**
++   *
++   */
+   public function __construct(TreeBuilderInterface $tree_builder, TokenEntityMapperInterface $entity_mapper) {
+     $this->treeBuilder = $tree_builder;
+     $this->entityMapper = $entity_mapper;
+@@ -43,10 +46,10 @@ class TokenDevelController extends ControllerBase {
+    * Prints the loaded structure of the current entity.
+    *
+    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+-   *    A RouteMatch object.
++   *   A RouteMatch object.
+    *
+    * @return array
+-   *    Array of page elements to render.
++   *   Array of page elements to render.
+    */
+   public function entityTokens(RouteMatchInterface $route_match) {
+     $output = [];
+@@ -88,12 +91,11 @@ class TokenDevelController extends ControllerBase {
+         'tokens' => $this->treeBuilder->buildTree($token_type, $options),
+       ],
+     ];
+-//    foreach ($tree as $token => $token_info) {
+-//      if (!isset($token_info['value']) && !empty($token_info['parent']) && !isset($tree[$token_info['parent']]['value'])) {
+-//        continue;
+-//      }
+-//    }
+-
++    // Foreach ($tree as $token => $token_info) {
++    //      if (!isset($token_info['value']) && !empty($token_info['parent']) && !isset($tree[$token_info['parent']]['value'])) {
++    //        continue;
++    //      }
++    //    }.
+     $build['tokens'] = [
+       '#type' => 'token_tree_table',
+       '#show_restricted' => FALSE,
+@@ -106,4 +108,5 @@ class TokenDevelController extends ControllerBase {
+ 
+     return $build;
+   }
++
+ }
+diff --git a/src/Controller/TokenTreeController.php b/src/Controller/TokenTreeController.php
+index 3edf402..65eb130 100644
+--- a/src/Controller/TokenTreeController.php
++++ b/src/Controller/TokenTreeController.php
+@@ -18,6 +18,9 @@ class TokenTreeController extends ControllerBase {
+    */
+   protected $treeBuilder;
+ 
++  /**
++   *
++   */
+   public function __construct(TreeBuilderInterface $tree_builder) {
+     $this->treeBuilder = $tree_builder;
+   }
+@@ -34,7 +37,7 @@ class TokenTreeController extends ControllerBase {
+   /**
+    * Page callback to output a token tree as an empty page.
+    */
+-  function outputTree(Request $request) {
++  public function outputTree(Request $request) {
+     $options = $request->query->has('options') ? Json::decode($request->query->get('options')) : [];
+ 
+     // The option token_types may only be an array OR 'all'. If it is not set,
+diff --git a/src/Element/TokenTreeTable.php b/src/Element/TokenTreeTable.php
+index 6de9c95..8dc22e2 100644
+--- a/src/Element/TokenTreeTable.php
++++ b/src/Element/TokenTreeTable.php
+@@ -108,10 +108,16 @@ class TokenTreeTable extends Table {
+     return $element;
+   }
+ 
++  /**
++   *
++   */
+   protected static function cleanCssIdentifier($id) {
+     return 'token-' . Html::cleanCssIdentifier(trim($id, '[]'), static::$cssFilter);
+   }
+ 
++  /**
++   *
++   */
+   protected static function formatRow($token, $token_info, $columns, $is_group = FALSE) {
+     $row = [
+       'id' => static::cleanCssIdentifier($token),
+@@ -152,4 +158,5 @@ class TokenTreeTable extends Table {
+ 
+     return $row;
+   }
++
+ }
+diff --git a/src/Plugin/Derivative/DevelLocalTask.php b/src/Plugin/Derivative/DevelLocalTask.php
+index 5b22e84..85aa69c 100644
+--- a/src/Plugin/Derivative/DevelLocalTask.php
++++ b/src/Plugin/Derivative/DevelLocalTask.php
+@@ -9,12 +9,18 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\Core\StringTranslation\TranslationInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class DevelLocalTask extends DeriverBase implements ContainerDeriverInterface {
+ 
+   use StringTranslationTrait;
+ 
+   protected $entityTypeManager;
+ 
++  /**
++   *
++   */
+   public function __construct(EntityTypeManagerInterface $entity_type_manager, TranslationInterface $string_translation) {
+     $this->entityTypeManager = $entity_type_manager;
+     $this->stringTranslation = $string_translation;
+@@ -53,4 +59,5 @@ class DevelLocalTask extends DeriverBase implements ContainerDeriverInterface {
+ 
+     return $this->derivatives;
+   }
++
+ }
+diff --git a/src/Routing/RouteSubscriber.php b/src/Routing/RouteSubscriber.php
+index b856f43..23806bd 100644
+--- a/src/Routing/RouteSubscriber.php
++++ b/src/Routing/RouteSubscriber.php
+@@ -24,6 +24,9 @@ class RouteSubscriber extends RouteSubscriberBase {
+    */
+   protected $moduleHandler;
+ 
++  /**
++   *
++   */
+   public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler) {
+     $this->entityTypeManager = $entity_type_manager;
+     $this->moduleHandler = $module_handler;
+@@ -68,7 +71,7 @@ class RouteSubscriber extends RouteSubscriberBase {
+    */
+   public static function getSubscribedEvents() {
+     $events = parent::getSubscribedEvents();
+-    $events[RoutingEvents::ALTER] = array('onAlterRoutes', 100);
++    $events[RoutingEvents::ALTER] = ['onAlterRoutes', 100];
+     return $events;
+   }
+ 
+diff --git a/src/Token.php b/src/Token.php
+index b75af5a..4ace4ca 100644
+--- a/src/Token.php
++++ b/src/Token.php
+@@ -134,7 +134,7 @@ class Token extends TokenBase implements TokenInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  function getInvalidTokens($type, $tokens) {
++  public function getInvalidTokens($type, $tokens) {
+     $token_info = $this->getInfo();
+     $invalid_tokens = [];
+ 
+diff --git a/src/TokenEntityMapper.php b/src/TokenEntityMapper.php
+index 051df8f..09c718b 100644
+--- a/src/TokenEntityMapper.php
++++ b/src/TokenEntityMapper.php
+@@ -29,6 +29,9 @@ class TokenEntityMapper implements TokenEntityMapperInterface {
+    */
+   protected $entityMappings;
+ 
++  /**
++   *
++   */
+   public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler) {
+     $this->entityTypeManager = $entity_type_manager;
+     $this->moduleHandler = $module_handler;
+@@ -52,7 +55,7 @@ class TokenEntityMapper implements TokenEntityMapperInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  function getEntityTypeForTokenType($token_type, $fallback = FALSE) {
++  public function getEntityTypeForTokenType($token_type, $fallback = FALSE) {
+     if (empty($this->entityMappings)) {
+       $this->getEntityTypeMappings();
+     }
+@@ -64,7 +67,7 @@ class TokenEntityMapper implements TokenEntityMapperInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  function getTokenTypeForEntityType($entity_type, $fallback = FALSE) {
++  public function getTokenTypeForEntityType($entity_type, $fallback = FALSE) {
+     if (empty($this->entityMappings)) {
+       $this->getEntityTypeMappings();
+     }
+diff --git a/src/TokenEntityMapperInterface.php b/src/TokenEntityMapperInterface.php
+index 5eb038e..510956a 100644
+--- a/src/TokenEntityMapperInterface.php
++++ b/src/TokenEntityMapperInterface.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\token;
+ 
++/**
++ *
++ */
+ interface TokenEntityMapperInterface {
+ 
+   /**
+@@ -27,7 +30,7 @@ interface TokenEntityMapperInterface {
+    * @see token_entity_info_alter()
+    * @see http://drupal.org/node/737726
+    */
+-  function getEntityTypeForTokenType($token_type, $fallback = FALSE);
++  public function getEntityTypeForTokenType($token_type, $fallback = FALSE);
+ 
+   /**
+    * Return the token type of a particular entity type.
+@@ -44,10 +47,11 @@ interface TokenEntityMapperInterface {
+    * @see token_entity_info_alter()
+    * @see http://drupal.org/node/737726
+    */
+-  function getTokenTypeForEntityType($entity_type, $fallback = FALSE);
++  public function getTokenTypeForEntityType($entity_type, $fallback = FALSE);
+ 
+   /**
+    * Resets metadata describing token and entity mappings.
+    */
+   public function resetInfo();
++
+ }
+diff --git a/src/TokenFieldRender.php b/src/TokenFieldRender.php
+index 95e6c0c..aabe084 100644
+--- a/src/TokenFieldRender.php
++++ b/src/TokenFieldRender.php
+@@ -5,6 +5,9 @@ namespace Drupal\token;
+ use Drupal\Core\Security\TrustedCallbackInterface;
+ use Drupal\Core\Render\Element;
+ 
++/**
++ *
++ */
+ class TokenFieldRender implements TrustedCallbackInterface {
+ 
+   /**
+diff --git a/src/TokenInterface.php b/src/TokenInterface.php
+index 6e023b0..6a190a3 100644
+--- a/src/TokenInterface.php
++++ b/src/TokenInterface.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\token;
+ 
++/**
++ *
++ */
+ interface TokenInterface {
+ 
+   /**
+@@ -54,7 +57,7 @@ interface TokenInterface {
+    * @return string[]
+    *   An array with the invalid tokens in their original raw forms.
+    */
+-  function getInvalidTokens($type, $tokens);
++  public function getInvalidTokens($type, $tokens);
+ 
+   /**
+    * Validate tokens in raw text based on possible contexts.
+@@ -70,4 +73,5 @@ interface TokenInterface {
+    *   An array with the invalid tokens in their original raw forms.
+    */
+   public function getInvalidTokensByContext($value, array $valid_types = []);
++
+ }
+diff --git a/src/TokenServiceProvider.php b/src/TokenServiceProvider.php
+index c855195..da2325a 100644
+--- a/src/TokenServiceProvider.php
++++ b/src/TokenServiceProvider.php
+@@ -17,4 +17,5 @@ class TokenServiceProvider extends ServiceProviderBase {
+     $definition = $container->getDefinition('token');
+     $definition->setClass('\Drupal\token\Token');
+   }
++
+ }
+diff --git a/src/TreeBuilder.php b/src/TreeBuilder.php
+index e5d8799..9a4f122 100644
+--- a/src/TreeBuilder.php
++++ b/src/TreeBuilder.php
+@@ -8,6 +8,9 @@ use Drupal\Core\Language\LanguageManagerInterface;
+ use Drupal\Core\Render\BubbleableMetadata;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ 
++/**
++ *
++ */
+ class TreeBuilder implements TreeBuilderInterface {
+ 
+   use StringTranslationTrait;
+@@ -39,6 +42,9 @@ class TreeBuilder implements TreeBuilderInterface {
+    */
+   protected $builtTrees;
+ 
++  /**
++   *
++   */
+   public function __construct(TokenInterface $token_service, TokenEntityMapperInterface $entity_mapper, CacheBackendInterface $cache_backend, LanguageManagerInterface $language_manager) {
+     $this->tokenService = $token_service;
+     $this->entityMapper = $entity_mapper;
+@@ -73,7 +79,7 @@ class TreeBuilder implements TreeBuilderInterface {
+ 
+     // @todo Find a way to use the render cache for this.
+     /*if ($cached_output = token_render_cache_get($element)) {
+-      return $cached_output;
++    return $cached_output;
+     }*/
+ 
+     $tree_options = [
+@@ -236,7 +242,7 @@ class TreeBuilder implements TreeBuilderInterface {
+         // Prevent duplicate recursive tokens. For example, this will prevent
+         // the tree from generating the following tokens or deeper:
+         // [comment:parent:parent]
+-        // [comment:parent:root:parent]
++        // [comment:parent:root:parent].
+         continue;
+       }
+ 
+@@ -267,4 +273,5 @@ class TreeBuilder implements TreeBuilderInterface {
+ 
+     return $tree;
+   }
++
+ }
+diff --git a/src/TreeBuilderInterface.php b/src/TreeBuilderInterface.php
+index c4212c2..5c7316d 100644
+--- a/src/TreeBuilderInterface.php
++++ b/src/TreeBuilderInterface.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\token;
+ 
++/**
++ *
++ */
+ interface TreeBuilderInterface {
+ 
+   /**
+@@ -76,4 +79,5 @@ interface TreeBuilderInterface {
+    *   Render array for the token tree.
+    */
+   public function buildAllRenderable(array $options = []);
++
+ }
+diff --git a/tests/modules/token_module_test/src/Controller/TokenTreeBrowseController.php b/tests/modules/token_module_test/src/Controller/TokenTreeBrowseController.php
+index 9b2ba08..1f391bf 100644
+--- a/tests/modules/token_module_test/src/Controller/TokenTreeBrowseController.php
++++ b/tests/modules/token_module_test/src/Controller/TokenTreeBrowseController.php
+@@ -5,12 +5,15 @@ namespace Drupal\token_module_test\Controller;
+ use Drupal\Core\Controller\ControllerBase;
+ use Symfony\Component\HttpFoundation\Request;
+ 
++/**
++ *
++ */
+ class TokenTreeBrowseController extends ControllerBase {
+ 
+   /**
+    * Page callback to output a link.
+    */
+-  function outputLink(Request $request) {
++  public function outputLink(Request $request) {
+     $build['tree']['#theme'] = 'token_tree_link';
+     $build['tokenarea'] = [
+       '#markup' => \Drupal::token()->replace('[current-page:title]'),
+diff --git a/tests/modules/token_module_test/token_module_test.tokens.inc b/tests/modules/token_module_test/token_module_test.tokens.inc
+index 3adf457..a2158e9 100644
+--- a/tests/modules/token_module_test/token_module_test.tokens.inc
++++ b/tests/modules/token_module_test/token_module_test.tokens.inc
+@@ -1,5 +1,9 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
+ /**
+  * Implements hook_token_info()
+  */
+diff --git a/tests/src/Functional/TokenBlockTest.php b/tests/src/Functional/TokenBlockTest.php
+index dd01983..9e317b8 100644
+--- a/tests/src/Functional/TokenBlockTest.php
++++ b/tests/src/Functional/TokenBlockTest.php
+@@ -28,12 +28,15 @@ class TokenBlockTest extends TokenTestBase {
+     $this->drupalLogin($this->admin_user);
+   }
+ 
++  /**
++   *
++   */
+   public function testBlockTitleTokens() {
+     $label = 'tokenblock';
+     $bundle = BlockContentType::create([
+       'id' => $label,
+       'label' => $label,
+-      'revision' => FALSE
++      'revision' => FALSE,
+     ]);
+     $bundle->save();
+ 
+@@ -70,4 +73,5 @@ class TokenBlockTest extends TokenTestBase {
+     // The apostraphe should only be escaped once.
+     $this->assertRaw("Site&#039;s first node block title");
+   }
++
+ }
+diff --git a/tests/src/Functional/TokenCurrentPageTest.php b/tests/src/Functional/TokenCurrentPageTest.php
+index 2770cfe..66afc0b 100644
+--- a/tests/src/Functional/TokenCurrentPageTest.php
++++ b/tests/src/Functional/TokenCurrentPageTest.php
+@@ -18,7 +18,10 @@ class TokenCurrentPageTest extends TokenTestBase {
+    */
+   public static $modules = ['node'];
+ 
+-  function testCurrentPageTokens() {
++  /**
++   *
++   */
++  public function testCurrentPageTokens() {
+     // Cache clear is necessary because the frontpage was already cached by an
+     // initial request.
+     $this->rebuildAll();
+@@ -35,7 +38,7 @@ class TokenCurrentPageTest extends TokenTestBase {
+       '[current-page:page-number]' => 1,
+       '[current-page:query:foo]' => NULL,
+       '[current-page:query:bar]' => NULL,
+-      // Deprecated tokens
++      // Deprecated tokens.
+       '[current-page:arg:0]' => 'user',
+       '[current-page:arg:1]' => 'login',
+       '[current-page:arg:2]' => NULL,
+@@ -59,11 +62,12 @@ class TokenCurrentPageTest extends TokenTestBase {
+       '[current-page:page-number]' => 1,
+       '[current-page:query:foo]' => 'bar',
+       '[current-page:query:bar]' => NULL,
+-      // Deprecated tokens
++      // Deprecated tokens.
+       '[current-page:arg:0]' => 'node',
+       '[current-page:arg:1]' => 1,
+       '[current-page:arg:2]' => NULL,
+     ];
+     $this->assertPageTokens("/node/{$node->id()}", $tokens, [], ['url_options' => ['query' => ['foo' => 'bar']]]);
+   }
++
+ }
+diff --git a/tests/src/Functional/TokenFieldUiTest.php b/tests/src/Functional/TokenFieldUiTest.php
+index 40219cc..705b068 100644
+--- a/tests/src/Functional/TokenFieldUiTest.php
++++ b/tests/src/Functional/TokenFieldUiTest.php
+@@ -100,6 +100,9 @@ class TokenFieldUiTest extends TokenTestBase {
+       ->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testFileFieldUi() {
+     $this->drupalGet('admin/structure/types/manage/article/fields/node.article.field_image');
+ 
+@@ -112,6 +115,9 @@ class TokenFieldUiTest extends TokenTestBase {
+     $this->assertText(t('Saved Image configuration.'));
+   }
+ 
++  /**
++   *
++   */
+   public function testFieldDescriptionTokens() {
+     $edit = [
+       'description' => 'The site is called [site:name].',
+@@ -194,7 +200,7 @@ class TokenFieldUiTest extends TokenTestBase {
+     unlink('public://styles/large/public/example2-test.gif');
+ 
+     $tokens = [
+-      // field_image
++      // field_image.
+       'field_image:thumbnail:mimetype' => 'image/png',
+       'field_image:medium:mimetype' => 'image/png',
+       'field_image:large:mimetype' => 'image/png',
+@@ -216,7 +222,7 @@ class TokenFieldUiTest extends TokenTestBase {
+       'field_image:thumbnail' => $style_thumbnail->buildUrl('public://example1.png'),
+       'field_image:medium' => $style_medium->buildUrl('public://example1.png'),
+       'field_image:large' => $style_large->buildUrl('public://example1.png'),
+-      // field_image_2
++      // field_image_2.
+       'field_image_2:thumbnail:mimetype' => 'image/gif',
+       'field_image_2:medium:mimetype' => 'image/gif',
+       'field_image_2:large:mimetype' => 'image/gif',
+diff --git a/tests/src/Functional/TokenMenuTest.php b/tests/src/Functional/TokenMenuTest.php
+index 4c95351..c458eec 100644
+--- a/tests/src/Functional/TokenMenuTest.php
++++ b/tests/src/Functional/TokenMenuTest.php
+@@ -31,7 +31,10 @@ class TokenMenuTest extends TokenTestBase {
+     'content_translation',
+   ];
+ 
+-  function testMenuTokens() {
++  /**
++   *
++   */
++  public function testMenuTokens() {
+     // Make sure we have a body field on the node type.
+     $this->drupalCreateContentType(['type' => 'page']);
+     // Add a menu.
+@@ -99,8 +102,7 @@ class TokenMenuTest extends TokenTestBase {
+     $node = $this->drupalCreateNode();
+ 
+     // Allow main menu for this node type.
+-    //$this->config('menu.entity.node.' . $node->getType())->set('available_menus', ['main-menu'])->save();
+-
++    // $this->config('menu.entity.node.' . $node->getType())->set('available_menus', ['main-menu'])->save();
+     // Add a node menu link.
+     /** @var \Drupal\menu_link_content\MenuLinkContentInterface $node_link */
+     $node_link = MenuLinkContent::create([
+@@ -289,7 +291,7 @@ class TokenMenuTest extends TokenTestBase {
+    * Tests that the module doesn't affect integrity of the menu, when
+    * translating them and that menu links tokens are correct.
+    */
+-  function testMultilingualMenu() {
++  public function testMultilingualMenu() {
+     // Place the menu block.
+     $this->drupalPlaceBlock('system_menu_block:main');
+ 
+@@ -379,11 +381,11 @@ class TokenMenuTest extends TokenTestBase {
+       'menu_name' => 'menu_test',
+     ];
+     $child_1 = $base_options + [
+-        'title' => 'child_1 title EN',
+-        'link' => ['uri' => 'internal:/menu-test/hierarchy/parent/child_1'],
+-        'parent' => $link->getPluginId(),
+-        'langcode' => 'en',
+-      ];
++      'title' => 'child_1 title EN',
++      'link' => ['uri' => 'internal:/menu-test/hierarchy/parent/child_1'],
++      'parent' => $link->getPluginId(),
++      'langcode' => 'en',
++    ];
+     $child_1 = MenuLinkContent::create($child_1);
+     $child_1->save();
+ 
+@@ -410,7 +412,7 @@ class TokenMenuTest extends TokenTestBase {
+     // Create a menu with a simple link hierarchy :
+     // - parent
+     //   - child-1
+-    //      - child-1-1
++    //     - child-1-1.
+     Menu::create([
+       'id' => 'menu_test',
+       'label' => 'Test menu',
+@@ -420,22 +422,22 @@ class TokenMenuTest extends TokenTestBase {
+       'menu_name' => 'menu_test',
+     ];
+     $parent = $base_options + [
+-        'title' => 'parent title',
+-        'link' => ['uri' => 'internal:/menu-test/hierarchy/parent'],
++      'title' => 'parent title',
++      'link' => ['uri' => 'internal:/menu-test/hierarchy/parent'],
+     ];
+     $parent = MenuLinkContent::create($parent);
+     $parent->save();
+     $child_1 = $base_options + [
+-        'title' => 'child_1 title',
+-        'link' => ['uri' => 'internal:/menu-test/hierarchy/parent/child_1'],
+-        'parent' => $parent->getPluginId(),
++      'title' => 'child_1 title',
++      'link' => ['uri' => 'internal:/menu-test/hierarchy/parent/child_1'],
++      'parent' => $parent->getPluginId(),
+     ];
+     $child_1 = MenuLinkContent::create($child_1);
+     $child_1->save();
+     $child_1_1 = $base_options + [
+-        'title' => 'child_1_1 title',
+-        'link' => ['uri' => 'internal:/menu-test/hierarchy/parent/child_1/child_1_1'],
+-        'parent' => $child_1->getPluginId(),
++      'title' => 'child_1_1 title',
++      'link' => ['uri' => 'internal:/menu-test/hierarchy/parent/child_1/child_1_1'],
++      'parent' => $child_1->getPluginId(),
+     ];
+     $child_1_1 = MenuLinkContent::create($child_1_1);
+     $child_1_1->save();
+diff --git a/tests/src/Functional/TokenTestTrait.php b/tests/src/Functional/TokenTestTrait.php
+index 3ea5e3f..2a3c795 100644
+--- a/tests/src/Functional/TokenTestTrait.php
++++ b/tests/src/Functional/TokenTestTrait.php
+@@ -14,11 +14,17 @@ trait TokenTestTrait {
+ 
+   use PathAliasTestTrait;
+ 
+-  function assertToken($type, array $data, $token, $expected, array $options = []) {
++  /**
++   *
++   */
++  public function assertToken($type, array $data, $token, $expected, array $options = []) {
+     return $this->assertTokens($type, $data, [$token => $expected], $options);
+   }
+ 
+-  function assertTokens($type, array $data, array $tokens, array $options = []) {
++  /**
++   *
++   */
++  public function assertTokens($type, array $data, array $tokens, array $options = []) {
+     $input = $this->mapTokenNames($type, array_keys($tokens));
+     $bubbleable_metadata = new BubbleableMetadata();
+     $replacements = \Drupal::token()->generate($type, $input, $data, $options, $bubbleable_metadata);
+@@ -41,7 +47,10 @@ trait TokenTestTrait {
+     return $replacements;
+   }
+ 
+-  function mapTokenNames($type, array $tokens = []) {
++  /**
++   *
++   */
++  public function mapTokenNames($type, array $tokens = []) {
+     $return = [];
+     foreach ($tokens as $token) {
+       $return[$token] = "[$type:$token]";
+@@ -49,7 +58,10 @@ trait TokenTestTrait {
+     return $return;
+   }
+ 
+-  function assertNoTokens($type, array $data, array $tokens, array $options = []) {
++  /**
++   *
++   */
++  public function assertNoTokens($type, array $data, array $tokens, array $options = []) {
+     $input = $this->mapTokenNames($type, $tokens);
+     $bubbleable_metadata = new BubbleableMetadata();
+     $replacements = \Drupal::token()->generate($type, $input, $data, $options, $bubbleable_metadata);
+@@ -59,11 +71,17 @@ trait TokenTestTrait {
+     }
+   }
+ 
+-  function saveAlias($source, $alias, $language = Language::LANGCODE_NOT_SPECIFIED) {
++  /**
++   *
++   */
++  public function saveAlias($source, $alias, $language = Language::LANGCODE_NOT_SPECIFIED) {
+     return $this->createPathAlias($source, $alias, $language);
+   }
+ 
+-  function saveEntityAlias($entity_type, EntityInterface $entity, $alias, $language = Language::LANGCODE_NOT_SPECIFIED) {
++  /**
++   *
++   */
++  public function saveEntityAlias($entity_type, EntityInterface $entity, $alias, $language = Language::LANGCODE_NOT_SPECIFIED) {
+     $uri = $entity->toUrl()->toArray();
+     return $this->saveAlias($uri['path'], $alias, $language);
+   }
+@@ -71,7 +89,7 @@ trait TokenTestTrait {
+   /**
+    * Make a page request and test for token generation.
+    */
+-  function assertPageTokens($url, array $tokens, array $data = [], array $options = []) {
++  public function assertPageTokens($url, array $tokens, array $data = [], array $options = []) {
+     if (empty($tokens)) {
+       return TRUE;
+     }
+diff --git a/tests/src/Functional/TokenURLTest.php b/tests/src/Functional/TokenURLTest.php
+index a8d27f2..6b3d270 100644
+--- a/tests/src/Functional/TokenURLTest.php
++++ b/tests/src/Functional/TokenURLTest.php
+@@ -26,7 +26,10 @@ class TokenURLTest extends TokenTestBase {
+     $this->saveAlias('/node/1', '/first-node');
+   }
+ 
+-  function testURLTokens() {
++  /**
++   *
++   */
++  public function testURLTokens() {
+     $url = new Url('entity.node.canonical', ['node' => 1]);
+     $tokens = [
+       'absolute' => $url->setAbsolute()->toString(),
+@@ -48,4 +51,5 @@ class TokenURLTest extends TokenTestBase {
+     ];
+     $this->assertTokens('url', ['url' => new Url('entity.node.canonical', ['node' => 1])], $tokens);
+   }
++
+ }
+diff --git a/tests/src/Functional/TokenUserTest.php b/tests/src/Functional/TokenUserTest.php
+index 6574e02..486b4cb 100644
+--- a/tests/src/Functional/TokenUserTest.php
++++ b/tests/src/Functional/TokenUserTest.php
+@@ -128,4 +128,5 @@ class TokenUserTest extends TokenTestBase {
+     $this->assertLink('Browse available tokens.');
+     $this->assertLinkByHref('token/tree');
+   }
++
+ }
+diff --git a/tests/src/Functional/Tree/AutocompleteTest.php b/tests/src/Functional/Tree/AutocompleteTest.php
+index 5d4af0c..52f658f 100644
+--- a/tests/src/Functional/Tree/AutocompleteTest.php
++++ b/tests/src/Functional/Tree/AutocompleteTest.php
+@@ -75,4 +75,5 @@ class AutocompleteTest extends TokenTestBase {
+ 
+     $this->assertTrue(isset($response['[user:original:uid]']));
+   }
++
+ }
+diff --git a/tests/src/Functional/Tree/HelpPageTest.php b/tests/src/Functional/Tree/HelpPageTest.php
+index 719fb0f..89b6c3f 100644
+--- a/tests/src/Functional/Tree/HelpPageTest.php
++++ b/tests/src/Functional/Tree/HelpPageTest.php
+@@ -25,6 +25,9 @@ class HelpPageTest extends TokenTestBase {
+    */
+   public static $modules = ['help'];
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+ 
+diff --git a/tests/src/Functional/Tree/TokenTreeTestTrait.php b/tests/src/Functional/Tree/TokenTreeTestTrait.php
+index 5e969c3..750b4f8 100644
+--- a/tests/src/Functional/Tree/TokenTreeTestTrait.php
++++ b/tests/src/Functional/Tree/TokenTreeTestTrait.php
+@@ -118,4 +118,5 @@ trait TokenTreeTestTrait {
+     $xpath .= '/td[contains(@class, "token-key") and text() = "' . $token . '"]';
+     return $xpath;
+   }
++
+ }
+diff --git a/tests/src/Functional/Tree/TreeTest.php b/tests/src/Functional/Tree/TreeTest.php
+index 8d902dc..bcef846 100644
+--- a/tests/src/Functional/Tree/TreeTest.php
++++ b/tests/src/Functional/Tree/TreeTest.php
+@@ -26,6 +26,9 @@ class TreeTest extends TokenTestBase {
+    */
+   public static $modules = ['node'];
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+ 
+@@ -145,4 +148,5 @@ class TreeTest extends TokenTestBase {
+     }
+     return $link;
+   }
++
+ }
+diff --git a/tests/src/Functional/UrlTest.php b/tests/src/Functional/UrlTest.php
+index 107629b..acc0985 100644
+--- a/tests/src/Functional/UrlTest.php
++++ b/tests/src/Functional/UrlTest.php
+@@ -124,7 +124,6 @@ class UrlTest extends BrowserTestBase {
+       $assert_session->elementContains('css', '#block-token-url-test-block', $test['expected3']);
+     }
+ 
+-
+     // Can't do this test in the for loop above, it's too different.
+     $block->getPlugin()->setConfigurationValue('label', 'prefix_[current-page:query:unicorns]_suffix');
+     $block->save();
+diff --git a/tests/src/Kernel/ArrayTest.php b/tests/src/Kernel/ArrayTest.php
+index d484835..4957d27 100644
+--- a/tests/src/Kernel/ArrayTest.php
++++ b/tests/src/Kernel/ArrayTest.php
+@@ -9,7 +9,10 @@ namespace Drupal\Tests\token\Kernel;
+  */
+ class ArrayTest extends KernelTestBase {
+ 
+-  function testArrayTokens() {
++  /**
++   *
++   */
++  public function testArrayTokens() {
+     // Test a simple array.
+     $array = [0 => 'a', 1 => 'b', 2 => 'c', 4 => 'd'];
+     $tokens = [
+@@ -31,7 +34,7 @@ class ArrayTest extends KernelTestBase {
+     $this->assertTokens('array', ['array' => $array], $tokens);
+ 
+     // Test a mixed simple and render array.
+-    // 2 => c, 0 => a, 4 => d, 1 => b
++    // 2 => c, 0 => a, 4 => d, 1 => b.
+     $array = [
+       '#property' => 'value',
+       0 => 'a',
+diff --git a/tests/src/Kernel/BookTest.php b/tests/src/Kernel/BookTest.php
+index 215fdb5..4f77a7a 100644
+--- a/tests/src/Kernel/BookTest.php
++++ b/tests/src/Kernel/BookTest.php
+@@ -32,7 +32,10 @@ class BookTest extends KernelTestBase {
+     $this->installConfig(['node', 'book', 'field']);
+   }
+ 
+-  function testBookTokens() {
++  /**
++   *
++   */
++  public function testBookTokens() {
+     $book = Node::create([
+       'type' => 'book',
+       'title' => 'Book Main Page',
+@@ -65,8 +68,8 @@ class BookTest extends KernelTestBase {
+       'book:root:title' => $book_title,
+       'book:root:url' => Url::fromRoute('entity.node.canonical', ['node' => $book->id()], ['absolute' => TRUE])->toString(),
+       'book:root:content-type' => 'Book page',
+-      'book:parent' => null,
+-      'book:parents' => null,
++      'book:parent' => NULL,
++      'book:parents' => NULL,
+     ];
+     $this->assertTokens('node', ['node' => $book], $tokens);
+ 
+diff --git a/tests/src/Kernel/CommentTest.php b/tests/src/Kernel/CommentTest.php
+index 286089d..6f77ae8 100644
+--- a/tests/src/Kernel/CommentTest.php
++++ b/tests/src/Kernel/CommentTest.php
+@@ -43,10 +43,13 @@ class CommentTest extends KernelTestBase {
+     $this->addDefaultCommentField('node', 'page');
+   }
+ 
+-  function testCommentTokens() {
++  /**
++   *
++   */
++  public function testCommentTokens() {
+     $node = Node::create([
+       'type' => 'page',
+-      'title' => $this->randomMachineName()
++      'title' => $this->randomMachineName(),
+     ]);
+     $node->save();
+ 
+diff --git a/tests/src/Kernel/DateTest.php b/tests/src/Kernel/DateTest.php
+index c120e11..dca2509 100644
+--- a/tests/src/Kernel/DateTest.php
++++ b/tests/src/Kernel/DateTest.php
+@@ -24,7 +24,10 @@ class DateTest extends KernelTestBase {
+     $this->installConfig(['system', 'token_module_test']);
+   }
+ 
+-  function testDateTokens() {
++  /**
++   *
++   */
++  public function testDateTokens() {
+     $tokens = [
+       'token_module_test' => '1984',
+       'invalid_format' => NULL,
+diff --git a/tests/src/Kernel/EntityTest.php b/tests/src/Kernel/EntityTest.php
+index 44501f7..1f40a36 100644
+--- a/tests/src/Kernel/EntityTest.php
++++ b/tests/src/Kernel/EntityTest.php
+@@ -41,7 +41,10 @@ class EntityTest extends KernelTestBase {
+     $this->vocab = $vocabulary;
+   }
+ 
+-  function testEntityMapping() {
++  /**
++   *
++   */
++  public function testEntityMapping() {
+     /** @var \Drupal\token\TokenEntityMapperInterface $mapper */
+     $mapper = \Drupal::service('token.entity_mapper');
+     $this->assertSame('node', $mapper->getEntityTypeForTokenType('node'));
+@@ -64,7 +67,10 @@ class EntityTest extends KernelTestBase {
+     $this->assertSame($term->label() . $vocabulary->label(), \Drupal::token()->replace('[term:name][term:vocabulary:name]', ['taxonomy_term' => $term]));
+   }
+ 
+-  function addTerm(VocabularyInterface $vocabulary, array $term = []) {
++  /**
++   *
++   */
++  public function addTerm(VocabularyInterface $vocabulary, array $term = []) {
+     $term += [
+       'name' => mb_strtolower($this->randomMachineName(5)),
+       'vid' => $vocabulary->id(),
+@@ -77,7 +83,7 @@ class EntityTest extends KernelTestBase {
+   /**
+    * Test the [entity:original:*] tokens.
+    */
+-  function testEntityOriginal() {
++  public function testEntityOriginal() {
+     $node = Node::create(['type' => 'page', 'title' => 'Original title']);
+     $node->save();
+ 
+diff --git a/tests/src/Kernel/FieldTest.php b/tests/src/Kernel/FieldTest.php
+index 345ae67..cceaecf 100644
+--- a/tests/src/Kernel/FieldTest.php
++++ b/tests/src/Kernel/FieldTest.php
+@@ -114,7 +114,7 @@ class FieldTest extends KernelTestBase {
+         'allowed_values' => [
+           'key1' => 'value1',
+           'key2' => 'value2',
+-        ]
++        ],
+       ],
+     ]);
+     $field_storage->save();
+@@ -406,7 +406,7 @@ class FieldTest extends KernelTestBase {
+       'type' => 'text_trimmed',
+       'settings' => [
+         'trim_length' => 50,
+-      ]
++      ],
+     ]);
+     $entity_display->save();
+ 
+@@ -459,7 +459,7 @@ class FieldTest extends KernelTestBase {
+     $this->assertNull($tokenService->getTokenInfo('node', 'uid'));
+   }
+ 
+-  /*
++  /**
+    * Tests chaining entity reference tokens.
+    */
+   public function testEntityReferenceTokens() {
+@@ -469,7 +469,7 @@ class FieldTest extends KernelTestBase {
+       'test_field' => [
+         'value' => 'foo',
+         'format' => $this->testFormat->id(),
+-      ]
++      ],
+     ]);
+     $reference->save();
+     $term_reference_field_value = $this->randomString();
+@@ -713,8 +713,8 @@ class FieldTest extends KernelTestBase {
+ 
+     /** @var \Drupal\node\NodeInterface $node */
+     $node = Node::create([
+-        'title' => 'Node for daterange field',
+-        'type' => 'article',
++      'title' => 'Node for daterange field',
++      'type' => 'article',
+     ]);
+ 
+     $node->get('field_daterange')->value = '2013-12-22T00:00:00';
+@@ -765,4 +765,5 @@ class FieldTest extends KernelTestBase {
+       'field_timestamp:1:date' => $node->get('field_timestamp')->get(1)->value,
+     ]);
+   }
++
+ }
+diff --git a/tests/src/Kernel/FileTest.php b/tests/src/Kernel/FileTest.php
+index 6cfa988..93bcda4 100644
+--- a/tests/src/Kernel/FileTest.php
++++ b/tests/src/Kernel/FileTest.php
+@@ -3,6 +3,7 @@
+ namespace Drupal\Tests\token\Kernel;
+ 
+ use Drupal\file\Entity\File;
++
+ /**
+  * Tests file tokens.
+  *
+@@ -25,7 +26,10 @@ class FileTest extends KernelTestBase {
+     $this->installEntitySchema('file');
+   }
+ 
+-  function testFileTokens() {
++  /**
++   *
++   */
++  public function testFileTokens() {
+     // Create a test file object.
+     $file = File::create([
+       'fid' => 1,
+diff --git a/tests/src/Kernel/NodeTest.php b/tests/src/Kernel/NodeTest.php
+index 846961a..e1a73c2 100644
+--- a/tests/src/Kernel/NodeTest.php
++++ b/tests/src/Kernel/NodeTest.php
+@@ -43,12 +43,15 @@ class NodeTest extends KernelTestBase {
+     $node_type->save();
+   }
+ 
+-  function testNodeTokens() {
++  /**
++   *
++   */
++  public function testNodeTokens() {
+     $page = Node::create([
+       'type' => 'page',
+       'title' => 'Source Title',
+       'revision_log' => $this->randomMachineName(),
+-      'path' => ['alias' => '/content/source-node']
++      'path' => ['alias' => '/content/source-node'],
+     ]);
+     $page->save();
+     $tokens = [
+diff --git a/tests/src/Kernel/RandomTest.php b/tests/src/Kernel/RandomTest.php
+index aa8b659..60f74d3 100644
+--- a/tests/src/Kernel/RandomTest.php
++++ b/tests/src/Kernel/RandomTest.php
+@@ -9,7 +9,10 @@ namespace Drupal\Tests\token\Kernel;
+  */
+ class RandomTest extends KernelTestBase {
+ 
+-  function testRandomTokens() {
++  /**
++   *
++   */
++  public function testRandomTokens() {
+     $tokens = [
+       'number' => '[0-9]{1,}',
+       'hash:md5' => '[0-9a-f]{32}',
+diff --git a/tests/src/Kernel/TaxonomyTest.php b/tests/src/Kernel/TaxonomyTest.php
+index abc99ea..5d19b7f 100644
+--- a/tests/src/Kernel/TaxonomyTest.php
++++ b/tests/src/Kernel/TaxonomyTest.php
+@@ -43,7 +43,7 @@ class TaxonomyTest extends KernelTestBase {
+   /**
+    * Test the additional taxonomy term tokens.
+    */
+-  function testTaxonomyTokens() {
++  public function testTaxonomyTokens() {
+     $root_term = $this->addTerm($this->vocab, ['name' => 'Root term', 'path' => ['alias' => '/root-term']]);
+     $tokens = [
+       'url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $root_term->id()], ['absolute' => TRUE])->toString(),
+@@ -56,7 +56,7 @@ class TaxonomyTest extends KernelTestBase {
+       'parents:count' => NULL,
+       'parents:keys' => NULL,
+       'root' => NULL,
+-      // Deprecated tokens
++      // Deprecated tokens.
+       'url:alias' => '/root-term',
+     ];
+     $this->assertTokens('term', ['term' => $root_term], $tokens);
+@@ -74,7 +74,7 @@ class TaxonomyTest extends KernelTestBase {
+       'parents:keys' => $root_term->id(),
+       'root' => $root_term->label(),
+       'root:tid' => $root_term->id(),
+-      // Deprecated tokens
++      // Deprecated tokens.
+       'url:alias' => "/taxonomy/term/{$parent_term->id()}",
+     ];
+     $this->assertTokens('term', ['term' => $parent_term], $tokens);
+@@ -91,7 +91,7 @@ class TaxonomyTest extends KernelTestBase {
+   /**
+    * Test the additional vocabulary tokens.
+    */
+-  function testVocabularyTokens() {
++  public function testVocabularyTokens() {
+     $vocabulary = $this->vocab;
+     $tokens = [
+       'machine-name' => 'tags',
+@@ -100,7 +100,10 @@ class TaxonomyTest extends KernelTestBase {
+     $this->assertTokens('vocabulary', ['vocabulary' => $vocabulary], $tokens);
+   }
+ 
+-  function addVocabulary(array $vocabulary = []) {
++  /**
++   *
++   */
++  public function addVocabulary(array $vocabulary = []) {
+     $vocabulary += [
+       'name' => mb_strtolower($this->randomMachineName(5)),
+       'nodes' => ['article' => 'article'],
+@@ -109,7 +112,10 @@ class TaxonomyTest extends KernelTestBase {
+     return $vocabulary;
+   }
+ 
+-  function addTerm($vocabulary, array $term = []) {
++  /**
++   *
++   */
++  public function addTerm($vocabulary, array $term = []) {
+     $term += [
+       'name' => mb_strtolower($this->randomMachineName(5)),
+       'vid' => $vocabulary->id(),
+@@ -122,7 +128,7 @@ class TaxonomyTest extends KernelTestBase {
+   /**
+    * Test the multilingual terms.
+    */
+-  function testMultilingualTerms() {
++  public function testMultilingualTerms() {
+     // Add a second language.
+     $language = ConfigurableLanguage::createFromLangcode('de');
+     $language->save();
+diff --git a/tests/src/Kernel/UnitTest.php b/tests/src/Kernel/UnitTest.php
+index ee0f725..daeef47 100644
+--- a/tests/src/Kernel/UnitTest.php
++++ b/tests/src/Kernel/UnitTest.php
+@@ -57,7 +57,7 @@ class UnitTest extends KernelTestBase {
+         '[user:ip-address]',
+         '[user:uid]',
+         '[comment:cid]',
+-        // Deprecated tokens
++        // Deprecated tokens.
+         '[node:tnid]',
+         '[node:type]',
+         '[node:type-name]',
+@@ -87,7 +87,7 @@ class UnitTest extends KernelTestBase {
+         '[site:invalid]',
+         '[user:ip-address]',
+         '[comment:cid]',
+-        // Deprecated tokens
++        // Deprecated tokens.
+         '[node:tnid]',
+         '[node:type]',
+         '[node:type-name]',
+diff --git a/token.pages.inc b/token.pages.inc
+index 0e41734..75960d7 100644
+--- a/token.pages.inc
++++ b/token.pages.inc
+@@ -4,6 +4,7 @@
+  * @file
+  * User page callbacks for the token module.
+  */
++
+ use Drupal\Component\Serialization\Json;
+ use Drupal\Component\Utility\DiffArray;
+ use Drupal\Core\Link;
+diff --git a/token.tokens.inc b/token.tokens.inc
+index 4b43404..fa8c804 100755
+--- a/token.tokens.inc
++++ b/token.tokens.inc
+@@ -9,8 +9,6 @@ use Drupal\Core\Entity\ContentEntityInterface;
+ use Drupal\Core\Entity\FieldableEntityInterface;
+ use Drupal\Core\Entity\TypedData\EntityDataDefinitionInterface;
+ use Drupal\Core\Render\BubbleableMetadata;
+-use Drupal\Core\Render\Element;
+-use Drupal\Component\Utility\Crypt;
+ use Drupal\Component\Utility\Html;
+ use Drupal\Core\TypedData\DataReferenceDefinitionInterface;
+ use Drupal\Core\Url;
+@@ -22,7 +20,6 @@ use Drupal\node\NodeInterface;
+ use Drupal\system\Entity\Menu;
+ use Drupal\user\UserInterface;
+ use Symfony\Cmf\Component\Routing\RouteObjectInterface;
+-use Drupal\Core\TypedData\PrimitiveInterface;
+ use Drupal\Core\Field\FieldStorageDefinitionInterface;
+ use Drupal\Core\Entity\ContentEntityTypeInterface;
+ use Drupal\image\Entity\ImageStyle;
+@@ -827,7 +824,7 @@ function token_tokens($type, array $tokens, array $data = [], array $options = [
+           // Instantiation would fail again on malformed urls.
+         }
+       }
+-      // Add cache contexts to ensure this token functions on a per-path basis
++      // Add cache contexts to ensure this token functions on a per-path basis.
+       $bubbleable_metadata->addCacheContexts(['url.path']);
+       $replacements += \Drupal::token()->generate('url', $url_tokens, ['url' => $url], $options, $bubbleable_metadata);
+     }

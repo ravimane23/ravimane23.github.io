@@ -1,0 +1,142 @@
+diff --git a/modules/rh_node/rh-node.js b/modules/rh_node/rh-node.js
+index ac34fd0..f91105f 100644
+--- a/modules/rh_node/rh-node.js
++++ b/modules/rh_node/rh-node.js
+@@ -2,13 +2,13 @@
+  * @file
+  */
+ 
+-(function($, Drupal) {
++(function ($, Drupal) {
+ 
+   Drupal.behaviors.rhNode = {
+     attach: function (context, settings) {
+ 
+       // Display the action in the vertical tab summary.
+-      $(context).find('.rabbit-hole-settings-form').drupalSetSummary(function(context) {
++      $(context).find('.rabbit-hole-settings-form').drupalSetSummary(function (context) {
+         var $action = $('.rabbit-hole-action-setting input:checked', context);
+         return Drupal.checkPlain($action.next('label').text());
+       });
+diff --git a/src/BehaviorInvoker.php b/src/BehaviorInvoker.php
+index 8709b4f..5de3fa1 100644
+--- a/src/BehaviorInvoker.php
++++ b/src/BehaviorInvoker.php
+@@ -75,13 +75,13 @@ class BehaviorInvoker implements BehaviorInvokerInterface {
+    * will use the defaults!
+    *
+    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+-   *    The entity to apply rabbit hole behavior on.
++   *   The entity to apply rabbit hole behavior on.
+    * @param Symfony\Component\HttpFoundation\Response $current_response
+-   *    The current response, to be passed along to and potentially altered by
++   *   The current response, to be passed along to and potentially altered by
+    *    any called rabbit hole plugin.
+    *
+    * @return Symfony\Component\HttpFoundation\Response|null
+-   *    A response or null if the response is unchanged.
++   *   A response or null if the response is unchanged.
+    *
+    * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+    *   The PageNotFound plugin may throw a NotFoundHttpException which is not
+diff --git a/src/FormManglerService.php b/src/FormManglerService.php
+index badea70..5e4c63e 100644
+--- a/src/FormManglerService.php
++++ b/src/FormManglerService.php
+@@ -264,7 +264,7 @@ class FormManglerService {
+     // Add ability to validate user input before saving the data.
+     $attach['rabbit_hole']['rabbit_hole']['redirect']['rh_redirect']['#element_validate'][] = [
+       'Drupal\rabbit_hole\FormManglerService',
+-      'validateFormRedirect'
++      'validateFormRedirect',
+     ];
+   }
+ 
+diff --git a/src/Plugin/RabbitHoleBehaviorPlugin/PageRedirect.php b/src/Plugin/RabbitHoleBehaviorPlugin/PageRedirect.php
+index 6eb5e95..546337e 100644
+--- a/src/Plugin/RabbitHoleBehaviorPlugin/PageRedirect.php
++++ b/src/Plugin/RabbitHoleBehaviorPlugin/PageRedirect.php
+@@ -68,7 +68,7 @@ class PageRedirect extends RabbitHoleBehaviorPluginBase implements ContainerFact
+   /**
+    * The entity plugin manager.
+    *
+-   * @var Drupal\rabbit_hole\Entity\RabbitHoleEntityPluginManager;
++   * @var Drupal\rabbit_hole\Entity\RabbitHoleEntityPluginManager
+    */
+   protected $rhEntityPluginManager;
+ 
+@@ -109,7 +109,7 @@ class PageRedirect extends RabbitHoleBehaviorPluginBase implements ContainerFact
+    * {@inheritdoc}
+    */
+   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+-    return new static (
++    return new static(
+       $configuration,
+       $plugin_id,
+       $plugin_definition,
+@@ -267,7 +267,7 @@ class PageRedirect extends RabbitHoleBehaviorPluginBase implements ContainerFact
+         'You may enter tokens in this field, such as %example1 or %example2.', [
+           '%example1' => '[node:field_link]',
+           '%example2' => '/my/view?page=[node:field_page_number]',
+-      ]);
++        ]);
+     }
+ 
+     $form['rabbit_hole']['redirect']['rh_redirect'] = [
+diff --git a/src/Plugin/RabbitHoleBehaviorPluginInterface.php b/src/Plugin/RabbitHoleBehaviorPluginInterface.php
+index ef1a36f..ec54745 100644
+--- a/src/Plugin/RabbitHoleBehaviorPluginInterface.php
++++ b/src/Plugin/RabbitHoleBehaviorPluginInterface.php
+@@ -18,7 +18,7 @@ interface RabbitHoleBehaviorPluginInterface extends PluginInspectionInterface {
+   /**
+    * Perform the rabbit hole action.
+    *
+-   * @param EntityInterface $entity
++   * @param \Drupal\Core\Entity\EntityInterface $entity
+    *   The entity the action is being performed on.
+    */
+   public function performAction(EntityInterface $entity);
+@@ -32,11 +32,11 @@ interface RabbitHoleBehaviorPluginInterface extends PluginInspectionInterface {
+    *   The form state array to modify.
+    * @param string $form_id
+    *   The form ID.
+-   * @param EntityInterface|null $entity
++   * @param \Drupal\Core\Entity\EntityInterface|null $entity
+    *   The entity used by the form.
+    * @param bool $entity_is_bundle
+    *   Whether the entity is a bundle.
+-   * @param ImmutableConfig|null $bundle_settings
++   * @param \Drupal\Core\Config\ImmutableConfig|null $bundle_settings
+    *   The behavior settings for the bundle of the entity (or the entity itself,
+    *   if it is a bundle).
+    */
+diff --git a/src/Plugin/RabbitHoleEntityPluginBase.php b/src/Plugin/RabbitHoleEntityPluginBase.php
+index db4a729..65fedf0 100644
+--- a/src/Plugin/RabbitHoleEntityPluginBase.php
++++ b/src/Plugin/RabbitHoleEntityPluginBase.php
+@@ -45,8 +45,8 @@ abstract class RabbitHoleEntityPluginBase extends PluginBase implements RabbitHo
+     $map[$this->pluginDefinition['entityType']]
+         = $this->pluginDefinition['entityType'];
+     $bundle = \Drupal::entityTypeManager()
+-        ->getDefinition($this->pluginDefinition['entityType'])
+-        ->getBundleEntityType();
++      ->getDefinition($this->pluginDefinition['entityType'])
++      ->getBundleEntityType();
+     if (!empty($bundle)) {
+       $map[$bundle] = $bundle;
+     }
+diff --git a/src/RabbitHolePermissionGenerator.php b/src/RabbitHolePermissionGenerator.php
+index 77279b2..974a611 100644
+--- a/src/RabbitHolePermissionGenerator.php
++++ b/src/RabbitHolePermissionGenerator.php
+@@ -55,8 +55,8 @@ class RabbitHolePermissionGenerator implements ContainerInjectionInterface {
+ 
+     foreach ($this->rhEntityPluginManager->getDefinitions() as $def) {
+       $entity_type = $this->entityTypeManager
+-              ->getStorage($def['entityType'])
+-              ->getEntityType();
++        ->getStorage($def['entityType'])
++        ->getEntityType();
+       $permissions += [
+         'rabbit hole administer ' . $def['entityType'] => [
+           'title' => $this->t(

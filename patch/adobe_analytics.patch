@@ -1,0 +1,48 @@
+diff --git a/src/AdobeAnalyticsHelper.php b/src/AdobeAnalyticsHelper.php
+index 2532442..f0ebc28 100644
+--- a/src/AdobeAnalyticsHelper.php
++++ b/src/AdobeAnalyticsHelper.php
+@@ -195,7 +195,6 @@ class AdobeAnalyticsHelper {
+     $version = $this->config->get("version");
+     $nojs = !empty($this->config->get("image_file_location")) ? $this->config->get("image_file_location") : NULL;
+ 
+-
+     // Extract entity overrides.
+     list ($include_main_codesnippet, $include_custom_variables, $entity_snippet) = $this->extractEntityOverrides();
+ 
+diff --git a/src/Plugin/Field/FieldType/AdobeAnalyticsItem.php b/src/Plugin/Field/FieldType/AdobeAnalyticsItem.php
+index 4dbec8d..3d8b88b 100644
+--- a/src/Plugin/Field/FieldType/AdobeAnalyticsItem.php
++++ b/src/Plugin/Field/FieldType/AdobeAnalyticsItem.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\adobe_analytics\Plugin\Field\FieldType;
+ 
+-use Drupal\Component\Utility\Random;
+-use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\FieldItemBase;
+ use Drupal\Core\Field\FieldStorageDefinitionInterface;
+ use Drupal\Core\Form\FormStateInterface;
+diff --git a/src/Plugin/Field/FieldWidget/AdobeAnalyticsWidget.php b/src/Plugin/Field/FieldWidget/AdobeAnalyticsWidget.php
+index d0b428a..3c1f416 100644
+--- a/src/Plugin/Field/FieldWidget/AdobeAnalyticsWidget.php
++++ b/src/Plugin/Field/FieldWidget/AdobeAnalyticsWidget.php
+@@ -18,8 +18,6 @@ use Drupal\Core\Url;
+  */
+ class AdobeAnalyticsWidget extends WidgetBase {
+ 
+-
+-
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/tests/src/Functional/AdobeAnalyticsEntityOverridesTest.php b/tests/src/Functional/AdobeAnalyticsEntityOverridesTest.php
+index 11e45d0..b8315a2 100644
+--- a/tests/src/Functional/AdobeAnalyticsEntityOverridesTest.php
++++ b/tests/src/Functional/AdobeAnalyticsEntityOverridesTest.php
+@@ -125,4 +125,5 @@ class AdobeAnalyticsEntityOverridesTest extends JavascriptTestBase {
+     $this->assertSession()->responseNotContains('extraVariableName');
+     $this->assertSession()->responseContains('customVar');
+   }
++
+ }

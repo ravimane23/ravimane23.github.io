@@ -1,0 +1,67 @@
+diff --git a/assets/js/ckeditor/plugin.js b/assets/js/ckeditor/plugin.js
+index 8f15e3d..711e1c4 100644
+--- a/assets/js/ckeditor/plugin.js
++++ b/assets/js/ckeditor/plugin.js
+@@ -24,7 +24,7 @@ CKEDITOR.plugins.add("footnotes", {
+   requires: ["fakeobjects", "dialog"],
+   icons: "footnotes",
+   onLoad() {
+-    const iconPath = `${window.location.origin + this.path}icons/fn_icon2.png`;
++    const iconPath = `${window.location.origin + this.path}icons / fn_icon2.png`;
+     CKEDITOR.addCss(
+       `${".cke_footnote{background-image: url("}${CKEDITOR.getUrl(
+         iconPath
+@@ -87,8 +87,8 @@ CKEDITOR.plugins.add("footnotes", {
+       }
+     });
+ 
+-    CKEDITOR.dialog.add("createfootnotes", `${this.path}dialogs/footnotes.js`);
+-    CKEDITOR.dialog.add("editfootnotes", `${this.path}dialogs/footnotes.js`);
++    CKEDITOR.dialog.add("createfootnotes", `${this.path}dialogs / footnotes.js`);
++    CKEDITOR.dialog.add("editfootnotes", `${this.path}dialogs / footnotes.js`);
+   },
+   afterInit(editor) {
+     const { dataProcessor } = editor;
+diff --git a/tests/src/FunctionalJavascript/FootnotesCkeditorPluginTest.php b/tests/src/FunctionalJavascript/FootnotesCkeditorPluginTest.php
+index 2eaede1..86b9f94 100755
+--- a/tests/src/FunctionalJavascript/FootnotesCkeditorPluginTest.php
++++ b/tests/src/FunctionalJavascript/FootnotesCkeditorPluginTest.php
+@@ -17,8 +17,7 @@ use Drupal\Tests\ckeditor\Traits\CKEditorTestTrait;
+  *
+  * @group footnotes
+  */
+-class FootnotesCkeditorPluginTest extends WebDriverTestBase
+-{
++class FootnotesCkeditorPluginTest extends WebDriverTestBase {
+ 
+   use StringTranslationTrait;
+   use CKEditorTestTrait;
+@@ -50,8 +49,7 @@ class FootnotesCkeditorPluginTest extends WebDriverTestBase
+   /**
+    * {@inheritdoc}
+    */
+-  protected function setUp()
+-  {
++  protected function setUp() {
+     parent::setUp();
+ 
+     // Create a text format and associate CKEditor.
+@@ -63,7 +61,7 @@ class FootnotesCkeditorPluginTest extends WebDriverTestBase
+           'status' => TRUE,
+           'settings' => [
+             'footnotes_collapse' => 0,
+-            'footnotes_html' => 0
++            'footnotes_html' => 0,
+           ],
+         ],
+       ],
+@@ -126,8 +124,7 @@ class FootnotesCkeditorPluginTest extends WebDriverTestBase
+   /**
+    * Tests CKEditor plugin functionality for body field.
+    */
+-  public function testUi()
+-  {
++  public function testUi() {
+     $session = $this->getSession();
+     $assert_session = $this->assertSession();
+ 

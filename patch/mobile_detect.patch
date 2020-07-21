@@ -1,0 +1,300 @@
+diff --git a/src/Plugin/Condition/MobileDetectDeviceType.php b/src/Plugin/Condition/MobileDetectDeviceType.php
+index 789c8de..33b3422 100644
+--- a/src/Plugin/Condition/MobileDetectDeviceType.php
++++ b/src/Plugin/Condition/MobileDetectDeviceType.php
+@@ -50,8 +50,8 @@ class MobileDetectDeviceType extends ConditionPluginBase implements ContainerFac
+    */
+   public function defaultConfiguration() {
+     return [
+-        'devices' => [],
+-      ] + parent::defaultConfiguration();
++      'devices' => [],
++    ] + parent::defaultConfiguration();
+   }
+ 
+   /**
+@@ -109,16 +109,19 @@ class MobileDetectDeviceType extends ConditionPluginBase implements ContainerFac
+             return TRUE;
+           }
+           break;
++
+         case 'tablet':
+           if ($detect->isTablet()) {
+             return TRUE;
+           }
+           break;
++
+         case 'desktop':
+           if (!$detect->isMobile()) {
+             return TRUE;
+           }
+           break;
++
+         default:
+           throw new \InvalidArgumentException(sprintf('Undefined device "%s".', $key));
+       }
+diff --git a/src/Plugin/Condition/MobileDetectPlatform.php b/src/Plugin/Condition/MobileDetectPlatform.php
+index 4106437..a909588 100644
+--- a/src/Plugin/Condition/MobileDetectPlatform.php
++++ b/src/Plugin/Condition/MobileDetectPlatform.php
+@@ -28,10 +28,10 @@ class MobileDetectPlatform extends ConditionPluginBase implements ContainerFacto
+   /**
+    * {@inheritdoc}
+    */
+-	public function __construct(array $configuration, $plugin_id, $plugin_definition, MobileDetect $mobile_detect) {
+-		parent::__construct($configuration, $plugin_id, $plugin_definition);
+-		$this->mobileDetect = $mobile_detect;
+-	}
++  public function __construct(array $configuration, $plugin_id, $plugin_definition, MobileDetect $mobile_detect) {
++    parent::__construct($configuration, $plugin_id, $plugin_definition);
++    $this->mobileDetect = $mobile_detect;
++  }
+ 
+   /**
+    * {@inheritdoc}
+@@ -50,14 +50,14 @@ class MobileDetectPlatform extends ConditionPluginBase implements ContainerFacto
+    */
+   public function defaultConfiguration() {
+     return [
+-        'platform' => [],
+-      ] + parent::defaultConfiguration();
++      'platform' => [],
++    ] + parent::defaultConfiguration();
+   }
+ 
+   /**
+-	 * {@inheritdoc}
+-	 */
+-	public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
++   * {@inheritdoc}
++   */
++  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+     $form['platform'] = [
+       '#type' => 'checkboxes',
+       '#title' => $this->t('When the platform is determined'),
+@@ -67,17 +67,17 @@ class MobileDetectPlatform extends ConditionPluginBase implements ContainerFacto
+         'ios' => $this->t('iOS'),
+       ],
+       '#description' => $this->t('If you select no platforms, the condition will evaluate to TRUE for all platforms.'),
+-		];
++    ];
+     return parent::buildConfigurationForm($form, $form_state);
+   }
+ 
+   /**
+-	 * {@inheritdoc}
+-	 */
+-	public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
++   * {@inheritdoc}
++   */
++  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+     $this->configuration['platform'] = array_filter($form_state->getValue('platform'));
+-		parent::submitConfigurationForm($form, $form_state);
+-	}
++    parent::submitConfigurationForm($form, $form_state);
++  }
+ 
+   /**
+    * {@inheritdoc}
+@@ -92,7 +92,7 @@ class MobileDetectPlatform extends ConditionPluginBase implements ContainerFacto
+   /**
+    * {@inheritdoc}
+    */
+-	public function evaluate() {
++  public function evaluate() {
+     $platform = $this->configuration['platform'];
+     if (empty($platform) && !$this->isNegated()) {
+       return TRUE;
+@@ -106,17 +106,19 @@ class MobileDetectPlatform extends ConditionPluginBase implements ContainerFacto
+             return TRUE;
+           }
+           break;
++
+         case 'ios':
+           if ($detect->isIOS()) {
+             return TRUE;
+           }
+           break;
++
+         default:
+           throw new \InvalidArgumentException(sprintf('Undefined platform "%s".', $key));
+       }
+     }
+     return FALSE;
+-	}
++  }
+ 
+   /**
+    * {@inheritdoc}
+diff --git a/src/Twig/MobileDetectTwig.php b/src/Twig/MobileDetectTwig.php
+index 7b8c1d9..a71663e 100644
+--- a/src/Twig/MobileDetectTwig.php
++++ b/src/Twig/MobileDetectTwig.php
+@@ -7,88 +7,96 @@ use Detection\MobileDetect;
+ 
+ /**
+  * MobileDetectTwig class.
+- *
+  */
+-class MobileDetectTwig extends \Twig_Extension
+-{
++class MobileDetectTwig extends \Twig_Extension {
+ 
+-	/**
+-	 * @var MobileDetect
+-	 */
+-	protected $mobileDetector;
++  /**
++   * @var \Detection\MobileDetect
++   */
++  protected $mobileDetector;
+ 
+-	/**
+-	 * Constructor
+-	 * @param MobileDetect $mobileDetector
+-	 */
+-	public function __construct(MobileDetect $mobileDetector) {
+-		$this->mobileDetector = $mobileDetector;
+-	}
++  /**
++   * Constructor.
++   *
++   * @param \Detection\MobileDetect $mobileDetector
++   */
++  public function __construct(MobileDetect $mobileDetector) {
++    $this->mobileDetector = $mobileDetector;
++  }
+ 
+-	/**
+-	 * Get extension twig function
+-	 * @return array
+-	 */
+-	public function getFunctions() {
+-		return array(
+-                        'is_mobile' => new TwigFunction('isMobile', [$this, 'isMobile']),
+-			'is_tablet' => new TwigFunction('isTablet', [$this, 'isTablet']),
+-			'is_device' => new TwigFunction('isDevice', [$this, 'isDevice']),
+-			'is_ios' => new TwigFunction('isIOS', [$this, 'isIOS']),
+-			'is_android_os' => new TwigFunction('isAndroidOS', [$this, 'isAndroidOS']),
++  /**
++   * Get extension twig function.
++   *
++   * @return array
++   */
++  public function getFunctions() {
++    return [
++      'is_mobile' => new TwigFunction('isMobile', [$this, 'isMobile']),
++      'is_tablet' => new TwigFunction('isTablet', [$this, 'isTablet']),
++      'is_device' => new TwigFunction('isDevice', [$this, 'isDevice']),
++      'is_ios' => new TwigFunction('isIOS', [$this, 'isIOS']),
++      'is_android_os' => new TwigFunction('isAndroidOS', [$this, 'isAndroidOS']),
+ 
+-		);
+-	}
++    ];
++  }
+ 
+-	/**
+-	 * Is mobile
+-	 * @return boolean
+-	 */
+-	public function isMobile() {
+-		return $this->mobileDetector->isMobile();
+-	}
++  /**
++   * Is mobile.
++   *
++   * @return bool
++   */
++  public function isMobile() {
++    return $this->mobileDetector->isMobile();
++  }
+ 
+-	/**
+-	 * Is tablet
+-	 * @return boolean
+-	 */
+-	public function isTablet() {
+-		return $this->mobileDetector->isTablet();
+-	}
++  /**
++   * Is tablet.
++   *
++   * @return bool
++   */
++  public function isTablet() {
++    return $this->mobileDetector->isTablet();
++  }
+ 
+-	/**
+-	 * Is device
+-	 * @param string $deviceName is[iPhone|BlackBerry|HTC|Nexus|Dell|Motorola|Samsung|Sony|Asus|Palm|Vertu|...]
+-	 * @return boolean
+-	 */
+-	public function isDevice($deviceName) {
+-		$methodName = 'is' . strtolower((string) $deviceName);
++  /**
++   * Is device.
++   *
++   * @param string $deviceName
++   *   is[iPhone|BlackBerry|HTC|Nexus|Dell|Motorola|Samsung|Sony|Asus|Palm|Vertu|...].
++   *
++   * @return bool
++   */
++  public function isDevice($deviceName) {
++    $methodName = 'is' . strtolower((string) $deviceName);
+ 
+-		return $this->mobileDetector->$methodName();
+-	}
++    return $this->mobileDetector->$methodName();
++  }
+ 
+-	/**
+-	 * Is iOS
+-	 * @return boolean
+-	 */
+-	public function isIOS() {
+-		return $this->mobileDetector->isIOS();
+-	}
++  /**
++   * Is iOS.
++   *
++   * @return bool
++   */
++  public function isIOS() {
++    return $this->mobileDetector->isIOS();
++  }
+ 
+-	/**
+-	 * Is Android OS
+-	 * @return boolean
+-	 */
+-	public function isAndroidOS() {
+-		return $this->mobileDetector->isAndroidOS();
+-	}
++  /**
++   * Is Android OS.
++   *
++   * @return bool
++   */
++  public function isAndroidOS() {
++    return $this->mobileDetector->isAndroidOS();
++  }
+ 
+-	/**
+-	 * Extension name
+-	 * @return string
+-	 */
+-	public function getName() {
+-		return 'mobile_detect.twig.extension';
+-	}
++  /**
++   * Extension name.
++   *
++   * @return string
++   */
++  public function getName() {
++    return 'mobile_detect.twig.extension';
++  }
+ 
+ }

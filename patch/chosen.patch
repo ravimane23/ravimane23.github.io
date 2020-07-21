@@ -1,0 +1,86 @@
+diff --git a/js/chosen.js b/js/chosen.js
+index bd777bd..c4a7288 100644
+--- a/js/chosen.js
++++ b/js/chosen.js
+@@ -3,14 +3,14 @@
+  * Attaches behaviors for the Chosen module.
+  */
+ 
+-(function($, Drupal, drupalSettings) {
++(function ($, Drupal, drupalSettings) {
+   'use strict';
+ 
+   // Temporal workaround while  https://github.com/harvesthq/chosen/issues/515
+   // is fixed. This fix was taken from:
+   // https://github.com/harvesthq/chosen/issues/515#issuecomment-104602031
+   $.fn.oldChosen = $.fn.chosen;
+-  $.fn.chosen = function(options) {
++  $.fn.chosen = function (options) {
+     var select = $(this)
+       , is_creating_chosen = !!options;
+ 
+@@ -74,7 +74,7 @@
+     /**
+      * Drupal attach behavior.
+      */
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+       this.settings = this.getSettings(settings);
+       this.getElements(context).once('chosen').each(function (i, element) {
+         this.createChosen(element);
+@@ -87,7 +87,7 @@
+      * @param {jQuery|HTMLElement} element
+      *   The element.
+      */
+-    createChosen: function(element) {
++    createChosen: function (element) {
+       var $element = $(element);
+       $element.chosen(this.getElementOptions($element));
+     },
+@@ -127,7 +127,7 @@
+       var $elements = $context.find(selector || this.settings.selector);
+ 
+       // Remove elements that should not be converted into Chosen.
+-      $elements = $elements.filter(function(i, element) {
++      $elements = $elements.filter(function (i, element) {
+         return this.filterElements(element);
+       }.bind(this));
+ 
+diff --git a/modules/chosen_field/tests/src/Functional/ChosenFieldWidgetsTest.php b/modules/chosen_field/tests/src/Functional/ChosenFieldWidgetsTest.php
+index b0fcb90..1d38dcc 100644
+--- a/modules/chosen_field/tests/src/Functional/ChosenFieldWidgetsTest.php
++++ b/modules/chosen_field/tests/src/Functional/ChosenFieldWidgetsTest.php
+@@ -228,7 +228,7 @@ class ChosenFieldWidgetsTest extends FieldTestBase {
+   /**
+    * Tests the 'options_select' widget (multiple select).
+    */
+-  function testSelectListMultiple() {
++  public function testSelectListMultiple() {
+     // Create an instance of the 'multiple values' field.
+     $instance = \Drupal::entityTypeManager()->getStorage('field_config')->create([
+       'field_storage' => $this->card_2,
+diff --git a/modules/chosen_lib/src/Commands/ChosenLibCommands.php b/modules/chosen_lib/src/Commands/ChosenLibCommands.php
+index 2442d1d..6ead08a 100644
+--- a/modules/chosen_lib/src/Commands/ChosenLibCommands.php
++++ b/modules/chosen_lib/src/Commands/ChosenLibCommands.php
+@@ -115,7 +115,7 @@ class ChosenLibCommands extends DrushCommands {
+       $destination = getcwd() . '/' . basename($file);
+     }
+ 
+-    // Copied from: \Drush\Commands\SyncViaHttpCommands::downloadFile
++    // Copied from: \Drush\Commands\SyncViaHttpCommands::downloadFile.
+     static $use_wget;
+     if ($use_wget === NULL) {
+       $process = Drush::process(['which', 'wget']);
+diff --git a/tests/modules/chosen_test/src/Form/ChosenTestForm.php b/tests/modules/chosen_test/src/Form/ChosenTestForm.php
+index ff9d6dd..628e55f 100644
+--- a/tests/modules/chosen_test/src/Form/ChosenTestForm.php
++++ b/tests/modules/chosen_test/src/Form/ChosenTestForm.php
+@@ -4,7 +4,6 @@ namespace Drupal\chosen_test\Form;
+ 
+ use Drupal\Core\Form\FormBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\system\Form;
+ 
+ /**
+  * Implements a ChosenConfig form.

@@ -1,0 +1,12 @@
+diff --git a/src/Form/RestUIForm.php b/src/Form/RestUIForm.php
+index de15660..505f7fe 100644
+--- a/src/Form/RestUIForm.php
++++ b/src/Form/RestUIForm.php
+@@ -175,7 +175,6 @@ class RestUIForm extends ConfigFormBase {
+     $form['#tree'] = TRUE;
+     $form['resource_id'] = ['#type' => 'value', '#value' => $resource_id];
+ 
+-
+     $authentication_providers = array_keys($this->authenticationCollector->getSortedProviders());
+     $authentication_providers = array_combine($authentication_providers, $authentication_providers);
+     $format_options = array_combine($this->formats, $this->formats);

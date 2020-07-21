@@ -1,0 +1,13 @@
+diff --git a/src/Plugin/ImporterBase.php b/src/Plugin/ImporterBase.php
+index 7af81ae..f41565b 100644
+--- a/src/Plugin/ImporterBase.php
++++ b/src/Plugin/ImporterBase.php
+@@ -99,7 +99,7 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
+                   $return['content'][$index][$field][$in] = $content;
+                 }
+               }
+-              else if (isset($return['content'][$index][$field])) {
++              elseif (isset($return['content'][$index][$field])) {
+                 $prev = $return['content'][$index][$field];
+                 $return['content'][$index][$field] = [];
+ 

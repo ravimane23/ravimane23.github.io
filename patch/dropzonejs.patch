@@ -1,0 +1,171 @@
+diff --git a/js/dropzone.integration.js b/js/dropzone.integration.js
+index 14b1bd0..988f0a6 100644
+--- a/js/dropzone.integration.js
++++ b/js/dropzone.integration.js
+@@ -15,7 +15,7 @@
+     attach: function (context) {
+       Dropzone.autoDiscover = false;
+ 
+-      $('.dropzone-enable').each(function() {
++      $('.dropzone-enable').each(function () {
+         var selector = $(this);
+         selector.addClass('dropzone');
+ 
+diff --git a/modules/eb_widget/src/Plugin/EntityBrowser/Widget/DropzoneJsEbWidget.php b/modules/eb_widget/src/Plugin/EntityBrowser/Widget/DropzoneJsEbWidget.php
+index 1b4b49b..5ecc656 100644
+--- a/modules/eb_widget/src/Plugin/EntityBrowser/Widget/DropzoneJsEbWidget.php
++++ b/modules/eb_widget/src/Plugin/EntityBrowser/Widget/DropzoneJsEbWidget.php
+@@ -219,7 +219,7 @@ class DropzoneJsEbWidget extends WidgetBase {
+    *
+    * @param array $form
+    *   Form structure.
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   Form state object.
+    *
+    * @return \Drupal\file\FileInterface[]
+@@ -409,7 +409,6 @@ class DropzoneJsEbWidget extends WidgetBase {
+       '#default_value' => $configuration['extensions'],
+     ];
+ 
+-
+     $exif_found = $this->libraryDiscovery->getLibraryByName('dropzonejs', 'exif-js');
+ 
+     $form['clientside_resize'] = [
+@@ -437,11 +436,11 @@ class DropzoneJsEbWidget extends WidgetBase {
+       '#min' => 0,
+       '#states' => [
+         'visible' => [
+-          ':input[name="table[' . $this->uuid() .  '][form][clientside_resize]"]' => [
++          ':input[name="table[' . $this->uuid() . '][form][clientside_resize]"]' => [
+             'checked' => TRUE,
+           ],
+-        ]
+-      ]
++        ],
++      ],
+     ];
+ 
+     $form['resize_height'] = [
+@@ -453,11 +452,11 @@ class DropzoneJsEbWidget extends WidgetBase {
+       '#min' => 0,
+       '#states' => [
+         'visible' => [
+-          ':input[name="table[' . $this->uuid() .  '][form][clientside_resize]"]' => [
++          ':input[name="table[' . $this->uuid() . '][form][clientside_resize]"]' => [
+             'checked' => TRUE,
+           ],
+-        ]
+-      ]
++        ],
++      ],
+     ];
+ 
+     $form['resize_quality'] = [
+@@ -469,11 +468,11 @@ class DropzoneJsEbWidget extends WidgetBase {
+       '#step' => 0.1,
+       '#states' => [
+         'visible' => [
+-          ':input[name="table[' . $this->uuid() .  '][form][clientside_resize]"]' => [
++          ':input[name="table[' . $this->uuid() . '][form][clientside_resize]"]' => [
+             'checked' => TRUE,
+           ],
+-        ]
+-      ]
++        ],
++      ],
+     ];
+ 
+     $form['resize_method'] = [
+@@ -486,11 +485,11 @@ class DropzoneJsEbWidget extends WidgetBase {
+       ],
+       '#states' => [
+         'visible' => [
+-          ':input[name="table[' . $this->uuid() .  '][form][clientside_resize]"]' => [
++          ':input[name="table[' . $this->uuid() . '][form][clientside_resize]"]' => [
+             'checked' => TRUE,
+           ],
+-        ]
+-      ]
++        ],
++      ],
+     ];
+ 
+     $form['thumbnail_method'] = [
+@@ -503,11 +502,11 @@ class DropzoneJsEbWidget extends WidgetBase {
+       ],
+       '#states' => [
+         'visible' => [
+-          ':input[name="table[' . $this->uuid() .  '][form][clientside_resize]"]' => [
++          ':input[name="table[' . $this->uuid() . '][form][clientside_resize]"]' => [
+             'checked' => TRUE,
+           ],
+-        ]
+-      ]
++        ],
++      ],
+     ];
+ 
+     return $form;
+diff --git a/src/Events/DropzoneMediaEntityCreateEvent.php b/src/Events/DropzoneMediaEntityCreateEvent.php
+index aaffd64..93789b1 100644
+--- a/src/Events/DropzoneMediaEntityCreateEvent.php
++++ b/src/Events/DropzoneMediaEntityCreateEvent.php
+@@ -103,7 +103,7 @@ class DropzoneMediaEntityCreateEvent extends Event {
+    * Get the form that contains the Dropzone element.
+    *
+    * @return array
+-   *    The form that contains the Dropzone element.
++   *   The form that contains the Dropzone element.
+    */
+   public function getForm() {
+     return $this->form;
+@@ -113,7 +113,7 @@ class DropzoneMediaEntityCreateEvent extends Event {
+    * Get the form state.
+    *
+    * @return \Drupal\Core\Form\FormStateInterface
+-   *    The current formstate.
++   *   The current formstate.
+    */
+   public function getFormState() {
+     return $this->formState;
+@@ -133,7 +133,7 @@ class DropzoneMediaEntityCreateEvent extends Event {
+    * Get the Dropzone form element.
+    *
+    * @return array
+-   *    The dropzone element.
++   *   The dropzone element.
+    */
+   public function getElement() {
+     return $this->element;
+diff --git a/tests/src/FunctionalJavascript/DropzoneJsEbWidgetTest.php b/tests/src/FunctionalJavascript/DropzoneJsEbWidgetTest.php
+index 504cb19..62c621e 100644
+--- a/tests/src/FunctionalJavascript/DropzoneJsEbWidgetTest.php
++++ b/tests/src/FunctionalJavascript/DropzoneJsEbWidgetTest.php
+@@ -67,4 +67,5 @@ class DropzoneJsEbWidgetTest extends DropzoneJsWebDriverTestBase {
+     sleep(2);
+     $this->assertSession()->elementContains('xpath', '//div[contains(@class, "entities-list")]/div[contains(@class, "label")]', 'notalama.jpg');
+   }
++
+ }
+diff --git a/tests/src/FunctionalJavascript/DropzoneJsWebDriverTestBase.php b/tests/src/FunctionalJavascript/DropzoneJsWebDriverTestBase.php
+index 0a858b0..2832d43 100644
+--- a/tests/src/FunctionalJavascript/DropzoneJsWebDriverTestBase.php
++++ b/tests/src/FunctionalJavascript/DropzoneJsWebDriverTestBase.php
+@@ -19,7 +19,7 @@ abstract class DropzoneJsWebDriverTestBase extends WebDriverTestBase {
+    *
+    * @var string
+    */
+-  var $fileData = "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAAAAABVicqIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA
++  public $fileData = "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAAAAABVicqIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA
+ B3RJTUUH3gIYBAEMHCkuWQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUH
+ AAAAQElEQVRo3u3NQQ0AAAgEoNN29i9kCh9uUICa3OtIJBKJRCKRSCQSiUQikUgkEolEIpFIJBKJ
+ RCKRSCQSiUTyPlnSFQER9VCp/AAAAABJRU5ErkJggg==";
+@@ -51,6 +51,7 @@ RCKRSCQSiUTyPlnSFQER9VCp/AAAAABJRU5ErkJggg==";
+    *
+    * @return \Drupal\file\FileInterface
+    *   Returns an image.
++   *
+    * @throws \Drupal\Core\Entity\EntityStorageException
+    */
+   protected function getFile($name, $extension = 'jpg') {

@@ -1,0 +1,55 @@
+diff --git a/css/livechat.css b/css/livechat.css
+index 14ecabb..517cfd5 100644
+--- a/css/livechat.css
++++ b/css/livechat.css
+@@ -104,7 +104,8 @@
+ }
+ 
+ @media only screen and (max-width:975px) {
+-  #livechat_panel, #login_panel {
++  #livechat_panel,
++  #login_panel {
+     flex-direction: column;
+   }
+   .livechat_screenshot {
+@@ -186,7 +187,8 @@ iframe#login-with-livechat,
+   margin-top: 8px;
+ }
+ 
+-.fadein, .fadeout {
++.fadein,
++.fadeout {
+   opacity: 0;
+   -moz-transition: opacity 0.4s ease-in-out;
+   -o-transition: opacity 0.4s ease-in-out;
+diff --git a/js/livechat_admin.js b/js/livechat_admin.js
+index 598ee92..a8e7acb 100644
+--- a/js/livechat_admin.js
++++ b/js/livechat_admin.js
+@@ -35,7 +35,7 @@
+         $('#livechat_mobile').val(props.mobile);
+       }
+ 
+-      $('.advanced_options').on('change', function() {
++      $('.advanced_options').on('change', function () {
+         var mobile = $('#livechat_mobile').val();
+         $('#advanced_settings').addClass('disable_advanced_settings');
+         $.ajax({
+@@ -45,7 +45,7 @@
+           data: {
+             mobile: mobile
+           }
+-        }).done(function(){
++        }).done(function () {
+           showNotification();
+           $('#advanced_settings').removeClass('disable_advanced_settings');
+         });
+@@ -56,7 +56,7 @@
+           type: 'POST',
+           dataType: 'json',
+           url: settings.livechat.livechat_admin.reset_properties_url,
+-        }).done(function(){
++        }).done(function () {
+           logoutLiveChat();
+ 
+           $('#login_panel').show();

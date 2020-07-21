@@ -1,0 +1,11 @@
+diff --git a/tests/src/Functional/RedirectManagerTest.php b/tests/src/Functional/RedirectManagerTest.php
+index 7c55ab2..60fc9e3 100644
+--- a/tests/src/Functional/RedirectManagerTest.php
++++ b/tests/src/Functional/RedirectManagerTest.php
+@@ -89,5 +89,5 @@ class RedirectManagerTest extends BrowserTestBase {
+   // TODO A test would be great, if possible.
+   // public function testRedirectLoop() {
+   //  $this->markTestIncomplete('Not yet implemented');
+-  // }
++  // }.
+ }

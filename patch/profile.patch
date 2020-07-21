@@ -1,0 +1,92 @@
+diff --git a/profile.post_update.php b/profile.post_update.php
+index 2ad2159..413d63f 100644
+--- a/profile.post_update.php
++++ b/profile.post_update.php
+@@ -1,5 +1,9 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
+ use Drupal\Core\Config\ExtensionInstallStorage;
+ use Drupal\Core\Config\InstallStorage;
+ use Drupal\Core\Entity\Entity\EntityFormDisplay;
+diff --git a/src/Controller/ProfileController.php b/src/Controller/ProfileController.php
+index 6903b5f..c62560a 100644
+--- a/src/Controller/ProfileController.php
++++ b/src/Controller/ProfileController.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Controller\ControllerBase;
+ use Drupal\profile\Entity\ProfileInterface;
+ use Symfony\Component\HttpFoundation\RedirectResponse;
+ 
++/**
++ *
++ */
+ class ProfileController extends ControllerBase {
+ 
+   /**
+diff --git a/src/Form/ProfileForm.php b/src/Form/ProfileForm.php
+index e8df392..162c080 100644
+--- a/src/Form/ProfileForm.php
++++ b/src/Form/ProfileForm.php
+@@ -5,6 +5,9 @@ namespace Drupal\profile\Form;
+ use Drupal\Core\Entity\ContentEntityForm;
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ class ProfileForm extends ContentEntityForm {
+ 
+   /**
+diff --git a/tests/src/Kernel/ProfileTokenTest.php b/tests/src/Kernel/ProfileTokenTest.php
+index 585fe4c..ed7e8c9 100644
+--- a/tests/src/Kernel/ProfileTokenTest.php
++++ b/tests/src/Kernel/ProfileTokenTest.php
+@@ -2,9 +2,6 @@
+ 
+ namespace Drupal\Tests\profile\Kernel;
+ 
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+-use Drupal\Core\Entity\EntityViewBuilderInterface;
+-use Drupal\Core\Render\RendererInterface;
+ use Drupal\profile\Entity\Profile;
+ use Drupal\profile\Entity\ProfileType;
+ use Drupal\field\Entity\FieldStorageConfig;
+@@ -27,7 +24,7 @@ class ProfileTokenTest extends EntityKernelTestBase {
+     'filter',
+     'profile',
+     'views',
+-    'token'
++    'token',
+   ];
+ 
+   /**
+@@ -60,7 +57,7 @@ class ProfileTokenTest extends EntityKernelTestBase {
+     $this->installEntitySchema('view');
+     $this->installSchema('user', ['users_data']);
+     $this->installConfig(self::$modules);
+-    /** @var EntityTypeManagerInterface $entity_type_manager */
++    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
+     $entity_type_manager = $this->container->get('entity_type.manager');
+     $this->profileStorage = $entity_type_manager->getStorage('profile');
+     $this->viewBuilder = $entity_type_manager->getViewBuilder('profile');
+@@ -115,7 +112,7 @@ class ProfileTokenTest extends EntityKernelTestBase {
+     // it can be compared to the token output.
+     $entity_type_manager = \Drupal::entityTypeManager();
+ 
+-    /** @var EntityViewBuilderInterface $view_builder */
++    /** @var \Drupal\Core\Entity\EntityViewBuilderInterface $view_builder */
+     $view_builder = $entity_type_manager->getViewBuilder('profile');
+     $entity_view = $view_builder->view($profile, 'token');
+     $field_view = $view_builder->viewField($profile->get('profile_fullname'));
+@@ -123,7 +120,7 @@ class ProfileTokenTest extends EntityKernelTestBase {
+     // Add the pre_render method to match the rendered output of a field token.
+     $field_output['#pre_render'][] = '\Drupal\token\TokenFieldRender::preRender';
+ 
+-    /** @var RendererInterface $renderer */
++    /** @var \Drupal\Core\Render\RendererInterface $renderer */
+     $renderer = \Drupal::service('renderer');
+     $rendered_field = $renderer->renderPlain($field_view);
+     $rendered_entity = $renderer->renderRoot($entity_view);

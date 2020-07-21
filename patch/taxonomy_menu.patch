@@ -1,0 +1,20 @@
+diff --git a/src/Plugin/Menu/TaxonomyMenuMenuLink.php b/src/Plugin/Menu/TaxonomyMenuMenuLink.php
+index 0ac8e6e..b218cf8 100644
+--- a/src/Plugin/Menu/TaxonomyMenuMenuLink.php
++++ b/src/Plugin/Menu/TaxonomyMenuMenuLink.php
+@@ -99,7 +99,8 @@ class TaxonomyMenuMenuLink extends MenuLinkBase implements ContainerFactoryPlugi
+     if (!empty($link) && $link->hasTranslation($language)) {
+       $translation = $link->getTranslation($language);
+       return $translation->label();
+-    } else if ($link) {
++    }
++    elseif ($link) {
+       return $link->label();
+     }
+ 
+@@ -168,4 +169,5 @@ class TaxonomyMenuMenuLink extends MenuLinkBase implements ContainerFactoryPlugi
+     $override = $this->staticOverride->loadOverride($this->getPluginId());
+     return $override !== NULL && !empty($override);
+   }
++
+ }

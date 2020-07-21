@@ -1,0 +1,149 @@
+diff --git a/domain/src/Commands/DomainCommandException.php b/domain/src/Commands/DomainCommandException.php
+index 0ab54726..7bd14ccf 100644
+--- a/domain/src/Commands/DomainCommandException.php
++++ b/domain/src/Commands/DomainCommandException.php
+@@ -1,10 +1,10 @@
+ <?php
+-/**
+- *
+- */
+ 
+ namespace Drupal\domain\Commands;
+ 
++/**
++ *
++ */
+ class DomainCommandException extends \Exception {
+ 
+ }
+diff --git a/domain_access/src/Commands/DomainAccessCommands.php b/domain_access/src/Commands/DomainAccessCommands.php
+index fe408cb3..859a844a 100644
+--- a/domain_access/src/Commands/DomainAccessCommands.php
++++ b/domain_access/src/Commands/DomainAccessCommands.php
+@@ -40,22 +40,22 @@ class DomainAccessCommands extends DomainCommands {
+     return $result;
+   }
+ 
+-/**
+- * @hook option domain:delete
+- */
++  /**
++   * @hook option domain:delete
++   */
+   public function deleteOptions(Command $command, AnnotationData $annotationData) {
+     $command->addOption(
+         'content-assign',
+         '',
+         InputOption::VALUE_OPTIONAL,
+         'Reassign content for Domain Access',
+-        null
++        NULL
+     );
+   }
+ 
+-/**
+- * @hook on-event domain-delete
+- */
++  /**
++   * @hook on-event domain-delete
++   */
+   public function domainAccessDomainDelete($target_domain, $options) {
+     // Run our own deletion routine here.
+     if (is_null($options['content-assign'])) {
+diff --git a/domain_alias/src/DomainAliasForm.php b/domain_alias/src/DomainAliasForm.php
+index 27928b0f..e29446d3 100644
+--- a/domain_alias/src/DomainAliasForm.php
++++ b/domain_alias/src/DomainAliasForm.php
+@@ -6,7 +6,6 @@ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Entity\EntityForm;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\domain\DomainStorageInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+diff --git a/domain_config/tests/modules/domain_config_hook_test/src/PageCache/RequestPolicy/PageCacheRequestPolicy.php b/domain_config/tests/modules/domain_config_hook_test/src/PageCache/RequestPolicy/PageCacheRequestPolicy.php
+index 6d0cc4b4..07f783d0 100644
+--- a/domain_config/tests/modules/domain_config_hook_test/src/PageCache/RequestPolicy/PageCacheRequestPolicy.php
++++ b/domain_config/tests/modules/domain_config_hook_test/src/PageCache/RequestPolicy/PageCacheRequestPolicy.php
+@@ -4,7 +4,6 @@ namespace Drupal\domain_config_hook_test\PageCache\RequestPolicy;
+ 
+ use Drupal\Core\Config\ConfigFactory;
+ use Drupal\Core\PageCache\RequestPolicyInterface;
+-use Drupal\Core\Session\SessionConfigurationInterface;
+ use Symfony\Component\HttpFoundation\Request;
+ 
+ /**
+diff --git a/domain_source/js/domain_source.js b/domain_source/js/domain_source.js
+index 6e549663..9f1101d9 100644
+--- a/domain_source/js/domain_source.js
++++ b/domain_source/js/domain_source.js
+@@ -25,7 +25,7 @@
+       // Get the domains selected by the domain access field.
+       function getDomains() {
+         var domains = new Array();
+-        $("#edit-field-domain-access :checked").each(function(index, obj) {
++        $("#edit-field-domain-access :checked").each(function (index, obj) {
+           domains.push(obj.value);
+         });
+         setOptions(domains);
+@@ -33,7 +33,7 @@
+ 
+       // Based on selected domains, show/hide the selection options.
+       function setOptions(domains) {
+-        $("#edit-field-domain-source option").each(function(index, obj) {
++        $("#edit-field-domain-source option").each(function (index, obj) {
+           if (jQuery.inArray(obj.value, domains) == -1 && obj.value != '_none') {
+             // If the current selection is removed, reset the selection to _none.
+             if ($("#edit-field-domain-source").val() == obj.value) {
+diff --git a/domain_source/src/Commands/DomainSourceCommands.php b/domain_source/src/Commands/DomainSourceCommands.php
+index 452f0efd..e0a92b10 100644
+--- a/domain_source/src/Commands/DomainSourceCommands.php
++++ b/domain_source/src/Commands/DomainSourceCommands.php
+@@ -49,7 +49,7 @@ class DomainSourceCommands extends DomainCommands {
+         '',
+         InputOption::VALUE_OPTIONAL,
+         'Reassign content for Domain Source',
+-        null
++        NULL
+     );
+   }
+ 
+diff --git a/domain_source/src/DomainSourceServiceProvider.php b/domain_source/src/DomainSourceServiceProvider.php
+index d0f09a34..59cae6b0 100644
+--- a/domain_source/src/DomainSourceServiceProvider.php
++++ b/domain_source/src/DomainSourceServiceProvider.php
+@@ -26,8 +26,8 @@ class DomainSourceServiceProvider extends ServiceProviderBase {
+   /**
+    * Determines the Drupal version.
+    *
+-   * @return integer
+-   *  The core numberic version.
++   * @return int
++   *   The core numberic version.
+    */
+   private function getDrupalVersion() {
+     return (int) substr(\Drupal::VERSION, 0, 1);
+diff --git a/domain_source/tests/src/Functional/DomainSourceParameterTest.php b/domain_source/tests/src/Functional/DomainSourceParameterTest.php
+index ae14efb0..accaf79c 100644
+--- a/domain_source/tests/src/Functional/DomainSourceParameterTest.php
++++ b/domain_source/tests/src/Functional/DomainSourceParameterTest.php
+@@ -17,7 +17,7 @@ class DomainSourceParameterTest extends DomainTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array('domain', 'domain_source', 'domain_source_test', 'field', 'node', 'user');
++  public static $modules = ['domain', 'domain_source', 'domain_source_test', 'field', 'node', 'user'];
+ 
+   /**
+    * {@inheritdoc}
+@@ -29,6 +29,9 @@ class DomainSourceParameterTest extends DomainTestBase {
+     DomainTestBase::domainCreateTestDomains(3);
+   }
+ 
++  /**
++   *
++   */
+   public function testDomainSourceUrls() {
+     // Create a node, assigned to a source domain.
+     $id = 'example_com';

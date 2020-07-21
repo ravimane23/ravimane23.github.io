@@ -1,0 +1,73 @@
+diff --git a/js/addtoany.admin.js b/js/addtoany.admin.js
+index b4fe864..537851a 100644
+--- a/js/addtoany.admin.js
++++ b/js/addtoany.admin.js
+@@ -3,7 +3,6 @@
+   Drupal.behaviors.addtoany = {
+     attach: function (context, settings) {
+ 
+-
+       // Initial page setup
+ 
+       var addtoany_icon = $('input[name="addtoany_universal_button"]').next('label').find('img:first');
+@@ -12,7 +11,6 @@
+       // Set the A2A icon's size to match selected Icon Size
+       addtoany_icon.height(initial_icon_size_int).width(initial_icon_size_int);
+ 
+-
+       // Bring attention to large A2A icon option
+       // because the universal button will likely be changed to match the other icons
+       // (Drupal #states can't handle this)
+@@ -26,7 +24,6 @@
+ 
+       });
+ 
+-
+     }
+   };
+ 
+diff --git a/src/Form/AddToAnySettingsForm.php b/src/Form/AddToAnySettingsForm.php
+index c7b357f..9d4b614 100644
+--- a/src/Form/AddToAnySettingsForm.php
++++ b/src/Form/AddToAnySettingsForm.php
+@@ -224,7 +224,7 @@ class AddToAnySettingsForm extends ConfigFormBase {
+       $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo($entityId);
+       $links = [];
+ 
+-      foreach($bundles as $machine_name => $bundle) {
++      foreach ($bundles as $machine_name => $bundle) {
+         $label = $bundle['label'];
+ 
+         // Some labels are TranslatableMarkup objects (such as the File entity).
+@@ -250,7 +250,7 @@ class AddToAnySettingsForm extends ConfigFormBase {
+         '#title' => $this->t('@entity', ['@entity' => $entity->getLabel()]),
+         '#default_value' => $addtoany_settings->get("entities.{$entityId}"),
+         '#description' => $description,
+-        '#attributes' => ['class' => ['addtoany-entity-checkbox']]
++        '#attributes' => ['class' => ['addtoany-entity-checkbox']],
+       ];
+     }
+ 
+@@ -278,7 +278,7 @@ class AddToAnySettingsForm extends ConfigFormBase {
+       ->set('universal_button_placement', $values['addtoany_universal_button_placement'])
+       ->set('no_3p', $values['addtoany_no_3p']);
+ 
+-    foreach(self::getContentEntities() as $entity) {
++    foreach (self::getContentEntities() as $entity) {
+       $entityId = $entity->id();
+       $this->config('addtoany.settings')
+         ->set("entities.{$entityId}", $values[$entityId]);
+@@ -291,6 +291,7 @@ class AddToAnySettingsForm extends ConfigFormBase {
+ 
+   /**
+    * Get all available content entities in the environment.
++   *
+    * @return array
+    */
+   public static function getContentEntities() {
+@@ -305,4 +306,5 @@ class AddToAnySettingsForm extends ConfigFormBase {
+ 
+     return $content_entity_types;
+   }
++
+ }

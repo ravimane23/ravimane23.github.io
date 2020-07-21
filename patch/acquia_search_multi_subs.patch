@@ -1,0 +1,913 @@
+diff --git a/acquia_search_multi_subs.common.inc b/acquia_search_multi_subs.common.inc
+index 8b046ab..07d0d6c 100644
+--- a/acquia_search_multi_subs.common.inc
++++ b/acquia_search_multi_subs.common.inc
+@@ -24,12 +24,12 @@
+  * could be WXYZ-12345.dev.wwwexamplecom
+  *
+  * @param string $acquia_identifier
+- *   Subscription ID. E.g. WXYZ-12345
++ *   Subscription ID. E.g. WXYZ-12345.
+  * @param string $ah_site_environment
+  *   String with the environment, from $_ENV[AH_SITE_ENVIRONMENT].
+  *   E.g. 'dev', 'test', 'prod'.
+  * @param string $ah_site_name
+- *   From $_ENV[AH_SITE_NAME]
++ *   From $_ENV[AH_SITE_NAME].
+  * @param string $sites_foldername
+  *   Optional. The current site folder within [docroot]/sites/*.
+  *   @see conf_path()
+@@ -38,7 +38,7 @@
+  */
+ function acquia_search_multi_subs_get_expected_search_cores($acquia_identifier, $ah_site_environment, $ah_site_name, $sites_foldername = 'default') {
+   // Build eligible environments array.
+-  $ah_environments = array();
++  $ah_environments = [];
+   // If we have the proper environment, add it as the first option.
+   if ($ah_site_environment) {
+     $ah_environments[$ah_site_environment] = $ah_site_name;
+@@ -49,12 +49,12 @@ function acquia_search_multi_subs_get_expected_search_cores($acquia_identifier,
+     $ah_environments['dev'] = $ah_site_name;
+   }
+ 
+-  $expected_core_names = array();
++  $expected_core_names = [];
+   foreach ($ah_environments as $site_environment => $site_name) {
+     // The possible core name suffixes are [current site folder name] and 'default'.
+-    $core_suffixes = array_unique(array($sites_foldername, 'default'));
++    $core_suffixes = array_unique([$sites_foldername, 'default']);
+     foreach ($core_suffixes as $core_suffix) {
+-      // Fix the $core_suffix: alphanumeric only
++      // Fix the $core_suffix: alphanumeric only.
+       $core_suffix = preg_replace('@[^a-zA-Z0-9]+@', '', $core_suffix);
+       // We first add a 60-char-length indexname, which is the Solr index name limit.
+       $expected_core_names[] = substr($acquia_identifier . '.' . $site_environment . '.' . $core_suffix, 0, 60);
+@@ -69,7 +69,7 @@ function acquia_search_multi_subs_get_expected_search_cores($acquia_identifier,
+         $expected_core_names[] = $acquia_identifier . '_' . $site_name;
+       }
+     }
+-    // Add our failover options
++    // Add our failover options.
+     $expected_core_names[] = $acquia_identifier . '.' . $site_environment . '.failover';
+   }
+   // Add suffix-less core if we're on prod now. If the sitename is empty,
+@@ -101,27 +101,27 @@ function acquia_search_multi_subs_get_settings_form(array &$form, array &$form_s
+   $configuration += acquia_search_multi_subs_default_configuration();
+ 
+   // Define the override form.
+-  $form['acquia_override_subscription'] = array(
++  $form['acquia_override_subscription'] = [
+     '#type' => 'fieldset',
+     '#title' => t('Configure Acquia Search'),
+-    '#description' => t('This is usually not necessary unless you really want this search environment to connect to a different Acquia search subscription. By default it uses your subscription that was configured in the <a href="@url">Acquia Agent</a>.', array('@url' => url('admin/config/system/acquia-agent'))),
++    '#description' => t('This is usually not necessary unless you really want this search environment to connect to a different Acquia search subscription. By default it uses your subscription that was configured in the <a href="@url">Acquia Agent</a>.', ['@url' => url('admin/config/system/acquia-agent')]),
+     '#collapsed' => FALSE,
+     '#collapsible' => TRUE,
+     '#tree' => TRUE,
+     '#weight' => 11,
+-    '#element_validate' => array('acquia_search_multi_subs_form_validate'),
+-  );
++    '#element_validate' => ['acquia_search_multi_subs_form_validate'],
++  ];
+ 
+   // Add a checkbox to auto switch per environment.
+-  $form['acquia_override_subscription']['acquia_override_auto_switch'] = array(
++  $form['acquia_override_subscription']['acquia_override_auto_switch'] = [
+     '#type' => 'checkbox',
+     '#title' => t('Automatically switch when an Acquia Environment is detected'),
+     '#description' => t('Based on the detection of the AH_SITE_NAME and AH_SITE_ENVIRONMENT header we can detect which environment you are currently using and switch the Acquia Search Core automatically if there is a corresponding core.'),
+     '#default_value' => $configuration['acquia_override_auto_switch'],
+-  );
++  ];
+ 
+   // Add a form element to make it easier to choose from multiple cores.
+-  $options = array('default' => t('Default'), 'other' => t('Other'));
++  $options = ['default' => t('Default'), 'other' => t('Other')];
+   $search_cores = acquia_search_multi_subs_get_search_cores();
+   $failover_exists = NULL;
+   $failover_region = NULL;
+@@ -130,91 +130,91 @@ function acquia_search_multi_subs_get_settings_form(array &$form, array &$form_s
+       $options[$search_core['core_id']] = $search_core['core_id'];
+       if (strstr($search_core['core_id'], '.failover')) {
+         $failover_exists = TRUE;
+-        $matches = array();
++        $matches = [];
+         preg_match("/^([^-]*)/", $search_core['balancer'], $matches);
+         $failover_region = reset($matches);
+       }
+     }
+   }
+-  $form['acquia_override_subscription']['acquia_override_selector'] = array(
++  $form['acquia_override_subscription']['acquia_override_selector'] = [
+     '#type' => 'select',
+     '#title' => t('Acquia Search Core'),
+     '#options' => $options,
+     '#default_value' => $configuration['acquia_override_selector'],
+     '#description' => t('Choose any of the available search cores or manually define one by choosing "other". To use the default settings, select default.'),
+-    '#states' => array(
+-      'visible' => array(
+-        ':input[name*="acquia_override_auto_switch"]' => array('checked' => FALSE),
+-      ),
+-    ),
+-  );
++    '#states' => [
++      'visible' => [
++        ':input[name*="acquia_override_auto_switch"]' => ['checked' => FALSE],
++      ],
++    ],
++  ];
+ 
+   // Show a warning if there are not enough cores available to make the auto
+   // switch possible.
+   if (count($options) <= 2) {
+-    $t_args = array('!refresh' => l(t('refresh'), 'admin/config/system/acquia-search-multi-subs/refresh-status', array('query' => array( 'destination' => current_path()))));
++    $t_args = ['!refresh' => l(t('refresh'), 'admin/config/system/acquia-search-multi-subs/refresh-status', ['query' => ['destination' => current_path()]])];
+     drupal_set_message(t('It seems you only have 1 Acquia Search index. To find out if you are eligible for a search core per environment it is recommended you open a support ticket with Acquia. Once you have that settled, !refresh your subscription so it pulls in the latest information to connect to your indexes.', $t_args), 'warning', FALSE);
+   }
+ 
+   // Generate the custom form.
+-  $form['acquia_override_subscription']['acquia_override_subscription_id'] = array(
++  $form['acquia_override_subscription']['acquia_override_subscription_id'] = [
+     '#type' => 'textfield',
+     '#title' => t('Enter your Acquia Subscription Identifier'),
+     '#description' => t('Prefilled with the identifier of the Acquia Connector. You can find your details in Acquia Insight.'),
+     '#default_value' => $configuration['acquia_override_subscription_id'],
+-    '#states' => array(
+-      'visible' => array(
+-        ':input[name*="acquia_override_selector"]' => array('value' => 'other'),
+-        ':input[name*="acquia_override_auto_switch"]' => array('checked' => FALSE),
+-      ),
+-    ),
+-  );
++    '#states' => [
++      'visible' => [
++        ':input[name*="acquia_override_selector"]' => ['value' => 'other'],
++        ':input[name*="acquia_override_auto_switch"]' => ['checked' => FALSE],
++      ],
++    ],
++  ];
+ 
+-  $form['acquia_override_subscription']['acquia_override_subscription_key'] = array(
++  $form['acquia_override_subscription']['acquia_override_subscription_key'] = [
+     '#type' => 'textfield',
+     '#title' => t('Enter your Acquia Subscription key'),
+     '#description' => t('Prefilled with the key of the Acquia Connector. You can find your details in Acquia Insight.'),
+     '#default_value' => $configuration['acquia_override_subscription_key'],
+-    '#states' => array(
+-      'visible' => array(
+-        ':input[name*="acquia_override_selector"]' => array('value' => 'other'),
+-        ':input[name*="acquia_override_auto_switch"]' => array('checked' => FALSE),
+-      ),
+-    ),
+-  );
++    '#states' => [
++      'visible' => [
++        ':input[name*="acquia_override_selector"]' => ['value' => 'other'],
++        ':input[name*="acquia_override_auto_switch"]' => ['checked' => FALSE],
++      ],
++    ],
++  ];
+ 
+-  $form['acquia_override_subscription']['acquia_override_subscription_corename'] = array(
++  $form['acquia_override_subscription']['acquia_override_subscription_corename'] = [
+     '#type' => 'textfield',
+     '#description' => t('Please enter the name of the Acquia Search core you want to connect to that belongs to the above identifier and key. In most cases you would want to use the dropdown list to get the correct value.'),
+     '#title' => t('Enter your Acquia Search Core Name'),
+     '#default_value' => $configuration['acquia_override_subscription_corename'],
+-    '#states' => array(
+-      'visible' => array(
+-        ':input[name*="acquia_override_selector"]' => array('value' => 'other'),
+-        ':input[name*="acquia_override_auto_switch"]' => array('checked' => FALSE),
+-      ),
+-    ),
+-  );
++    '#states' => [
++      'visible' => [
++        ':input[name*="acquia_override_selector"]' => ['value' => 'other'],
++        ':input[name*="acquia_override_auto_switch"]' => ['checked' => FALSE],
++      ],
++    ],
++  ];
+ 
+   // Check if we have MR cores.
+   if ($failover_exists) {
+     // Add a checkbox to auto switch to the failover variant in a defined region.
+-    $t_args = array(
++    $t_args = [
+       '%region' => $failover_region,
+       '@import' => url('https://github.com/acquia/acquia-search-service-import'),
+       '@export' => url('https://github.com/acquia/acquia-search-service-import'),
+-    );
+-    $form['acquia_override_subscription']['acquia_override_failover'] = array(
++    ];
++    $form['acquia_override_subscription']['acquia_override_failover'] = [
+       '#type' => 'checkbox',
+       '#title' => t('Enable multi-region failover support.'),
+       '#description' => t('If the Drupal site is hosted in %region it will fail over to the fail-over index. You still need to use the Acquia Search Service <a href="@export">Export</a> and <a href="@import">Import</a> tools to sync your Acquia Search index between the two.', $t_args),
+       '#default_value' => $configuration['acquia_override_failover'],
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[name*="acquia_override_auto_switch"]' => array('checked' => TRUE),
+-        ),
+-      ),
+-    );
++      '#states' => [
++        'visible' => [
++          ':input[name*="acquia_override_auto_switch"]' => ['checked' => TRUE],
++        ],
++      ],
++    ];
+   }
+ }
+ 
+@@ -225,7 +225,7 @@ function acquia_search_multi_subs_get_settings_form(array &$form, array &$form_s
+  *   The default configuration.
+  */
+ function acquia_search_multi_subs_default_configuration() {
+-  return array(
++  return [
+     'acquia_override_auto_switch' => TRUE,
+     'acquia_override_selector' => '',
+     'acquia_override_failover' => FALSE,
+@@ -233,7 +233,7 @@ function acquia_search_multi_subs_default_configuration() {
+     'acquia_override_subscription_key' => acquia_agent_settings('acquia_key'),
+     'acquia_override_subscription_corename' => '',
+     'acquia_search_multi_subs_get_settings_form' => FALSE,
+-  );
++  ];
+ }
+ 
+ /**
+@@ -276,7 +276,7 @@ function acquia_search_multi_subs_form_validate(array $element, &$form_state) {
+   }
+   elseif ($form_values['acquia_override_selector'] == 'default') {
+     // Delete all possible index variables from the Acquia Multi Subs module, since
+-    // we revert to default for this Search Environment
++    // we revert to default for this Search Environment.
+     $form_state['values']['acquia_override_subscription_id'] = acquia_agent_settings('acquia_identifier');
+     $form_state['values']['acquia_override_subscription_key'] = acquia_agent_settings('acquia_key');
+     $form_state['values']['acquia_override_subscription_corename'] = acquia_agent_settings('acquia_identifier');
+@@ -291,7 +291,7 @@ function acquia_search_multi_subs_form_validate(array $element, &$form_state) {
+   $identifier = $form_values['acquia_override_subscription_id'];
+   $key = $form_values['acquia_override_subscription_key'];
+ 
+-  $subscription = acquia_agent_get_subscription(array(), $identifier, $key);
++  $subscription = acquia_agent_get_subscription([], $identifier, $key);
+   if (!is_array($subscription)) {
+     form_error($element['acquia_override_subscription_key'], t('This combination of ID and key is not valid.'));
+   }
+diff --git a/src/EventSubscriber/SearchSubscriber.php b/src/EventSubscriber/SearchSubscriber.php
+index 85728c5..26a602d 100644
+--- a/src/EventSubscriber/SearchSubscriber.php
++++ b/src/EventSubscriber/SearchSubscriber.php
+@@ -5,10 +5,12 @@ namespace Drupal\acquia_search_multi_subs\EventSubscriber;
+ use Solarium\Core\Event\Events;
+ use Solarium\Core\Plugin\AbstractPlugin;
+ use Drupal\Component\Utility\Crypt;
+-use Symfony\Component\EventDispatcher\Event;
+ use Solarium\Exception\HttpException;
+ use Drupal\acquia_connector\CryptConnector;
+ 
++/**
++ *
++ */
+ class SearchSubscriber extends AbstractPlugin {
+ 
+   protected $client;
+@@ -25,8 +27,8 @@ class SearchSubscriber extends AbstractPlugin {
+     $this->client = $client;
+     $this->options = $options;
+     $dispatcher = $this->client->getEventDispatcher();
+-    $dispatcher->addListener(Events::PRE_EXECUTE_REQUEST, array($this, 'preExecuteRequest'));
+-    $dispatcher->addListener(Events::POST_EXECUTE_REQUEST, array($this, 'postExecuteRequest'));
++    $dispatcher->addListener(Events::PRE_EXECUTE_REQUEST, [$this, 'preExecuteRequest']);
++    $dispatcher->addListener(Events::POST_EXECUTE_REQUEST, [$this, 'postExecuteRequest']);
+   }
+ 
+   /**
+@@ -62,7 +64,7 @@ class SearchSubscriber extends AbstractPlugin {
+    */
+   public function postExecuteRequest($event) {
+     $response = $event->getResponse();
+-    if($response->getStatusCode() != 200) {
++    if ($response->getStatusCode() != 200) {
+       throw new HttpException($response->getStatusMessage());
+     }
+     if ($event->getRequest()->getHandler() == 'admin/ping') {
+@@ -85,7 +87,7 @@ class SearchSubscriber extends AbstractPlugin {
+   protected function authenticateResponse($response, $nonce, $url) {
+     $hmac = $this->extractHmac($response->getHeaders());
+     if (!$this->validateResponse($hmac, $nonce, $response->getBody(), NULL, $this->client->getEndpoint()->getOption('core'))) {
+-      throw new HttpException('Authentication of search content failed url: '. $url);
++      throw new HttpException('Authentication of search content failed url: ' . $url);
+     }
+     return $response;
+   }
+@@ -98,7 +100,7 @@ class SearchSubscriber extends AbstractPlugin {
+    * @return string hmac_digest
+    */
+   public function extractHmac($headers) {
+-    $reg = array();
++    $reg = [];
+     if (is_array($headers)) {
+       foreach ($headers as $value) {
+         if (stristr($value, 'pragma') && preg_match("/hmac_digest=([^;]+);/i", $value, $reg)) {
+diff --git a/src/Plugin/search_api/backend/SearchApiAcquiaSearchMultiService.php b/src/Plugin/search_api/backend/SearchApiAcquiaSearchMultiService.php
+index 61c03bd..bef8bb6 100644
+--- a/src/Plugin/search_api/backend/SearchApiAcquiaSearchMultiService.php
++++ b/src/Plugin/search_api/backend/SearchApiAcquiaSearchMultiService.php
+@@ -25,9 +25,9 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+    * {@inheritdoc}
+    */
+   public function setConnectionOptions() {
+-    $has_id = (isset($this->options['acquia_override_subscription']['acquia_override_subscription_id'])) ? true : false;
+-    $has_key = (isset($this->options['acquia_override_subscription']['acquia_override_subscription_key'])) ? true : false;
+-    $has_corename = (isset($this->options['acquia_override_subscription']['acquia_override_subscription_corename'])) ? true : false;
++    $has_id = (isset($this->options['acquia_override_subscription']['acquia_override_subscription_id'])) ? TRUE : FALSE;
++    $has_key = (isset($this->options['acquia_override_subscription']['acquia_override_subscription_key'])) ? TRUE : FALSE;
++    $has_corename = (isset($this->options['acquia_override_subscription']['acquia_override_subscription_corename'])) ? TRUE : FALSE;
+ 
+     if ($has_id && $has_key && $has_corename) {
+       $identifier = $this->options['acquia_override_subscription']['acquia_override_subscription_id'];
+@@ -71,7 +71,7 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+     $form['path']['#access'] = FALSE;
+ 
+     // Get our common settings form.
+-    $configuration = isset($this->options['acquia_override_subscription']) ? $this->options['acquia_override_subscription'] : array();
++    $configuration = isset($this->options['acquia_override_subscription']) ? $this->options['acquia_override_subscription'] : [];
+     acquia_search_multi_subs_get_settings_form($form, $form_state, $configuration);
+     return $form;
+   }
+@@ -96,7 +96,7 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+     $output .= "<dl>\n  <dt>";
+     $output .= t('Acquia Search Auto Detection');
+     $output .= "</dt>\n  <dd>";
+-    $output .= t('Auto detection of your environment is <strong>@state</strong>', array('@state' => $auto_detection_state));
++    $output .= t('Auto detection of your environment is <strong>@state</strong>', ['@state' => $auto_detection_state]);
+     $output .= '</dd>';
+     $output .= "\n</dl>";
+ 
+@@ -109,10 +109,10 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+   public function getExtraInformation() {
+     $auto_detection = (!isset($this->options['acquia_override_subscription']['acquia_override_auto_switch']) || $this->options['acquia_override_subscription']['acquia_override_auto_switch']);
+     $auto_detection_state = ($auto_detection) ? t('enabled') : t('disabled');
+-    $info[] = array(
++    $info[] = [
+       'label' => t('Acquia Search Auto Detection'),
+-      'info' => t('Auto detection of your environment is <strong>@state</strong>.', array('@state' => $auto_detection_state)),
+-    );
++      'info' => t('Auto detection of your environment is <strong>@state</strong>.', ['@state' => $auto_detection_state]),
++    ];
+ 
+     $this->setConnectionOptions();
+     $info = array_merge($info, parent::getExtraInformation());
+@@ -129,10 +129,10 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+   public function configurationFormValidate(array $form, array &$values, array &$form_state) {
+     parent::configurationFormValidate($form, $values, $form_state);
+ 
+-    $has_id = (isset($values['acquia_override_subscription']['acquia_override_subscription_id'])) ? true : false;
+-    $has_key = (isset($values['acquia_override_subscription']['acquia_override_subscription_key'])) ? true : false;
+-    $has_corename = (isset($values['acquia_override_subscription']['acquia_override_subscription_corename'])) ? true : false;
+-    $has_auto_switch = !empty($values['acquia_override_subscription']['acquia_override_auto_switch']) ? true : false;
++    $has_id = (isset($values['acquia_override_subscription']['acquia_override_subscription_id'])) ? TRUE : FALSE;
++    $has_key = (isset($values['acquia_override_subscription']['acquia_override_subscription_key'])) ? TRUE : FALSE;
++    $has_corename = (isset($values['acquia_override_subscription']['acquia_override_subscription_corename'])) ? TRUE : FALSE;
++    $has_auto_switch = !empty($values['acquia_override_subscription']['acquia_override_auto_switch']) ? TRUE : FALSE;
+     if (!$has_auto_switch && $has_id && $has_key && $has_corename) {
+       $identifier = $values['acquia_override_subscription']['acquia_override_subscription_id'];
+       $key = $values['acquia_override_subscription']['acquia_override_subscription_key'];
+@@ -158,17 +158,17 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+ 
+     // If we do not have auto switch enabled, statically configure the right
+     // core to options.
+-    $has_id = (isset($values['acquia_override_subscription']['acquia_override_subscription_id'])) ? true : false;
+-    $has_key = (isset($values['acquia_override_subscription']['acquia_override_subscription_key'])) ? true : false;
+-    $has_corename = (isset($values['acquia_override_subscription']['acquia_override_subscription_corename'])) ? true : false;
+-    $has_auto_switch = !empty($values['acquia_override_subscription']['acquia_override_auto_switch']) ? true : false;
++    $has_id = (isset($values['acquia_override_subscription']['acquia_override_subscription_id'])) ? TRUE : FALSE;
++    $has_key = (isset($values['acquia_override_subscription']['acquia_override_subscription_key'])) ? TRUE : FALSE;
++    $has_corename = (isset($values['acquia_override_subscription']['acquia_override_subscription_corename'])) ? TRUE : FALSE;
++    $has_auto_switch = !empty($values['acquia_override_subscription']['acquia_override_auto_switch']) ? TRUE : FALSE;
+ 
+     if (!$has_auto_switch && $has_id && $has_key && $has_corename) {
+       $identifier = $values['acquia_override_subscription']['acquia_override_subscription_id'];
+       $key = $values['acquia_override_subscription']['acquia_override_subscription_key'];
+       $corename = $values['acquia_override_subscription']['acquia_override_subscription_corename'];
+ 
+-      // Set our solr path
++      // Set our solr path.
+       $this->options['path'] = '/solr/' . $corename;
+ 
+       // Set the derived key for this environment.
+@@ -198,7 +198,7 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+    */
+   protected function getAcquiaSubscriptionError($subscription, $identifier, $quiet = FALSE) {
+     if (!is_array($subscription)) {
+-      $t_args = array('%subscription' => $identifier);
++      $t_args = ['%subscription' => $identifier];
+       $error_message = t('Unable to get %subscription subscription data. Please try later.', $t_args);
+       if (is_numeric($subscription)) {
+         switch ($subscription) {
+@@ -214,7 +214,7 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+       elseif ($subscription === FALSE) {
+         // Occurs when response validation failed.
+         $error_message = t('Acquia subscription response validation error. Please check your <a href="!url">Acquia Subscription Settings</a> settings and try again.',
+-          array('!url' => url('admin/config/system/acquia-agent')));
++          ['!url' => url('admin/config/system/acquia-agent')]);
+       }
+ 
+       // Log and display error message (if the user has access).
+@@ -222,7 +222,7 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+         if (user_access('administer search_api')) {
+           drupal_set_message($error_message, 'warning', FALSE);
+         }
+-        watchdog('acquia_search_multi_subs', $error_message, array(), WATCHDOG_WARNING);
++        watchdog('acquia_search_multi_subs', $error_message, [], WATCHDOG_WARNING);
+       }
+ 
+       return $error_message;
+@@ -237,12 +237,13 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+    *
+    * @param $acquia_identifier
+    * @param $acquia_key
++   *
+    * @return FALSE, integer (xmlrpc error number), or subscription data
+    *   @see acquia_agent_get_subscription()
+    */
+   protected function getAcquiaSubscription($acquia_identifier, $acquia_key) {
+     $subscription = FALSE;
+-    $subscription_cache = &drupal_static(__FUNCTION__, array());
++    $subscription_cache = &drupal_static(__FUNCTION__, []);
+     // Get subscription and use cache.
+     $cid = 'asms-subscription-' . $acquia_identifier . ':' . $acquia_key;
+     if (isset($subscription_cache[$cid])) {
+@@ -260,7 +261,7 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+     if (empty($subscription) || !is_array($subscription)) {
+       // We do not want to send a heartbeat to the server, we only need
+       // subscription data.
+-      $subscription = acquia_agent_get_subscription(array('no_heartbeat' => 1), $acquia_identifier, $acquia_key);
++      $subscription = acquia_agent_get_subscription(['no_heartbeat' => 1], $acquia_identifier, $acquia_key);
+       // Don't cache non-subscription data: XML-RPC client error, etc.
+       if (!$this->getAcquiaSubscriptionError($subscription, $acquia_identifier)) {
+         $subscription_cache[$cid] = $subscription;
+@@ -271,4 +272,5 @@ class SearchApiAcquiaSearchMultiService extends SearchApiAcquiaSearchService {
+ 
+     return $subscription;
+   }
++
+ }
+diff --git a/src/Plugin/search_api/backend/SearchApiSolrAcquiaMultiSubsBackend.php b/src/Plugin/search_api/backend/SearchApiSolrAcquiaMultiSubsBackend.php
+index f98de8d..a8784d4 100644
+--- a/src/Plugin/search_api/backend/SearchApiSolrAcquiaMultiSubsBackend.php
++++ b/src/Plugin/search_api/backend/SearchApiSolrAcquiaMultiSubsBackend.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\acquia_search_multi_subs\Plugin\search_api\backend;
+ 
++use Drupal\Core\Database\Database;
+ use Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend;
+ use Drupal\Core\Config\Config;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+@@ -10,10 +11,6 @@ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\acquia_search_multi_subs\EventSubscriber\SearchSubscriber;
+ use Drupal\Core\Language\LanguageManagerInterface;
+-use Drupal\acquia_connector\Client;
+-use Drupal\acquia_connector\CryptConnector;
+-use Symfony\Component\Validator\Constraints\False;
+-
+ 
+ /**
+  * @SearchApiBackend(
+@@ -25,6 +22,7 @@ use Symfony\Component\Validator\Constraints\False;
+ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+ 
+   protected $eventDispatcher = FALSE;
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -32,7 +30,6 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+ 
+     // If we have a particular core selected, then construct the index
+     // configuration accordingly.
+-
+     // Shortcut to the override configuration.
+     $override = $configuration['acquia_override_subscription'];
+ 
+@@ -43,7 +40,7 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+       $configuration['path'] = '/solr/';
+       $configuration['core'] = isset($_ENV['AH_SITE_ENVIRONMENT']) ? $this->getEnvironmentCore() : $override['local_core'];
+     }
+-    else if (!empty($override['acquia_override_selector'])) {
++    elseif (!empty($override['acquia_override_selector'])) {
+       $configuration['host'] = acquia_search_get_search_host();
+       // Attention! We do not need to add the core to the path, because the core property
+       // will inherit the core property. @see Endpoint::getBaseUri().
+@@ -52,7 +49,7 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+       $configuration['path'] = '/solr/';
+       $configuration['core'] = isset($_ENV['AH_SITE_ENVIRONMENT']) ? $override['acquia_override_selector'] : $override['local_core'];
+     }
+-    else if (!empty($override['acquia_override_subscription_id']) &&
++    elseif (!empty($override['acquia_override_subscription_id']) &&
+       !empty($override['acquia_override_subscription_key']) &&
+       !empty($override['acquia_override_subscription_corename'])) {
+       // Manual override.
+@@ -99,22 +96,22 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+     // Provide a detailed message about the environment the module is detecting.
+     if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
+       $info_text = $this->t('Auto detection of your environment is %state. Detected environment: :env, site name: :site_name.: ',
+-        array(
++        [
+           '%state' => $auto_detection_state,
+           ':env' => $_ENV['AH_SITE_ENVIRONMENT'],
+           ':site_name' => $_ENV['AH_SITE_NAME'],
+-        )
++        ]
+       );
+     }
+     else {
+       $info_text = $this->t('Auto detection of your environment is %state. Detecting local environment.',
+-        array('%state' => $auto_detection_state));
++        ['%state' => $auto_detection_state]);
+     }
+ 
+-    $info[] = array(
++    $info[] = [
+       'label' => $this->t('Acquia Search Auto Detection'),
+       'info' => $info_text,
+-    );
++    ];
+ 
+     return $info;
+   }
+@@ -145,18 +142,18 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+     $form['path']['#access'] = FALSE;
+ 
+     // Define the override form.
+-    $form['acquia_override_subscription'] = array(
++    $form['acquia_override_subscription'] = [
+       '#type' => 'fieldset',
+       '#title' => $this->t('Configure Acquia Search'),
+       '#collapsed' => FALSE,
+       '#collapsible' => TRUE,
+       '#tree' => TRUE,
+       '#weight' => -10,
+-      '#element_validate' => array('acquia_search_multi_subs_form_validate'),
+-    );
++      '#element_validate' => ['acquia_search_multi_subs_form_validate'],
++    ];
+ 
+     // Add a checkbox to auto switch per environment.
+-    $form['acquia_override_subscription']['acquia_override_auto_switch'] = array(
++    $form['acquia_override_subscription']['acquia_override_auto_switch'] = [
+       '#weight' => -10,
+       '#type' => 'checkbox',
+       '#title' => $this->t('Automatically switch when an Acquia Environment is detected'),
+@@ -164,11 +161,11 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+         AH_SITE_ENVIRONMENT header we can detect which environment you are currently
+         using and switch the Acquia Search Core automatically if there is a corresponding core.
+         Make sure to <a href=":url">update your locally cached subscription information</a> if your core does not show up.',
+-        array(':url' => Url::fromRoute('acquia_connector.refresh_status')->toString())),
++        [':url' => Url::fromRoute('acquia_connector.refresh_status')->toString()]),
+       '#default_value' => $this->configuration['acquia_override_subscription']['acquia_override_auto_switch'],
+-    );
++    ];
+ 
+-    $options = array('default' => t('Default'), 'other' => t('Other'));
++    $options = ['default' => t('Default'), 'other' => t('Other')];
+ 
+     $subscription = \Drupal::config('acquia_connector.settings')->get('subscription_data');
+     $search_cores = $subscription['heartbeat_data']['search_cores'];
+@@ -180,13 +177,13 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+         $options[$search_core['core_id']] = $search_core['core_id'];
+         if (strstr($search_core['core_id'], '.failover')) {
+           $failover_exists = TRUE;
+-          $matches = array();
++          $matches = [];
+           preg_match("/^([^-]*)/", $search_core['balancer'], $matches);
+           $failover_region = reset($matches);
+         }
+       }
+     }
+-    $form['acquia_override_subscription']['acquia_override_selector'] = array(
++    $form['acquia_override_subscription']['acquia_override_selector'] = [
+       '#type' => 'select',
+       '#title' => t('Acquia Search Core'),
+       '#options' => $options,
+@@ -194,34 +191,34 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+       '#description' => $this->t('Choose a search core to connect to. This is usually not necessary unless you really
+         want this search environment to connect to a different Acquia search subscription.
+         By default it uses your subscription that was configured for the
+-        <a href=":url">Acquia Connector</a>.', array(':url' => Url::fromRoute('acquia_connector.settings')->toString())),
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[name*="acquia_override_auto_switch"]' => array('checked' => FALSE),
+-        ),
+-      ),
+-    );
+-
+-    $options = array();
++        <a href=":url">Acquia Connector</a>.', [':url' => Url::fromRoute('acquia_connector.settings')->toString()]),
++      '#states' => [
++        'visible' => [
++          ':input[name*="acquia_override_auto_switch"]' => ['checked' => FALSE],
++        ],
++      ],
++    ];
++
++    $options = [];
+     if (is_array($search_cores)) {
+       foreach ($search_cores as $search_core) {
+         $options[$search_core['core_id']] = $search_core['core_id'];
+         if (strstr($search_core['core_id'], '.failover')) {
+           $failover_exists = TRUE;
+-          $matches = array();
++          $matches = [];
+           preg_match("/^([^-]*)/", $search_core['balancer'], $matches);
+           $failover_region = reset($matches);
+         }
+       }
+     }
+-    $form['acquia_override_subscription']['local_core'] = array(
++    $form['acquia_override_subscription']['local_core'] = [
+       '#weight' => 10,
+       '#type' => 'select',
+       '#description' => t('Please enter the name of the search core you would like to use on your local environments, e.g. for development reasons.'),
+       '#title' => t('Core to use when site is running inside non-Acquia (local) environment'),
+       '#options' => $options,
+       '#default_value' => $this->configuration['acquia_override_subscription']['local_core'],
+-    );
++    ];
+ 
+     // Show a warning if there are not enough cores available to make the auto
+     // switch possible.
+@@ -231,48 +228,48 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+       recommended you open a support ticket with Acquia. Once you have that settled,
+       <a href=":url">refresh</a> your subscription so it pulls in the latest information to connect
+       to your indexes.',
+-        array(':url' => Url::fromRoute('acquia_connector.refresh_status')->toString())), 'warning', FALSE);
++        [':url' => Url::fromRoute('acquia_connector.refresh_status')->toString()]), 'warning', FALSE);
+     }
+ 
+     // Generate the custom form.
+-    $form['acquia_override_subscription']['acquia_override_subscription_id'] = array(
++    $form['acquia_override_subscription']['acquia_override_subscription_id'] = [
+       '#type' => 'textfield',
+       '#title' => t('Enter your Acquia Subscription Identifier'),
+       '#description' => t('Prefilled with the identifier of the Acquia Connector. You can find your details in Acquia Insight.'),
+       '#default_value' => $this->configuration['acquia_override_subscription']['acquia_override_subscription_id'],
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[name*="acquia_override_selector"]' => array('value' => 'other'),
+-          ':input[name*="acquia_override_auto_switch"]' => array('checked' => FALSE),
+-        ),
+-      ),
+-    );
+-
+-    $form['acquia_override_subscription']['acquia_override_subscription_key'] = array(
++      '#states' => [
++        'visible' => [
++          ':input[name*="acquia_override_selector"]' => ['value' => 'other'],
++          ':input[name*="acquia_override_auto_switch"]' => ['checked' => FALSE],
++        ],
++      ],
++    ];
++
++    $form['acquia_override_subscription']['acquia_override_subscription_key'] = [
+       '#type' => 'textfield',
+       '#title' => t('Enter your Acquia Subscription key'),
+       '#description' => t('Prefilled with the key of the Acquia Connector. You can find your details in Acquia Insight.'),
+       '#default_value' => $this->configuration['acquia_override_subscription']['acquia_override_subscription_key'],
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[name*="acquia_override_selector"]' => array('value' => 'other'),
+-          ':input[name*="acquia_override_auto_switch"]' => array('checked' => FALSE),
+-        ),
+-      ),
+-    );
+-
+-    $form['acquia_override_subscription']['acquia_override_subscription_corename'] = array(
++      '#states' => [
++        'visible' => [
++          ':input[name*="acquia_override_selector"]' => ['value' => 'other'],
++          ':input[name*="acquia_override_auto_switch"]' => ['checked' => FALSE],
++        ],
++      ],
++    ];
++
++    $form['acquia_override_subscription']['acquia_override_subscription_corename'] = [
+       '#type' => 'textfield',
+       '#description' => t('Please enter the name of the Acquia Search core you want to connect to that belongs to the above identifier and key. In most cases you would want to use the dropdown list to get the correct value.'),
+       '#title' => t('Enter your Acquia Search Core Name'),
+       '#default_value' => $this->configuration['acquia_override_subscription']['acquia_override_subscription_corename'],
+-      '#states' => array(
+-        'visible' => array(
+-          ':input[name*="acquia_override_selector"]' => array('value' => 'other'),
+-          ':input[name*="acquia_override_auto_switch"]' => array('checked' => FALSE),
+-        ),
+-      ),
+-    );
++      '#states' => [
++        'visible' => [
++          ':input[name*="acquia_override_selector"]' => ['value' => 'other'],
++          ':input[name*="acquia_override_auto_switch"]' => ['checked' => FALSE],
++        ],
++      ],
++    ];
+     return $form;
+   }
+ 
+@@ -292,34 +289,36 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+ 
+     // If we do not have auto switch enabled, statically configure the right
+     // core to options.
+-
+     $has_id = (isset($values['acquia_override_subscription']['acquia_override_subscription_id'])) ? TRUE : FALSE;
+     $has_key = (isset($values['acquia_override_subscription']['acquia_override_subscription_key'])) ? TRUE : FALSE;
+     $has_corename = (isset($values['acquia_override_subscription']['acquia_override_subscription_corename'])) ? TRUE : FALSE;
+     $has_auto_switch = !empty($values['acquia_override_subscription']['acquia_override_auto_switch']) ? TRUE : FALSE;
+ 
+-//
+-//    // Static override for the index, save the provided core information.
+-//    if (!$has_auto_switch && $has_id && $has_key && $has_corename) {
+-//      $identifier = $values['acquia_override_subscription']['acquia_override_subscription_id'];
+-//      $key = $values['acquia_override_subscription']['acquia_override_subscription_key'];
+-//      $corename = $values['acquia_override_subscription']['acquia_override_subscription_corename'];
+-//
+-//      // Set our solr path
+-//      $this->options['path'] = '/solr/' . $corename;
+-//
+-//      // Set the derived key for this environment.
+-//      // Subscription already cached by configurationFormValidate().
+-//      $subscription = $this->getAcquiaSubscription($identifier, $key);
+-//      $derived_key_salt = $subscription['derived_key_salt'];
+-//      $derived_key = _acquia_search_multi_subs_create_derived_key($derived_key_salt, $corename, $key);
+-//      $this->options['derived_key'] = $derived_key;
+-//
+-//      $search_host = acquia_search_multi_subs_get_hostname($corename);
+-//      $this->options['host'] = $search_host;
+-//    }
++    //
++    //    // Static override for the index, save the provided core information.
++    //    if (!$has_auto_switch && $has_id && $has_key && $has_corename) {
++    //      $identifier = $values['acquia_override_subscription']['acquia_override_subscription_id'];
++    //      $key = $values['acquia_override_subscription']['acquia_override_subscription_key'];
++    //      $corename = $values['acquia_override_subscription']['acquia_override_subscription_corename'];
++    //
++    //      // Set our solr path
++    //      $this->options['path'] = '/solr/' . $corename;
++    //
++    //      // Set the derived key for this environment.
++    //      // Subscription already cached by configurationFormValidate().
++    //      $subscription = $this->getAcquiaSubscription($identifier, $key);
++    //      $derived_key_salt = $subscription['derived_key_salt'];
++    //      $derived_key = _acquia_search_multi_subs_create_derived_key($derived_key_salt, $corename, $key);
++    //      $this->options['derived_key'] = $derived_key;
++    //
++    //      $search_host = acquia_search_multi_subs_get_hostname($corename);
++    //      $this->options['host'] = $search_host;
++    //    }
+   }
+ 
++  /**
++   *
++   */
+   private function getEnvironmentCore() {
+     $ah_site_environment = isset($_ENV['AH_SITE_ENVIRONMENT']) ? $_ENV['AH_SITE_ENVIRONMENT'] : '';
+     $ah_site_name = isset($_ENV['AH_SITE_NAME']) ? $_ENV['AH_SITE_NAME'] : '';
+@@ -327,7 +326,7 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+     $ah_region = isset($_ENV['AH_CURRENT_REGION']) ? $_ENV['AH_CURRENT_REGION'] : '';
+     $ah_db_name = '';
+     if ($ah_site_environment && $ah_site_name && $ah_site_group) {
+-      $tmp = \Drupal\Core\Database\Database::getConnection()->getConnectionOptions();
++      $tmp = Database::getConnection()->getConnectionOptions();
+       $ah_db_name = $tmp['database'];
+     }
+ 
+@@ -382,7 +381,7 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+    * could be WXYZ-12345.dev.wwwexamplecom
+    *
+    * @param string $acquia_identifier
+-   *   Subscription ID. E.g. WXYZ-12345
++   *   Subscription ID. E.g. WXYZ-12345.
+    * @param string $ah_site_environment
+    *   String with the environment, from $_ENV[AH_SITE_ENVIRONMENT].
+    *   E.g. 'dev', 'test', 'prod'.
+@@ -398,8 +397,8 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+    */
+   private function getExpectedSearchCores($acquia_identifier, $ah_site_environment, $ah_site_name, $ah_site_group, $sites_foldername = 'default', $ah_db_name) {
+     // Build eligible environments array.
+-    $ah_environments = array();
+-    $expected_core_names = array();
++    $ah_environments = [];
++    $expected_core_names = [];
+ 
+     // If we have the proper environment, add it as the first option.
+     if ($ah_site_environment) {
+@@ -415,10 +414,10 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+ 
+     foreach ($ah_environments as $site_environment => $site_name) {
+       // The possible core name suffixes are [database name], [current site folder name] and 'default'.
+-      $core_suffixes = array_unique(array($ah_db_name, $sites_foldername, 'default', $ah_site_name));
++      $core_suffixes = array_unique([$ah_db_name, $sites_foldername, 'default', $ah_site_name]);
+       foreach ($core_suffixes as $core_suffix) {
+         if ($core_suffix) {
+-          // Fix the $core_suffix: alphanumeric only
++          // Fix the $core_suffix: alphanumeric only.
+           $core_suffix = preg_replace('@[^a-zA-Z0-9]+@', '', $core_suffix);
+           // We first add a 60-char-length indexname, which is the Solr index name limit.
+           $expected_core_names[] = substr($acquia_identifier . '.' . $site_environment . '.' . $core_suffix, 0, 60);
+@@ -433,7 +432,7 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+         $site_name = preg_replace('@[^a-zA-Z0-9_-]+@', '_', $site_name);
+         $expected_core_names[] = $acquia_identifier . '_' . $site_name;
+       }
+-      // Add our failover options
++      // Add our failover options.
+       $expected_core_names[] = $acquia_identifier . '.' . $site_environment . '.failover';
+     }
+     // Add suffix-less core if we're on prod now. If the sitename is empty,
+@@ -445,4 +444,5 @@ class SearchApiSolrAcquiaMultiSubsBackend extends SearchApiSolrBackend {
+ 
+     return array_unique($expected_core_names);
+   }
++
+ }
+diff --git a/src/Plugin/search_api/backend/acquia_search_multi_subs.searchapisolr.inc b/src/Plugin/search_api/backend/acquia_search_multi_subs.searchapisolr.inc
+index 676b72c..442477b 100644
+--- a/src/Plugin/search_api/backend/acquia_search_multi_subs.searchapisolr.inc
++++ b/src/Plugin/search_api/backend/acquia_search_multi_subs.searchapisolr.inc
+@@ -29,14 +29,14 @@ function acquia_search_multi_subs_searchapi_init() {
+ 
+   // Load the Search API servers to check. Only load servers using the
+   // acquia_search_service class.
+-  $servers = search_api_server_load_multiple(FALSE, array('class' => 'acquia_search_service'));
++  $servers = search_api_server_load_multiple(FALSE, ['class' => 'acquia_search_service']);
+   foreach ($servers as $server) {
+     // Load defaults.
+     $options = $server->options;
+-    $options += array('acquia_override_subscription' => array());
++    $options += ['acquia_override_subscription' => []];
+     $options['acquia_override_subscription'] += acquia_search_multi_subs_default_configuration();
+ 
+-    // Get some variables
++    // Get some variables.
+     $environment_core_name = $options['acquia_override_subscription']['acquia_override_subscription_corename'];
+     $acquia_override_auto_switch = $options['acquia_override_subscription']['acquia_override_auto_switch'];
+     $acquia_override_selector = $options['acquia_override_subscription']['acquia_override_selector'];
+@@ -50,13 +50,13 @@ function acquia_search_multi_subs_searchapi_init() {
+     else {
+       // If auto switch is disabled, only try to match the specified core.
+       if ($acquia_override_selector == 'other') {
+-        $expected_core_names = array($environment_core_name);
++        $expected_core_names = [$environment_core_name];
+       }
+       elseif ($acquia_override_selector == 'default') {
+-        $expected_core_names = array(acquia_agent_settings('acquia_identifier'));
++        $expected_core_names = [acquia_agent_settings('acquia_identifier')];
+       }
+       else {
+-        $expected_core_names = array($acquia_override_selector);
++        $expected_core_names = [$acquia_override_selector];
+       }
+     }
+ 
+@@ -64,7 +64,7 @@ function acquia_search_multi_subs_searchapi_init() {
+     if ($acquia_override_failover) {
+       foreach ($available_search_cores as $core_id => $available_search_core) {
+         $expected_search_core_region = str_replace('-', '', $ah_region);
+-        $matches = array();
++        $matches = [];
+         preg_match("/^([^-]*)/", $available_search_core['balancer'], $matches);
+         $search_core_region = reset($matches);
+         if ($search_core_region != $expected_search_core_region) {
+@@ -73,7 +73,7 @@ function acquia_search_multi_subs_searchapi_init() {
+       }
+     }
+     else {
+-      // if not enabled, remove all failover indexes from being a possible candidate
++      // If not enabled, remove all failover indexes from being a possible candidate.
+       foreach ($subscription_expected_search_cores as $search_core_id => $search_core) {
+         if (strstr($search_core, 'failover')) {
+           unset($subscription_expected_search_cores[$search_core_id]);
+@@ -81,7 +81,7 @@ function acquia_search_multi_subs_searchapi_init() {
+       }
+     }
+ 
+-    $match_found = false;
++    $match_found = FALSE;
+     foreach ($expected_core_names as $expected_core_name) {
+       // This allows us to break from the 2-level deep foreach.
+       if ($match_found) {
+@@ -93,9 +93,9 @@ function acquia_search_multi_subs_searchapi_init() {
+           // If the core is already the same, don't do anything.
+           if (strtolower($available_search_core['core_id']) != strtolower($environment_core_name)) {
+             acquia_search_multi_subs_searchapi_set_default_core($server, $available_search_core);
+-            watchdog('acquia_search_multi_subs', 'Switched Search API solr server "@server_name" from core @old_core_id to @new_core_id', array('@server_name' => $server->name, '@old_core_id' => $environment_core_name, '@new_core_id' => $available_search_core['core_id']), WATCHDOG_NOTICE);
++            watchdog('acquia_search_multi_subs', 'Switched Search API solr server "@server_name" from core @old_core_id to @new_core_id', ['@server_name' => $server->name, '@old_core_id' => $environment_core_name, '@new_core_id' => $available_search_core['core_id']], WATCHDOG_NOTICE);
+           }
+-          $match_found = true;
++          $match_found = TRUE;
+           break;
+         }
+       }

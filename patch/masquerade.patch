@@ -1,0 +1,56 @@
+diff --git a/tests/src/Functional/MasqueradeWebTestBase.php b/tests/src/Functional/MasqueradeWebTestBase.php
+index cc43a61..46d501b 100644
+--- a/tests/src/Functional/MasqueradeWebTestBase.php
++++ b/tests/src/Functional/MasqueradeWebTestBase.php
+@@ -180,20 +180,20 @@ abstract class MasqueradeWebTestBase extends BrowserTestBase {
+   protected function masqueradeAs(AccountInterface $account) {
+     $this->drupalGet('user/' . $account->id());
+     $this->clickLink($this->t('Masquerade as @name', ['@name' => $account->getDisplayName()]));
+-    //$this->drupalGet('user/' . $account->id() . '/masquerade', [
++    // $this->drupalGet('user/' . $account->id() . '/masquerade', [
+     //  'query' => [
+     //    'token' => $this->drupalGetToken('user/' . $account->id() . '/masquerade'),
+     //  ],
+-    //]);
+-    //$this->assertSession()->statusCodeEquals(200);
++    // ]);
++    // $this->assertSession()->statusCodeEquals(200);
+     $this->assertSession()
+       ->pageTextContains('You are now masquerading as ' . $account->label());
+ 
+     // Update the logged in user account.
+     // @see \Drupal\Tests\BrowserTestBase::drupalLogin()
+     if (isset($this->session_id)) {
+-      //$this->loggedInUser = $account;
+-      //$this->loggedInUser->session_id = $this->session_id;
++      // $this->loggedInUser = $account;
++      // $this->loggedInUser->session_id = $this->session_id;
+     }
+   }
+ 
+@@ -209,20 +209,20 @@ abstract class MasqueradeWebTestBase extends BrowserTestBase {
+   protected function unmasquerade(AccountInterface $account) {
+     $this->drupalGet('user/' . $account->id());
+     $this->clickLink('Unmasquerade');
+-    //$this->drupalGet('unmasquerade', [
++    // $this->drupalGet('unmasquerade', [
+     //  'query' => [
+     //    'token' => $this->drupalGetToken('unmasquerade'),
+     //  ],
+-    //]);
+-    //$this->assertSession()->statusCodeEquals(200);
++    // ]);
++    // $this->assertSession()->statusCodeEquals(200);
+     $this->assertSession()
+       ->pageTextContains('You are no longer masquerading as ' . $account->label());
+ 
+     // Update the logged in user account.
+     // @see \Drupal\Tests\BrowserTestBase::drupalLogin()
+     if (isset($this->session_id)) {
+-      //$this->loggedInUser = $account;
+-      //$this->loggedInUser->session_id = $this->session_id;
++      // $this->loggedInUser = $account;
++      // $this->loggedInUser->session_id = $this->session_id;
+     }
+   }
+ 

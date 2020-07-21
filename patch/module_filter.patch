@@ -1,0 +1,805 @@
+diff --git a/js/jquery.winnow.js b/js/jquery.winnow.js
+index 32123fd..d18c9ce 100644
+--- a/js/jquery.winnow.js
++++ b/js/jquery.winnow.js
+@@ -5,7 +5,7 @@
+ 
+ (function ($) {
+ 
+-  var now = Date.now || function() {
++  var now = Date.now || function () {
+       return new Date().getTime();
+     };
+ 
+@@ -16,7 +16,7 @@
+     var timestamp;
+     var result;
+ 
+-    var later = function() {
++    var later = function () {
+       var last = now() - timestamp;
+ 
+       if (last < wait && last >= 0) {
+@@ -33,7 +33,7 @@
+       }
+     };
+ 
+-    return function() {
++    return function () {
+       context = this;
+       args = arguments;
+       timestamp = now();
+@@ -61,7 +61,7 @@
+     }
+   };
+ 
+-  var Winnow = function(element, selector, options) {
++  var Winnow = function (element, selector, options) {
+     var self = this;
+ 
+     self.element = element;
+@@ -97,7 +97,7 @@
+     if (self.element.val() == '') {
+       self.clearButton.hide();
+     }
+-    self.clearButton.click(function(e) {
++    self.clearButton.click(function (e) {
+       e.preventDefault();
+ 
+       self.clearFilter();
+@@ -105,7 +105,7 @@
+     self.element.after(self.clearButton);
+ 
+     self.element.on({
+-      keyup: debounce(function() {
++      keyup: debounce(function () {
+         var value = self.element.val();
+         if (!value || explode(value).pop().slice(-1) !== ':') {
+           // Only filter if we aren't using the operator autocomplete.
+@@ -115,7 +115,7 @@
+       keydown: preventEnterKey
+     });
+     self.element.on({
+-      keyup: function() {
++      keyup: function () {
+         // Show/hide the clear button.
+         if (self.element.val() != '') {
+           self.clearButton.show();
+@@ -141,15 +141,15 @@
+       }
+ 
+       self.element.autocomplete({
+-        'search': function(event) {
++        'search': function (event) {
+           if (explode(event.target.value).pop() != ':') {
+             return false;
+           }
+         },
+-        'source': function(request, response) {
++        'source': function (request, response) {
+           return response(source);
+         },
+-        'select': function(event, ui) {
++        'select': function (event, ui) {
+           var terms = explode(event.target.value);
+           // Remove the current input.
+           terms.pop();
+@@ -159,7 +159,7 @@
+           // Return false to tell jQuery UI that we've filled in the value already.
+           return false;
+         },
+-        'focus': function() {
++        'focus': function () {
+           return false;
+         }
+       });
+@@ -168,7 +168,7 @@
+     self.element.data('winnow', self);
+   };
+ 
+-  Winnow.prototype.setQueries = function(string) {
++  Winnow.prototype.setQueries = function (string) {
+     var self = this;
+     var strings = explode(string);
+ 
+@@ -201,11 +201,11 @@
+     }
+   };
+ 
+-  Winnow.prototype.buildIndex = function() {
++  Winnow.prototype.buildIndex = function () {
+     var self = this;
+     this.index = [];
+ 
+-    $(self.selector, self.wrapper).each(function(i) {
++    $(self.selector, self.wrapper).each(function (i) {
+       var text = (self.options.textSelector) ? $(self.options.textSelector, this).text() : $(this).text();
+       var item = {
+         key: i,
+@@ -224,21 +224,21 @@
+     return self.trigger('finishIndexing', [ self ]);
+   };
+ 
+-  Winnow.prototype.bind = function() {
++  Winnow.prototype.bind = function () {
+     var args = arguments;
+     args[0] = 'winnow:' + args[0];
+ 
+     return this.element.bind.apply(this.element, args);
+   };
+ 
+-  Winnow.prototype.trigger = function(event) {
++  Winnow.prototype.trigger = function (event) {
+     var args = arguments;
+     args[0] = 'winnow:' + args[0];
+ 
+     return this.element.trigger.apply(this.element, args);
+   };
+ 
+-  Winnow.prototype.filter = function() {
++  Winnow.prototype.filter = function () {
+     var self = this;
+ 
+     self.results = [];
+@@ -250,7 +250,7 @@
+ 
+     var start = self.trigger('start');
+ 
+-    $.each(self.index, function(key, item) {
++    $.each(self.index, function (key, item) {
+       var $item = item.element;
+       var operatorMatch = true;
+ 
+@@ -300,9 +300,9 @@
+     }
+   };
+ 
+-  Winnow.prototype.getOperators = function() {
++  Winnow.prototype.getOperators = function () {
+     return $.extend({}, {
+-      text: function(string, item) {
++      text: function (string, item) {
+         if (item.text.indexOf(string) >= 0) {
+           return true;
+         }
+@@ -310,7 +310,7 @@
+     }, this.options.additionalOperators);
+   };
+ 
+-  Winnow.prototype.processRules = function(item) {
++  Winnow.prototype.processRules = function (item) {
+     var self = this;
+     var $item = item.element;
+     var result = true;
+@@ -327,11 +327,11 @@
+     return result;
+   };
+ 
+-  Winnow.prototype.stripe = function() {
++  Winnow.prototype.stripe = function () {
+     var flip = { even: 'odd', odd: 'even' };
+     var stripe = 'odd';
+ 
+-    $.each(this.index, function(key, item) {
++    $.each(this.index, function (key, item) {
+       if (!item.element.is(':visible')) {
+         item.element.removeClass('odd even').addClass(stripe);
+         stripe = flip[stripe];
+@@ -339,17 +339,17 @@
+     });
+   };
+ 
+-  Winnow.prototype.clearFilter = function() {
++  Winnow.prototype.clearFilter = function () {
+     this.element.val('');
+     this.filter();
+     this.clearButton.hide();
+     this.element.focus();
+   };
+ 
+-  $.fn.winnow = function(selector, options) {
++  $.fn.winnow = function (selector, options) {
+     var $input = this.not('.winnow-processed').addClass('winnow-processed');
+ 
+-    $input.each(function() {
++    $input.each(function () {
+       var winnow = new Winnow($input, selector, options);
+     });
+ 
+diff --git a/js/module_filter.js b/js/module_filter.js
+index 25c436e..de2a5dd 100644
+--- a/js/module_filter.js
++++ b/js/module_filter.js
+@@ -1,18 +1,18 @@
+-(function($, Drupal) {
++(function ($, Drupal) {
+ 
+   'use strict';
+ 
+   Drupal.ModuleFilter = Drupal.ModuleFilter || {};
+ 
+   Drupal.ModuleFilter.localStorage = {
+-    getItem: function(key) {
++    getItem: function (key) {
+       if (typeof Storage !== 'undefined') {
+         return localStorage.getItem('moduleFilter.' + key);
+       }
+ 
+       return null;
+     },
+-    getBoolean: function(key) {
++    getBoolean: function (key) {
+       var item = Drupal.ModuleFilter.localStorage.getItem(key);
+ 
+       if (item != null) {
+@@ -21,12 +21,12 @@
+ 
+       return null;
+     },
+-    setItem: function(key, data) {
++    setItem: function (key, data) {
+       if (typeof Storage !== 'undefined') {
+         localStorage.setItem('moduleFilter.' + key, data)
+       }
+     },
+-    removeItem: function(key) {
++    removeItem: function (key) {
+       if (typeof Storage !== 'undefined') {
+         localStorage.removeItem('moduleFilter.' + key);
+       }
+@@ -37,7 +37,7 @@
+    * Filter enhancements.
+    */
+   Drupal.behaviors.moduleFilter = {
+-    attach: function(context) {
++    attach: function (context) {
+ 
+     }
+   };
+diff --git a/js/module_filter.modules.js b/js/module_filter.modules.js
+index 85aaff8..86973b7 100644
+--- a/js/module_filter.modules.js
++++ b/js/module_filter.modules.js
+@@ -3,7 +3,7 @@
+  * Module filter behaviors.
+  */
+ 
+-(function($, Drupal) {
++(function ($, Drupal) {
+ 
+   'use strict';
+ 
+@@ -14,7 +14,7 @@
+    * Filter enhancements.
+    */
+   Drupal.behaviors.moduleFilterModules = {
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+       var $input = $('input.table-filter-text', context).once('module-filter');
+       if ($input.length) {
+         ModuleFilter.input = $input;
+@@ -50,7 +50,7 @@
+           clearLabel: Drupal.t('clear'),
+           wrapper: ModuleFilter.modulesWrapper,
+           buildIndex: [
+-            function(item) {
++            function (item) {
+               var $checkbox = $('td.checkbox :checkbox', item.element);
+               if ($checkbox.length > 0) {
+                 item.status = $checkbox.is(':checked');
+@@ -64,7 +64,7 @@
+             }
+           ],
+           additionalOperators: {
+-            description: function(string, item) {
++            description: function (string, item) {
+               if (item.description == undefined) {
+                 // Soft cache.
+                 item.description = $('.module-description', item.element).text().toLowerCase();
+@@ -74,11 +74,11 @@
+                 return true;
+               }
+             },
+-            requiredBy: function(string, item) {
++            requiredBy: function (string, item) {
+               if (item.requiredBy === undefined) {
+                 // Soft cache.
+                 item.requiredBy = [];
+-                $('.admin-requirements.required-by li', item.element).each(function() {
++                $('.admin-requirements.required-by li', item.element).each(function () {
+                   var moduleName = $(this)
+                     .text()
+                     .toLowerCase()
+@@ -95,11 +95,11 @@
+                 }
+               }
+             },
+-            requires: function(string, item) {
++            requires: function (string, item) {
+               if (item.requires === undefined) {
+                 // Soft cache.
+                 item.requires = [];
+-                $('.admin-requirements.requires li', item.element).each(function() {
++                $('.admin-requirements.requires li', item.element).each(function () {
+                   var moduleName = $(this)
+                     .text()
+                     .toLowerCase()
+@@ -118,7 +118,7 @@
+             }
+           },
+           rules: [
+-            function(item) {
++            function (item) {
+               if (showEnabled) {
+                 if (item.status === true && item.disabled === true) {
+                   return true;
+@@ -142,7 +142,7 @@
+         ModuleFilter.winnow = ModuleFilter.input.data('winnow');
+ 
+         var $details = ModuleFilter.modulesWrapper.children('details');
+-        ModuleFilter.input.bind('winnow:finish', function() {
++        ModuleFilter.input.bind('winnow:finish', function () {
+           Drupal.announce(
+             Drupal.formatPlural(
+               ModuleFilter.modulesWrapper.find(ModuleFilter.selector + ':visible').length,
+@@ -152,17 +152,17 @@
+           );
+         });
+ 
+-        $enabled.change(function(e, el) {
++        $enabled.change(function (e, el) {
+           showEnabled = $(this).is(':checked');
+           ModuleFilter.localStorage.setItem('modules.enabled', showEnabled);
+           ModuleFilter.winnow.filter();
+         });
+-        $disabled.change(function() {
++        $disabled.change(function () {
+           showDisabled = $disabled.is(':checked');
+           ModuleFilter.localStorage.setItem('modules.disabled', showDisabled);
+           ModuleFilter.winnow.filter();
+         });
+-        $unavailable.change(function() {
++        $unavailable.change(function () {
+           showUnavailable = $unavailable.is(':checked');
+           ModuleFilter.localStorage.setItem('modules.unavailable', showUnavailable);
+           ModuleFilter.winnow.filter();
+diff --git a/js/module_filter.modules_bare.js b/js/module_filter.modules_bare.js
+index fbaf9ce..7bc17be 100644
+--- a/js/module_filter.modules_bare.js
++++ b/js/module_filter.modules_bare.js
+@@ -1,4 +1,4 @@
+-(function($, Drupal) {
++(function ($, Drupal) {
+ 
+   'use strict';
+ 
+@@ -9,20 +9,20 @@
+    * Filter enhancements.
+    */
+   Drupal.behaviors.moduleFilterModulesBare = {
+-    attach: function(context) {
++    attach: function (context) {
+       if (ModuleFilter.input != undefined) {
+         var $details = ModuleFilter.modulesWrapper.children('details');
+ 
+-        ModuleFilter.input.bind('winnow:start', function() {
++        ModuleFilter.input.bind('winnow:start', function () {
+           // Note that we first open all <details> to be able to use ':visible'.
+           // Mark the <details> elements that were closed before filtering, so
+           // they can be reclosed when filtering is removed.
+           $details.show().not('[open]').attr('data-module_filter-state', 'forced-open');
+         });
+-        ModuleFilter.input.bind('winnow:finish', function() {
++        ModuleFilter.input.bind('winnow:finish', function () {
+           // Hide the package <details> if they don't have any visible rows.
+           // Note that we first show() all <details> to be able to use ':visible'.
+-          $details.attr('open', true).each(function(index, element) {
++          $details.attr('open', true).each(function (index, element) {
+             var $group = $(element);
+             var $visibleRows = $group.find('tbody tr:visible');
+             $group.toggle($visibleRows.length > 0);
+diff --git a/js/module_filter.modules_tabs.js b/js/module_filter.modules_tabs.js
+index 6fa8460..62ad39d 100644
+--- a/js/module_filter.modules_tabs.js
++++ b/js/module_filter.modules_tabs.js
+@@ -1,11 +1,11 @@
+-(function($) {
++(function ($) {
+ 
+   // 'use strict';
+ 
+   Drupal.ModuleFilter = Drupal.ModuleFilter || {};
+   var ModuleFilter = Drupal.ModuleFilter;
+ 
+-  var Tabs = function(tabs, $pane) {
++  var Tabs = function (tabs, $pane) {
+     var $tabs = $('<ul class="modules-tabs__menu"></ul>');
+ 
+     // Add our three special tabs.
+@@ -93,13 +93,13 @@
+     }
+   };
+ 
+-  Tabs.prototype.getActive = function() {
++  Tabs.prototype.getActive = function () {
+     if (this.activeTab) {
+       return this.activeTab;
+     }
+   };
+ 
+-  Tabs.prototype.setActive = function(tab) {
++  Tabs.prototype.setActive = function (tab) {
+     if (this.activeTab) {
+       this.activeTab.hideSummary();
+       this.activeTab.element.removeClass('is-selected');
+@@ -112,19 +112,19 @@
+     return this.activeTab;
+   };
+ 
+-  Tabs.prototype.get = function(packageId) {
++  Tabs.prototype.get = function (packageId) {
+     if (this.tabs[packageId]) {
+       return this.tabs[packageId];
+     }
+   };
+ 
+-  Tabs.prototype.resetResults = function() {
++  Tabs.prototype.resetResults = function () {
+     for (var i in this.tabs) {
+       this.tabs[i].resetResults();
+     }
+   };
+ 
+-  Tabs.prototype.showResults = function() {
++  Tabs.prototype.showResults = function () {
+     var staticTabs = [ 'all', 'recent', 'new' ];
+ 
+     for (var i in this.tabs) {
+@@ -140,14 +140,14 @@
+     }
+   };
+ 
+-  Tabs.prototype.hideResults = function() {
++  Tabs.prototype.hideResults = function () {
+     for (var i in this.tabs) {
+       this.tabs[i].hideResults();
+       this.tabs[i].element.show();
+     }
+   };
+ 
+-  var Tab = function(name, packageId) {
++  var Tab = function (name, packageId) {
+     this.name = name;
+     this.packageId = packageId;
+     this.element = $('<li class="modules-tabs__menu-item tab__' + this.packageId + '"></li>');
+@@ -158,7 +158,7 @@
+     this.summary = null;
+   };
+ 
+-  Tab.prototype.select = function() {
++  Tab.prototype.select = function () {
+     ModuleFilter.tabs.setActive(this);
+ 
+     if (ModuleFilter.winnow) {
+@@ -166,19 +166,19 @@
+     }
+   };
+ 
+-  Tab.prototype.resetResults = function() {
++  Tab.prototype.resetResults = function () {
+     this.results = [];
+   };
+ 
+-  Tab.prototype.showResults = function() {
++  Tab.prototype.showResults = function () {
+     $('span.result', this.element).text(this.results.length);
+   };
+ 
+-  Tab.prototype.hideResults = function() {
++  Tab.prototype.hideResults = function () {
+     $('span.result', this.element).empty();
+   };
+ 
+-  Tab.prototype.setSummary = function(summary, key, persistent) {
++  Tab.prototype.setSummary = function (summary, key, persistent) {
+     if (!this.summary) {
+       this.summary = new Summary();
+       this.link.append(this.summary.element);
+@@ -187,21 +187,21 @@
+     this.summary.set(summary, key, persistent);
+   };
+ 
+-  Tab.prototype.showSummary = function() {
++  Tab.prototype.showSummary = function () {
+     this.toggleSummary(true);
+   };
+ 
+-  Tab.prototype.hideSummary = function() {
++  Tab.prototype.hideSummary = function () {
+     this.toggleSummary(false);
+   };
+ 
+-  Tab.prototype.toggleSummary = function(display) {
++  Tab.prototype.toggleSummary = function (display) {
+     if (this.summary) {
+       this.summary.toggle(Boolean(display));
+     }
+   };
+ 
+-  Tab.prototype.toggleEnabling = function(name) {
++  Tab.prototype.toggleEnabling = function (name) {
+     this.enabling = this.enabling || {};
+     if (this.enabling[name] != undefined) {
+       delete this.enabling[name];
+@@ -228,21 +228,21 @@
+     }
+   };
+ 
+-  var Summary = function() {
++  var Summary = function () {
+     this.element = $('<div class="summary"></div>');
+     this.element.hide();
+     this.items = {};
+   };
+ 
+-  Summary.prototype.show = function() {
++  Summary.prototype.show = function () {
+     this.toggle(true);
+   };
+ 
+-  Summary.prototype.hide = function() {
++  Summary.prototype.hide = function () {
+     this.toggle(false);
+   };
+ 
+-  Summary.prototype.toggle = function(display) {
++  Summary.prototype.toggle = function (display) {
+     display = Boolean(display);
+ 
+     this.element.children(':not(.persistent)').toggle(display);
+@@ -255,7 +255,7 @@
+     }
+   };
+ 
+-  Summary.prototype.set = function(summary, key, persistent) {
++  Summary.prototype.set = function (summary, key, persistent) {
+     if (!key) {
+       key = 'default';
+     }
+@@ -305,7 +305,7 @@
+   };
+ 
+   Drupal.behaviors.moduleFilterModulesTabs = {
+-    attach: function(context) {
++    attach: function (context) {
+       if (ModuleFilter.input != undefined) {
+         var tabs = {};
+ 
+@@ -324,7 +324,7 @@
+           // Because the table headers are visually hidden, we use col to set
+           // the column widths.
+           var $colgroup = $('<colgroup></colgroup>');
+-          $('thead th', $originalTable).each(function() {
++          $('thead th', $originalTable).each(function () {
+             $colgroup.append('<col class="' + $(this).attr('class') + '">');
+           });
+           $('col', $colgroup).removeClass('visually-hidden');
+@@ -332,7 +332,7 @@
+           $table.append($('thead', $originalTable));
+           $table.append('<tbody></tbody>');
+ 
+-          ModuleFilter.modulesWrapper.children('details').each(function() {
++          ModuleFilter.modulesWrapper.children('details').each(function () {
+             var $details = $(this);
+             var packageName = $details.children('summary').text();
+             var packageId = $details.children('summary').attr('aria-controls');
+@@ -342,18 +342,18 @@
+               tabs[packageId] = new Tab(packageName, packageId);
+             }
+ 
+-            $('.details-wrapper tbody tr', $details).each(function() {
++            $('.details-wrapper tbody tr', $details).each(function () {
+               var $row = $(this);
+               $row.addClass('package__' + packageId);
+               $row.data('moduleFilter.packageId', packageId);
+ 
+-              $row.hover(function() {
++              $row.hover(function () {
+                 tabs[packageId].element.addClass('suggest');
+-              }, function() {
++              }, function () {
+                 tabs[packageId].element.removeClass('suggest');
+               });
+ 
+-              $('td.checkbox input', $row).change(function() {
++              $('td.checkbox input', $row).change(function () {
+                 $row.toggleClass('enabling', $(this).is(':checked'));
+ 
+                 var packageId = $row.data('moduleFilter.packageId');
+@@ -371,7 +371,7 @@
+ 
+           // Sort rows by module name.
+           var $rows = $('tbody tr', $table);
+-          $rows.sort(function(a, b) {
++          $rows.sort(function (a, b) {
+             var aname = $('td.module label', a).text();
+             var bname = $('td.module label', b).text();
+ 
+@@ -408,7 +408,7 @@
+         buildTable();
+         ModuleFilter.tabs = new Tabs(tabs, ModuleFilter.wrapper);
+ 
+-        ModuleFilter.winnow.options.rules.push(function(item) {
++        ModuleFilter.winnow.options.rules.push(function (item) {
+           var activeTab = ModuleFilter.tabs.getActive();
+ 
+           // Update tab results. The results are updated prior to hiding the
+@@ -453,18 +453,18 @@
+             return false;
+           }
+         });
+-        ModuleFilter.winnow.bind('finishIndexing', function(e, winnow) {
+-          $.each(winnow.index, function(key, item) {
++        ModuleFilter.winnow.bind('finishIndexing', function (e, winnow) {
++          $.each(winnow.index, function (key, item) {
+             var packageId = item.element.data('moduleFilter.packageId');
+             if (packageId) {
+               item.tab = ModuleFilter.tabs.get(packageId);
+             }
+           });
+         });
+-        ModuleFilter.winnow.bind('start', function() {
++        ModuleFilter.winnow.bind('start', function () {
+           ModuleFilter.tabs.resetResults();
+         });
+-        ModuleFilter.winnow.bind('finish', function() {
++        ModuleFilter.winnow.bind('finish', function () {
+           if (ModuleFilter.input.val() != '') {
+             ModuleFilter.tabs.showResults();
+           }
+diff --git a/js/module_filter.modules_uninstall.js b/js/module_filter.modules_uninstall.js
+index 0c6e5a4..51ab4ac 100644
+--- a/js/module_filter.modules_uninstall.js
++++ b/js/module_filter.modules_uninstall.js
+@@ -3,7 +3,7 @@
+  * Module filter behaviors.
+  */
+ 
+-(function($, Drupal) {
++(function ($, Drupal) {
+ 
+   'use strict';
+ 
+@@ -11,7 +11,7 @@
+    * Filter enhancements.
+    */
+   Drupal.behaviors.moduleFilterModulesUninstall = {
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+       var $input = $('input.table-filter-text', context).once('module-filter');
+       if ($input.length) {
+         var wrapperId = $input.attr('data-table');
+@@ -27,7 +27,7 @@
+           clearLabel: Drupal.t('clear'),
+           wrapper: $modulesWrapper,
+           additionalOperators: {
+-            description: function(string, item) {
++            description: function (string, item) {
+               if (item.description == undefined) {
+                 // Soft cache.
+                 item.description = $('.module-description', item.element).text().toLowerCase();
+@@ -40,7 +40,7 @@
+           }
+         }).focus();
+ 
+-        $input.bind('winnow:finish', function() {
++        $input.bind('winnow:finish', function () {
+           Drupal.announce(
+             Drupal.formatPlural(
+               $modulesWrapper.find(selector + ':visible').length,
+diff --git a/js/module_filter.permissions.js b/js/module_filter.permissions.js
+index 2a2a9c1..d402663 100644
+--- a/js/module_filter.permissions.js
++++ b/js/module_filter.permissions.js
+@@ -1,4 +1,4 @@
+-(function($) {
++(function ($) {
+ 
+   'use strict';
+ 
+@@ -6,7 +6,7 @@
+    * Filter enhancements.
+    */
+   Drupal.behaviors.moduleFilterPermissions = {
+-    attach: function(context) {
++    attach: function (context) {
+       var $input = $('input.table-filter-text', context).once('module-filter');
+       if ($input.length) {
+         var wrapperId = $input.attr('data-table');
+@@ -19,7 +19,7 @@
+         $input.winnow(wrapperId + ' ' + selector, {
+           textSelector: 'td.module',
+           buildIndex: [
+-            function(item) {
++            function (item) {
+               item.isModule = item.text != '';
+ 
+               if (item.isModule) {
+@@ -35,7 +35,7 @@
+             }
+           ],
+           additionalOperators: {
+-            perm: function(string, item) {
++            perm: function (string, item) {
+               if (!item.isModule) {
+                 if (item.permission == undefined) {
+                   item.permission = $('.permission .title', item.element).text().toLowerCase();
+@@ -50,7 +50,7 @@
+         });
+ 
+         var winnow = $input.data('winnow');
+-        $input.bind('winnow:finish', function() {
++        $input.bind('winnow:finish', function () {
+           if (winnow.results.length > 0) {
+             for (var i in winnow.results) {
+               if (winnow.results[i].isModule) {
+diff --git a/js/module_filter.update_status.js b/js/module_filter.update_status.js
+index 6ef7802..f024332 100644
+--- a/js/module_filter.update_status.js
++++ b/js/module_filter.update_status.js
+@@ -3,7 +3,7 @@
+  * Module filter behaviors.
+  */
+ 
+-(function($, Drupal) {
++(function ($, Drupal) {
+ 
+   'use strict';
+ 
+@@ -13,7 +13,7 @@
+    * Filter enhancements.
+    */
+   Drupal.behaviors.moduleFilterUpdateStatus = {
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+       var $input = $('input.table-filter-text').once('module-filter');
+       if ($input.length) {
+         var selector = 'tbody tr';
+@@ -29,7 +29,7 @@
+           clearLabel: Drupal.t('clear'),
+           wrapper: $wrapper,
+           buildIndex: [
+-            function(item) {
++            function (item) {
+               if (item.element.is('.color-success')) {
+                 item.state = 'ok';
+               }
+@@ -44,7 +44,7 @@
+             }
+           ],
+           rules: [
+-            function(item) {
++            function (item) {
+               switch (show) {
+                 case 'all':
+                   return true;
+@@ -69,8 +69,8 @@
+         Drupal.ModuleFilter.winnow = $input.data('winnow');
+ 
+         var $titles = $('h3', $wrapper);
+-        $input.bind('winnow:finish', function() {
+-          $titles.each(function(index, element) {
++        $input.bind('winnow:finish', function () {
++          $titles.each(function (index, element) {
+             var $title = $(element);
+             var $table = $title.next();
+             if ($table.is('table')) {
+@@ -88,7 +88,7 @@
+           );
+         });
+ 
+-        $show.change(function() {
++        $show.change(function () {
+           show = $(this).val();
+           Drupal.ModuleFilter.localStorage.setItem('updateStatus.show', show);
+           Drupal.ModuleFilter.winnow.filter();

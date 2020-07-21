@@ -1,0 +1,122 @@
+diff --git a/consumers.post_update.php b/consumers.post_update.php
+index d975d13..6fc4d34 100644
+--- a/consumers.post_update.php
++++ b/consumers.post_update.php
+@@ -1,5 +1,9 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
+ use Drupal\Core\Field\BaseFieldDefinition;
+ 
+ /**
+diff --git a/src/ConsumerListBuilder.php b/src/ConsumerListBuilder.php
+index 801129c..813a40d 100644
+--- a/src/ConsumerListBuilder.php
++++ b/src/ConsumerListBuilder.php
+@@ -4,7 +4,6 @@ namespace Drupal\consumers;
+ 
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityListBuilder;
+-use Drupal\Core\Url;
+ 
+ /**
+  * Defines a class to build a listing of Access Token entities.
+diff --git a/src/ConsumerStorage.php b/src/ConsumerStorage.php
+index fc97f16..84335a4 100644
+--- a/src/ConsumerStorage.php
++++ b/src/ConsumerStorage.php
+@@ -5,6 +5,9 @@ namespace Drupal\consumers;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
+ 
++/**
++ *
++ */
+ class ConsumerStorage extends SqlContentEntityStorage {
+ 
+   /**
+diff --git a/src/Entity/Consumer.php b/src/Entity/Consumer.php
+index 16d3c25..5ec92cd 100644
+--- a/src/Entity/Consumer.php
++++ b/src/Entity/Consumer.php
+@@ -221,7 +221,7 @@ class Consumer extends ContentEntityBase implements EntityOwnerInterface {
+   /**
+    * Gets closure that will set is_default to the selected value for an entity.
+    *
+-   * @param boolean $value
++   * @param bool $value
+    *   The final value of the "is_default" field.
+    *
+    * @return \Closure
+diff --git a/src/Entity/Form/MakeDefaultForm.php b/src/Entity/Form/MakeDefaultForm.php
+index 7cce648..f3f5eaa 100644
+--- a/src/Entity/Form/MakeDefaultForm.php
++++ b/src/Entity/Form/MakeDefaultForm.php
+@@ -2,11 +2,13 @@
+ 
+ namespace Drupal\consumers\Entity\Form;
+ 
+-use Drupal\consumers\Entity\Consumer;
+ use Drupal\Core\Entity\ContentEntityConfirmFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Url;
+ 
++/**
++ *
++ */
+ class MakeDefaultForm extends ContentEntityConfirmFormBase {
+ 
+   /**
+diff --git a/src/Entity/Routing/HtmlRouteProvider.php b/src/Entity/Routing/HtmlRouteProvider.php
+index 5ed812f..6d8a09e 100644
+--- a/src/Entity/Routing/HtmlRouteProvider.php
++++ b/src/Entity/Routing/HtmlRouteProvider.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider;
+ use Symfony\Component\Routing\Route;
+ 
++/**
++ *
++ */
+ class HtmlRouteProvider extends DefaultHtmlRouteProvider {
+ 
+   /**
+diff --git a/src/MissingConsumer.php b/src/MissingConsumer.php
+index 6c5fa27..549cdea 100644
+--- a/src/MissingConsumer.php
++++ b/src/MissingConsumer.php
+@@ -2,4 +2,7 @@
+ 
+ namespace Drupal\consumers;
+ 
++/**
++ *
++ */
+ class MissingConsumer extends \Exception {}
+diff --git a/src/Negotiator.php b/src/Negotiator.php
+index 75c4f03..8ff460f 100644
+--- a/src/Negotiator.php
++++ b/src/Negotiator.php
+@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Psr\Log\LoggerAwareTrait;
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\HttpFoundation\RequestStack;
+-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+ 
+ /**
+  * Extracts the consumer information from the given context.
+diff --git a/tests/src/Functional/UpdatePathTest.php b/tests/src/Functional/UpdatePathTest.php
+index e921704..87a4de2 100644
+--- a/tests/src/Functional/UpdatePathTest.php
++++ b/tests/src/Functional/UpdatePathTest.php
+@@ -17,7 +17,6 @@ class UpdatePathTest extends UpdatePathTestBase {
+     // 8.4.0 fixtures were removed in 8.8.x.
+     // https://www.drupal.org/project/consumers/issues/3115996
+     // @todo: Remove this conditional after 8.7.x is no longer supported.
+-
+     if (file_exists($this->getDrupalRoot() . '/core/modules/system/tests/fixtures/update/drupal-8.8.0.bare.standard.php.gz')) {
+       $this->databaseDumpFiles = [
+         $this->getDrupalRoot() . '/core/modules/system/tests/fixtures/update/drupal-8.8.0.bare.standard.php.gz',

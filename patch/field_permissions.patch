@@ -1,0 +1,32 @@
+diff --git a/src/FieldPermissionsService.php b/src/FieldPermissionsService.php
+index ed06c81..7c95da0 100644
+--- a/src/FieldPermissionsService.php
++++ b/src/FieldPermissionsService.php
+@@ -177,7 +177,7 @@ class FieldPermissionsService implements FieldPermissionsServiceInterface, Conta
+   /**
+    * Determines if the given account may view the field, regardless of entity.
+    *
+-   * This should only return TRUE if
++   * This should only return TRUE if.
+    * @code
+    * $this->getFieldAccess('view', $items, $account, $field_definition);
+    * @endcode
+diff --git a/src/Plugin/FieldPermissionType/Base.php b/src/Plugin/FieldPermissionType/Base.php
+index 5989427..22a592c 100644
+--- a/src/Plugin/FieldPermissionType/Base.php
++++ b/src/Plugin/FieldPermissionType/Base.php
+@@ -67,7 +67,7 @@ abstract class Base extends PluginBase implements FieldPermissionTypeInterface,
+   /**
+    * Determines if the given account may view the field, regardless of entity.
+    *
+-   * This should only return TRUE if
++   * This should only return TRUE if.
+    * @code
+    * $this->hasFieldAccess('view', $entity, $account);
+    * @endcode
+@@ -85,4 +85,5 @@ abstract class Base extends PluginBase implements FieldPermissionTypeInterface,
+   public function hasFieldViewAccessForEveryEntity(AccountInterface $account) {
+     return FALSE;
+   }
++
+ }

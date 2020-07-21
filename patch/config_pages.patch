@@ -1,0 +1,411 @@
+diff --git a/config_pages.drush.inc b/config_pages.drush.inc
+index cd77408..b790999 100644
+--- a/config_pages.drush.inc
++++ b/config_pages.drush.inc
+@@ -1,7 +1,8 @@
+ <?php
+ 
+ /**
+- * @file Contains the code to generate the drush commands.
++ * @file
++ * Contains the code to generate the drush commands.
+  */
+ 
+ use Drupal\config_pages\Entity\ConfigPages;
+diff --git a/src/Command/GetValueCommand.php b/src/Command/GetValueCommand.php
+index a91c830..63dee64 100644
+--- a/src/Command/GetValueCommand.php
++++ b/src/Command/GetValueCommand.php
+@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputArgument;
+ use Symfony\Component\Console\Input\InputInterface;
+ use Symfony\Component\Console\Output\OutputInterface;
+ use Drupal\Console\Core\Command\ContainerAwareCommand;
+-use Drupal\Console\Annotations\DrupalCommand;
+ 
+ /**
+  * Class GetValueCommand.
+@@ -26,7 +25,8 @@ class GetValueCommand extends ContainerAwareCommand {
+ 
+   /**
+    * Constructs a new GetValueCommand object.
+-   * @param LoggerChannelFactoryInterface $loggerChannelFactory
++   *
++   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $loggerChannelFactory
+    */
+   public function __construct(LoggerChannelFactoryInterface $loggerChannelFactory) {
+     $this->logger = $loggerChannelFactory->get('config_pages');
+diff --git a/src/Command/SetValueCommand.php b/src/Command/SetValueCommand.php
+index dab02b6..6f84d86 100644
+--- a/src/Command/SetValueCommand.php
++++ b/src/Command/SetValueCommand.php
+@@ -9,8 +9,6 @@ use Symfony\Component\Console\Input\InputInterface;
+ use Symfony\Component\Console\Output\OutputInterface;
+ use Drupal\Console\Core\Command\Command;
+ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+-use Drupal\Console\Annotations\DrupalCommand;
+-
+ 
+ /**
+  * Class SetValueCommand.
+@@ -29,7 +27,8 @@ class SetValueCommand extends Command {
+ 
+   /**
+    * Constructs a new SetValueCommand object.
+-   * @param LoggerChannelFactoryInterface $logger_factory
++   *
++   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
+    */
+   public function __construct(LoggerChannelFactoryInterface $logger_factory) {
+     $this->logger = $logger_factory->get('config_pages');
+diff --git a/src/Commands/ConfigPagesCommands.php b/src/Commands/ConfigPagesCommands.php
+index efd9bb7..e982fec 100644
+--- a/src/Commands/ConfigPagesCommands.php
++++ b/src/Commands/ConfigPagesCommands.php
+@@ -11,7 +11,7 @@ use Drush\Commands\DrushCommands;
+  *
+  * See these files for an example of injecting Drupal services:
+  *   - http://cgit.drupalcode.org/devel/tree/src/Commands/DevelCommands.php
+- *   - http://cgit.drupalcode.org/devel/tree/drush.services.yml
++ *   - http://cgit.drupalcode.org/devel/tree/drush.services.yml.
+  */
+ class ConfigPagesCommands extends DrushCommands {
+ 
+@@ -26,7 +26,8 @@ class ConfigPagesCommands extends DrushCommands {
+    * @param $value
+    *   The value for the field
+    * @param null $context
+-   * @param array $options An associative array of options whose values come from cli, aliases, config, etc.
++   * @param array $options
++   *   An associative array of options whose values come from cli, aliases, config, etc.
+    * @option append
+    *   Append to an existing value.
+    * @usage drush cpsfv bundle field_name value
+@@ -66,7 +67,7 @@ class ConfigPagesCommands extends DrushCommands {
+   }
+ 
+   /**
+-   * Get a value for the field of Config Pages
++   * Get a value for the field of Config Pages.
+    *
+    * @param $bundle
+    *   The type of config page "/admin/structure/config_pages/types"
+diff --git a/src/ConfigPagesAccessControlHandler.php b/src/ConfigPagesAccessControlHandler.php
+index 33a7bee..f7bc63a 100644
+--- a/src/ConfigPagesAccessControlHandler.php
++++ b/src/ConfigPagesAccessControlHandler.php
+@@ -22,8 +22,9 @@ class ConfigPagesAccessControlHandler extends EntityAccessControlHandler {
+       return AccessResult::allowed();
+     }
+     if ($operation == 'update') {
+-      if ($account->hasPermission('edit config_pages entity'))
++      if ($account->hasPermission('edit config_pages entity')) {
+         return AccessResult::allowed()->cachePerPermissions();
++      }
+       if ($entity->getEntityTypeId() === 'config_pages_type' && $account->hasPermission('edit ' . $entity->id() . ' config page entity')) {
+         return AccessResult::allowed()->cachePerPermissions();
+       }
+@@ -38,8 +39,9 @@ class ConfigPagesAccessControlHandler extends EntityAccessControlHandler {
+    * {@inheritdoc}
+    */
+   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+-    if ($account->hasPermission('edit config_pages entity'))
++    if ($account->hasPermission('edit config_pages entity')) {
+       return AccessResult::allowed()->cachePerPermissions();
++    }
+     if ($account->hasPermission('edit ' . $entity_bundle . ' config page entity')) {
+       return AccessResult::allowed()->cachePerPermissions();
+     }
+diff --git a/src/ConfigPagesForm.php b/src/ConfigPagesForm.php
+index c1bc881..057d805 100644
+--- a/src/ConfigPagesForm.php
++++ b/src/ConfigPagesForm.php
+@@ -69,7 +69,7 @@ class ConfigPagesForm extends ContentEntityForm {
+   /**
+    * Constructs a ConfigPagesForm object.
+    *
+-   * @param EntityRepositoryInterface $entity_repository
++   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+    *   The entity manager.
+    * @param \Drupal\Core\Entity\EntityStorageInterface $config_pages_storage
+@@ -78,7 +78,7 @@ class ConfigPagesForm extends ContentEntityForm {
+    *   The custom config page type storage.
+    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+    *   The language manager.
+-   * @param MessengerInterface $messenger
++   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
+    *   The entity type bundle service.
+    * @param \Drupal\Component\Datetime\TimeInterface $time
+@@ -253,8 +253,9 @@ class ConfigPagesForm extends ContentEntityForm {
+    * Form submit.
+    *
+    * Clear field values submit callback.
++   *
+    * @param array $form
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    */
+   public function configPagesClearValues(array $form, FormStateInterface $form_state) {
+ 
+@@ -341,7 +342,8 @@ class ConfigPagesForm extends ContentEntityForm {
+    * @todo Consider introducing a 'preview' action here, since it is used by
+    *   many entity types.
+    * @param array $form
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
++   *
+    * @return mixed
+    */
+   protected function actions(array $form, FormStateInterface $form_state) {
+@@ -369,4 +371,3 @@ class ConfigPagesForm extends ContentEntityForm {
+   }
+ 
+ }
+-
+diff --git a/src/ConfigPagesListBuilder.php b/src/ConfigPagesListBuilder.php
+index 4a417b1..159c0f8 100644
+--- a/src/ConfigPagesListBuilder.php
++++ b/src/ConfigPagesListBuilder.php
+@@ -97,7 +97,7 @@ class ConfigPagesListBuilder extends EntityListBuilder implements EntityListBuil
+       }
+     }
+     $row['context'] = implode(', ', $contextData);
+-    $row['token'] =  !empty($entity->token)
++    $row['token'] = !empty($entity->token)
+       ? 'Exposed'
+       : 'Hidden';
+ 
+diff --git a/src/ConfigPagesPermissions.php b/src/ConfigPagesPermissions.php
+index 8712bd3..f42744f 100644
+--- a/src/ConfigPagesPermissions.php
++++ b/src/ConfigPagesPermissions.php
+@@ -25,6 +25,7 @@ class ConfigPagesPermissions implements ContainerInjectionInterface {
+    *
+    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+    *   The entity type manager.
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    */
+diff --git a/src/ConfigPagesStorage.php b/src/ConfigPagesStorage.php
+index 1d78d0a..2c6226c 100644
+--- a/src/ConfigPagesStorage.php
++++ b/src/ConfigPagesStorage.php
+@@ -38,7 +38,7 @@ class ConfigPagesStorage extends SqlContentEntityStorage {
+     $entities = [];
+ 
+     // Use module load method to get ConfigPage loaded by id.
+-    foreach ($ids as $id){
++    foreach ($ids as $id) {
+       $entity = $this->load($id);
+       if (!empty($entity)) {
+         $entities[$entity->id()] = $entity;
+diff --git a/src/ConfigPagesTypeForm.php b/src/ConfigPagesTypeForm.php
+index c3506df..755da86 100644
+--- a/src/ConfigPagesTypeForm.php
++++ b/src/ConfigPagesTypeForm.php
+@@ -23,12 +23,12 @@ class ConfigPagesTypeForm extends EntityForm {
+   protected $routesRebuildRequired = FALSE;
+ 
+   /**
+-   * @var PathValidatorInterface|\Drupal\Core\Path\PathValidatorInterface
++   * @var \Drupal\Core\Path\PathValidatorInterface|\Drupal\Core\Path\PathValidatorInterface
+    */
+   protected  $pathValidator;
+ 
+   /**
+-   * @var RouteBuilderInterface|\Drupal\Core\Routing\RouteBuilderInterface
++   * @var \Drupal\Core\Routing\RouteBuilderInterface|\Drupal\Core\Routing\RouteBuilderInterface
+    */
+   protected $routerBuilder;
+ 
+@@ -46,7 +46,7 @@ class ConfigPagesTypeForm extends EntityForm {
+    *   The path validator class.
+    * @param \Drupal\Core\Routing\RouteBuilderInterface
+    *   The router interface.
+-   * @param MessengerInterface $messenger
++   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+    */
+   public function __construct(PathValidatorInterface $path_validator,
+                               RouteBuilderInterface $router_builder,
+@@ -100,8 +100,8 @@ class ConfigPagesTypeForm extends EntityForm {
+       '#type' => 'checkbox',
+       '#title' => t('Expose this ConfigPage values as tokens.'),
+       '#default_value' => !empty($config_pages_type->token)
+-        ? $config_pages_type->token
+-        : FALSE,
++      ? $config_pages_type->token
++      : FALSE,
+       '#required' => FALSE,
+     ];
+ 
+diff --git a/src/ConfigPagesTypeListBuilder.php b/src/ConfigPagesTypeListBuilder.php
+index d16d5f8..91ca357 100644
+--- a/src/ConfigPagesTypeListBuilder.php
++++ b/src/ConfigPagesTypeListBuilder.php
+@@ -84,7 +84,7 @@ class ConfigPagesTypeListBuilder extends ConfigEntityListBuilder {
+       }
+     }
+     $row['context'] = implode(', ', $contextData);
+-    $row['token'] =  !empty($entity->token)
++    $row['token'] = !empty($entity->token)
+       ? 'Exposed'
+       : 'Hidden';
+ 
+diff --git a/src/Controller/ConfigPagesController.php b/src/Controller/ConfigPagesController.php
+index 8a1a9dd..7e453cc 100644
+--- a/src/Controller/ConfigPagesController.php
++++ b/src/Controller/ConfigPagesController.php
+@@ -65,7 +65,7 @@ class ConfigPagesController extends ControllerBase {
+    *   The config page type storage.
+    * @param \Drupal\Core\Extension\ThemeHandlerInterface $theme_handler
+    *   The theme handler.
+-   * @param EntityTypeManagerInterface $entity_type_manager
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+    */
+   public function __construct(EntityStorageInterface $config_pages_storage,
+                               EntityStorageInterface $config_pages_type_storage,
+@@ -119,6 +119,7 @@ class ConfigPagesController extends ControllerBase {
+    *
+    * @return array
+    *   A form array as expected by drupal_render().
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    */
+@@ -156,6 +157,7 @@ class ConfigPagesController extends ControllerBase {
+    * Presents the config page confirmation form.
+    *
+    * @param $config_pages
++   *
+    * @return array
+    *   A form array as expected by drupal_render().
+    */
+diff --git a/src/Entity/ConfigPagesType.php b/src/Entity/ConfigPagesType.php
+index 62c808f..5c81dbe 100644
+--- a/src/Entity/ConfigPagesType.php
++++ b/src/Entity/ConfigPagesType.php
+@@ -135,6 +135,7 @@ class ConfigPagesType extends ConfigEntityBundleBase implements ConfigPagesTypeI
+    *
+    * @return string
+    *   Return context label.
++   *
+    * @throws \Drupal\Component\Plugin\Exception\PluginException
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    */
+@@ -158,6 +159,7 @@ class ConfigPagesType extends ConfigEntityBundleBase implements ConfigPagesTypeI
+    *
+    * @return array
+    *   Get context links.
++   *
+    * @throws \Drupal\Component\Plugin\Exception\PluginException
+    */
+   public function getContextLinks() {
+diff --git a/src/Form/ConfigPagesTypeDeleteForm.php b/src/Form/ConfigPagesTypeDeleteForm.php
+index 88ed4b4..d7c3bc2 100644
+--- a/src/Form/ConfigPagesTypeDeleteForm.php
++++ b/src/Form/ConfigPagesTypeDeleteForm.php
+@@ -14,14 +14,15 @@ class ConfigPagesTypeDeleteForm extends EntityDeleteForm {
+   /**
+    * The query factory to create entity queries.
+    *
+-   * @var \Drupal\Core\Entity\EntityStorageInterface::getQuery()
++   * @var \Drupal\Core\Entity\EntityStorageInterfacegetQuery
+    */
+   public $queryFactory;
+ 
+   /**
+    * Constructs a query factory object.
+    *
+-   * @param EntityTypeManagerInterface $entity_type_manager
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    */
+diff --git a/tests/src/Functional/ConfigPageTokenTest.php b/tests/src/Functional/ConfigPageTokenTest.php
+index 49644a3..1f3c3e9 100644
+--- a/tests/src/Functional/ConfigPageTokenTest.php
++++ b/tests/src/Functional/ConfigPageTokenTest.php
+@@ -3,8 +3,6 @@
+ namespace Drupal\config_pages\tests\Functional;
+ 
+ use Drupal\config_pages\Entity\ConfigPagesType;
+-use Drupal\field\Entity\FieldConfig;
+-use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+@@ -12,8 +10,7 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group config_pages
+  */
+-class ConfigPageTokenTest extends BrowserTestBase
+-{
++class ConfigPageTokenTest extends BrowserTestBase {
+ 
+   /**
+    * Modules to enable.
+diff --git a/tests/src/Functional/CreateConfigPageTypeTest.php b/tests/src/Functional/CreateConfigPageTypeTest.php
+index 6241779..29fc089 100644
+--- a/tests/src/Functional/CreateConfigPageTypeTest.php
++++ b/tests/src/Functional/CreateConfigPageTypeTest.php
+@@ -12,8 +12,7 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group config_pages
+  */
+-class CreateConfigPageTypeTest extends BrowserTestBase
+-{
++class CreateConfigPageTypeTest extends BrowserTestBase {
+ 
+   /**
+    * Modules to enable.
+@@ -124,4 +123,5 @@ class CreateConfigPageTypeTest extends BrowserTestBase
+     $this->clickLink('Edit');
+     $this->assertSession()->statusCodeEquals(200);
+   }
++
+ }
+diff --git a/tests/src/Functional/DeleteConfigPageTypeTest.php b/tests/src/Functional/DeleteConfigPageTypeTest.php
+index 2baba47..21fd8a7 100644
+--- a/tests/src/Functional/DeleteConfigPageTypeTest.php
++++ b/tests/src/Functional/DeleteConfigPageTypeTest.php
+@@ -3,8 +3,6 @@
+ namespace Drupal\config_pages\tests\Functional;
+ 
+ use Drupal\config_pages\Entity\ConfigPagesType;
+-use Drupal\field\Entity\FieldConfig;
+-use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+@@ -12,8 +10,7 @@ use Drupal\Tests\BrowserTestBase;
+  *
+  * @group config_pages
+  */
+-class DeleteConfigPageTypeTest extends BrowserTestBase
+-{
++class DeleteConfigPageTypeTest extends BrowserTestBase {
+ 
+   /**
+    * Modules to enable.
+diff --git a/tests/src/Functional/UiPageTest.php b/tests/src/Functional/UiPageTest.php
+index 493c214..3b605b1 100644
+--- a/tests/src/Functional/UiPageTest.php
++++ b/tests/src/Functional/UiPageTest.php
+@@ -5,10 +5,10 @@ namespace Drupal\config_pages\tests\Functional;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+-* Tests that the ConfigPages UI pages are reachable.
+-*
+-* @group config_pages
+-*/
++ * Tests that the ConfigPages UI pages are reachable.
++ *
++ * @group config_pages
++ */
+ class UiPageTest extends BrowserTestBase {
+ 
+   /**

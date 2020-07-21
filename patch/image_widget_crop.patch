@@ -1,0 +1,65 @@
+diff --git a/js/ImageWidgetCrop.js b/js/ImageWidgetCrop.js
+index a1dbd18..ec08ad3 100644
+--- a/js/ImageWidgetCrop.js
++++ b/js/ImageWidgetCrop.js
+@@ -104,7 +104,7 @@
+ 
+     // Disable triggering the "Reset crop" button when ENTER is pressed in the
+     // form.
+-    this.$wrapper.closest('form').find('input').on('keypress', function(e) {
++    this.$wrapper.closest('form').find('input').on('keypress', function (e) {
+       return e.which !== 13;
+     });
+   };
+diff --git a/js/ImageWidgetCropType.js b/js/ImageWidgetCropType.js
+index c8b6807..dca5bf6 100644
+--- a/js/ImageWidgetCropType.js
++++ b/js/ImageWidgetCropType.js
+@@ -724,7 +724,7 @@
+         return value;
+     };
+ 
+-    String.prototype.capitalize = function() {
++    String.prototype.capitalize = function () {
+       return this.charAt(0).toUpperCase() + this.slice(1);
+     };
+ 
+diff --git a/modules/image_widget_crop_examples/src/Form/ImageWidgetCropExamplesForm.php b/modules/image_widget_crop_examples/src/Form/ImageWidgetCropExamplesForm.php
+index 7529836..3f3325f 100644
+--- a/modules/image_widget_crop_examples/src/Form/ImageWidgetCropExamplesForm.php
++++ b/modules/image_widget_crop_examples/src/Form/ImageWidgetCropExamplesForm.php
+@@ -66,7 +66,7 @@ class ImageWidgetCropExamplesForm extends ConfigFormBase {
+    * {@inheritdoc}
+    */
+   public static function create(ContainerInterface $container) {
+-    return new static (
++    return new static(
+       $container->get('config.factory'),
+       $container->get('file.usage'),
+       $container->get('image_widget_crop.manager')
+diff --git a/src/Form/CropWidgetForm.php b/src/Form/CropWidgetForm.php
+index c333244..a8fb31e 100644
+--- a/src/Form/CropWidgetForm.php
++++ b/src/Form/CropWidgetForm.php
+@@ -71,7 +71,7 @@ class CropWidgetForm extends ConfigFormBase {
+    * {@inheritdoc}
+    */
+   public static function create(ContainerInterface $container) {
+-    return new static (
++    return new static(
+       $container->get('config.factory'),
+       $container->get('image_widget_crop.manager'),
+       $container->get('module_handler'),
+diff --git a/src/ImageWidgetCropManager.php b/src/ImageWidgetCropManager.php
+index 07d1096..057d49a 100644
+--- a/src/ImageWidgetCropManager.php
++++ b/src/ImageWidgetCropManager.php
+@@ -342,7 +342,7 @@ class ImageWidgetCropManager implements ImageWidgetCropInterface {
+             foreach ($crop_elements as $crop_element) {
+               if (is_array($crop_element) && isset($crop_element['crop_wrapper'])) {
+ 
+-                // If file-id key is not available, set it same as parent elements target_id
++                // If file-id key is not available, set it same as parent elements target_id.
+                 if (empty($crop_element['file-id']) && !empty($crop_elements['target_id'])) {
+                   $crop_element['file-id'] = $crop_elements['target_id'];
+                 }

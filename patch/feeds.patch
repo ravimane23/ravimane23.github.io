@@ -1,0 +1,25 @@
+diff --git a/src/Component/CsvParser.php b/src/Component/CsvParser.php
+index 8295bc2c..c68bcf25 100644
+--- a/src/Component/CsvParser.php
++++ b/src/Component/CsvParser.php
+@@ -225,7 +225,7 @@ class CsvParser implements \Iterator {
+         return;
+       }
+ 
+-    // Skip empty lines that aren't wrapped in an enclosure.
++      // Skip empty lines that aren't wrapped in an enclosure.
+     } while (!strlen(rtrim($line, "\r\n")));
+ 
+     $this->currentLine = $this->parseLine($line);
+diff --git a/src/Feeds/Parser/OpmlParser.php b/src/Feeds/Parser/OpmlParser.php
+index bfb589a6..b163359c 100644
+--- a/src/Feeds/Parser/OpmlParser.php
++++ b/src/Feeds/Parser/OpmlParser.php
+@@ -70,7 +70,6 @@ class OpmlParser extends PluginBase implements ParserInterface {
+         'outlines' => [],
+       ];
+       // @codeCoverageIgnoreEnd
+-
+       $item = new OpmlItem();
+       // Assume it is an actual feed if the URL is set.
+       if ($outline['#xmlurl']) {

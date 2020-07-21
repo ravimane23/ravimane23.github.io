@@ -1,0 +1,838 @@
+diff --git a/src/Plugin/Derivative/ViewsLocalTask.php b/src/Plugin/Derivative/ViewsLocalTask.php
+index 9152064..d520943 100644
+--- a/src/Plugin/Derivative/ViewsLocalTask.php
++++ b/src/Plugin/Derivative/ViewsLocalTask.php
+@@ -8,7 +8,6 @@ use Drupal\Core\State\StateInterface;
+ use Drupal\Component\Plugin\Derivative\DeriverBase;
+ use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+ use Drupal\Core\Routing\RouteProviderInterface;
+-use Drupal\views\Views;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+@@ -16,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  *
+  * With this derivative it's possible to set up views on paths like:
+  * - /webform/webform-id/my-submission-view
+- * - /webform/webform-another-id/my-submission-view
++ * - /webform/webform-another-id/my-submission-view.
+  *
+  * Therefore you can have 2 different views for 2 different webforms on the same
+  * route. Standard views local task derivative would allow you to set up only
+@@ -118,10 +117,10 @@ class ViewsLocalTask extends DeriverBase implements ContainerDeriverInterface {
+               /** @var \Drupal\Core\Menu\LocalTaskInterface $local_task */
+               if ($local_task->getRouteName() == $name) {
+                 $definition = [
+-                    'route_name' => $route_name,
+-                    'weight' => $menu['weight'],
+-                    'title' => $menu['title'],
+-                  ] + $base_plugin_definition;
++                  'route_name' => $route_name,
++                  'weight' => $menu['weight'],
++                  'title' => $menu['title'],
++                ] + $base_plugin_definition;
+                 if ($local_task->getPluginDefinition()['parent_id']) {
+                   $definition['parent_id'] = $local_task->getPluginDefinition()['parent_id'];
+                 }
+@@ -147,19 +146,19 @@ class ViewsLocalTask extends DeriverBase implements ContainerDeriverInterface {
+           $parent_task = $this->localTaskManager->getDefinition($name, FALSE);
+           if ($parent_task) {
+             $this->derivatives['webform_views:' . $plugin_id] = [
+-                'route_name' => $route_name,
+-                'weight' => $menu['weight'],
+-                'title' => $menu['title'],
+-                'parent_id' => $parent_task['parent_id'] ?: $parent_task['id'],
+-              ] + $base_plugin_definition;
++              'route_name' => $route_name,
++              'weight' => $menu['weight'],
++              'title' => $menu['title'],
++              'parent_id' => $parent_task['parent_id'] ?: $parent_task['id'],
++            ] + $base_plugin_definition;
+           }
+           else {
+             $this->derivatives['webform_views:' . $plugin_id] = [
+-                'route_name' => $route_name,
+-                'weight' => $menu['weight'],
+-                'title' => $menu['title'],
+-                'base_route' => $name,
+-              ] + $base_plugin_definition;
++              'route_name' => $route_name,
++              'weight' => $menu['weight'],
++              'title' => $menu['title'],
++              'base_route' => $name,
++            ] + $base_plugin_definition;
+           }
+         }
+       }
+diff --git a/src/Plugin/views/WebformSubmissionCastToNumberTrait.php b/src/Plugin/views/WebformSubmissionCastToNumberTrait.php
+index 1c06369..8a84ae5 100644
+--- a/src/Plugin/views/WebformSubmissionCastToNumberTrait.php
++++ b/src/Plugin/views/WebformSubmissionCastToNumberTrait.php
+@@ -11,7 +11,7 @@ trait WebformSubmissionCastToNumberTrait {
+    * Cast a given SQL snippet to data type expected by this handler.
+    *
+    * @param string $value
+-   *   SQL snippet that should be casted
++   *   SQL snippet that should be casted.
+    *
+    * @return string
+    *   SQL snippet that casts provided $value to necessary data type
+diff --git a/src/Plugin/views/WebformSubmissionTrait.php b/src/Plugin/views/WebformSubmissionTrait.php
+index 9d790d9..e42ae92 100644
+--- a/src/Plugin/views/WebformSubmissionTrait.php
++++ b/src/Plugin/views/WebformSubmissionTrait.php
+@@ -2,15 +2,13 @@
+ 
+ namespace Drupal\webform_views\Plugin\views;
+ 
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+-
+ /**
+  * Trait for webform submission views handlers.
+  */
+ trait WebformSubmissionTrait {
+ 
+   /**
+-   * @var EntityTypeManagerInterface
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+   protected $entityTypeManager;
+ 
+diff --git a/src/Plugin/views/field/WebformSubmissionField.php b/src/Plugin/views/field/WebformSubmissionField.php
+index aa710ca..fa122f6 100644
+--- a/src/Plugin/views/field/WebformSubmissionField.php
++++ b/src/Plugin/views/field/WebformSubmissionField.php
+@@ -17,12 +17,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ class WebformSubmissionField extends FieldPluginBase {
+ 
+   /**
+-   * @var EntityTypeManagerInterface
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+   protected $entityTypeManager;
+ 
+   /**
+-   * @var WebformElementManagerInterface
++   * @var \Drupal\webform\Plugin\WebformElementManagerInterface
+    */
+   protected $webformElementManager;
+ 
+@@ -137,7 +137,7 @@ class WebformSubmissionField extends FieldPluginBase {
+       $element_key = $this->definition['webform_submission_field'];
+ 
+       // Get element and element handler plugin.
+-      $element = $webform->getElement($element_key,TRUE);
++      $element = $webform->getElement($element_key, TRUE);
+       if (!$element) {
+         return [];
+       }
+diff --git a/src/Plugin/views/field/WebformSubmissionNotesEditField.php b/src/Plugin/views/field/WebformSubmissionNotesEditField.php
+index f3a066f..e8ae6e3 100644
+--- a/src/Plugin/views/field/WebformSubmissionNotesEditField.php
++++ b/src/Plugin/views/field/WebformSubmissionNotesEditField.php
+@@ -6,7 +6,6 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\views\Plugin\views\field\FieldPluginBase;
+ use Drupal\views\Plugin\views\field\UncacheableFieldHandlerTrait;
+ use Drupal\views\ResultRow;
+-use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Webform submission notes field that allows to edit them.
+@@ -43,7 +42,7 @@ class WebformSubmissionNotesEditField extends FieldPluginBase {
+ 
+     $form[$this->options['id']]['#tree'] = TRUE;
+     foreach ($this->view->result as $row_index => $row) {
+-      /** @var WebformSubmissionInterface $webform_submission */
++      /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
+       $webform_submission = $this->getEntity($row);
+ 
+       $form[$this->options['id']][$row_index] = [
+@@ -63,7 +62,7 @@ class WebformSubmissionNotesEditField extends FieldPluginBase {
+    */
+   public function viewsFormSubmit(&$form, FormStateInterface $form_state) {
+     foreach ($this->view->result as $row_index => $row) {
+-      /** @var WebformSubmissionInterface $webform_submission */
++      /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
+       $webform_submission = $this->getEntity($row);
+ 
+       $notes = $form_state->getValue($form[$this->options['id']][$row_index]['#parents']);
+diff --git a/src/Plugin/views/field/WebformSubmissionSubmittedToTrait.php b/src/Plugin/views/field/WebformSubmissionSubmittedToTrait.php
+index 054b32b..ae3aff1 100644
+--- a/src/Plugin/views/field/WebformSubmissionSubmittedToTrait.php
++++ b/src/Plugin/views/field/WebformSubmissionSubmittedToTrait.php
+@@ -4,7 +4,6 @@ namespace Drupal\webform_views\Plugin\views\field;
+ 
+ use Drupal\views\Entity\Render\EntityTranslationRenderTrait;
+ use Drupal\views\ResultRow;
+-use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Reasonable starting point for fields regarding source entity.
+@@ -72,7 +71,7 @@ trait WebformSubmissionSubmittedToTrait {
+    *   have one
+    */
+   protected function getSourceEntity(ResultRow $row) {
+-    /** @var WebformSubmissionInterface $entity */
++    /** @var \Drupal\webform\WebformSubmissionInterface $entity */
+     $entity = $this->getEntity($row);
+     return $entity->getSourceEntity();
+   }
+diff --git a/src/Plugin/views/field/WebformSubmissionUserSubmissionEditField.php b/src/Plugin/views/field/WebformSubmissionUserSubmissionEditField.php
+index 5e40b8c..8f472fd 100644
+--- a/src/Plugin/views/field/WebformSubmissionUserSubmissionEditField.php
++++ b/src/Plugin/views/field/WebformSubmissionUserSubmissionEditField.php
+@@ -5,7 +5,6 @@ namespace Drupal\webform_views\Plugin\views\field;
+ use Drupal\Core\Url;
+ use Drupal\views\Plugin\views\field\EntityLinkEdit;
+ use Drupal\views\ResultRow;
+-use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Field handler to present a link to a non-admin edit form of an entity.
+@@ -18,7 +17,7 @@ class WebformSubmissionUserSubmissionEditField extends EntityLinkEdit {
+    * {@inheritdoc}
+    */
+   protected function getUrlInfo(ResultRow $row) {
+-    /** @var WebformSubmissionInterface $webform_submission */
++    /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
+     $webform_submission = $this->getEntity($row);
+     $webform = $webform_submission->getWebform();
+ 
+diff --git a/src/Plugin/views/field/WebformSubmissionUserSubmissionViewField.php b/src/Plugin/views/field/WebformSubmissionUserSubmissionViewField.php
+index 348953f..96957e5 100644
+--- a/src/Plugin/views/field/WebformSubmissionUserSubmissionViewField.php
++++ b/src/Plugin/views/field/WebformSubmissionUserSubmissionViewField.php
+@@ -5,7 +5,6 @@ namespace Drupal\webform_views\Plugin\views\field;
+ use Drupal\Core\Url;
+ use Drupal\views\Plugin\views\field\EntityLink;
+ use Drupal\views\ResultRow;
+-use Drupal\webform\WebformSubmissionInterface;
+ 
+ /**
+  * Field handler to present a link to a non-admin view of an entity.
+@@ -18,7 +17,7 @@ class WebformSubmissionUserSubmissionViewField extends EntityLink {
+    * {@inheritdoc}
+    */
+   protected function getUrlInfo(ResultRow $row) {
+-    /** @var WebformSubmissionInterface $webform_submission */
++    /** @var \Drupal\webform\WebformSubmissionInterface $webform_submission */
+     $webform_submission = $this->getEntity($row);
+     $webform = $webform_submission->getWebform();
+ 
+diff --git a/src/Plugin/views/filter/WebformSubmissionCompositeFieldFilter.php b/src/Plugin/views/filter/WebformSubmissionCompositeFieldFilter.php
+index fc0d7ac..50d073b 100644
+--- a/src/Plugin/views/filter/WebformSubmissionCompositeFieldFilter.php
++++ b/src/Plugin/views/filter/WebformSubmissionCompositeFieldFilter.php
+@@ -9,6 +9,9 @@ namespace Drupal\webform_views\Plugin\views\filter;
+  */
+ class WebformSubmissionCompositeFieldFilter extends WebformSubmissionFieldFilter {
+ 
++  /**
++   *
++   */
+   protected function getWebformElement() {
+     $element = parent::getWebformElement();
+ 
+diff --git a/src/Plugin/views/filter/WebformSubmissionDateFilter.php b/src/Plugin/views/filter/WebformSubmissionDateFilter.php
+index 2d33dff..f2a7ae9 100644
+--- a/src/Plugin/views/filter/WebformSubmissionDateFilter.php
++++ b/src/Plugin/views/filter/WebformSubmissionDateFilter.php
+@@ -15,12 +15,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ class WebformSubmissionDateFilter extends Date {
+ 
+   /**
+-   * @var TimeInterface
++   * @var \Drupal\Component\Datetime\TimeInterface
+    */
+   protected $time;
+ 
+   /**
+-   * @var DateFormatterInterface
++   * @var \Drupal\Core\Datetime\DateFormatterInterface
+    */
+   protected $dateFormatter;
+ 
+@@ -72,7 +72,7 @@ class WebformSubmissionDateFilter extends Date {
+   /**
+    * {@inheritdoc}
+    */
+-  function operators() {
++  public function operators() {
+     $operators = parent::operators();
+     unset($operators['regular_expression']);
+ 
+diff --git a/src/Plugin/views/filter/WebformSubmissionEntityReferenceSelectFilter.php b/src/Plugin/views/filter/WebformSubmissionEntityReferenceSelectFilter.php
+index fbe5a5e..8977250 100644
+--- a/src/Plugin/views/filter/WebformSubmissionEntityReferenceSelectFilter.php
++++ b/src/Plugin/views/filter/WebformSubmissionEntityReferenceSelectFilter.php
+@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ class WebformSubmissionEntityReferenceSelectFilter extends WebformSubmissionSelectFilter {
+ 
+   /**
+-   * @var ElementInfoManager
++   * @var \Drupal\Core\Render\ElementInfoManager
+    */
+   protected $elementManager;
+ 
+@@ -31,6 +31,9 @@ class WebformSubmissionEntityReferenceSelectFilter extends WebformSubmissionSele
+     );
+   }
+ 
++  /**
++   *
++   */
+   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, ElementInfoManager $element_info_manager) {
+     parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager);
+ 
+diff --git a/src/Plugin/views/filter/WebformSubmissionFieldFilter.php b/src/Plugin/views/filter/WebformSubmissionFieldFilter.php
+index c3e5179..204b7b4 100644
+--- a/src/Plugin/views/filter/WebformSubmissionFieldFilter.php
++++ b/src/Plugin/views/filter/WebformSubmissionFieldFilter.php
+@@ -27,12 +27,12 @@ class WebformSubmissionFieldFilter extends StringFilter {
+   const ELEMENT_TYPE = 'element';
+ 
+   /**
+-   * @var EntityTypeManagerInterface
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+   protected $entityTypeManager;
+ 
+   /**
+-   * @var ElementInfoManagerInterface
++   * @var \Drupal\Core\Render\ElementInfoManagerInterface
+    */
+   protected $elementInfoManager;
+ 
+@@ -191,7 +191,7 @@ class WebformSubmissionFieldFilter extends StringFilter {
+   /**
+    * {@inheritdoc}
+    */
+-  function operators() {
++  public function operators() {
+     $operators = parent::operators();
+ 
+     // We additionally mark each operator as whether it should use element form
+@@ -289,12 +289,12 @@ class WebformSubmissionFieldFilter extends StringFilter {
+    * Extract a property of a form element.
+    *
+    * @param array $element
+-   *   Form element whose property to extract
++   *   Form element whose property to extract.
+    * @param string $property
+-   *   Property to extract
++   *   Property to extract.
+    * @param mixed $default
+    *   Default value to use when the property is not defined in the provided
+-   *   element
++   *   element.
+    *
+    * @return mixed
+    *   The property value extracted from form element
+diff --git a/src/Plugin/views/filter/WebformSubmissionHiddenFilter.php b/src/Plugin/views/filter/WebformSubmissionHiddenFilter.php
+index fa8debc..f8559f5 100644
+--- a/src/Plugin/views/filter/WebformSubmissionHiddenFilter.php
++++ b/src/Plugin/views/filter/WebformSubmissionHiddenFilter.php
+@@ -12,7 +12,7 @@ class WebformSubmissionHiddenFilter extends WebformSubmissionFieldFilter {
+   /**
+    * {@inheritdoc}
+    */
+-  function operators() {
++  public function operators() {
+     $operators = parent::operators();
+ 
+     // Replace all occurrences of "use the element type itself" (which would be
+diff --git a/src/Plugin/views/filter/WebformSubmissionNumericFilter.php b/src/Plugin/views/filter/WebformSubmissionNumericFilter.php
+index 6dac883..1e62837 100644
+--- a/src/Plugin/views/filter/WebformSubmissionNumericFilter.php
++++ b/src/Plugin/views/filter/WebformSubmissionNumericFilter.php
+@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  * Since webform submission values are stored as string, we introduce additional
+  * following definition properties to this handler:
+  * - explicit_cast: (bool) Whether the values should be explicitly casted to a
+- *   number in the views query
++ *   number in the views query.
+  *
+  * @ViewsFilter("webform_submission_numeric_filter")
+  */
+@@ -25,12 +25,12 @@ class WebformSubmissionNumericFilter extends NumericFilter {
+   use WebformSubmissionCastToNumberTrait;
+ 
+   /**
+-   * @var EntityTypeManagerInterface
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+   protected $entityTypeManager;
+ 
+   /**
+-   * @var ElementInfoManagerInterface
++   * @var \Drupal\Core\Render\ElementInfoManagerInterface
+    */
+   protected $elementInfoManager;
+ 
+@@ -80,11 +80,11 @@ class WebformSubmissionNumericFilter extends NumericFilter {
+         $default_value = end($possible_location);
+         $default_value = isset($this->value[$default_value]) ? $this->value[$default_value] : NULL;
+         $element = [
+-            '#title' => $element['#title'],
+-            '#default_value' => $default_value,
+-            '#required' => FALSE,
+-            '#states' => $element['#states'],
+-          ] + $webform->getElementInitialized($this->definition['webform_submission_field']);
++          '#title' => $element['#title'],
++          '#default_value' => $default_value,
++          '#required' => FALSE,
++          '#states' => $element['#states'],
++        ] + $webform->getElementInitialized($this->definition['webform_submission_field']);
+       }
+     }
+   }
+@@ -140,7 +140,7 @@ class WebformSubmissionNumericFilter extends NumericFilter {
+   /**
+    * {@inheritdoc}
+    */
+-  function operators() {
++  public function operators() {
+     $operators = parent::operators();
+     unset($operators['regular_expression']);
+ 
+@@ -151,12 +151,12 @@ class WebformSubmissionNumericFilter extends NumericFilter {
+    * Extract a property of a form element.
+    *
+    * @param array $element
+-   *   Form element whose property to extract
++   *   Form element whose property to extract.
+    * @param string $property
+-   *   Property to extract
++   *   Property to extract.
+    * @param mixed $default
+    *   Default value to use when the property is not defined in the provided
+-   *   element
++   *   element.
+    *
+    * @return mixed
+    *   The property value extracted from form element
+diff --git a/src/Plugin/views/filter/WebformSubmissionWebformCategory.php b/src/Plugin/views/filter/WebformSubmissionWebformCategory.php
+index d4ec0cc..ec101b1 100644
+--- a/src/Plugin/views/filter/WebformSubmissionWebformCategory.php
++++ b/src/Plugin/views/filter/WebformSubmissionWebformCategory.php
+@@ -16,7 +16,7 @@ class WebformSubmissionWebformCategory extends StringFilter {
+   /**
+    * Entity type manager service.
+    *
+-   * @var EntityTypeManagerInterface
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+   protected $entityTypeManager;
+ 
+diff --git a/src/Plugin/views/filter/WebformSubmissionWebformStatus.php b/src/Plugin/views/filter/WebformSubmissionWebformStatus.php
+index 42ba151..e0691bf 100644
+--- a/src/Plugin/views/filter/WebformSubmissionWebformStatus.php
++++ b/src/Plugin/views/filter/WebformSubmissionWebformStatus.php
+@@ -19,7 +19,7 @@ class WebformSubmissionWebformStatus extends InOperator {
+   /**
+    * Entity type manager service.
+    *
+-   * @var EntityTypeManagerInterface
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+   protected $entityTypeManager;
+ 
+diff --git a/src/Routing/RouteSubscriber.php b/src/Routing/RouteSubscriber.php
+index 7201ca3..98c7952 100644
+--- a/src/Routing/RouteSubscriber.php
++++ b/src/Routing/RouteSubscriber.php
+@@ -16,12 +16,12 @@ use Symfony\Component\Routing\RouteCollection;
+ class RouteSubscriber extends RouteSubscriberBase {
+ 
+   /**
+-   * @var StateInterface
++   * @var \Drupal\Core\State\StateInterface
+    */
+   protected $state;
+ 
+   /**
+-   * @var EntityTypeManagerInterface
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+   protected $entityTypeManager;
+ 
+diff --git a/src/WebformElementViews/WebformCompositeViews.php b/src/WebformElementViews/WebformCompositeViews.php
+index 1a95c28..047fae7 100644
+--- a/src/WebformElementViews/WebformCompositeViews.php
++++ b/src/WebformElementViews/WebformCompositeViews.php
+@@ -3,12 +3,8 @@
+ namespace Drupal\webform_views\WebformElementViews;
+ 
+ use Drupal\Component\Utility\Html;
+-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+-use Drupal\Core\Entity\EntityTypeInterface;
+-use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\webform\Plugin\WebformElementInterface;
+ use Drupal\webform\WebformInterface;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Default webform views handler for composite webform elements.
+@@ -71,11 +67,11 @@ class WebformCompositeViews extends WebformElementViewsAbstract {
+    * Generate views data for a given composite key of a webform element.
+    *
+    * @param \Drupal\webform\Plugin\WebformElementInterface $element_plugin
+-   *   Webform element plugin whose views data definition is requested
++   *   Webform element plugin whose views data definition is requested.
+    * @param array $element
+-   *   Webform element whose views data definition is requested
++   *   Webform element whose views data definition is requested.
+    * @param string $composite_key
+-   *   Composite key for which views data to generate
++   *   Composite key for which views data to generate.
+    *
+    * @return array
+    *   Views data definition array that corresponds to the given webform
+diff --git a/src/WebformElementViews/WebformDefaultViews.php b/src/WebformElementViews/WebformDefaultViews.php
+index f28ca76..10a7f8a 100644
+--- a/src/WebformElementViews/WebformDefaultViews.php
++++ b/src/WebformElementViews/WebformDefaultViews.php
+@@ -2,13 +2,7 @@
+ 
+ namespace Drupal\webform_views\WebformElementViews;
+ 
+-use Drupal\Component\Utility\Html;
+-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+-use Drupal\Core\Entity\EntityTypeInterface;
+-use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\webform\Plugin\WebformElementInterface;
+-use Drupal\webform\WebformInterface;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Default webform views handler for webform elements.
+diff --git a/src/WebformElementViews/WebformElementViewsAbstract.php b/src/WebformElementViews/WebformElementViewsAbstract.php
+index 6d90661..5f3cb0a 100644
+--- a/src/WebformElementViews/WebformElementViewsAbstract.php
++++ b/src/WebformElementViews/WebformElementViewsAbstract.php
+@@ -4,7 +4,6 @@ namespace Drupal\webform_views\WebformElementViews;
+ 
+ use Drupal\Component\Utility\Html;
+ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+-use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\webform\Plugin\WebformElementInterface;
+@@ -22,12 +21,12 @@ abstract class WebformElementViewsAbstract implements WebformElementViewsInterfa
+   /**
+    * Webform submission entity type.
+    *
+-   * @var EntityTypeInterface
++   * @var \Drupal\Core\Entity\EntityTypeInterface
+    */
+   protected $entityType;
+ 
+   /**
+-   * @var WebformElementManagerInterface
++   * @var \Drupal\webform\Plugin\WebformElementManagerInterface
+    */
+   protected $webformElementManager;
+ 
+@@ -45,9 +44,9 @@ abstract class WebformElementViewsAbstract implements WebformElementViewsInterfa
+    * WebformElementViewsAbstract constructor.
+    *
+    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+-   *   Entity type manager service
++   *   Entity type manager service.
+    * @param \Drupal\webform\Plugin\WebformElementManagerInterface $webform_element_manager
+-   *   Webform element manager service
++   *   Webform element manager service.
+    */
+   public function __construct(EntityTypeManagerInterface $entity_type_manager, WebformElementManagerInterface $webform_element_manager) {
+     $this->entityType = $entity_type_manager->getDefinition('webform_submission');
+diff --git a/src/WebformElementViews/WebformElementViewsInterface.php b/src/WebformElementViews/WebformElementViewsInterface.php
+index ba34a79..c204504 100644
+--- a/src/WebformElementViews/WebformElementViewsInterface.php
++++ b/src/WebformElementViews/WebformElementViewsInterface.php
+@@ -14,9 +14,9 @@ interface WebformElementViewsInterface {
+    * Generate views data related to a given element of a given webform.
+    *
+    * @param array $element
+-   *   Webform element whose views data is queried
++   *   Webform element whose views data is queried.
+    * @param \Drupal\webform\WebformInterface $webform
+-   *   Webform within which the element is found
++   *   Webform within which the element is found.
+    *
+    * @return array
+    *   Views data array that corresponds to the provided webform element
+@@ -27,9 +27,9 @@ interface WebformElementViewsInterface {
+    * Generate views data definition that corresponds to given webform element.
+    *
+    * @param \Drupal\webform\Plugin\WebformElementInterface $element_plugin
+-   *   Webform element plugin whose views data definition is requested
++   *   Webform element plugin whose views data definition is requested.
+    * @param array $element
+-   *   Webform element whose views data definition is requested
++   *   Webform element whose views data definition is requested.
+    *
+    * @return array
+    *   Views data definition array that corresponds to the given webform
+diff --git a/src/WebformElementViews/WebformEntityReferenceViews.php b/src/WebformElementViews/WebformEntityReferenceViews.php
+index 0f2739e..f7c8f79 100644
+--- a/src/WebformElementViews/WebformEntityReferenceViews.php
++++ b/src/WebformElementViews/WebformEntityReferenceViews.php
+@@ -17,7 +17,7 @@ class WebformEntityReferenceViews extends WebformDefaultViews {
+   /**
+    * Entity type manager service.
+    *
+-   * @var EntityTypeManagerInterface
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+   protected $entityTypeManager;
+ 
+@@ -25,9 +25,9 @@ class WebformEntityReferenceViews extends WebformDefaultViews {
+    * WebformEntityReferenceViews constructor.
+    *
+    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+-   *   Entity type manager service
++   *   Entity type manager service.
+    * @param \Drupal\webform\Plugin\WebformElementManagerInterface $webform_element_manager
+-   *   Webform element manager service
++   *   Webform element manager service.
+    */
+   public function __construct(EntityTypeManagerInterface $entity_type_manager, WebformElementManagerInterface $webform_element_manager) {
+     parent::__construct($entity_type_manager, $webform_element_manager);
+@@ -94,9 +94,9 @@ class WebformEntityReferenceViews extends WebformDefaultViews {
+    * Retrieve target entity type from provided element.
+    *
+    * @param \Drupal\webform\Plugin\WebformElementEntityReferenceInterface $element_plugin
+-   *   Element plugin that corresponds to $element
++   *   Element plugin that corresponds to $element.
+    * @param array $element
+-   *   Webform element whose target entity type is requested
++   *   Webform element whose target entity type is requested.
+    *
+    * @return \Drupal\Core\Entity\EntityTypeInterface
+    *   Target entity type of the provided element
+diff --git a/src/WebformSubmissionViewsData.php b/src/WebformSubmissionViewsData.php
+index 99bbaee..05c0315 100644
+--- a/src/WebformSubmissionViewsData.php
++++ b/src/WebformSubmissionViewsData.php
+@@ -22,12 +22,12 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
+ class WebformSubmissionViewsData extends WebformSubmissionViewsDataBase {
+ 
+   /**
+-   * @var WebformElementManagerInterface
++   * @var \Drupal\webform\Plugin\WebformElementManagerInterface
+    */
+   protected $webformElementManager;
+ 
+   /**
+-   * @var EntityStorageInterface
++   * @var \Drupal\Core\Entity\EntityStorageInterface
+    */
+   protected $webformStorage;
+ 
+@@ -224,9 +224,9 @@ class WebformSubmissionViewsData extends WebformSubmissionViewsDataBase {
+    * Collect webform element views data.
+    *
+    * @param array $element
+-   *   Element whose views data is to be collected
++   *   Element whose views data is to be collected.
+    * @param \Drupal\webform\WebformInterface $webform
+-   *   Webform where $element belongs to
++   *   Webform where $element belongs to.
+    *
+    * @return array
+    *   Views data that corresponds to the provided $element
+diff --git a/tests/src/Kernel/WebformViewsTestBase.php b/tests/src/Kernel/WebformViewsTestBase.php
+index c00a6ae..5a745b6 100644
+--- a/tests/src/Kernel/WebformViewsTestBase.php
++++ b/tests/src/Kernel/WebformViewsTestBase.php
+@@ -190,7 +190,7 @@ abstract class WebformViewsTestBase extends KernelTestBase {
+    *   field handlers and corresponding values will be rendered HTML markup that
+    *   the view produced for that field.
+    */
+-  protected function renderView(View $view, array $args = array(), $exclude_fields = ['sid']) {
++  protected function renderView(View $view, array $args = [], $exclude_fields = ['sid']) {
+     /** @var \Drupal\views\ViewExecutable $executable */
+     $executable = $view->getExecutable();
+ 
+diff --git a/tests/src/Kernel/argument/TextareaWebformViewsTest.php b/tests/src/Kernel/argument/TextareaWebformViewsTest.php
+index af51987..a9bf9c6 100644
+--- a/tests/src/Kernel/argument/TextareaWebformViewsTest.php
++++ b/tests/src/Kernel/argument/TextareaWebformViewsTest.php
+@@ -27,7 +27,8 @@ class TextareaWebformViewsTest extends WebformViewsArgumentTestBase {
+       'table' => 'webform_submission_field_webform_element',
+       'field' => 'webform_submission_value',
+       'options' => [],
+-    ]],
++    ],
++    ],
+     'argument' => [[
+       'id' => 'element',
+       'table' => 'webform_submission_field_webform_element',
+@@ -35,7 +36,8 @@ class TextareaWebformViewsTest extends WebformViewsArgumentTestBase {
+       'options' => [
+         'default_action' => 'not found',
+       ],
+-    ]],
++    ],
++    ],
+   ];
+ 
+ }
+diff --git a/tests/src/Kernel/argument/TextfieldWebformViewsTest.php b/tests/src/Kernel/argument/TextfieldWebformViewsTest.php
+index c8b0265..ed66d32 100644
+--- a/tests/src/Kernel/argument/TextfieldWebformViewsTest.php
++++ b/tests/src/Kernel/argument/TextfieldWebformViewsTest.php
+@@ -27,7 +27,8 @@ class TextfieldWebformViewsTest extends WebformViewsArgumentTestBase {
+       'table' => 'webform_submission_field_webform_element',
+       'field' => 'webform_submission_value',
+       'options' => [],
+-    ]],
++    ],
++    ],
+     'argument' => [[
+       'id' => 'element',
+       'table' => 'webform_submission_field_webform_element',
+@@ -35,7 +36,8 @@ class TextfieldWebformViewsTest extends WebformViewsArgumentTestBase {
+       'options' => [
+         'default_action' => 'not found',
+       ],
+-    ]],
++    ],
++    ],
+   ];
+ 
+ }
+diff --git a/tests/src/Kernel/field/TextareaWebformViewsTest.php b/tests/src/Kernel/field/TextareaWebformViewsTest.php
+index 969ad01..e5cb607 100644
+--- a/tests/src/Kernel/field/TextareaWebformViewsTest.php
++++ b/tests/src/Kernel/field/TextareaWebformViewsTest.php
+@@ -32,7 +32,8 @@ class TextareaWebformViewsTest extends WebformViewsFieldTestBase {
+       'table' => 'webform_submission_field_webform_element',
+       'field' => 'webform_submission_value',
+       'options' => [],
+-    ]],
++    ],
++    ],
+   ];
+ 
+ }
+diff --git a/tests/src/Kernel/field/TextfieldWebformViewsTest.php b/tests/src/Kernel/field/TextfieldWebformViewsTest.php
+index cf5a1c4..28c6d70 100644
+--- a/tests/src/Kernel/field/TextfieldWebformViewsTest.php
++++ b/tests/src/Kernel/field/TextfieldWebformViewsTest.php
+@@ -32,7 +32,8 @@ class TextfieldWebformViewsTest extends WebformViewsFieldTestBase {
+       'table' => 'webform_submission_field_webform_element',
+       'field' => 'webform_submission_value',
+       'options' => [],
+-    ]],
++    ],
++    ],
+   ];
+ 
+ }
+diff --git a/tests/src/Kernel/relationship/EntityAutocompleteWebformViewsTest.php b/tests/src/Kernel/relationship/EntityAutocompleteWebformViewsTest.php
+index 049e31e..9496404 100644
+--- a/tests/src/Kernel/relationship/EntityAutocompleteWebformViewsTest.php
++++ b/tests/src/Kernel/relationship/EntityAutocompleteWebformViewsTest.php
+@@ -38,7 +38,8 @@ class EntityAutocompleteWebformViewsTest extends WebformViewsRelationshipTestBas
+         'table' => 'webform_submission_field_webform_element',
+         'field' => 'webform_submission_value',
+         'options' => [],
+-      ]],
++      ],
++      ],
+       'field' => [[
+         'id' => 'entity_id',
+         'table' => $target_entity_type->getDataTable(),
+@@ -51,7 +52,8 @@ class EntityAutocompleteWebformViewsTest extends WebformViewsRelationshipTestBas
+           'empty_zero' => FALSE,
+           'hide_alter_empty' => TRUE,
+         ],
+-      ]],
++      ],
++      ],
+     ];
+   }
+ 
+diff --git a/tests/src/Kernel/relationship/WebformViewsRelationshipTestBase.php b/tests/src/Kernel/relationship/WebformViewsRelationshipTestBase.php
+index 79e9ccf..71dc4c3 100644
+--- a/tests/src/Kernel/relationship/WebformViewsRelationshipTestBase.php
++++ b/tests/src/Kernel/relationship/WebformViewsRelationshipTestBase.php
+@@ -10,7 +10,7 @@ use Drupal\Tests\webform_views\Kernel\WebformViewsTestBase;
+ abstract class WebformViewsRelationshipTestBase extends WebformViewsTestBase {
+ 
+   /**
+-   * Entity type onto which relationship is being tested
++   * Entity type onto which relationship is being tested.
+    *
+    * @var string
+    */
+diff --git a/tests/src/Kernel/sort/TextareaWebformViewsTest.php b/tests/src/Kernel/sort/TextareaWebformViewsTest.php
+index 5cb8c66..6bf1694 100644
+--- a/tests/src/Kernel/sort/TextareaWebformViewsTest.php
++++ b/tests/src/Kernel/sort/TextareaWebformViewsTest.php
+@@ -27,13 +27,15 @@ class TextareaWebformViewsTest extends WebformViewsSortTestBase {
+       'table' => 'webform_submission_field_webform_element',
+       'field' => 'webform_submission_value',
+       'options' => [],
+-    ]],
++    ],
++    ],
+     'sort' => [[
+       'id' => 'element',
+       'table' => 'webform_submission_field_webform_element',
+       'field' => 'webform_submission_value',
+       'options' => [],
+-    ]],
++    ],
++    ],
+   ];
+ 
+ }
+diff --git a/tests/src/Kernel/sort/TextfieldWebformViewsTest.php b/tests/src/Kernel/sort/TextfieldWebformViewsTest.php
+index 0c71e81..7217ab6 100644
+--- a/tests/src/Kernel/sort/TextfieldWebformViewsTest.php
++++ b/tests/src/Kernel/sort/TextfieldWebformViewsTest.php
+@@ -27,13 +27,15 @@ class TextfieldWebformViewsTest extends WebformViewsSortTestBase {
+       'table' => 'webform_submission_field_webform_element',
+       'field' => 'webform_submission_value',
+       'options' => [],
+-    ]],
++    ],
++    ],
+     'sort' => [[
+       'id' => 'element',
+       'table' => 'webform_submission_field_webform_element',
+       'field' => 'webform_submission_value',
+       'options' => [],
+-    ]],
++    ],
++    ],
+   ];
+ 
+ }
+diff --git a/webform_views.api.php b/webform_views.api.php
+index a513aed..5eeff79 100644
+--- a/webform_views.api.php
++++ b/webform_views.api.php
+@@ -1,4 +1,4 @@
+- <?php
++<?php
+ 
+ /**
+  * @file
+@@ -18,11 +18,11 @@ use Drupal\webform\WebformInterface;
+  * webform_views_webform_element_info_alter() for sample code.
+  *
+  * @param string $views_handler_class
+- *   Name of the current webform element views handler class
++ *   Name of the current webform element views handler class.
+  * @param array $element
+- *   Webform element whose views handler is being altered
++ *   Webform element whose views handler is being altered.
+  * @param \Drupal\webform\WebformInterface $webform
+- *   Webform where $element belongs to
++ *   Webform where $element belongs to.
+  */
+ function hook_webform_views_element_views_handler(&$views_handler_class, $element, WebformInterface $webform) {
+   if ($webform->id() == 'my_special_webform' && $element['#webform_key'] == 'my_special_webform_element') {

@@ -1,0 +1,192 @@
+diff --git a/modules/search_api_db/src/Plugin/search_api/backend/Database.php b/modules/search_api_db/src/Plugin/search_api/backend/Database.php
+index 3d349b95..be79d120 100644
+--- a/modules/search_api_db/src/Plugin/search_api/backend/Database.php
++++ b/modules/search_api_db/src/Plugin/search_api/backend/Database.php
+@@ -893,6 +893,7 @@ class Database extends BackendPluginBase implements PluginFormInterface {
+     switch ($type) {
+       case 'text':
+         return ['type' => 'varchar', 'length' => 30];
++
+       case 'string':
+       case 'uri':
+         return ['type' => 'varchar', 'length' => 255];
+diff --git a/modules/search_api_db/src/Tests/Update/SearchApiDbUpdate8102Test.php b/modules/search_api_db/src/Tests/Update/SearchApiDbUpdate8102Test.php
+index 5b6a2eb0..fc54329b 100644
+--- a/modules/search_api_db/src/Tests/Update/SearchApiDbUpdate8102Test.php
++++ b/modules/search_api_db/src/Tests/Update/SearchApiDbUpdate8102Test.php
+@@ -27,7 +27,7 @@ class SearchApiDbUpdate8102Test extends UpdatePathTestBase {
+     $entity_type_ids = [
+       'search_api_index',
+       'search_api_server',
+-      'search_api_task'
++      'search_api_task',
+     ];
+     foreach ($entity_type_ids as $entity_type_id) {
+       $entity_type = \Drupal::getContainer()
+diff --git a/search_api.theme.inc b/search_api.theme.inc
+index 12c896ad..bde23f87 100644
+--- a/search_api.theme.inc
++++ b/search_api.theme.inc
+@@ -49,7 +49,7 @@ function template_preprocess_search_api_admin_fields_table(array &$variables) {
+   $variables['note'] = $form['note'] ?? '';
+   unset($form['note'], $form['submit']);
+ 
+-  $variables['table']  = [
++  $variables['table'] = [
+     '#theme' => 'table',
+     '#header' => $form['#header'],
+     '#rows' => $rows,
+diff --git a/search_api.views.inc b/search_api.views.inc
+index a65656b2..a80a2934 100644
+--- a/search_api.views.inc
++++ b/search_api.views.inc
+@@ -338,15 +338,15 @@ function _search_api_views_handler_mapping() {
+       'language' => [
+         'argument' => [
+           'id' => 'search_api',
+-          ],
++        ],
+         'filter' => [
+           'id' => 'search_api_language',
+           'allow empty' => FALSE,
+-          ],
++        ],
+         'sort' => [
+           'id' => 'search_api',
+-          ],
+         ],
++      ],
+       'options' => [
+         'argument' => [
+           'id' => 'search_api',
+diff --git a/src/IndexListBuilder.php b/src/IndexListBuilder.php
+index 622efe3f..f285ccf4 100644
+--- a/src/IndexListBuilder.php
++++ b/src/IndexListBuilder.php
+@@ -89,7 +89,7 @@ class IndexListBuilder extends ConfigEntityListBuilder {
+           if (!isset($fields[$required_field])) {
+             $errors[$required_type_id . ':' . $required_field] = t('Field @field in content type @node_type not found. Database Search Defaults module could not be installed', [
+               '@node_type' => $required_type_id,
+-              '@field' => $required_field
++              '@field' => $required_field,
+             ]);
+           }
+         }
+diff --git a/src/Plugin/search_api/processor/AggregatedFields.php b/src/Plugin/search_api/processor/AggregatedFields.php
+index 87952a26..b869b89c 100644
+--- a/src/Plugin/search_api/processor/AggregatedFields.php
++++ b/src/Plugin/search_api/processor/AggregatedFields.php
+@@ -110,6 +110,7 @@ class AggregatedFields extends ProcessorPluginBase {
+             $values = [reset($values)];
+           }
+           break;
++
+         case 'last':
+           if ($values) {
+             $values = [end($values)];
+diff --git a/src/Plugin/views/field/SearchApiBulkForm.php b/src/Plugin/views/field/SearchApiBulkForm.php
+index 89782fbe..7a4b7ac1 100644
+--- a/src/Plugin/views/field/SearchApiBulkForm.php
++++ b/src/Plugin/views/field/SearchApiBulkForm.php
+@@ -84,6 +84,7 @@ class SearchApiBulkForm extends BulkForm {
+   }
+ 
+   // phpcs:disable Drupal.Commenting.FunctionComment.TypeHintMissing
++
+   /**
+    * Form constructor for the bulk form.
+    *
+diff --git a/src/Plugin/views/filter/SearchApiString.php b/src/Plugin/views/filter/SearchApiString.php
+index 59f46d47..8f5592bf 100644
+--- a/src/Plugin/views/filter/SearchApiString.php
++++ b/src/Plugin/views/filter/SearchApiString.php
+@@ -26,7 +26,7 @@ class SearchApiString extends SearchApiNumeric {
+       $operator = $this->operator == 'between' ? 'BETWEEN' : 'NOT BETWEEN';
+       $this->getQuery()->addWhere($this->options['group'], $field, [
+         $this->value['min'],
+-        $this->value['max']
++        $this->value['max'],
+       ], $operator);
+     }
+     elseif ($this->value['min'] != '') {
+diff --git a/src/Tracker/TrackerPluginBase.php b/src/Tracker/TrackerPluginBase.php
+index aeb6779b..0f5e5540 100644
+--- a/src/Tracker/TrackerPluginBase.php
++++ b/src/Tracker/TrackerPluginBase.php
+@@ -35,5 +35,4 @@ abstract class TrackerPluginBase extends IndexPluginBase implements TrackerInter
+ 
+   // @todo Move some of the methods from
+   //   \Drupal\search_api\Plugin\search_api\tracker\Basic to here?
+-
+ }
+diff --git a/tests/src/Functional/IntegrationTest.php b/tests/src/Functional/IntegrationTest.php
+index a6020f80..9133c99d 100644
+--- a/tests/src/Functional/IntegrationTest.php
++++ b/tests/src/Functional/IntegrationTest.php
+@@ -1340,7 +1340,6 @@ class IntegrationTest extends SearchApiBrowserTestBase {
+     $this->assertEquals(0, $tracked_items, 'No items left in tracking table.');
+ 
+     // @todo Also try to verify whether the items got deleted from the server.
+-
+     // Re-enable the index and check that the items are tracked again.
+     $edit = [
+       'status' => TRUE,
+diff --git a/tests/src/Functional/ProcessorIntegrationTest.php b/tests/src/Functional/ProcessorIntegrationTest.php
+index 265234a6..f3fe0aa0 100644
+--- a/tests/src/Functional/ProcessorIntegrationTest.php
++++ b/tests/src/Functional/ProcessorIntegrationTest.php
+@@ -102,7 +102,7 @@ class ProcessorIntegrationTest extends SearchApiBrowserTestBase {
+       'add_url',
+       'aggregated_field',
+       'language_with_fallback',
+-      'rendered_item'
++      'rendered_item',
+     ];
+     $actual_processors = array_keys($this->loadIndex()->getProcessors());
+     sort($actual_processors);
+diff --git a/tests/src/Kernel/Processor/RenderedItemTest.php b/tests/src/Kernel/Processor/RenderedItemTest.php
+index 70c099ff..e3748f12 100644
+--- a/tests/src/Kernel/Processor/RenderedItemTest.php
++++ b/tests/src/Kernel/Processor/RenderedItemTest.php
+@@ -49,7 +49,7 @@ class RenderedItemTest extends ProcessorTestBase {
+     'comment',
+     'system',
+     'filter',
+-    'path_alias'
++    'path_alias',
+   ];
+ 
+   /**
+diff --git a/tests/src/Kernel/System/FieldValuesExtractionTest.php b/tests/src/Kernel/System/FieldValuesExtractionTest.php
+index 640f3648..41533b7f 100644
+--- a/tests/src/Kernel/System/FieldValuesExtractionTest.php
++++ b/tests/src/Kernel/System/FieldValuesExtractionTest.php
+@@ -307,7 +307,6 @@ class FieldValuesExtractionTest extends KernelTestBase {
+    */
+   public function testNestedComplexFieldValuesExtraction() {
+     // Complex data definition structure.
+-
+     // phpcs:disable Drupal.Commenting.InlineComment.NotCapital
+     // data => ListDataDefinition (list) [
+     //   itemDefinition => ComplexDataDefinition (map) [
+@@ -323,7 +322,7 @@ class FieldValuesExtractionTest extends KernelTestBase {
+     //       ]
+     //     ]
+     //   ]
+-    // ]
++    // ].
+     // phpcs:enable
+ 
+     $properties_def = MapDataDefinition::create();
+diff --git a/tests/src/Kernel/Views/ViewsCacheabilityMetadataExportTest.php b/tests/src/Kernel/Views/ViewsCacheabilityMetadataExportTest.php
+index 7d6c91bf..46c1eac8 100644
+--- a/tests/src/Kernel/Views/ViewsCacheabilityMetadataExportTest.php
++++ b/tests/src/Kernel/Views/ViewsCacheabilityMetadataExportTest.php
+@@ -78,7 +78,6 @@ class ViewsCacheabilityMetadataExportTest extends KernelTestBase {
+     $container->set('cache_contexts_manager', $cache_contexts_manager);
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */

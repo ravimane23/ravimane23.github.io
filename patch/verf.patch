@@ -1,0 +1,49 @@
+diff --git a/src/Plugin/views/filter/EntityReference.php b/src/Plugin/views/filter/EntityReference.php
+index 2ce8b83..aff7c38 100644
+--- a/src/Plugin/views/filter/EntityReference.php
++++ b/src/Plugin/views/filter/EntityReference.php
+@@ -4,7 +4,6 @@ namespace Drupal\verf\Plugin\views\filter;
+ 
+ use Drupal\Core\Cache\Cache;
+ use Drupal\Core\Cache\CacheableMetadata;
+-use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityStorageInterface;
+ use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+diff --git a/tests/src/Functional/IntegrationTest.php b/tests/src/Functional/IntegrationTest.php
+index 04cbf99..01f0cb1 100644
+--- a/tests/src/Functional/IntegrationTest.php
++++ b/tests/src/Functional/IntegrationTest.php
+@@ -58,7 +58,7 @@ class IntegrationTest extends BrowserTestBase {
+     $this->nodeType = $this->drupalCreateContentType();
+     $this->createEntityReferenceField('node', $this->nodeType->id(), 'field_refs', 'Refs', 'node');
+ 
+-    $this->admin = $this->drupalCreateUser([], $this->randomString(), true);
++    $this->admin = $this->drupalCreateUser([], $this->randomString(), TRUE);
+     $this->author = $this->drupalCreateUser(['view own unpublished content']);
+   }
+ 
+@@ -123,9 +123,9 @@ class IntegrationTest extends BrowserTestBase {
+    * Asserts that an option with a given value can be selected in a select.
+    *
+    * @param string $locator
+-   *   input id, name or label
++   *   input id, name or label.
+    * @param string $value
+-   *   option value
++   *   option value.
+    *
+    * @throws \Behat\Mink\Exception\ElementNotFoundException
+    */
+@@ -137,9 +137,9 @@ class IntegrationTest extends BrowserTestBase {
+    * Asserts that no option with a given value can be selected in a select.
+    *
+    * @param string $locator
+-   *   input id, name or label
++   *   input id, name or label.
+    * @param string $value
+-   *   option value
++   *   option value.
+    *
+    * @throws \Behat\Mink\Exception\ElementNotFoundException
+    */

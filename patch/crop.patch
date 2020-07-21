@@ -1,0 +1,93 @@
+diff --git a/src/Form/CropTypeDeleteForm.php b/src/Form/CropTypeDeleteForm.php
+index 1bd56cc..ca85b3a 100644
+--- a/src/Form/CropTypeDeleteForm.php
++++ b/src/Form/CropTypeDeleteForm.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\crop\Form;
+ 
+ use Drupal\Core\Entity\EntityConfirmFormBase;
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\StringTranslation\TranslationInterface;
+ use Drupal\Core\Url;
+diff --git a/src/Plugin/ImageEffect/CropEffect.php b/src/Plugin/ImageEffect/CropEffect.php
+index f6930b6..2809988 100644
+--- a/src/Plugin/ImageEffect/CropEffect.php
++++ b/src/Plugin/ImageEffect/CropEffect.php
+@@ -118,12 +118,12 @@ class CropEffect extends ConfigurableImageEffectBase implements ContainerFactory
+ 
+     if (!$image->crop($anchor['x'], $anchor['y'], $size['width'], $size['height'])) {
+       $this->logger->error('Manual image crop failed using the %toolkit toolkit on %path (%mimetype, %width x %height)', [
+-          '%toolkit' => $image->getToolkitId(),
+-          '%path' => $image->getSource(),
+-          '%mimetype' => $image->getMimeType(),
+-          '%width' => $image->getWidth(),
+-          '%height' => $image->getHeight(),
+-        ]
++        '%toolkit' => $image->getToolkitId(),
++        '%path' => $image->getSource(),
++        '%mimetype' => $image->getMimeType(),
++        '%width' => $image->getWidth(),
++        '%height' => $image->getHeight(),
++      ]
+       );
+       return FALSE;
+     }
+diff --git a/tests/src/Functional/CropFunctionalTest.php b/tests/src/Functional/CropFunctionalTest.php
+index 5580b82..c092321 100644
+--- a/tests/src/Functional/CropFunctionalTest.php
++++ b/tests/src/Functional/CropFunctionalTest.php
+@@ -76,7 +76,6 @@ class CropFunctionalTest extends BrowserTestBase {
+     $this->drupalGet('admin/config/media/crop/add');
+     $this->assertSession()->statusCodeEquals(403);
+ 
+-
+     // Can access pages if logged in and no crop types exist.
+     $this->drupalLogin($this->adminUser);
+     $this->drupalGet('admin/config/media/crop');
+@@ -89,7 +88,6 @@ class CropFunctionalTest extends BrowserTestBase {
+     $this->assertSession()->statusCodeEquals(200);
+     $this->assertSession()->addressEquals('admin/config/media/crop/add');
+ 
+-
+     // Create crop type.
+     $crop_type_id = strtolower($this->randomMachineName());
+     $edit = [
+@@ -105,7 +103,6 @@ class CropFunctionalTest extends BrowserTestBase {
+     self::assertTrue(strpos($label[0]->getText(), $edit['label']) !== FALSE, 'Crop type label found on listing page.');
+     $this->assertSession()->pageTextContains($edit['description']);
+ 
+-
+     // Check edit form.
+     $this->clickLink(t('Edit'));
+     $this->assertSession()->pageTextContains(t('Edit @name crop type', ['@name' => $edit['label']]));
+@@ -114,7 +111,6 @@ class CropFunctionalTest extends BrowserTestBase {
+     $this->assertSession()->fieldExists('edit-label');
+     $this->assertSession()->responseContains($edit['description']);
+ 
+-
+     // See if crop type appears on image effect configuration form.
+     $this->drupalGet('admin/config/media/image-styles/manage/' . $this->testStyle->id() . '/add/crop_crop');
+     $option = $this->xpath("//select[@id='edit-data-crop-type']/option");
+@@ -141,7 +137,6 @@ class CropFunctionalTest extends BrowserTestBase {
+     $this->drupalPostForm('admin/config/media/crop/add', $edit, t('Save crop type'));
+     $this->assertSession()->pageTextContains(t('The machine-readable name is already in use. It must be unique.'));
+ 
+-
+     // Delete crop type.
+     $this->drupalGet('admin/config/media/crop');
+     $this->assertSession()->linkExists('Test image style');
+diff --git a/tests/src/Functional/UpdatePathTest.php b/tests/src/Functional/UpdatePathTest.php
+index 7841c17..d024705 100644
+--- a/tests/src/Functional/UpdatePathTest.php
++++ b/tests/src/Functional/UpdatePathTest.php
+@@ -20,6 +20,9 @@ class UpdatePathTest extends UpdatePathTestBase {
+     ];
+   }
+ 
++  /**
++   *
++   */
+   public function testUpdatePath() {
+     $this->runUpdates();
+     $this->assertTrue(\Drupal::database()->schema()->indexExists('crop_field_data', 'crop__uri_type'));

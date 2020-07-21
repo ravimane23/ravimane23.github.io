@@ -1,0 +1,11 @@
+diff --git a/js/ckeditor_config.js b/js/ckeditor_config.js
+index 71b1953..22c496b 100644
+--- a/js/ckeditor_config.js
++++ b/js/ckeditor_config.js
+@@ -18,4 +18,4 @@
+       });
+     }
+   };
+-})(jQuery, Drupal);
+\ No newline at end of file
++})(jQuery, Drupal);

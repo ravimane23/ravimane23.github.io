@@ -1,0 +1,570 @@
+diff --git a/src/AliasCleaner.php b/src/AliasCleaner.php
+index 8cbf9ee..f28822b 100644
+--- a/src/AliasCleaner.php
++++ b/src/AliasCleaner.php
+@@ -233,7 +233,7 @@ class AliasCleaner implements AliasCleanerInterface {
+ 
+     // Replace or drop punctuation based on user settings.
+     $output = strtr($output, $this->cleanStringCache['punctuation']);
+-    
++
+     // Optionally transliterate.
+     if ($this->cleanStringCache['transliterate']) {
+       // If the reduce strings to letters and numbers is enabled, don't bother
+@@ -246,7 +246,6 @@ class AliasCleaner implements AliasCleanerInterface {
+       $output = strtr($output, $this->cleanStringCache['punctuation']);
+     }
+ 
+-
+     // Reduce strings to letters and numbers.
+     if ($this->cleanStringCache['reduce_ascii']) {
+       $output = preg_replace('/[^a-zA-Z0-9\/]+/', $this->cleanStringCache['separator'], $output);
+diff --git a/src/Commands/PathautoCommands.php b/src/Commands/PathautoCommands.php
+index 1a1ed8f..d7de7a3 100644
+--- a/src/Commands/PathautoCommands.php
++++ b/src/Commands/PathautoCommands.php
+@@ -105,7 +105,7 @@ class PathautoCommands extends DrushCommands {
+   }
+ 
+   /**
+-   * Delete URL aliases
++   * Delete URL aliases.
+    *
+    * @command pathauto:aliases-delete
+    *
+diff --git a/src/Form/PathautoSettingsForm.php b/src/Form/PathautoSettingsForm.php
+index f45cbb4..278a12c 100644
+--- a/src/Form/PathautoSettingsForm.php
++++ b/src/Form/PathautoSettingsForm.php
+@@ -223,7 +223,7 @@ class PathautoSettingsForm extends ConfigFormBase {
+         PathautoGeneratorInterface::UPDATE_ACTION_NO_NEW => $this->t('Do nothing. Leave the old alias intact.'),
+         PathautoGeneratorInterface::UPDATE_ACTION_LEAVE => $this->t('Create a new alias. Leave the existing alias functioning.'),
+         PathautoGeneratorInterface::UPDATE_ACTION_DELETE => $this->t('Create a new alias. Delete the old alias.'),
+-    ],
++      ],
+       '#description' => $description,
+     ];
+ 
+@@ -281,7 +281,7 @@ class PathautoSettingsForm extends ConfigFormBase {
+           PathautoGeneratorInterface::PUNCTUATION_REMOVE => $this->t('Remove'),
+           PathautoGeneratorInterface::PUNCTUATION_REPLACE => $this->t('Replace by separator'),
+           PathautoGeneratorInterface::PUNCTUATION_DO_NOTHING => $this->t('No action (do not replace)'),
+-      ],
++        ],
+       ];
+     }
+ 
+diff --git a/src/Form/PatternEditForm.php b/src/Form/PatternEditForm.php
+index 4c892d7..488d147 100644
+--- a/src/Form/PatternEditForm.php
++++ b/src/Form/PatternEditForm.php
+@@ -110,7 +110,7 @@ class PatternEditForm extends EntityForm {
+       '#suffix' => '</div>',
+     ];
+ 
+-    // if there is no type yet, stop here.
++    // If there is no type yet, stop here.
+     if ($this->entity->getType()) {
+ 
+       $alias_type = $this->entity->getAliasType();
+@@ -238,7 +238,7 @@ class PatternEditForm extends EntityForm {
+             'negate' => FALSE,
+             'context_mapping' => [
+               $entity_type => $entity_type,
+-            ]
++            ],
+           ]
+         );
+       }
+@@ -253,7 +253,7 @@ class PatternEditForm extends EntityForm {
+             'negate' => FALSE,
+             'context_mapping' => [
+               'language' => $language_mapping,
+-            ]
++            ],
+           ]
+         );
+         $entity->addRelationship($language_mapping, $this->t('Language'));
+diff --git a/src/PathautoFieldItemList.php b/src/PathautoFieldItemList.php
+index 300675c..9c378ed 100644
+--- a/src/PathautoFieldItemList.php
++++ b/src/PathautoFieldItemList.php
+@@ -4,6 +4,9 @@ namespace Drupal\pathauto;
+ 
+ use Drupal\path\Plugin\Field\FieldType\PathFieldItemList;
+ 
++/**
++ *
++ */
+ class PathautoFieldItemList extends PathFieldItemList {
+ 
+   /**
+diff --git a/src/PathautoGeneratorInterface.php b/src/PathautoGeneratorInterface.php
+index 1c19bcb..59ec79d 100644
+--- a/src/PathautoGeneratorInterface.php
++++ b/src/PathautoGeneratorInterface.php
+@@ -10,17 +10,17 @@ use Drupal\Core\Entity\EntityInterface;
+ interface PathautoGeneratorInterface {
+ 
+   /**
+-   * "Do nothing. Leave the old alias intact."
++   * "Do nothing. Leave the old alias intact.".
+    */
+   const UPDATE_ACTION_NO_NEW = 0;
+ 
+   /**
+-   * "Create a new alias. Leave the existing alias functioning."
++   * "Create a new alias. Leave the existing alias functioning.".
+    */
+   const UPDATE_ACTION_LEAVE = 1;
+ 
+   /**
+-   * "Create a new alias. Delete the old alias."
++   * "Create a new alias. Delete the old alias.".
+    */
+   const UPDATE_ACTION_DELETE = 2;
+ 
+@@ -73,13 +73,13 @@ interface PathautoGeneratorInterface {
+   /**
+    * Creates or updates an alias for the given entity.
+    *
+-   * @param EntityInterface $entity
++   * @param \Drupal\Core\Entity\EntityInterface $entity
+    *   Entity for which to update the alias.
+    * @param string $op
+    *   The operation performed (insert, update)
+    * @param array $options
+    *   - force: will force updating the path
+-   *   - language: the language for which to create the alias
++   *   - language: the language for which to create the alias.
+    *
+    * @return array|null
+    *   - An array with alias data in case the alias has been created or updated.
+diff --git a/src/PathautoWidget.php b/src/PathautoWidget.php
+index 392e8e8..f048d87 100644
+--- a/src/PathautoWidget.php
++++ b/src/PathautoWidget.php
+@@ -24,18 +24,18 @@ class PathautoWidget extends PathWidget {
+     // @todo Impossible to do this in widget, use another solution
+     /*
+     $form['path'] += array(
+-      '#type' => 'fieldset',
+-      '#title' => $this->t('URL path settings'),
+-      '#collapsible' => TRUE,
+-      '#collapsed' => empty($form['path']['alias']),
+-      '#group' => 'additional_settings',
+-      '#attributes' => array(
+-        'class' => array('path-form'),
+-      ),
+-      '#access' => \Drupal::currentUser()->hasPermission('create url aliases') || \Drupal::currentUser()->hasPermission('administer url aliases'),
+-      '#weight' => 30,
+-      '#tree' => TRUE,
+-      '#element_validate' => array('path_form_element_validate'),
++    '#type' => 'fieldset',
++    '#title' => $this->t('URL path settings'),
++    '#collapsible' => TRUE,
++    '#collapsed' => empty($form['path']['alias']),
++    '#group' => 'additional_settings',
++    '#attributes' => array(
++    'class' => array('path-form'),
++    ),
++    '#access' => \Drupal::currentUser()->hasPermission('create url aliases') || \Drupal::currentUser()->hasPermission('administer url aliases'),
++    '#weight' => 30,
++    '#tree' => TRUE,
++    '#element_validate' => array('path_form_element_validate'),
+     );*/
+ 
+     $pattern = \Drupal::service('pathauto.generator')->getPatternByEntity($entity);
+diff --git a/src/Plugin/Deriver/EntityAliasTypeDeriver.php b/src/Plugin/Deriver/EntityAliasTypeDeriver.php
+index 37f751c..bde643a 100644
+--- a/src/Plugin/Deriver/EntityAliasTypeDeriver.php
++++ b/src/Plugin/Deriver/EntityAliasTypeDeriver.php
+@@ -86,7 +86,7 @@ class EntityAliasTypeDeriver extends DeriverBase implements ContainerDeriverInte
+         $this->derivatives[$entity_type_id]['types'] = [$this->tokenEntityMapper->getTokenTypeForEntityType($entity_type_id)];
+         $this->derivatives[$entity_type_id]['provider'] = $entity_type->getProvider();
+         $this->derivatives[$entity_type_id]['context_definitions'] = [
+-          $entity_type_id => new EntityContextDefinition("entity:$entity_type_id", $this->t('@label being aliased', ['@label' => $entity_type->getLabel()]))
++          $entity_type_id => new EntityContextDefinition("entity:$entity_type_id", $this->t('@label being aliased', ['@label' => $entity_type->getLabel()])),
+         ];
+       }
+     }
+diff --git a/tests/src/Functional/PathautoBulkUpdateTest.php b/tests/src/Functional/PathautoBulkUpdateTest.php
+index 1cad4f4..13563a6 100644
+--- a/tests/src/Functional/PathautoBulkUpdateTest.php
++++ b/tests/src/Functional/PathautoBulkUpdateTest.php
+@@ -15,7 +15,7 @@ class PathautoBulkUpdateTest extends BrowserTestBase {
+ 
+   use PathautoTestHelperTrait;
+ 
+- /**
++  /**
+    * {@inheritdoc}
+    */
+   protected $defaultTheme = 'stable';
+@@ -70,6 +70,9 @@ class PathautoBulkUpdateTest extends BrowserTestBase {
+     $this->patterns['forum'] = $this->createPattern('forum', '/forums/[term:name]');
+   }
+ 
++  /**
++   *
++   */
+   public function testBulkUpdate() {
+     // Create some nodes.
+     $this->nodes = [];
+diff --git a/tests/src/Functional/PathautoNodeWebTest.php b/tests/src/Functional/PathautoNodeWebTest.php
+index f9a5bca..0b8f3a4 100644
+--- a/tests/src/Functional/PathautoNodeWebTest.php
++++ b/tests/src/Functional/PathautoNodeWebTest.php
+@@ -136,7 +136,7 @@ class PathautoNodeWebTest extends BrowserTestBase {
+     $edit = [];
+     $edit['title'] = 'My test article';
+     $this->drupalCreateNode($edit);
+-    //$this->drupalPostForm(NULL, $edit, t('Save'));
++    // $this->drupalPostForm(NULL, $edit, t('Save'));
+     $node = $this->drupalGetNodeByTitle($edit['title']);
+ 
+     // Pathauto checkbox should still not exist.
+@@ -189,7 +189,7 @@ class PathautoNodeWebTest extends BrowserTestBase {
+       'type' => 'page',
+       'path' => [
+         'pathauto' => PathautoState::SKIP,
+-    ],
++      ],
+     ]);
+ 
+     $this->assertNoEntityAlias($node);
+@@ -260,7 +260,6 @@ class PathautoNodeWebTest extends BrowserTestBase {
+     $this->assertNull(\Drupal::keyValue('pathauto_state.node')->get($node->id()), 'Pathauto state was deleted');
+   }
+ 
+-
+   /**
+    * Tests that nodes without a Pathauto pattern can set custom aliases.
+    */
+diff --git a/tests/src/Functional/PathautoTestHelperTrait.php b/tests/src/Functional/PathautoTestHelperTrait.php
+index 0e6e9be..f9b0f28 100644
+--- a/tests/src/Functional/PathautoTestHelperTrait.php
++++ b/tests/src/Functional/PathautoTestHelperTrait.php
+@@ -67,11 +67,14 @@ trait PathautoTestHelperTrait {
+         'negate' => FALSE,
+         'context_mapping' => [
+           $entity_type => $entity_type,
+-        ]
++        ],
+       ]
+     );
+   }
+ 
++  /**
++   *
++   */
+   public function assertToken($type, $object, $token, $expected) {
+     $bubbleable_metadata = new BubbleableMetadata();
+     $tokens = \Drupal::token()->generate($type, [$token => $token], [$type => $object], [], $bubbleable_metadata);
+@@ -79,6 +82,9 @@ trait PathautoTestHelperTrait {
+     $this->assertSame($tokens[$token], $expected, t("Token value for [@type:@token] was '@actual', expected value '@expected'.", ['@type' => $type, '@token' => $token, '@actual' => $tokens[$token], '@expected' => $expected]));
+   }
+ 
++  /**
++   *
++   */
+   public function saveEntityAlias(EntityInterface $entity, $alias, $langcode = NULL) {
+     // By default, use the entity language.
+     if (!$langcode) {
+@@ -87,6 +93,9 @@ trait PathautoTestHelperTrait {
+     return $this->createPathAlias('/' . $entity->toUrl()->getInternalPath(), $alias, $langcode);
+   }
+ 
++  /**
++   *
++   */
+   public function assertEntityAlias(EntityInterface $entity, $expected_alias, $langcode = NULL) {
+     // By default, use the entity language.
+     if (!$langcode) {
+@@ -95,10 +104,16 @@ trait PathautoTestHelperTrait {
+     $this->assertAlias('/' . $entity->toUrl()->getInternalPath(), $expected_alias, $langcode);
+   }
+ 
++  /**
++   *
++   */
+   public function assertEntityAliasExists(EntityInterface $entity) {
+     return $this->assertAliasExists(['path' => '/' . $entity->toUrl()->getInternalPath()]);
+   }
+ 
++  /**
++   *
++   */
+   public function assertNoEntityAlias(EntityInterface $entity, $langcode = NULL) {
+     // By default, use the entity language.
+     if (!$langcode) {
+@@ -107,6 +122,9 @@ trait PathautoTestHelperTrait {
+     $this->assertEntityAlias($entity, '/' . $entity->toUrl()->getInternalPath(), $langcode);
+   }
+ 
++  /**
++   *
++   */
+   public function assertNoEntityAliasExists(EntityInterface $entity, $alias = NULL) {
+     $path = ['path' => '/' . $entity->toUrl()->getInternalPath()];
+     if (!empty($alias)) {
+@@ -115,6 +133,9 @@ trait PathautoTestHelperTrait {
+     $this->assertNoAliasExists($path);
+   }
+ 
++  /**
++   *
++   */
+   public function assertAlias($source, $expected_alias, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+     \Drupal::service('path_alias.manager')->cacheClear($source);
+     $entity_type_manager = \Drupal::entityTypeManager();
+@@ -125,17 +146,26 @@ trait PathautoTestHelperTrait {
+       ['%source' => $source, '@language' => $langcode]));
+   }
+ 
++  /**
++   *
++   */
+   public function assertAliasExists($conditions) {
+     $path = $this->loadPathAliasByConditions($conditions);
+     $this->assertNotEmpty($path, t('Alias with conditions @conditions found.', ['@conditions' => var_export($conditions, TRUE)]));
+     return $path;
+   }
+ 
++  /**
++   *
++   */
+   public function assertNoAliasExists($conditions) {
+     $alias = $this->loadPathAliasByConditions($conditions);
+     $this->assertEmpty($alias, t('Alias with conditions @conditions not found.', ['@conditions' => var_export($conditions, TRUE)]));
+   }
+ 
++  /**
++   *
++   */
+   public function deleteAllAliases() {
+     \Drupal::service('pathauto.alias_storage_helper')->deleteAll();
+     \Drupal::service('path_alias.manager')->cacheClear();
+@@ -158,6 +188,9 @@ trait PathautoTestHelperTrait {
+     return $vocabulary;
+   }
+ 
++  /**
++   *
++   */
+   public function addTerm(VocabularyInterface $vocabulary, array $values = []) {
+     $values += [
+       'name' => mb_strtolower($this->randomMachineName(5)),
+@@ -169,6 +202,9 @@ trait PathautoTestHelperTrait {
+     return $term;
+   }
+ 
++  /**
++   *
++   */
+   public function assertEntityPattern($entity_type, $bundle, $langcode = Language::LANGCODE_NOT_SPECIFIED, $expected) {
+ 
+     $values = [
+@@ -181,6 +217,9 @@ trait PathautoTestHelperTrait {
+     $this->assertSame($expected, $pattern->getPattern());
+   }
+ 
++  /**
++   *
++   */
+   public function drupalGetTermByName($name, $reset = FALSE) {
+     if ($reset) {
+       // @todo - implement cache reset.
+diff --git a/tests/src/Functional/PathautoUserWebTest.php b/tests/src/Functional/PathautoUserWebTest.php
+index 8d5cfd8..213239a 100644
+--- a/tests/src/Functional/PathautoUserWebTest.php
++++ b/tests/src/Functional/PathautoUserWebTest.php
+@@ -19,7 +19,7 @@ class PathautoUserWebTest extends BrowserTestBase {
+    */
+   protected $defaultTheme = 'stable';
+ 
+-   /**
++  /**
+    * Modules to enable.
+    *
+    * @var array
+diff --git a/tests/src/FunctionalJavascript/PathautoLocaleTest.php b/tests/src/FunctionalJavascript/PathautoLocaleTest.php
+index 596fc77..4e21041 100644
+--- a/tests/src/FunctionalJavascript/PathautoLocaleTest.php
++++ b/tests/src/FunctionalJavascript/PathautoLocaleTest.php
+@@ -57,8 +57,9 @@ class PathautoLocaleTest extends WebDriverTestBase {
+       'path' => [[
+         'alias' => '/english-node',
+         'pathauto' => FALSE,
+-      ]],
+-     ];
++      ],
++      ],
++    ];
+     $node = $this->drupalCreateNode($node);
+     $english_alias = $this->loadPathAliasByConditions(['alias' => '/english-node', 'langcode' => 'en']);
+     $this->assertNotEmpty($english_alias, 'Alias created with proper language.');
+@@ -103,7 +104,7 @@ class PathautoLocaleTest extends WebDriverTestBase {
+       'access content overview',
+       'administer languages',
+       'translate any entity',
+-      'administer content translation'
++      'administer content translation',
+ 
+     ];
+     $admin_user = $this->drupalCreateUser($permissions);
+diff --git a/tests/src/FunctionalJavascript/PathautoUiTest.php b/tests/src/FunctionalJavascript/PathautoUiTest.php
+index ada2731..9ddc307 100644
+--- a/tests/src/FunctionalJavascript/PathautoUiTest.php
++++ b/tests/src/FunctionalJavascript/PathautoUiTest.php
+@@ -57,6 +57,9 @@ class PathautoUiTest extends WebDriverTestBase {
+     $this->drupalLogin($this->adminUser);
+   }
+ 
++  /**
++   *
++   */
+   public function testSettingsValidation() {
+     $this->drupalGet('/admin/config/search/path/settings');
+ 
+@@ -67,6 +70,9 @@ class PathautoUiTest extends WebDriverTestBase {
+     $this->assertSession()->elementAttributeContains('css', '#edit-max-component-length', 'min', '1');
+   }
+ 
++  /**
++   *
++   */
+   public function testPatternsWorkflow() {
+     $this->drupalPlaceBlock('local_tasks_block', ['id' => 'local-tasks-block']);
+     $this->drupalPlaceBlock('local_actions_block');
+@@ -102,7 +108,7 @@ class PathautoUiTest extends WebDriverTestBase {
+     $this->assertSession()->pageTextContains('Path pattern is using the following invalid tokens: [user:name], [term:name].');
+     $this->assertSession()->pageTextNotContains('The configuration options have been saved.');
+ 
+-    // We do not need ID anymore, it is already set in previous step and made a label by browser
++    // We do not need ID anymore, it is already set in previous step and made a label by browser.
+     unset($edit['id']);
+     $edit['pattern'] = '#[node:title]';
+     $this->drupalPostForm(NULL, $edit, 'Save');
+@@ -152,7 +158,7 @@ class PathautoUiTest extends WebDriverTestBase {
+ 
+     $this->drupalGet('/admin/config/search/path/patterns/page_pattern/duplicate');
+     $session->getPage()->pressButton('Edit');
+-    $edit = array('label' => 'Test Duplicate', 'id' => 'page_pattern_test_duplicate');
++    $edit = ['label' => 'Test Duplicate', 'id' => 'page_pattern_test_duplicate'];
+     $this->drupalPostForm(NULL, $edit, t('Save'));
+     $this->assertSession()->pageTextContains('Pattern Test Duplicate saved.');
+ 
+diff --git a/tests/src/Kernel/PathautoEntityWithStringIdTest.php b/tests/src/Kernel/PathautoEntityWithStringIdTest.php
+index 0bced80..e9286f0 100644
+--- a/tests/src/Kernel/PathautoEntityWithStringIdTest.php
++++ b/tests/src/Kernel/PathautoEntityWithStringIdTest.php
+@@ -79,7 +79,7 @@ class PathautoEntityWithStringIdTest extends KernelTestBase {
+    * @dataProvider entityWithStringIdProvider
+    *
+    * @param string|int $id
+-   *   The entity ID
++   *   The entity ID.
+    * @param string $expected_key
+    *   The expected key for 'pathauto_state.*' collections.
+    */
+@@ -114,19 +114,19 @@ class PathautoEntityWithStringIdTest extends KernelTestBase {
+   public function entityWithStringIdProvider() {
+     return [
+       'ascii with less or equal 128 chars' => [
+-        str_repeat('a', 128), str_repeat('a', 128)
++        str_repeat('a', 128), str_repeat('a', 128),
+       ],
+       'ascii with over 128 chars' => [
+-        str_repeat('a', 191), Crypt::hashBase64(str_repeat('a', 191))
++        str_repeat('a', 191), Crypt::hashBase64(str_repeat('a', 191)),
+       ],
+       'non-ascii with less or equal 128 chars' => [
+-        str_repeat('社', 128), Crypt::hashBase64(str_repeat('社', 128))
++        str_repeat('社', 128), Crypt::hashBase64(str_repeat('社', 128)),
+       ],
+       'non-ascii with over 128 chars' => [
+-        str_repeat('社', 191), Crypt::hashBase64(str_repeat('社', 191))
++        str_repeat('社', 191), Crypt::hashBase64(str_repeat('社', 191)),
+       ],
+       'simulating an integer id' => [
+-        123, '123'
++        123, '123',
+       ],
+     ];
+   }
+diff --git a/tests/src/Kernel/PathautoKernelTest.php b/tests/src/Kernel/PathautoKernelTest.php
+index 49d4182..d0bea9c 100644
+--- a/tests/src/Kernel/PathautoKernelTest.php
++++ b/tests/src/Kernel/PathautoKernelTest.php
+@@ -41,6 +41,9 @@ class PathautoKernelTest extends KernelTestBase {
+    */
+   protected $userPattern;
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setup();
+ 
+@@ -96,7 +99,7 @@ class PathautoKernelTest extends KernelTestBase {
+         'negate' => FALSE,
+         'context_mapping' => [
+           'language' => 'node:langcode:language',
+-        ]
++        ],
+       ]
+     );
+ 
+@@ -419,6 +422,9 @@ class PathautoKernelTest extends KernelTestBase {
+     $this->assertEntityPattern('taxonomy_term', 'name', Language::LANGCODE_NOT_SPECIFIED, 'bundle');
+   }
+ 
++  /**
++   *
++   */
+   public function testNoExistingPathAliases() {
+     $this->config('pathauto.settings')
+       ->set('punctuation.period', PathautoGeneratorInterface::PUNCTUATION_DO_NOTHING)
+@@ -492,7 +498,7 @@ class PathautoKernelTest extends KernelTestBase {
+ 
+     // Check that alias uniquifying is truncating with $wordsafe param set to
+     // TRUE.
+-    // If it doesn't path alias result would be content/thequick-brownf-0
++    // If it doesn't path alias result would be content/thequick-brownf-0.
+     $this->assertEntityAlias($node_1, '/content/thequick-brownfox');
+     $this->assertEntityAlias($node_2, '/content/thequick-0');
+   }
+@@ -588,7 +594,7 @@ class PathautoKernelTest extends KernelTestBase {
+    * @return \Drupal\node\Entity\Node
+    *   The created node.
+    */
+-  protected function drupalCreateNode(array $settings = [] ){
++  protected function drupalCreateNode(array $settings = []) {
+     // Populate defaults array.
+     $settings += [
+       'title' => $this->randomMachineName(8),
+diff --git a/tests/src/Kernel/PathautoTokenTest.php b/tests/src/Kernel/PathautoTokenTest.php
+index 95b564a..bd81b67 100644
+--- a/tests/src/Kernel/PathautoTokenTest.php
++++ b/tests/src/Kernel/PathautoTokenTest.php
+@@ -19,6 +19,9 @@ class PathautoTokenTest extends KernelTestBase {
+    */
+   public static $modules = ['system', 'token', 'path_alias', 'pathauto'];
+ 
++  /**
++   *
++   */
+   public function testPathautoTokens() {
+ 
+     $this->installConfig(['pathauto']);
+@@ -104,6 +107,9 @@ class PathautoTokenTest extends KernelTestBase {
+     return $replacements;
+   }
+ 
++  /**
++   *
++   */
+   public function mapTokenNames($type, array $tokens = []) {
+     $return = [];
+     foreach ($tokens as $token) {

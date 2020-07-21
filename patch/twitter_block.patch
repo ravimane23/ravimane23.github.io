@@ -1,0 +1,33 @@
+diff --git a/src/Tests/TwitterBlockTest.php b/src/Tests/TwitterBlockTest.php
+index 051e144..bcb4973 100644
+--- a/src/Tests/TwitterBlockTest.php
++++ b/src/Tests/TwitterBlockTest.php
+@@ -24,10 +24,10 @@ class TwitterBlockTest extends WebTestBase {
+   protected function setUp() {
+     parent::setUp();
+     // Create and login user.
+-    $admin_user = $this->drupalCreateUser(array(
++    $admin_user = $this->drupalCreateUser([
+       'administer blocks', 'administer site configuration',
+       'access administration pages',
+-    ));
++    ]);
+     $this->drupalLogin($admin_user);
+   }
+ 
+@@ -41,13 +41,13 @@ class TwitterBlockTest extends WebTestBase {
+     foreach (['bartik', 'seven', 'stark'] as $theme) {
+       $this->drupalGet('admin/structure/block/list/' . $theme);
+       // Configure and save the block.
+-      $this->drupalPlaceBlock('twitter_block', array(
++      $this->drupalPlaceBlock('twitter_block', [
+         'username' => 'drupal',
+         'width' => 180,
+         'height' => 200,
+         'region' => 'content',
+         'theme' => $theme,
+-      ));
++      ]);
+       // Set the default theme and ensure the block is placed.
+       $theme_settings->set('default', $theme)->save();
+       $this->drupalGet('');

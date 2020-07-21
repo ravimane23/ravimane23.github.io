@@ -1,0 +1,13 @@
+diff --git a/src/ViewmodepagePatternInterface.php b/src/ViewmodepagePatternInterface.php
+index 1e983d4..12db1ed 100755
+--- a/src/ViewmodepagePatternInterface.php
++++ b/src/ViewmodepagePatternInterface.php
+@@ -208,7 +208,7 @@ interface ViewmodepagePatternInterface extends ConfigEntityInterface {
+   /**
+    * Determines if this pattern can apply a given object.
+    *
+-   * @param EntityInterface $entity
++   * @param \Drupal\Core\Entity\EntityInterface $entity
+    *   The entity used to determine if this plugin can apply.
+    *
+    * @return bool

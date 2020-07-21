@@ -1,0 +1,13 @@
+diff --git a/src/Form/HtmlMailConfigurationForm.php b/src/Form/HtmlMailConfigurationForm.php
+index aadd6cb..70bc699 100644
+--- a/src/Form/HtmlMailConfigurationForm.php
++++ b/src/Form/HtmlMailConfigurationForm.php
+@@ -351,7 +351,7 @@ class HtmlMailConfigurationForm extends ConfigFormBase {
+    * {@inheritdoc}
+    */
+   public static function create(ContainerInterface $container) {
+-    return new static (
++    return new static(
+       $container->get('config.factory'),
+       $container->get('module_handler')
+     );

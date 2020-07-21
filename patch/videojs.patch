@@ -1,0 +1,251 @@
+diff --git a/src/Plugin/Field/FieldFormatter/VideoJsPlayerFormatter.php b/src/Plugin/Field/FieldFormatter/VideoJsPlayerFormatter.php
+index 7a87067..f8c7624 100644
+--- a/src/Plugin/Field/FieldFormatter/VideoJsPlayerFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/VideoJsPlayerFormatter.php
+@@ -1,21 +1,14 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\videojs\Plugin\Field\FieldFormatter\VideJsPlayerFormatter.
+- */
+-
+ namespace Drupal\videojs\Plugin\Field\FieldFormatter;
+ 
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+-use Drupal\Core\Link;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Drupal\Core\Session\AccountInterface;
+ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Cache\Cache;
+ 
+ /**
+  * Plugin implementation of the 'videojs_player' formatter.
+@@ -29,7 +22,6 @@ use Drupal\Core\Cache\Cache;
+  *   }
+  * )
+  */
+-
+ class VideoJsPlayerFormatter extends VideoJsPlayerFormatterBase implements ContainerFactoryPluginInterface {
+ 
+   /**
+@@ -84,15 +76,15 @@ class VideoJsPlayerFormatter extends VideoJsPlayerFormatterBase implements Conta
+    * {@inheritdoc}
+    */
+   public static function defaultSettings() {
+-    return array(
++    return [
+       'width' => '854',
+       'height' => '480',
+       'controls' => TRUE,
+       'autoplay' => FALSE,
+       'loop' => FALSE,
+       'muted' => FALSE,
+-      'preload' => 'none'
+-    ) + parent::defaultSettings();
++      'preload' => 'none',
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+@@ -135,12 +127,12 @@ class VideoJsPlayerFormatter extends VideoJsPlayerFormatterBase implements Conta
+       '#title' => t('Preload'),
+       '#type' => 'select',
+       '#default_value' => $this->getSetting('preload'),
+-      '#options' => array(
+-        'none' =>'none',
++      '#options' => [
++        'none' => 'none',
+         'metadata' => 'metadata',
+-        'auto' => 'auto'
+-      ),
+-      '#description' => t('Hint to the browser about whether optimistic downloading of the video itself or its metadata is considered worthwhile.')
++        'auto' => 'auto',
++      ],
++      '#description' => t('Hint to the browser about whether optimistic downloading of the video itself or its metadata is considered worthwhile.'),
+     ];
+     return $element;
+   }
+@@ -149,22 +141,23 @@ class VideoJsPlayerFormatter extends VideoJsPlayerFormatterBase implements Conta
+    * {@inheritdoc}
+    */
+   public function settingsSummary() {
+-    $summary = array();
++    $summary = [];
+     $summary[] = t('HTML5 Video (@widthx@height@controls@autoplay@loop@muted).', [
+       '@width' => $this->getSetting('width'),
+       '@height' => $this->getSetting('height'),
+-      '@controls' => $this->getSetting('controls') ? t(', controls') : '' ,
+-      '@autoplay' => $this->getSetting('autoplay') ? t(', autoplaying') : '' ,
++      '@controls' => $this->getSetting('controls') ? t(', controls') : '',
++      '@autoplay' => $this->getSetting('autoplay') ? t(', autoplaying') : '',
+       '@loop' => $this->getSetting('loop') ? t(', looping') : '' ,
+       '@muted' => $this->getSetting('muted') ? t(', muted') : '',
+     ]);
+     return $summary;
+   }
++
+   /**
+    * {@inheritdoc}
+    */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+-    $elements = array();
++    $elements = [];
+     $files = $this->getEntitiesToView($items, $langcode);
+ 
+     // Early opt-out if the field is empty.
+@@ -175,18 +168,18 @@ class VideoJsPlayerFormatter extends VideoJsPlayerFormatterBase implements Conta
+     // Collect cache tags to be added for each item in the field.
+     foreach ($files as $delta => $file) {
+       $video_uri = $file->getFileUri();
+-      $elements[$delta] = array(
++      $elements[$delta] = [
+         '#theme' => 'videojs',
+-        '#items' => array(Url::fromUri(file_create_url($video_uri))),
++        '#items' => [Url::fromUri(file_create_url($video_uri))],
+         '#player_attributes' => $this->getSettings(),
+-        '#attached' => array(
+-          'library' => array('videojs/videojs'),
+-        ),
+-      );
++        '#attached' => [
++          'library' => ['videojs/videojs'],
++        ],
++      ];
+     }
+     return $elements;
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -194,9 +187,10 @@ class VideoJsPlayerFormatter extends VideoJsPlayerFormatterBase implements Conta
+     $entity_form_display = entity_get_form_display($field_definition->getTargetEntityTypeId(), $field_definition->getTargetBundle(), 'default');
+     $widget = $entity_form_display->getRenderer($field_definition->getName());
+     $widget_id = $widget->getBaseId();
+-    if(!$field_definition->isList()){
++    if (!$field_definition->isList()) {
+       return TRUE;
+     }
+     return FALSE;
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/Plugin/Field/FieldFormatter/VideoJsPlayerFormatterBase.php b/src/Plugin/Field/FieldFormatter/VideoJsPlayerFormatterBase.php
+index 5d78b66..90ce1fd 100644
+--- a/src/Plugin/Field/FieldFormatter/VideoJsPlayerFormatterBase.php
++++ b/src/Plugin/Field/FieldFormatter/VideoJsPlayerFormatterBase.php
+@@ -1,14 +1,8 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\videojs\Plugin\Field\FieldFormatter\VideJsPlayerFormatterBase.
+- */
+-
+ namespace Drupal\videojs\Plugin\Field\FieldFormatter;
+ 
+ use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
+-use Drupal\field\FieldConfigInterface;
+ use Drupal\file\Plugin\Field\FieldFormatter\FileFormatterBase;
+ 
+ /**
+@@ -22,4 +16,5 @@ abstract class VideoJsPlayerFormatterBase extends FileFormatterBase {
+   protected function getEntitiesToView(EntityReferenceFieldItemListInterface $items, $langcode) {
+     return parent::getEntitiesToView($items, $langcode);
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/VideoJsPlayerListFormatter.php b/src/Plugin/Field/FieldFormatter/VideoJsPlayerListFormatter.php
+index fdf7245..49fd5a5 100644
+--- a/src/Plugin/Field/FieldFormatter/VideoJsPlayerListFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/VideoJsPlayerListFormatter.php
+@@ -1,22 +1,11 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\videojs\Plugin\Field\FieldFormatter\VideoJsPlayerListFormatter.
+- */
+-
+ namespace Drupal\videojs\Plugin\Field\FieldFormatter;
+ 
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+-use Drupal\Core\Link;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+-use Drupal\Core\Session\AccountInterface;
+ use Drupal\Core\Url;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+-use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Cache\Cache;
+-use Drupal\videojs\Plugin\Field\FieldFormatter\VideoJsPlayerFormatter;
+ 
+ /**
+  * Plugin implementation of the 'videojs_player_list' formatter.
+@@ -30,14 +19,13 @@ use Drupal\videojs\Plugin\Field\FieldFormatter\VideoJsPlayerFormatter;
+  *   }
+  * )
+  */
+-
+ class VideoJsPlayerListFormatter extends VideoJsPlayerFormatter implements ContainerFactoryPluginInterface {
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+-    $elements = array();
++    $elements = [];
+     $files = $this->getEntitiesToView($items, $langcode);
+ 
+     // Early opt-out if the field is empty.
+@@ -46,22 +34,22 @@ class VideoJsPlayerListFormatter extends VideoJsPlayerFormatter implements Conta
+     }
+ 
+     // Collect cache tags to be added for each item in the field.
+-    $video_items = array();
++    $video_items = [];
+     foreach ($files as $delta => $file) {
+       $video_uri = $file->getFileUri();
+       $video_items[] = Url::fromUri(file_create_url($video_uri));
+     }
+-    $elements[] = array(
++    $elements[] = [
+       '#theme' => 'videojs',
+       '#items' => $video_items,
+       '#player_attributes' => $this->getSettings(),
+-      '#attached' => array(
+-        'library' => array('videojs/videojs'),
+-      ),
+-    );
++      '#attached' => [
++        'library' => ['videojs/videojs'],
++      ],
++    ];
+     return $elements;
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -69,9 +57,10 @@ class VideoJsPlayerListFormatter extends VideoJsPlayerFormatter implements Conta
+     $entity_form_display = entity_get_form_display($field_definition->getTargetEntityTypeId(), $field_definition->getTargetBundle(), 'default');
+     $widget = $entity_form_display->getRenderer($field_definition->getName());
+     $widget_id = $widget->getBaseId();
+-    if($field_definition->isList()){
++    if ($field_definition->isList()) {
+       return TRUE;
+     }
+     return FALSE;
+   }
+-}
+\ No newline at end of file
++
++}

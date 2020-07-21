@@ -1,0 +1,72 @@
+diff --git a/src/Form/DefaultContentExtraSettingsForm.php b/src/Form/DefaultContentExtraSettingsForm.php
+index 6283e56..0000209 100644
+--- a/src/Form/DefaultContentExtraSettingsForm.php
++++ b/src/Form/DefaultContentExtraSettingsForm.php
+@@ -34,19 +34,19 @@ class DefaultContentExtraSettingsForm extends ConfigFormBase {
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     $config = $this->config('default_content_extra.settings');
+ 
+-    $form['path_alias'] = array(
++    $form['path_alias'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Path aliases'),
+       '#default_value' => $config->get('path_alias'),
+       '#description' => $this->t('This includes extra path alias data when exporting content and checks for it when importing.'),
+-    );
++    ];
+ 
+-    $form['delete_users'] = array(
++    $form['delete_users'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Delete users 0 and 1'),
+       '#default_value' => $config->get('delete_users'),
+       '#description' => $this->t('Importing user 0 and 1 will fail so this will delete these json files after being exported when using the default-content-export-references command.'),
+-    );
++    ];
+ 
+     return parent::buildForm($form, $form_state);
+   }
+diff --git a/src/Normalizer/NodeEntityNormalizer.php b/src/Normalizer/NodeEntityNormalizer.php
+index 3505153..43bb835 100644
+--- a/src/Normalizer/NodeEntityNormalizer.php
++++ b/src/Normalizer/NodeEntityNormalizer.php
+@@ -52,7 +52,7 @@ class NodeEntityNormalizer extends ContentEntityNormalizer {
+   /**
+    * {@inheritdoc}
+    */
+-  public function normalize($entity, $format = NULL, array $context = array()) {
++  public function normalize($entity, $format = NULL, array $context = []) {
+     $normalized = parent::normalize($entity, $format, $context);
+ 
+     if (!$entity->isNew() && $this->config->get('path_alias')) {
+@@ -71,7 +71,7 @@ class NodeEntityNormalizer extends ContentEntityNormalizer {
+   /**
+    * {@inheritdoc}
+    */
+-  public function denormalize($data, $class, $format = NULL, array $context = array()) {
++  public function denormalize($data, $class, $format = NULL, array $context = []) {
+     $entity = parent::denormalize($data, $class, $format, $context);
+ 
+     if ($this->config->get('path_alias')) {
+diff --git a/src/Normalizer/TermEntityNormalizer.php b/src/Normalizer/TermEntityNormalizer.php
+index f511292..b11bc80 100644
+--- a/src/Normalizer/TermEntityNormalizer.php
++++ b/src/Normalizer/TermEntityNormalizer.php
+@@ -46,7 +46,7 @@ class TermEntityNormalizer extends TermEntityNormalizerBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public function normalize($entity, $format = NULL, array $context = array()) {
++  public function normalize($entity, $format = NULL, array $context = []) {
+     $normalized = parent::normalize($entity, $format, $context);
+ 
+     if ($this->config->get('path_alias')) {
+@@ -65,7 +65,7 @@ class TermEntityNormalizer extends TermEntityNormalizerBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public function denormalize($data, $class, $format = NULL, array $context = array()) {
++  public function denormalize($data, $class, $format = NULL, array $context = []) {
+     $entity = parent::denormalize($data, $class, $format, $context);
+ 
+     if ($this->config->get('path_alias')) {

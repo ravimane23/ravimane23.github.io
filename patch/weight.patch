@@ -1,0 +1,20 @@
+diff --git a/tests/src/FunctionalJavascript/WeightTest.php b/tests/src/FunctionalJavascript/WeightTest.php
+index 20ca1cf..00bd241 100644
+--- a/tests/src/FunctionalJavascript/WeightTest.php
++++ b/tests/src/FunctionalJavascript/WeightTest.php
+@@ -190,7 +190,6 @@ class WeightTest extends WebDriverTestBase {
+ 
+     $this->submitForm([], 'Save');
+     // TODO: Fix the send message after saving the changes.
+-
+     // Check that page reordering was done in the backend for drag-n-drop.
+     $page1 = Node::load($this->nodes[0]->id());
+     $page2 = Node::load($this->nodes[1]->id());
+@@ -269,7 +268,6 @@ class WeightTest extends WebDriverTestBase {
+ 
+     $this->submitForm([], 'Save');
+     // TODO: Fix the send message after saving the changes.
+-
+     // Test weight with a grouped views.
+     $this->drupalGet('test-weight-grouped');
+     $page = $this->getSession()->getPage();

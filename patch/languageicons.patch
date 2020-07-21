@@ -1,0 +1,35 @@
+diff --git a/src/Form/LanguageiconsAdminSettings.php b/src/Form/LanguageiconsAdminSettings.php
+index 996960e..9a94465 100644
+--- a/src/Form/LanguageiconsAdminSettings.php
++++ b/src/Form/LanguageiconsAdminSettings.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Form\ConfigFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Render\Element;
+ 
++/**
++ *
++ */
+ class LanguageiconsAdminSettings extends ConfigFormBase {
+ 
+   /**
+@@ -40,7 +43,10 @@ class LanguageiconsAdminSettings extends ConfigFormBase {
+     return ['languageicons.settings'];
+   }
+ 
+-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
++  /**
++   *
++   */
++  public function buildForm(array $form, FormStateInterface $form_state) {
+     $form['show'] = [
+       '#type' => 'fieldset',
+       '#title' => t('Add language icons'),
+@@ -63,7 +69,7 @@ class LanguageiconsAdminSettings extends ConfigFormBase {
+     $form['show']['disabled'] = [
+       '#prefix' => '<div class="messages error">',
+       '#markup' => t('These options are currently disabled due to <a href=":issue_url">a bug</a> that cannot currently be resolved. They may be reintroduced at a later stage.', [
+-        ':issue_url' => 'http://drupal.org/node/1005144'
++        ':issue_url' => 'http://drupal.org/node/1005144',
+       ]),
+       '#suffix' => '</div>',
+     ];

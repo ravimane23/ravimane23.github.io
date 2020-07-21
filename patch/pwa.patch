@@ -1,0 +1,346 @@
+diff --git a/js/serviceworker.js b/js/serviceworker.js
+index d3813f2..a5373d8 100644
+--- a/js/serviceworker.js
++++ b/js/serviceworker.js
+@@ -14,7 +14,7 @@
+ // When Drupal replaces `cacheVersion` during server-side processing, it includes
+ // the packaged version number. That means any module upgrade will automatically
+ // result in a fresh SW installation.
+-const CACHE_VERSION = 1/*cacheVersion*/;
++const CACHE_VERSION = 1;/*cacheVersion*/
+ 
+ // Never include these URLs in the SW cache.
+ const CACHE_EXCLUDE = [/*exclude_cache_url*/].map(function (r) {return new RegExp(r);});
+@@ -31,7 +31,7 @@ const ACTIVE_LANGUAGES = [/*activeLanguages*/];
+ 
+ // When no connection is available, show this URL instead of the content that
+ // should be available at the URL. This URL is never shown in the browser.
+-const CACHE_OFFLINE = '/offline'/*offlinePage*/;
++const CACHE_OFFLINE = '/offline';/*offlinePage*/
+ 
+ // When an image hasn't been cached, we use this fallback image instead.
+ const CACHE_OFFLINE_IMAGE = '[/*modulePath*/]/assets/offline-image.png';
+@@ -62,7 +62,7 @@ let PWA_PHONE_HOME_ALREADY = false;
+ 
+ // If enabled, an updated service worker will not wait, but instead activates as
+ // soon as it's finished installing.
+-const SELF_SKIPWAITING = false/*pwaSkipWaiting*/;
++const SELF_SKIPWAITING = false;/*pwaSkipWaiting*/
+ 
+ /**
+  * Install the service worker.
+@@ -171,8 +171,8 @@ function getLanguagePathPrefix(request) {
+   const url = new URL(request.url);
+ 
+   for (let langcode of ACTIVE_LANGUAGES) {
+-    if (url.pathname.startsWith(`/${langcode}`)) {
+-      return `/${langcode}`;
++    if (url.pathname.startsWith(` / ${langcode}`)) {
++      return ` / ${langcode}`;
+     }
+   }
+   return '';
+@@ -475,7 +475,7 @@ function phoneHome() {
+ 
+     return Promise.resolve();
+   })
+-  .catch(function(error) {
++  .catch(function (error) {
+     console.error('PWA: Phone-home - ', error);
+   });
+ };
+@@ -485,10 +485,10 @@ function phoneHome() {
+  */
+ function pwaUninstallServiceWorker() {
+   return self.registration.unregister()
+-  .then(function(success) {
++  .then(function (success) {
+     if (success) {
+       // Delete all Caches that belong to the PWA module.
+-      caches.keys().then(function(names) {
++      caches.keys().then(function (names) {
+         for (let name of names) {
+           console.debug('cache name: ', name);
+           if (name.indexOf(CACHE_PREFIX) !== -1) {
+@@ -507,7 +507,7 @@ function pwaUninstallServiceWorker() {
+       console.error('PWA: Phone-home - Service worker could not unregister itself. It might be necessary to manually delete this service worker using browser devtools.');
+     }
+   })
+-  .catch(function(error) {
++  .catch(function (error) {
+     console.error('PWA: Phone-home - ', error);
+   });
+ }
+diff --git a/modules/pwa_extras/src/Form/PwaExtrasSettingsForm.php b/modules/pwa_extras/src/Form/PwaExtrasSettingsForm.php
+index 72a090d..259d924 100644
+--- a/modules/pwa_extras/src/Form/PwaExtrasSettingsForm.php
++++ b/modules/pwa_extras/src/Form/PwaExtrasSettingsForm.php
+@@ -95,4 +95,5 @@ class PwaExtrasSettingsForm extends ConfigFormBase {
+   protected function getEditableConfigNames() {
+     return ['pwa_extras.settings.apple'];
+   }
++
+ }
+diff --git a/src/Controller/PWAController.php b/src/Controller/PWAController.php
+index fa5d80a..d13fb07 100644
+--- a/src/Controller/PWAController.php
++++ b/src/Controller/PWAController.php
+@@ -1,8 +1,4 @@
+ <?php
+-/**
+- * @file
+- * Replace values in serviceworker.js
+- */
+ 
+ namespace Drupal\pwa\Controller;
+ 
+@@ -11,7 +7,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\State\StateInterface;
+ use Drupal\pwa\ManifestInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+-use Symfony\Component\HttpFoundation\Response;
+ use Symfony\Component\HttpFoundation\Request;
+ use Drupal\Core\Cache\CacheableResponse;
+ use Drupal\Core\Cache\CacheableMetadata;
+@@ -104,7 +99,6 @@ class PWAController implements ContainerInjectionInterface {
+     // within the HTML. Since this is the pure HTML response, any DOM modifications
+     // that trigger new requests cannot be accounted for. An example would be an
+     // asynchronously-loaded webfont.
+-
+     $resources = [];
+ 
+     foreach ($pages as $page) {
+@@ -112,7 +106,7 @@ class PWAController implements ContainerInjectionInterface {
+         // URL is validated as internal in ConfigurationForm.php.
+         $url = Url::fromUserInput($page, ['absolute' => TRUE])->toString(TRUE);
+         $url_string = $url->getGeneratedUrl();
+-        $response = \Drupal::httpClient()->get($url_string, array('headers' => array('Accept' => 'text/plain')));
++        $response = \Drupal::httpClient()->get($url_string, ['headers' => ['Accept' => 'text/plain']]);
+ 
+         $data = $response->getBody();
+         if (empty($data)) {
+@@ -183,7 +177,7 @@ class PWAController implements ContainerInjectionInterface {
+     $exclude_cache_url = pwa_str_to_list($config->get('urls_to_exclude'));
+ 
+     // Initialize a CacheableMetadata object.
+-    $cacheable_metadata = new CacheableMetadata;
++    $cacheable_metadata = new CacheableMetadata();
+     $cacheable_metadata->addCacheableDependency($config);
+     $cacheable_metadata
+       ->setCacheMaxAge(86400)
+@@ -269,15 +263,15 @@ class PWAController implements ContainerInjectionInterface {
+    * @package Applied from patch
+    * https://www.drupal.org/project/pwa/issues/2913023#comment-12819311.
+    */
+-    public function pwa_module_active_page() {
+-      return [
+-        '#tag' => 'h1',
+-        '#value' => 'PWA module is installed.',
+-        '#attributes' => [
+-          'data-drupal-pwa-active' => TRUE,
+-        ],
+-      ];
+-    }
++  public function pwa_module_active_page() {
++    return [
++      '#tag' => 'h1',
++      '#value' => 'PWA module is installed.',
++      '#attributes' => [
++        'data-drupal-pwa-active' => TRUE,
++      ],
++    ];
++  }
+ 
+   /**
+    * Provide a render array for offline pages.
+@@ -290,4 +284,5 @@ class PWAController implements ContainerInjectionInterface {
+       '#theme' => 'offline',
+     ];
+   }
++
+ }
+diff --git a/src/Form/ConfigurationForm.php b/src/Form/ConfigurationForm.php
+index 8df5034..a23e311 100644
+--- a/src/Form/ConfigurationForm.php
++++ b/src/Form/ConfigurationForm.php
+@@ -21,7 +21,7 @@ class ConfigurationForm extends ConfigFormBase {
+   /**
+    * The manifest service.
+    *
+-   * @var use Drupal\pwa\ManifestInterface
++   * @var useDrupal\pwa\ManifestInterface
+    */
+   protected $manifest;
+ 
+@@ -129,7 +129,7 @@ class ConfigurationForm extends ConfigFormBase {
+       '#title' => $this->t('Start URL'),
+       '#description' => $this->t('Start URL.'),
+       '#default_value' => $config->get('start_url'),
+-      '#rows' => 1
++      '#rows' => 1,
+     ];
+ 
+     $form['manifest']['theme_color'] = [
+@@ -223,7 +223,7 @@ class ConfigurationForm extends ConfigFormBase {
+       '#title' => $this->t('URLs to cache on install'),
+       '#description' => $this->t('These will serve the page offline even if they have not been visited. Make sure the URL is not a 404. Make sure are these are relative URLs, tokens or regex are not supported. Because we cache these, you may need to flush your cache when changing this value.'),
+       '#default_value' => $config->get('urls_to_cache'),
+-      '#rows' => 7
++      '#rows' => 7,
+     ];
+ 
+     $form['service_worker']['urls_to_exclude'] = [
+@@ -231,7 +231,7 @@ class ConfigurationForm extends ConfigFormBase {
+       '#title' => $this->t('URLs to exclude'),
+       '#description' => $this->t('Takes a regex, these URLs will use network-only, default config should be, admin/.* and user/reset/.*.'),
+       '#default_value' => $config->get('urls_to_exclude'),
+-      '#rows' => 7
++      '#rows' => 7,
+     ];
+ 
+     $form['service_worker']['offline_page'] = [
+@@ -262,11 +262,10 @@ class ConfigurationForm extends ConfigFormBase {
+   }
+ 
+   /**
+-   *
+-   * function converts an id to a display string or a string to an id
++   * Function converts an id to a display string or a string to an id.
+    *
+    * @param $value
+-   * @param boolean $needId
++   * @param bool $needId
+    *
+    * @return int|string
+    */
+@@ -277,9 +276,11 @@ class ConfigurationForm extends ConfigFormBase {
+         case 'standalone':
+           $id = 2;
+           break;
++
+         case 'minimal-ui':
+           $id = 3;
+           break;
++
+         case 'browser':
+           $id = 4;
+           break;
+@@ -292,12 +293,15 @@ class ConfigurationForm extends ConfigFormBase {
+         case 1:
+           $display = 'fullscreen';
+           break;
++
+         case 2:
+           $display = 'standalone';
+           break;
++
+         case 3:
+           $display = 'minimal-ui';
+           break;
++
+         case 4:
+           $display = 'browser';
+           break;
+@@ -320,20 +324,20 @@ class ConfigurationForm extends ConfigFormBase {
+       $form_state->setErrorByName('image', $this->t('Upload a image, or chose the theme image.'));
+     }
+ 
+-    // Check urls format
++    // Check urls format.
+     $urls_to_cache = pwa_str_to_list($form_state->getValue('urls_to_cache'));
+     foreach ($urls_to_cache as $page) {
+       // If link is internal.
+       try {
+-         $url = Url::fromUserInput($page);
+-       }
+-       catch(\Exception $e) {
+-         $form_state->setErrorByName('urls_to_cache', $this->t("The user-entered URL '{$page}' must begin with a '/', '?', or '#'."));
+-       }
+-       // If link does not exist.
+-       if (isset($url) && !$url->isRouted()) {
+-         $form_state->setErrorByName('urls_to_cache', $this->t('Error "' . $page . '" URL to Cache is a 404.'));
+-       }
++        $url = Url::fromUserInput($page);
++      }
++      catch (\Exception $e) {
++        $form_state->setErrorByName('urls_to_cache', $this->t("The user-entered URL '{$page}' must begin with a '/', '?', or '#'."));
++      }
++      // If link does not exist.
++      if (isset($url) && !$url->isRouted()) {
++        $form_state->setErrorByName('urls_to_cache', $this->t('Error "' . $page . '" URL to Cache is a 404.'));
++      }
+     }
+   }
+ 
+@@ -357,7 +361,7 @@ class ConfigurationForm extends ConfigFormBase {
+     $configTheme = $this->config('system.theme');
+     $nameOfDefaultTheme = $configTheme->get('default');
+ 
+-    // Get image from theme
++    // Get image from theme.
+     if ($default_image) {
+       $theme_image = theme_get_setting('logo.path', $nameOfDefaultTheme);
+       if (substr($theme_image, strlen($theme_image) - 3, 3) != 'png') {
+@@ -371,7 +375,7 @@ class ConfigurationForm extends ConfigFormBase {
+       }
+     }
+ 
+-    // Save new config data
++    // Save new config data.
+     $config
+       ->set('site_name', $form_state->getValue('name'))
+       ->set('short_name', $form_state->getValue('short_name'))
+@@ -390,7 +394,7 @@ class ConfigurationForm extends ConfigFormBase {
+       ->set('skip_waiting', $form_state->getValue('skip_waiting'))
+       ->save();
+ 
+-    // Save image if exists
++    // Save image if exists.
+     if (!empty($fid)) {
+       $file = File::load($fid);
+ 
+@@ -409,7 +413,7 @@ class ConfigurationForm extends ConfigFormBase {
+ 
+       $config->set('image', $file_uri)->save();
+ 
+-      // for image_small
++      // For image_small.
+       $newSize = 192;
+       $oldSize = 512;
+ 
+@@ -430,7 +434,7 @@ class ConfigurationForm extends ConfigFormBase {
+           ->save();
+       }
+ 
+-      // for image_very_small
++      // For image_very_small.
+       $newSize = 144;
+       $oldSize = 512;
+ 
+@@ -461,4 +465,5 @@ class ConfigurationForm extends ConfigFormBase {
+   protected function getEditableConfigNames() {
+     return ['pwa.config'];
+   }
++
+ }
+diff --git a/src/Manifest.php b/src/Manifest.php
+index bd345a9..2c088cf 100644
+--- a/src/Manifest.php
++++ b/src/Manifest.php
+@@ -5,7 +5,6 @@ namespace Drupal\pwa;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Language\LanguageManagerInterface;
+ use Drupal\Component\Serialization\Json;
+-use Drupal\Core\Url;
+ 
+ /**
+  * Manifest JSON building service.
+@@ -40,7 +39,7 @@ class Manifest implements ManifestInterface {
+   public function getOutput() {
+     // Get values.
+     $values = $this->getCleanValues();
+-      $manifest_data['orientation'] = 'portrait';
++    $manifest_data['orientation'] = 'portrait';
+     if (isset($values['site_name'])) {
+       $manifest_data['name'] = $values['site_name'];
+     }

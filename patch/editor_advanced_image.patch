@@ -1,0 +1,13 @@
+diff --git a/plugins/editoradvancedimage/plugin.js b/plugins/editoradvancedimage/plugin.js
+index 67ed13a..43978f2 100644
+--- a/plugins/editoradvancedimage/plugin.js
++++ b/plugins/editoradvancedimage/plugin.js
+@@ -115,7 +115,7 @@
+    * @return {?CKEDITOR.htmlParser.element}
+    *   The found element, or null.
+    */
+-  function findElementByName (element, name) {
++  function findElementByName(element, name) {
+     if (element.name === name) {
+       return element
+     }

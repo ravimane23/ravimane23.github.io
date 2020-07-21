@@ -1,0 +1,155 @@
+diff --git a/js/views-bootstrap.js b/js/views-bootstrap.js
+index fb645de..f3fc7d3 100644
+--- a/js/views-bootstrap.js
++++ b/js/views-bootstrap.js
+@@ -7,7 +7,7 @@
+    */
+   Drupal.behaviors.views_bootstrap_carousel = {
+     attach: function (context, settings) {
+-      $('.carousel-inner').each(function() {
++      $('.carousel-inner').each(function () {
+         if ($(this).children('div').length === 1) {
+           $(this).siblings('.carousel-control, .carousel-indicators').hide();
+         }
+@@ -15,6 +15,4 @@
+     }
+   }
+ 
+-
+-
+-}(jQuery));
+\ No newline at end of file
++}(jQuery));
+diff --git a/src/Plugin/views/style/ViewsBootstrapAccordion.php b/src/Plugin/views/style/ViewsBootstrapAccordion.php
+index 4aaafd6..7ce7f29 100644
+--- a/src/Plugin/views/style/ViewsBootstrapAccordion.php
++++ b/src/Plugin/views/style/ViewsBootstrapAccordion.php
+@@ -4,7 +4,6 @@ namespace Drupal\views_bootstrap\Plugin\views\style;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\views\Plugin\views\style\StylePluginBase;
+-use Drupal\views_bootstrap\ViewsBootstrap;
+ 
+ /**
+  * Style plugin to render each item as a row in a Bootstrap Accordion.
+@@ -62,35 +61,35 @@ class ViewsBootstrapAccordion extends StylePluginBase {
+         '#description' => $this->t('Select the field that will be used as the accordian panel titles.'),
+       ];
+     }
+-    $options_select = array(
++    $options_select = [
+       '0' => t('Collapsed'),
+       '1' => t('Uncollapsed'),
+-    );
+-    $form['collapse'] = array(
++    ];
++    $form['collapse'] = [
+       '#type' => 'fieldset',
+       '#title' => t('Collapse options'),
+-    );
+-    $form['collapse']['first'] = array(
++    ];
++    $form['collapse']['first'] = [
+       '#type' => 'select',
+       '#title' => t('First element'),
+       '#options' => $options_select,
+       '#default_value' => $this->options['collapse']['first'],
+       '#description' => t('To collapse/uncollapse the first element of the list. If there is only one item, first element settings prevails than the others (middle, last)'),
+-    );
+-    $form['collapse']['middle'] = array(
++    ];
++    $form['collapse']['middle'] = [
+       '#type' => 'select',
+       '#title' => t('Middle elements'),
+       '#options' => $options_select,
+       '#default_value' => $this->options['collapse']['middle'],
+       '#description' => t('To collapse/uncollapse the middle elements of the list.'),
+-    );
+-    $form['collapse']['last'] = array(
++    ];
++    $form['collapse']['last'] = [
+       '#type' => 'select',
+       '#title' => t('Last element'),
+       '#options' => $options_select,
+       '#default_value' => $this->options['collapse']['last'],
+       '#description' => t('To collapse/uncollapse the last element of the list.'),
+-    );
++    ];
+   }
+ 
+ }
+diff --git a/src/Plugin/views/style/ViewsBootstrapCards.php b/src/Plugin/views/style/ViewsBootstrapCards.php
+index a54f7fd..ab5f148 100644
+--- a/src/Plugin/views/style/ViewsBootstrapCards.php
++++ b/src/Plugin/views/style/ViewsBootstrapCards.php
+@@ -4,7 +4,6 @@ namespace Drupal\views_bootstrap\Plugin\views\style;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\views\Plugin\views\style\StylePluginBase;
+-use Drupal\Component\Utility\Html;
+ 
+ /**
+  * Style plugin to render each item in an ordered or unordered list.
+diff --git a/src/Plugin/views/style/ViewsBootstrapGrid.php b/src/Plugin/views/style/ViewsBootstrapGrid.php
+index eaf05eb..15efd0c 100644
+--- a/src/Plugin/views/style/ViewsBootstrapGrid.php
++++ b/src/Plugin/views/style/ViewsBootstrapGrid.php
+@@ -4,7 +4,6 @@ namespace Drupal\views_bootstrap\Plugin\views\style;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\views\Plugin\views\style\StylePluginBase;
+-use Drupal\Component\Utility\Html;
+ use Drupal\views_bootstrap\ViewsBootstrap;
+ 
+ /**
+diff --git a/src/Plugin/views/style/ViewsBootstrapTab.php b/src/Plugin/views/style/ViewsBootstrapTab.php
+index 7583184..efa92e4 100644
+--- a/src/Plugin/views/style/ViewsBootstrapTab.php
++++ b/src/Plugin/views/style/ViewsBootstrapTab.php
+@@ -4,7 +4,6 @@ namespace Drupal\views_bootstrap\Plugin\views\style;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\views\Plugin\views\style\StylePluginBase;
+-use Drupal\views_bootstrap\ViewsBootstrap;
+ 
+ /**
+  * Style plugin to render each item in an ordered or unordered list.
+diff --git a/src/ViewsBootstrap.php b/src/ViewsBootstrap.php
+index 9878b79..1381269 100644
+--- a/src/ViewsBootstrap.php
++++ b/src/ViewsBootstrap.php
+@@ -76,7 +76,6 @@ class ViewsBootstrap {
+     return $hooks;
+   }
+ 
+-
+   /**
+    * Return an array of breakpoint names.
+    */
+diff --git a/views_bootstrap.theme.inc b/views_bootstrap.theme.inc
+index ad84c92..8ff73bd 100644
+--- a/views_bootstrap.theme.inc
++++ b/views_bootstrap.theme.inc
+@@ -59,7 +59,7 @@ function template_preprocess_views_bootstrap_cards(array &$vars) {
+   $view = $vars['view'];
+   $vars['id'] = ViewsBootstrap::getUniqueId($view);
+ 
+-  // card rows.
++  // Card rows.
+   $image = $view->style_plugin->options['card_image_field'];
+   $title = $view->style_plugin->options['card_title_field'];
+   $content = $view->style_plugin->options['card_content_field'];
+@@ -221,7 +221,7 @@ function template_preprocess_views_bootstrap_tab(array &$vars) {
+       }
+     }
+     foreach ($vars['rows'] as $id => $row) {
+-      $vars['rows'][$id] = array();
++      $vars['rows'][$id] = [];
+       $vars['rows'][$id]['content'] = $row;
+       $vars['rows'][$id]['attributes'] = new Attribute();
+       if ($row_class = $view->style_plugin->getRowClass($id)) {
+@@ -257,4 +257,3 @@ function template_preprocess_views_bootstrap_table(array &$vars) {
+     $vars['attributes']['class'][] = 'table-' . $style;
+   }
+ }
+-

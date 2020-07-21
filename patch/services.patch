@@ -1,0 +1,415 @@
+diff --git a/src/Controller/ServiceEndpointResources.php b/src/Controller/ServiceEndpointResources.php
+index 5bbf944..fbb5e5f 100644
+--- a/src/Controller/ServiceEndpointResources.php
++++ b/src/Controller/ServiceEndpointResources.php
+@@ -17,7 +17,7 @@ class ServiceEndpointResources extends ControllerBase {
+   /**
+    * Service definition plugin manager.
+    *
+-   * @var \Drupal\Component\Plugin\PluginManagerInterface.
++   * @var \Drupal\Component\Plugin\PluginManagerInterface
+    */
+   protected $pluginManager;
+ 
+@@ -71,12 +71,12 @@ class ServiceEndpointResources extends ControllerBase {
+         $rows[] = $row;
+       }
+ 
+-      $build[$category]['table'] = array(
++      $build[$category]['table'] = [
+         '#type' => 'table',
+         '#rows' => $rows,
+         '#header' => $this->buildHeader(),
+         '#empty' => $this->t('No service definitions exist'),
+-      );
++      ];
+     }
+ 
+     return $build;
+diff --git a/src/Controller/Services.php b/src/Controller/Services.php
+index 0af4095..215d60a 100644
+--- a/src/Controller/Services.php
++++ b/src/Controller/Services.php
+@@ -99,7 +99,7 @@ class Services extends ControllerBase {
+   /**
+    * Generate a CSRF session token.
+    *
+-   * @return \Symfony\Component\HttpFoundation\Response.
++   * @return \Symfony\Component\HttpFoundation\Response
+    *   A HTTP response object.
+    */
+   public function csrfToken() {
+diff --git a/src/Entity/ServiceResource.php b/src/Entity/ServiceResource.php
+index 25e94fc..295867c 100644
+--- a/src/Entity/ServiceResource.php
++++ b/src/Entity/ServiceResource.php
+@@ -255,7 +255,7 @@ class ServiceResource extends ConfigEntityBase implements ServiceResourceInterfa
+   /**
+    * Authentication collector.
+    *
+-   * @return \Drupal\Core\Authentication\AuthenticationCollectorInterface.
++   * @return \Drupal\Core\Authentication\AuthenticationCollectorInterface
+    *   An authentication collection object.
+    */
+   protected function authenticationCollector() {
+diff --git a/src/Entity/ServicesEntityCreateAccessCheck.php b/src/Entity/ServicesEntityCreateAccessCheck.php
+index d7ff6bb..ab93532 100644
+--- a/src/Entity/ServicesEntityCreateAccessCheck.php
++++ b/src/Entity/ServicesEntityCreateAccessCheck.php
+@@ -1,8 +1,5 @@
+ <?php
+-/**
+- * @file
+- * Contains Drupal\services\Entity\EntityAccessCheck
+- */
++
+ namespace Drupal\services\Entity;
+ 
+ use Drupal\Core\Access\AccessResult;
+@@ -11,8 +8,6 @@ use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\Core\Session\AccountInterface;
+ use Symfony\Component\Routing\Route;
+ use Drupal\Core\Entity\EntityManagerInterface;
+-use Drupal\Core\Entity\EntityAccessCheck;
+-use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\Serializer\SerializerInterface;
+ 
+ /**
+diff --git a/src/Form/ServiceEndpointDeleteForm.php b/src/Form/ServiceEndpointDeleteForm.php
+index 98abf3d..58c9090 100644
+--- a/src/Form/ServiceEndpointDeleteForm.php
++++ b/src/Form/ServiceEndpointDeleteForm.php
+@@ -10,11 +10,12 @@ use Drupal\Core\Url;
+  * Builds the form to delete service endpoint entities.
+  */
+ class ServiceEndpointDeleteForm extends EntityConfirmFormBase {
++
+   /**
+    * {@inheritdoc}
+    */
+   public function getQuestion() {
+-    return $this->t('Are you sure you want to delete %name?', array('%name' => $this->entity->label()));
++    return $this->t('Are you sure you want to delete %name?', ['%name' => $this->entity->label()]);
+   }
+ 
+   /**
+diff --git a/src/Form/ServiceResourceConfigForm.php b/src/Form/ServiceResourceConfigForm.php
+index 4a8c274..47e8b19 100644
+--- a/src/Form/ServiceResourceConfigForm.php
++++ b/src/Form/ServiceResourceConfigForm.php
+@@ -40,7 +40,7 @@ class ServiceResourceConfigForm extends ServiceResourceBaseForm {
+       '#type' => 'checkbox',
+       '#title' => $this->t('Disable cache'),
+       '#description' => $this->t('Do not cache the response of the resource.'),
+-      '#default_value' => $entity->getNoCache()
++      '#default_value' => $entity->getNoCache(),
+     ];
+ 
+     return $form;
+diff --git a/src/Form/ServiceSettingsForm.php b/src/Form/ServiceSettingsForm.php
+index a5c5cb3..ec1abe6 100644
+--- a/src/Form/ServiceSettingsForm.php
++++ b/src/Form/ServiceSettingsForm.php
+@@ -52,7 +52,7 @@ class ServiceSettingsForm extends ConfigFormBase {
+       '#type' => 'checkbox',
+       '#title' => $this->t('Disable cache'),
+       '#description' => $this->t('Do not cache the response of the resources by default.'),
+-      '#default_value' => $config->get('default_no_cache')
++      '#default_value' => $config->get('default_no_cache'),
+     ];
+ 
+     return parent::buildForm($form, $form_state);
+diff --git a/src/Plugin/ServiceDefinition/AliasGet.php b/src/Plugin/ServiceDefinition/AliasGet.php
+index 78f5f70..ef79244 100644
+--- a/src/Plugin/ServiceDefinition/AliasGet.php
++++ b/src/Plugin/ServiceDefinition/AliasGet.php
+@@ -11,7 +11,6 @@ use Drupal\node\Entity\Node;
+ use Drupal\services\ServiceDefinitionBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\HttpFoundation\Request;
+-use Symfony\Component\HttpFoundation\Response;
+ use Symfony\Component\HttpKernel\Exception\HttpException;
+ use Symfony\Component\Serializer\SerializerInterface;
+ 
+@@ -51,6 +50,7 @@ class AliasGet extends ServiceDefinitionBase implements ContainerFactoryPluginIn
+     parent::__construct($configuration, $plugin_id, $plugin_definition);
+     $this->aliasManager = $alias_manager;
+   }
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -92,7 +92,8 @@ class AliasGet extends ServiceDefinitionBase implements ContainerFactoryPluginIn
+    * {@inheritdoc}
+    */
+   public function getCacheContexts() {
+-    return parent::getCacheContexts(); // TODO: Change the autogenerated stub.
++    // TODO: Change the autogenerated stub.
++    return parent::getCacheContexts();
+   }
+ 
+   /**
+@@ -113,7 +114,8 @@ class AliasGet extends ServiceDefinitionBase implements ContainerFactoryPluginIn
+    * {@inheritdoc}
+    */
+   public function getCacheMaxAge() {
+-    return parent::getCacheMaxAge(); // TODO: Change the autogenerated stub.
++    // TODO: Change the autogenerated stub.
++    return parent::getCacheMaxAge();
+   }
+ 
+ }
+diff --git a/src/Plugin/ServiceDefinition/EntityPost.php b/src/Plugin/ServiceDefinition/EntityPost.php
+index a3c3933..0598c5c 100644
+--- a/src/Plugin/ServiceDefinition/EntityPost.php
++++ b/src/Plugin/ServiceDefinition/EntityPost.php
+@@ -22,6 +22,7 @@ use Symfony\Component\Serializer\SerializerInterface;
+  * )
+  */
+ class EntityPost extends ServiceDefinitionEntityRequestContentBase {
++
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/Plugin/ServiceDefinition/EntityPut.php b/src/Plugin/ServiceDefinition/EntityPut.php
+index 4deb0a6..7454549 100644
+--- a/src/Plugin/ServiceDefinition/EntityPut.php
++++ b/src/Plugin/ServiceDefinition/EntityPut.php
+@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Route;
+  * )
+  */
+ class EntityPut extends ServiceDefinitionEntityRequestContentBase {
++
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/Plugin/ServiceDefinition/EntityView.php b/src/Plugin/ServiceDefinition/EntityView.php
+index 46db09d..b4c2c21 100644
+--- a/src/Plugin/ServiceDefinition/EntityView.php
++++ b/src/Plugin/ServiceDefinition/EntityView.php
+@@ -27,7 +27,7 @@ use Symfony\Component\Serializer\SerializerInterface;
+ class EntityView extends ServiceDefinitionBase implements ContainerFactoryPluginInterface {
+ 
+   /**
+-   * @var RendererInterface
++   * @var \Drupal\Core\Render\RendererInterface
+    */
+   protected $renderer;
+ 
+@@ -42,7 +42,7 @@ class EntityView extends ServiceDefinitionBase implements ContainerFactoryPlugin
+    * @param array $configuration
+    * @param string $plugin_id
+    * @param mixed $plugin_definition
+-   * @param RendererInterface $renderer
++   * @param \Drupal\Core\Render\RendererInterface $renderer
+    */
+   public function __construct(array $configuration, $plugin_id, $plugin_definition, RendererInterface $renderer, AssetResolverInterface $asset_resolver, AssetCollectionRendererInterface $css_collection_renderer, AssetCollectionRendererInterface $js_collection_renderer) {
+     parent::__construct($configuration, $plugin_id, $plugin_definition);
+@@ -100,6 +100,7 @@ class EntityView extends ServiceDefinitionBase implements ContainerFactoryPlugin
+ 
+     return $result;
+   }
++
+   /**
+    * Gathers the markup for each type of asset.
+    *
+diff --git a/src/Plugin/ServiceDefinition/UserLogin.php b/src/Plugin/ServiceDefinition/UserLogin.php
+index 0d0e20f..897a48b 100644
+--- a/src/Plugin/ServiceDefinition/UserLogin.php
++++ b/src/Plugin/ServiceDefinition/UserLogin.php
+@@ -42,7 +42,7 @@ class UserLogin extends ServiceDefinitionBase implements ContainerFactoryPluginI
+    *   The flood service.
+    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+    *   The entity manager service.
+-   * @param Session $session
++   * @param \Symfony\Component\HttpFoundation\Session\Session $session
+    */
+   public function __construct($configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, UserAuthInterface $user_auth, FloodInterface $flood, EntityManagerInterface $entity_manager, Session $session) {
+     parent::__construct($configuration, $plugin_id, $plugin_definition);
+@@ -100,7 +100,7 @@ class UserLogin extends ServiceDefinitionBase implements ContainerFactoryPluginI
+     // in to many different user accounts.  We have a reasonably high limit
+     // since there may be only one apparent IP for all users at an institution.
+     if ($this->flood->isAllowed('services.failed_login_ip', $flood_config->get('ip_limit'), $flood_config->get('ip_window'))) {
+-      $accounts = $this->entityManager->getStorage('user')->loadByProperties(array('name' => $username, 'status' => 1));
++      $accounts = $this->entityManager->getStorage('user')->loadByProperties(['name' => $username, 'status' => 1]);
+       $account = reset($accounts);
+       if ($account) {
+         if ($flood_config->get('uid_only')) {
+diff --git a/src/Routing/ServiceEndpoint.php b/src/Routing/ServiceEndpoint.php
+index f6ed9cd..40835cd 100644
+--- a/src/Routing/ServiceEndpoint.php
++++ b/src/Routing/ServiceEndpoint.php
+@@ -15,7 +15,7 @@ class ServiceEndpoint {
+    * @todo does this implement some interface that we're not documenting?
+    */
+   public function routes() {
+-    $routes = array();
++    $routes = [];
+ 
+     foreach (\Drupal::entityManager()->getStorage('service_endpoint')->loadMultiple() as $endpoint) {
+       foreach ($endpoint->loadResourceProviders() as $resource) {
+@@ -48,7 +48,7 @@ class ServiceEndpoint {
+           $route->setRequirement('_format', implode('|', array_keys($formats)));
+         }
+ 
+-        if($resource->getNoCache()) {
++        if ($resource->getNoCache()) {
+           $route->setOption('no_cache', TRUE);
+         }
+ 
+diff --git a/src/ServiceDefinitionBase.php b/src/ServiceDefinitionBase.php
+index dfa9fd3..e29500c 100644
+--- a/src/ServiceDefinitionBase.php
++++ b/src/ServiceDefinitionBase.php
+@@ -64,7 +64,7 @@ abstract class ServiceDefinitionBase extends ContextAwarePluginBase implements S
+    * {@inheritdoc}
+    */
+   public function processRoute(Route $route) {
+-    $route->addRequirements(array('_access' => 'TRUE'));
++    $route->addRequirements(['_access' => 'TRUE']);
+   }
+ 
+   /**
+diff --git a/src/ServiceDefinitionEntityRequestContentBase.php b/src/ServiceDefinitionEntityRequestContentBase.php
+index d967778..975caf1 100644
+--- a/src/ServiceDefinitionEntityRequestContentBase.php
++++ b/src/ServiceDefinitionEntityRequestContentBase.php
+@@ -23,14 +23,14 @@ class ServiceDefinitionEntityRequestContentBase extends ServiceDefinitionBase im
+    * {@inheritdoc}
+    */
+   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+-    return new static ($configuration, $plugin_id, $plugin_definition, $container->get('entity.manager'));
++    return new static($configuration, $plugin_id, $plugin_definition, $container->get('entity.manager'));
+   }
+ 
+   /**
+    * @param array $configuration
+    * @param string $plugin_id
+    * @param mixed $plugin_definition
+-   * @param EntityManagerInterface $manager
++   * @param \Drupal\Core\Entity\EntityManagerInterface $manager
+    */
+   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $manager) {
+     parent::__construct($configuration, $plugin_id, $plugin_definition);
+diff --git a/src/ServiceDefinitionInterface.php b/src/ServiceDefinitionInterface.php
+index 6515bbf..c94d4ab 100644
+--- a/src/ServiceDefinitionInterface.php
++++ b/src/ServiceDefinitionInterface.php
+@@ -93,7 +93,7 @@ interface ServiceDefinitionInterface extends ContextAwarePluginInterface, Cachea
+   /**
+    * Allow plugins to alter the response object before it is returned.
+    *
+-   * @param Response $response
++   * @param \Symfony\Component\HttpFoundation\Response $response
+    *   The response object that is about to be returned.
+    */
+   public function processResponse(Response $response);
+diff --git a/src/ServiceDefinitionPluginManager.php b/src/ServiceDefinitionPluginManager.php
+index 61c91da..1851bc2 100644
+--- a/src/ServiceDefinitionPluginManager.php
++++ b/src/ServiceDefinitionPluginManager.php
+@@ -6,7 +6,11 @@ use Drupal\Core\Cache\CacheBackendInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Plugin\DefaultPluginManager;
+ 
++/**
++ *
++ */
+ class ServiceDefinitionPluginManager extends DefaultPluginManager {
++
+   /**
+    * Constructs a new ServiceDefinitionPluginManager.
+    *
+diff --git a/src/ServiceResourceInterface.php b/src/ServiceResourceInterface.php
+index b4f59a5..de55b28 100644
+--- a/src/ServiceResourceInterface.php
++++ b/src/ServiceResourceInterface.php
+@@ -28,7 +28,7 @@ interface ServiceResourceInterface extends ConfigEntityInterface {
+   /**
+    * Get resource no caching option.
+    *
+-   * @return boolean
++   * @return bool
+    */
+   public function getNoCache();
+ 
+diff --git a/tests/src/Unit/Entity/ServiceResourceTest.php b/tests/src/Unit/Entity/ServiceResourceTest.php
+index d33893f..da73176 100644
+--- a/tests/src/Unit/Entity/ServiceResourceTest.php
++++ b/tests/src/Unit/Entity/ServiceResourceTest.php
+@@ -12,6 +12,9 @@ use Drupal\Tests\UnitTestCase;
+  */
+ class ServiceResourceTest extends UnitTestCase {
+ 
++  /**
++   *
++   */
+   public function testCanConstructDefaultResource() {
+     /* @var ServiceResource $resource */
+     $resource = new ServiceResource(
+@@ -20,7 +23,7 @@ class ServiceResourceTest extends UnitTestCase {
+         'service_endpoint_id' => 'test_endpoint_id',
+         'formats' => ['json'],
+         'authentication' => ['cookie'],
+-        'no_cache' => 0
++        'no_cache' => 0,
+       ],
+       'service_endpoint_resource'
+     );
+@@ -31,6 +34,9 @@ class ServiceResourceTest extends UnitTestCase {
+     $this->assertEquals(0, $resource->getNoCache(), 'Cache setting found.');
+   }
+ 
++  /**
++   *
++   */
+   public function testCanConstructResourceNoCacheFalse() {
+     /* @var ServiceResource $resource */
+     $resource = new ServiceResource(
+@@ -39,7 +45,7 @@ class ServiceResourceTest extends UnitTestCase {
+         'service_endpoint_id' => 'test_endpoint_id',
+         'formats' => [],
+         'authentication' => [],
+-        'no_cache' => FALSE
++        'no_cache' => FALSE,
+       ],
+       'service_endpoint_resource'
+     );
+@@ -47,6 +53,9 @@ class ServiceResourceTest extends UnitTestCase {
+     $this->assertEquals(0, $resource->getNoCache(), 'Cache setting found.');
+   }
+ 
++  /**
++   *
++   */
+   public function testCanConstructResourceNoCacheTrue() {
+     /* @var ServiceResource $resource */
+     $resource = new ServiceResource(
+@@ -55,7 +64,7 @@ class ServiceResourceTest extends UnitTestCase {
+         'service_endpoint_id' => 'test_endpoint_id',
+         'formats' => [],
+         'authentication' => [],
+-        'no_cache' => TRUE
++        'no_cache' => TRUE,
+       ],
+       'service_endpoint_resource'
+     );
+@@ -63,6 +72,9 @@ class ServiceResourceTest extends UnitTestCase {
+     $this->assertEquals(1, $resource->getNoCache(), 'Cache setting found.');
+   }
+ 
++  /**
++   *
++   */
+   public function testCanConstructResourceNoCache1() {
+     /* @var ServiceResource $resource */
+     $resource = new ServiceResource(
+@@ -71,7 +83,7 @@ class ServiceResourceTest extends UnitTestCase {
+         'service_endpoint_id' => 'test_endpoint_id',
+         'formats' => [],
+         'authentication' => [],
+-        'no_cache' => 1
++        'no_cache' => 1,
+       ],
+       'service_endpoint_resource'
+     );

@@ -1,0 +1,1058 @@
+diff --git a/src/Event/SessionLimitBypassEvent.php b/src/Event/SessionLimitBypassEvent.php
+index f9f7b1d..e2eb52f 100644
+--- a/src/Event/SessionLimitBypassEvent.php
++++ b/src/Event/SessionLimitBypassEvent.php
+@@ -4,6 +4,9 @@ namespace Drupal\session_limit\Event;
+ 
+ use Symfony\Component\EventDispatcher\Event;
+ 
++/**
++ *
++ */
+ class SessionLimitBypassEvent extends Event {
+ 
+   /**
+@@ -14,7 +17,7 @@ class SessionLimitBypassEvent extends Event {
+   /**
+    * Tell the session limit module you want to bypass session limit check.
+    *
+-   * usage:
++   * Usage:
+    *   SessionLimitBypassEvent->bypass(TRUE);
+    *
+    * @param bool $bypass
+diff --git a/src/Event/SessionLimitCollisionEvent.php b/src/Event/SessionLimitCollisionEvent.php
+index 6bb5baf..516053a 100644
+--- a/src/Event/SessionLimitCollisionEvent.php
++++ b/src/Event/SessionLimitCollisionEvent.php
+@@ -3,8 +3,10 @@
+ namespace Drupal\session_limit\Event;
+ 
+ use Symfony\Component\EventDispatcher\Event;
+-use Drupal\Core\Session\AccountInterface;
+ 
++/**
++ *
++ */
+ class SessionLimitCollisionEvent extends Event {
+ 
+   /**
+@@ -13,7 +15,7 @@ class SessionLimitCollisionEvent extends Event {
+   protected $sessionId;
+ 
+   /**
+-   * @var AccountInterface
++   * @var \Drupal\Core\Session\AccountInterface
+    */
+   protected $account;
+ 
+@@ -31,7 +33,7 @@ class SessionLimitCollisionEvent extends Event {
+    * SessionLimitCollisionEvent constructor.
+    *
+    * @param int $sessionId
+-   * @param AccountInterface $account
++   * @param \Drupal\Core\Session\AccountInterface $account
+    * @param int $userActiveSessions
+    * @param int $userMaxSessions
+    */
+@@ -64,7 +66,7 @@ class SessionLimitCollisionEvent extends Event {
+   }
+ 
+   /**
+-   * @return AccountInterface
++   * @return \Drupal\Core\Session\AccountInterface
+    */
+   public function getAccount() {
+     return $this->account;
+diff --git a/src/Event/SessionLimitDisconnectEvent.php b/src/Event/SessionLimitDisconnectEvent.php
+index 18ae33e..1fc960d 100644
+--- a/src/Event/SessionLimitDisconnectEvent.php
++++ b/src/Event/SessionLimitDisconnectEvent.php
+@@ -3,8 +3,10 @@
+ namespace Drupal\session_limit\Event;
+ 
+ use Symfony\Component\EventDispatcher\Event;
+-use Drupal\Core\Session\AccountInterface;
+ 
++/**
++ *
++ */
+ class SessionLimitDisconnectEvent extends Event {
+ 
+   /**
+@@ -88,10 +90,12 @@ class SessionLimitDisconnectEvent extends Event {
+    * Set the message the user sees when their session is ended.
+    *
+    * @param string $message
++   *
+    * @return $this
+    */
+   public function setMessage($message) {
+     $this->message = $message;
+     return $this;
+   }
++
+ }
+diff --git a/src/Form/SessionLimitForm.php b/src/Form/SessionLimitForm.php
+index c56acf2..b7b21b7 100644
+--- a/src/Form/SessionLimitForm.php
++++ b/src/Form/SessionLimitForm.php
+@@ -5,10 +5,10 @@ namespace Drupal\session_limit\Form;
+ use Drupal\Component\Utility\Crypt;
+ use Drupal\Core\Form\FormBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Render\Element;
+-use Drupal\Core\Session\SessionManager;
+-use Drupal\session_limit\Services\SessionLimit;
+ 
++/**
++ *
++ */
+ class SessionLimitForm extends FormBase {
+ 
+   /**
+@@ -22,7 +22,7 @@ class SessionLimitForm extends FormBase {
+    * {@inheritdoc}
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+-    /** @var SessionLimit $session_limit */
++    /** @var \Drupal\session_limit\Services\SessionLimit $session_limit */
+     $session_limit = \Drupal::service('session_limit');
+ 
+     $form['title'] = [
+@@ -30,7 +30,7 @@ class SessionLimitForm extends FormBase {
+       '#markup' => '<p>' . $this->t('Your active sessions are listed below. You need to choose a session to end.') . '</p>',
+     ];
+ 
+-    /** @var SessionManager $session_manager */
++    /** @var \Drupal\Core\Session\SessionManager $session_manager */
+     $session_manager = \Drupal::service('session_manager');
+     $current_session_id = Crypt::hashBase64($session_manager->getId());
+ 
+@@ -67,12 +67,15 @@ class SessionLimitForm extends FormBase {
+     return $form;
+   }
+ 
++  /**
++   *
++   */
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+-    /** @var SessionManager $session_manager */
++    /** @var \Drupal\Core\Session\SessionManager $session_manager */
+     $session_manager = \Drupal::service('session_manager');
+     $current_session_id = Crypt::hashBase64($session_manager->getId());
+ 
+-    /** @var SessionLimit $session_limit */
++    /** @var \Drupal\session_limit\Services\SessionLimit $session_limit */
+     $session_limit = \Drupal::service('session_limit');
+     $session_reference = $form_state->getValue(['session_reference']);
+     $sid = $form['active_sessions']['#value'][$session_reference]->sid;
+diff --git a/src/Form/SettingsForm.php b/src/Form/SettingsForm.php
+index 22801c2..1c36cf1 100644
+--- a/src/Form/SettingsForm.php
++++ b/src/Form/SettingsForm.php
+@@ -4,9 +4,11 @@ namespace Drupal\session_limit\Form;
+ 
+ use Drupal\Core\Form\ConfigFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Render\Element;
+ use Drupal\session_limit\Services\SessionLimit;
+ 
++/**
++ *
++ */
+ class SettingsForm extends ConfigFormBase {
+ 
+   /**
+@@ -23,6 +25,9 @@ class SettingsForm extends ConfigFormBase {
+     return ['session_limit.settings'];
+   }
+ 
++  /**
++   *
++   */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+ 
+     $form['session_limit_max'] = [
+@@ -94,7 +99,7 @@ class SettingsForm extends ConfigFormBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public function validateForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
++  public function validateForm(array &$form, FormStateInterface $form_state) {
+     $maxsessions = $form_state->getValue(['session_limit_max']);
+     if (!is_numeric($maxsessions)) {
+       $form_state->setErrorByName('session_limit_max', $this->t('You must enter a number for the maximum number of active sessions'));
+diff --git a/src/Services/SessionLimit.php b/src/Services/SessionLimit.php
+index f68026c..139f751 100644
+--- a/src/Services/SessionLimit.php
++++ b/src/Services/SessionLimit.php
+@@ -20,6 +20,9 @@ use Drupal\Core\Session\SessionManager;
+ use Drupal\Core\Extension\ModuleHandler;
+ use Drupal\Core\Config\ConfigFactory;
+ 
++/**
++ *
++ */
+ class SessionLimit implements EventSubscriberInterface {
+ 
+   const ACTION_ASK = 0;
+@@ -59,7 +62,7 @@ class SessionLimit implements EventSubscriberInterface {
+   protected $currentUser;
+ 
+   /**
+-   * @var RouteMatchInterface
++   * @var \Drupal\Core\Routing\RouteMatchInterface
+    */
+   protected $routeMatch;
+ 
+@@ -69,23 +72,23 @@ class SessionLimit implements EventSubscriberInterface {
+   protected $database;
+ 
+   /**
+-   * @var EventDispatcherInterface
++   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+    */
+ 
+   protected $eventDispatcher;
+ 
+   /**
+-   * @var SessionManager
++   * @var \Drupal\Core\Session\SessionManager
+    */
+   protected $sessionManager;
+ 
+   /**
+-   * @var ModuleHandler
++   * @var \Drupal\Core\Extension\ModuleHandler
+    */
+   protected $moduleHandler;
+ 
+   /**
+-   * @var ConfigFactory
++   * @var \Drupal\Core\Config\ConfigFactory
+    */
+   protected $configFactory;
+ 
+@@ -99,19 +102,19 @@ class SessionLimit implements EventSubscriberInterface {
+   /**
+    * SessionLimit constructor.
+    *
+-   * @param Connection $database
++   * @param \Drupal\Core\Database\Connection $database
+    *   The database connection.
+-   * @param EventDispatcherInterface $eventDispatcher
++   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+    *   The event dispatcher service.
+-   * @param RouteMatchInterface $routeMatch
++   * @param \Drupal\Core\Routing\RouteMatchInterface $routeMatch
+    *   The Route.
+-   * @param AccountProxy $currentUser
++   * @param \Drupal\Core\Session\AccountProxy $currentUser
+    *   The current user.
+-   * @param SessionManager $sessionManager
++   * @param \Drupal\Core\Session\SessionManager $sessionManager
+    *   Session manager.
+-   * @param ModuleHandler $moduleHandler
++   * @param \Drupal\Core\Extension\ModuleHandler $moduleHandler
+    *   Module handler.
+-   * @param ConfigFactory $configFactory
++   * @param \Drupal\Core\Config\ConfigFactory $configFactory
+    *   Config factory.
+    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+    *   The messenger.
+@@ -128,14 +131,14 @@ class SessionLimit implements EventSubscriberInterface {
+   }
+ 
+   /**
+-   * @return RouteMatchInterface
++   * @return \Drupal\Core\Routing\RouteMatchInterface
+    */
+   public function getRouteMatch() {
+     return $this->routeMatch;
+   }
+ 
+   /**
+-   * @return EventDispatcherInterface
++   * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface
+    */
+   public function getEventDispatcher() {
+     return $this->eventDispatcher;
+@@ -155,7 +158,7 @@ class SessionLimit implements EventSubscriberInterface {
+    * higher than the configured limit.
+    */
+   public function onKernelRequest() {
+-    /** @var SessionLimitBypassEvent $bypassEvent */
++    /** @var \Drupal\session_limit\Event\SessionLimitBypassEvent $bypassEvent */
+     $bypassEvent = $this
+       ->getEventDispatcher()
+       ->dispatch('session_limit.bypass', new SessionLimitBypassEvent());
+@@ -176,14 +179,14 @@ class SessionLimit implements EventSubscriberInterface {
+         ->dispatch('session_limit.collision', $collisionEvent);
+     }
+     else {
+-      // force checking this twice as there's a race condition around
++      // Force checking this twice as there's a race condition around
+       // sessionId creation see issue #1176412.
+       // @todo accessing the $_SESSION super global is bad.
+       if (!isset($_SESSION['session_limit_checkonce'])) {
+         $_SESSION['session_limit_checkonce'] = TRUE;
+       }
+       else {
+-        // mark sessionId as verified to bypass this in future.
++        // Mark sessionId as verified to bypass this in future.
+         $_SESSION['session_limit'] = TRUE;
+       }
+     }
+@@ -192,7 +195,7 @@ class SessionLimit implements EventSubscriberInterface {
+   /**
+    * Event listener, on check for session check bypass.
+    *
+-   * @param SessionLimitBypassEvent $event
++   * @param \Drupal\session_limit\Event\SessionLimitBypassEvent $event
+    */
+   public function onSessionLimitBypass(SessionLimitBypassEvent $event) {
+     if ($this->getCurrentUser()->id() < 2) {
+@@ -236,19 +239,19 @@ class SessionLimit implements EventSubscriberInterface {
+    * configured behaviour of the module we will either drop existing sessions,
+    * prevent this new session or ask the user what to do.
+    *
+-   * @param SessionLimitCollisionEvent $event
++   * @param \Drupal\session_limit\Event\SessionLimitCollisionEvent $event
+    */
+   public function onSessionCollision(SessionLimitCollisionEvent $event) {
+     switch ($this->getCollisionBehaviour()) {
+-      case self::ACTION_ASK :
++      case self::ACTION_ASK:
+         $this->_onSessionCollision__Ask();
+         break;
+ 
+-      case self::ACTION_PREVENT_NEW :
++      case self::ACTION_PREVENT_NEW:
+         $this->_onSessionCollision__PreventNew($event);
+         break;
+ 
+-      case self::ACTION_DROP_OLDEST :
++      case self::ACTION_DROP_OLDEST:
+         $this->_onSessionCollision__DropOldest($event);
+         break;
+     }
+@@ -270,11 +273,11 @@ class SessionLimit implements EventSubscriberInterface {
+   /**
+    * React to a session collision by preventing new sessions.
+    *
+-   * @param SessionLimitCollisionEvent $event
++   * @param \Drupal\session_limit\Event\SessionLimitCollisionEvent $event
+    *   The session collision event.
+    */
+   protected function _onSessionCollision__PreventNew(SessionLimitCollisionEvent $event) {
+-    /** @var SessionLimitDisconnectEvent $disconnectEvent */
++    /** @var \Drupal\session_limit\Event\SessionLimitDisconnectEvent $disconnectEvent */
+     $disconnectEvent = $this
+       ->getEventDispatcher()
+       ->dispatch('session_limit.disconnect', new SessionLimitDisconnectEvent($event->getSessionId(), $event, $this->getMessage($event->getAccount())));
+@@ -287,16 +290,16 @@ class SessionLimit implements EventSubscriberInterface {
+   /**
+    * React to a session collision by dropping older sessions.
+    *
+-   * @param SessionLimitCollisionEvent $event
++   * @param \Drupal\session_limit\Event\SessionLimitCollisionEvent $event
+    *   The session collision event.
+    */
+   protected function _onSessionCollision__DropOldest(SessionLimitCollisionEvent $event) {
+     // Get the number of sessions that should be removed.
+     // @todo replace the straight db query with a select.
+-    $limit = $this->database->query("SELECT COUNT(DISTINCT(sid)) - :max_sessions FROM {sessions} WHERE uid = :uid", array(
++    $limit = $this->database->query("SELECT COUNT(DISTINCT(sid)) - :max_sessions FROM {sessions} WHERE uid = :uid", [
+       ':max_sessions' => $event->getUserMaxSessions(),
+       ':uid' => $event->getAccount()->id(),
+-    ))->fetchField();
++    ])->fetchField();
+ 
+     if ($limit > 0) {
+       // Secure sessionId ids are separate rows in the database, but we don't
+@@ -304,14 +307,14 @@ class SessionLimit implements EventSubscriberInterface {
+       // sessionId or vice versa. This is why this query is DISTINCT.
+       $result = $this->database->select('sessions', 's')
+         ->distinct()
+-        ->fields('s', array('sid', 'timestamp'))
++        ->fields('s', ['sid', 'timestamp'])
+         ->condition('s.uid', $event->getAccount()->id())
+         ->orderBy('timestamp', 'ASC')
+         ->range(0, $limit)
+         ->execute();
+ 
+       foreach ($result as $session) {
+-        /** @var SessionLimitDisconnectEvent $disconnectEvent */
++        /** @var \Drupal\session_limit\Event\SessionLimitDisconnectEvent $disconnectEvent */
+         $disconnectEvent = $this
+           ->getEventDispatcher()
+           ->dispatch('session_limit.disconnect', new SessionLimitDisconnectEvent($session->id, $event, $this->getMessage($event->getAccount())));
+@@ -327,17 +330,17 @@ class SessionLimit implements EventSubscriberInterface {
+    * Disconnect a sessionId.
+    *
+    * @param string $sessionId
+-   *   The session being disconnected
++   *   The session being disconnected.
+    * @param string $message
+-   *   The logout message which must be already translated by this point
++   *   The logout message which must be already translated by this point.
+    */
+   public function sessionDisconnect($sessionId, $message) {
+     $serialized_message = '';
+ 
+     if ($this->hasMessageSeverity() && !empty($message)) {
+       $serialized_message = 'messages|' . serialize([
+-          $this->getMessageSeverity() => [$message],
+-        ]);
++        $this->getMessageSeverity() => [$message],
++      ]);
+     }
+ 
+     $this->database->update('sessions')
+@@ -361,7 +364,7 @@ class SessionLimit implements EventSubscriberInterface {
+    */
+   public function sessionActiveDisconnect($message) {
+     $this->messenger->addMessage($message, $this->getMessageSeverity());
+-    $this->moduleHandler->invokeAll('user_logout', array($this->currentUser));
++    $this->moduleHandler->invokeAll('user_logout', [$this->currentUser]);
+     $this->sessionManager->destroy();
+     $this->currentUser->setAccount(new AnonymousUserSession());
+   }
+@@ -434,7 +437,7 @@ class SessionLimit implements EventSubscriberInterface {
+     foreach ($account->getRoles() as $rid) {
+       if (!empty($role_limits[$rid])) {
+         if ($role_limits[$rid] == self::USER_UNLIMITED_SESSIONS) {
+-          // If they have an unlimited role then just return the unlimited value;
++          // If they have an unlimited role then just return the unlimited value;.
+           return self::USER_UNLIMITED_SESSIONS;
+         }
+ 
+@@ -444,7 +447,6 @@ class SessionLimit implements EventSubscriberInterface {
+     }
+ 
+     // @todo reinstate per user limits.
+-
+     return $limit;
+   }
+ 
+@@ -472,14 +474,14 @@ class SessionLimit implements EventSubscriberInterface {
+   }
+ 
+   /**
+-   * return @bool
++   * Return @bool.
+    */
+   public function hasMessageSeverity() {
+     $severity = $this->getMessageSeverity();
+     return !empty($severity) && in_array($severity, [
+       'error',
+       'warning',
+-      'status'
++      'status',
+     ]);
+   }
+ 
+@@ -496,7 +498,8 @@ class SessionLimit implements EventSubscriberInterface {
+   /**
+    * Get the logged out message for the given user.
+    *
+-   * @param AccountInterface $account
++   * @param \Drupal\Core\Session\AccountInterface $account
++   *
+    * @return string
+    */
+   public function getMessage(AccountInterface $account) {
+@@ -504,4 +507,5 @@ class SessionLimit implements EventSubscriberInterface {
+       '@number' => $this->getUserMaxSessions($account),
+     ]);
+   }
++
+ }
+diff --git a/tests/SessionLimitBaseTestCase.php b/tests/SessionLimitBaseTestCase.php
+index d867646..3fb582c 100644
+--- a/tests/SessionLimitBaseTestCase.php
++++ b/tests/SessionLimitBaseTestCase.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\session_limit;
+ 
+ /**
+@@ -12,13 +13,13 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+   /**
+    * A store references to different sessions.
+    */
+-  protected $curlHandles = array();
+-  protected $loggedInUsers = array();
++  protected $curlHandles = [];
++  protected $loggedInUsers = [];
+ 
+   /**
+    * Session limit helper function to create 3 roles.
+    *
+-   * @param stdClass $user
++   * @param object $user
+    *   (optional) If provided the user will be added to
+    *   the three roles.
+    *
+@@ -27,11 +28,11 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+    */
+   public function sessionLimitMakeRoles($user = NULL) {
+     // Create roles.
+-    $roles = array();
++    $roles = [];
+ 
+-    $roles[] = (object) array('name' => 'role1');
+-    $roles[] = (object) array('name' => 'role2');
+-    $roles[] = (object) array('name' => 'role3');
++    $roles[] = (object) ['name' => 'role1'];
++    $roles[] = (object) ['name' => 'role2'];
++    $roles[] = (object) ['name' => 'role3'];
+     user_role_save($roles[0]);
+     user_role_save($roles[1]);
+     user_role_save($roles[2]);
+@@ -53,7 +54,7 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+    *
+    * @param int $session_limit
+    *   The max number of sessions the specified user should be able to access.
+-   * @param stdClass $user
++   * @param object $user
+    *   (optional) The user to test this with. Leave blank to create a user.
+    */
+   public function assertSessionLogout($session_limit, stdClass $user = NULL) {
+@@ -62,17 +63,17 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+     \Drupal::configFactory()->getEditable('session_limit.settings')->set('session_limit_logged_out_message', 'Reached limit @number.')->save();
+ 
+     // Create the user to test with.
+-    $user = empty($user) ? $this->drupalCreateUser(array('access content')) : $user;
++    $user = empty($user) ? $this->drupalCreateUser(['access content']) : $user;
+ 
+-    $sessions = array();
++    $sessions = [];
+ 
+     for ($session_number = 1; $session_number <= $session_limit; $session_number++) {
+ 
+       // Log user into each session.
+       $this->drupalLogin($user);
+       $this->drupalGet('user');
+-      $this->assertText(t('Log out'), t('User is logged in under session @no.', array('@no' => $session_number)));
+-      $this->assertText($user->name, t('User is logged in under session @no.', array('@no' => $session_number)));
++      $this->assertText(t('Log out'), t('User is logged in under session @no.', ['@no' => $session_number]));
++      $this->assertText($user->name, t('User is logged in under session @no.', ['@no' => $session_number]));
+ 
+       // Backup session.
+       $sessions[$session_number] = $this->stashSession();
+@@ -85,8 +86,8 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+     foreach ($sessions as $session_number => $session_id) {
+       $this->restoreSession($session_id);
+       $this->drupalGet('user');
+-      $this->assertText(t('Log out'), t('User is logged in under session @no.', array('@no' => $session_number)));
+-      $this->assertText($user->name, t('User is logged in under session @no.', array('@no' => $session_number)));
++      $this->assertText(t('Log out'), t('User is logged in under session @no.', ['@no' => $session_number]));
++      $this->assertText($user->name, t('User is logged in under session @no.', ['@no' => $session_number]));
+     }
+ 
+     // Create a further session.
+@@ -94,8 +95,8 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+     $this->stashSession();
+     $this->drupalLogin($user);
+     $this->drupalGet('user');
+-    $this->assertText(t('Log out'), t('User is logged in under session @no.', array('@no' => $extra_session_number)));
+-    $this->assertText($user->name, t('User is logged in under session @no.', array('@no' => $extra_session_number)));
++    $this->assertText(t('Log out'), t('User is logged in under session @no.', ['@no' => $extra_session_number]));
++    $this->assertText($user->name, t('User is logged in under session @no.', ['@no' => $extra_session_number]));
+ 
+     // Check user 1 is no longer logged in on session 1.
+     $sessions[$extra_session_number] = $this->stashSession();
+@@ -103,7 +104,7 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+     $this->drupalGet('node');
+     $this->assertNoText(t('Log out'), t('User 1 is not logged in under session 1.'));
+ 
+-    $this->assertText(t('Reached limit @number.', array('@number' => $session_limit)), t('User was shown session limit message.'));
++    $this->assertText(t('Reached limit @number.', ['@number' => $session_limit]), t('User was shown session limit message.'));
+ 
+     // Check user 1 is logged in on all other sessions.
+     foreach ($sessions as $session_number => $session_id) {
+@@ -114,8 +115,8 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+ 
+       $this->restoreSession($session_id);
+       $this->drupalGet('user');
+-      $this->assertText(t('Log out'), t('User is logged in under session @no.', array('@no' => $session_number)));
+-      $this->assertText($user->name, t('User is logged in under session @no.', array('@no' => $session_number)));
++      $this->assertText(t('Log out'), t('User is logged in under session @no.', ['@no' => $session_number]));
++      $this->assertText($user->name, t('User is logged in under session @no.', ['@no' => $session_number]));
+     }
+   }
+ 
+@@ -136,17 +137,17 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+     \Drupal::configFactory()->getEditable('session_limit.settings')->set('session_limit_max', $session_limit)->save();
+ 
+     // Create the user to test with.
+-    $user = $this->drupalCreateUser(array('access content'));
++    $user = $this->drupalCreateUser(['access content']);
+ 
+-    $sessions = array();
++    $sessions = [];
+ 
+     for ($session_number = 1; $session_number <= $session_limit; $session_number++) {
+ 
+       // Log user into each session.
+       $this->drupalLogin($user);
+       $this->drupalGet('user');
+-      $this->assertText(t('Log out'), t('User is logged in under session @no.', array('@no' => $session_number)));
+-      $this->assertText($user->name, t('User is logged in under session @no.', array('@no' => $session_number)));
++      $this->assertText(t('Log out'), t('User is logged in under session @no.', ['@no' => $session_number]));
++      $this->assertText($user->name, t('User is logged in under session @no.', ['@no' => $session_number]));
+ 
+       // Backup session.
+       $sessions[$session_number] = $this->stashSession();
+@@ -156,14 +157,14 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+     foreach ($sessions as $session_number => $session_id) {
+       $this->restoreSession($session_id);
+       $this->drupalGet('user');
+-      $this->assertText(t('Log out'), t('User is logged in under session @no.', array('@no' => $session_number)));
+-      $this->assertText($user->name, t('User is logged in under session @no.', array('@no' => $session_number)));
++      $this->assertText(t('Log out'), t('User is logged in under session @no.', ['@no' => $session_number]));
++      $this->assertText($user->name, t('User is logged in under session @no.', ['@no' => $session_number]));
+     }
+ 
+     // Try to login on a further session.
+     $this->stashSession();
+     $this->drupalLoginExpectFail($user);
+-    $this->assertText(t('The maximum number of simultaneous sessions (@session_limit) for your account has been reached. You did not log off from a previous session or someone else is logged on to your account. This may indicate that your account has been compromised or that account sharing is limited on this site. Please contact the site administrator if you suspect your account has been compromised.', array('@session_limit' => $session_limit)), t('User sees the session limit login prevention message.'));
++    $this->assertText(t('The maximum number of simultaneous sessions (@session_limit) for your account has been reached. You did not log off from a previous session or someone else is logged on to your account. This may indicate that your account has been compromised or that account sharing is limited on this site. Please contact the site administrator if you suspect your account has been compromised.', ['@session_limit' => $session_limit]), t('User sees the session limit login prevention message.'));
+ 
+     // Switch back to session 1 and logout.
+     $extra_session_number = $session_limit + 1;
+@@ -206,8 +207,7 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+     // Set a new unique cookie filename.
+     do {
+       $this->cookieFile = $this->public_files_directory . '/' . $this->randomName() . '.jar';
+-    }
+-    while (isset($this->curlHandles[$this->cookieFile]));
++    } while (isset($this->curlHandles[$this->cookieFile]));
+ 
+     return $session_id;
+   }
+@@ -250,8 +250,8 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+     // Make the server forget all sessions.
+     db_truncate('sessions')->execute();
+ 
+-    $this->curlHandles = array();
+-    $this->loggedInUsers = array();
++    $this->curlHandles = [];
++    $this->loggedInUsers = [];
+     $this->loggedInUser = FALSE;
+     $this->cookieFile = $this->public_files_directory . '/' . $this->randomName() . '.jar';
+     unset($this->curlHandle);
+@@ -274,17 +274,18 @@ class SessionLimitBaseTestCase extends DrupalWebTestCase {
+       $this->drupalLogout();
+     }
+ 
+-    $edit = array(
++    $edit = [
+       'name' => $account->name,
+-      'pass' => $account->pass_raw
+-    );
++      'pass' => $account->pass_raw,
++    ];
+     $this->drupalPost('user', $edit, t('Log in'));
+ 
+     // Check that login was unsuccessful by ensuring there is no log out link.
+-    $pass = $this->assertNoLink(t('Log out'), 0, t('User %name did not log in.', array('%name' => $account->name)), t('User login'));
++    $pass = $this->assertNoLink(t('Log out'), 0, t('User %name did not log in.', ['%name' => $account->name]), t('User login'));
+ 
+     if (!$pass) {
+       $this->loggedInUser = $account;
+     }
+   }
++
+ }
+diff --git a/tests/SessionLimitLogoutTestCase.php b/tests/SessionLimitLogoutTestCase.php
+index 2306875..120d088 100644
+--- a/tests/SessionLimitLogoutTestCase.php
++++ b/tests/SessionLimitLogoutTestCase.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\session_limit;
+ 
+ /**
+@@ -7,18 +8,18 @@ namespace Drupal\session_limit;
+ class SessionLimitLogoutTestCase extends SessionLimitBaseTestCase {
+ 
+   /**
+-   * getInfo() returns properties that are displayed in the test selection form.
++   * GetInfo() returns properties that are displayed in the test selection form.
+    */
+   public static function getInfo() {
+-    return array(
++    return [
+       'name' => 'Session Limit Logout Tests',
+       'description' => 'Ensure that the session limit module functions as expected when behaviour is set to logout oldest session',
+       'group' => 'Session Limit',
+-    );
++    ];
+   }
+ 
+   /**
+-   * setUp() performs any pre-requisite tasks that need to happen.
++   * SetUp() performs any pre-requisite tasks that need to happen.
+    */
+   public function setUp() {
+     // Enable any modules required for the test.
+@@ -52,29 +53,25 @@ class SessionLimitLogoutTestCase extends SessionLimitBaseTestCase {
+    */
+   public function testSessionLimitRoles() {
+     // Create a test user.
+-    $user = $this->drupalCreateUser(array('access content'));
++    $user = $this->drupalCreateUser(['access content']);
+     $roles = $this->sessionLimitMakeRoles($user);
+ 
+     // Set the session limits for the roles.
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[0]->rid, 2);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[0]->rid, 2);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[1]->rid, 4);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[1]->rid, 4);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[2]->rid, 3);
+-
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[2]->rid, 3);
+     // Set the default session limit.
+     \Drupal::configFactory()->getEditable('session_limit.settings')->set('session_limit_max', 1)->save();
+ 
+@@ -92,30 +89,24 @@ class SessionLimitLogoutTestCase extends SessionLimitBaseTestCase {
+ 
+     // Add a personal session limit.
+     // @FIXME
+-// user_save() is now a method of the user entity.
+-// user_save($user, array('data' => array('session_limit' => 5)));
+-
+-
++    // user_save() is now a method of the user entity.
++    // user_save($user, array('data' => array('session_limit' => 5)));
+     // Set the session limits for the roles.
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[0]->rid, 2);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[0]->rid, 2);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[1]->rid, 3);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[1]->rid, 3);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[2]->rid, 4);
+-
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[2]->rid, 4);
+     // Set the default session limit.
+     \Drupal::configFactory()->getEditable('session_limit.settings')->set('session_limit_max', 1)->save();
+ 
+@@ -133,34 +124,29 @@ class SessionLimitLogoutTestCase extends SessionLimitBaseTestCase {
+ 
+     // Add a personal session limit.
+     // @FIXME
+-// user_save() is now a method of the user entity.
+-// user_save($user, array('data' => array('session_limit' => 1)));
+-
+-
++    // user_save() is now a method of the user entity.
++    // user_save($user, array('data' => array('session_limit' => 1)));
+     // Set the session limits for the roles.
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[0]->rid, 3);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[0]->rid, 3);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[1]->rid, 4);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[1]->rid, 4);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[2]->rid, 5);
+-
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[2]->rid, 5);
+     // Set the default session limit.
+     \Drupal::configFactory()->getEditable('session_limit.settings')->set('session_limit_max', 2)->save();
+ 
+     // Check if the user has access to only 1 session.
+     $this->assertSessionLogout(1, $user);
+   }
++
+ }
+diff --git a/tests/SessionLimitPreventTestCase.php b/tests/SessionLimitPreventTestCase.php
+index a5b034f..02e868d 100644
+--- a/tests/SessionLimitPreventTestCase.php
++++ b/tests/SessionLimitPreventTestCase.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\session_limit;
+ 
+ /**
+@@ -7,18 +8,18 @@ namespace Drupal\session_limit;
+ class SessionLimitPreventTestCase extends SessionLimitBaseTestCase {
+ 
+   /**
+-   * getInfo() returns properties that are displayed in the test selection form.
++   * GetInfo() returns properties that are displayed in the test selection form.
+    */
+   public static function getInfo() {
+-    return array(
++    return [
+       'name' => 'Session Limit Prevent Tests',
+       'description' => 'Ensure that the session limit module functions as expected when behaviour is set to prevent new sessions',
+       'group' => 'Session Limit',
+-    );
++    ];
+   }
+ 
+   /**
+-   * setUp() performs any pre-requisite tasks that need to happen.
++   * SetUp() performs any pre-requisite tasks that need to happen.
+    */
+   public function setUp() {
+     // Enable any modules required for the test.
+@@ -52,29 +53,25 @@ class SessionLimitPreventTestCase extends SessionLimitBaseTestCase {
+    */
+   public function testSessionLimitRoles() {
+     // Create a test user.
+-    $user = $this->drupalCreateUser(array('access content'));
++    $user = $this->drupalCreateUser(['access content']);
+     $roles = $this->sessionLimitMakeRoles($user);
+ 
+     // Set the session limits for the roles.
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[0]->rid, 2);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[0]->rid, 2);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[1]->rid, 4);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[1]->rid, 4);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[2]->rid, 3);
+-
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[2]->rid, 3);
+     // Set the default session limit.
+     \Drupal::configFactory()->getEditable('session_limit.settings')->set('session_limit_max', 1)->save();
+ 
+@@ -92,30 +89,24 @@ class SessionLimitPreventTestCase extends SessionLimitBaseTestCase {
+ 
+     // Add a personal session limit.
+     // @FIXME
+-// user_save() is now a method of the user entity.
+-// user_save($user, array('data' => array('session_limit' => 5)));
+-
+-
++    // user_save() is now a method of the user entity.
++    // user_save($user, array('data' => array('session_limit' => 5)));
+     // Set the session limits for the roles.
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[0]->rid, 2);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[0]->rid, 2);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[1]->rid, 3);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[1]->rid, 3);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[2]->rid, 4);
+-
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[2]->rid, 4);
+     // Set the default session limit.
+     \Drupal::configFactory()->getEditable('session_limit.settings')->set('session_limit_max', 1)->save();
+ 
+@@ -133,30 +124,24 @@ class SessionLimitPreventTestCase extends SessionLimitBaseTestCase {
+ 
+     // Add a personal session limit.
+     // @FIXME
+-// user_save() is now a method of the user entity.
+-// user_save($user, array('data' => array('session_limit' => 1)));
+-
+-
++    // user_save() is now a method of the user entity.
++    // user_save($user, array('data' => array('session_limit' => 1)));
+     // Set the session limits for the roles.
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[0]->rid, 3);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[0]->rid, 3);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[1]->rid, 4);
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[1]->rid, 4);
+     // @FIXME
+-// // @FIXME
+-// // The correct configuration object could not be determined. You'll need to
+-// // rewrite this call manually.
+-// variable_set('session_limit_rid_' . $roles[2]->rid, 5);
+-
+-
++    // // @FIXME
++    // // The correct configuration object could not be determined. You'll need to
++    // // rewrite this call manually.
++    // variable_set('session_limit_rid_' . $roles[2]->rid, 5);
+     // Set the default session limit.
+     \Drupal::configFactory()->getEditable('session_limit.settings')->set('session_limit_max', 2)->save();
+ 
+diff --git a/tests/SessionLimitSessionTestCase.php b/tests/SessionLimitSessionTestCase.php
+index 8ea5023..48ea9e4 100644
+--- a/tests/SessionLimitSessionTestCase.php
++++ b/tests/SessionLimitSessionTestCase.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\session_limit;
+ 
+ /**
+@@ -7,18 +8,18 @@ namespace Drupal\session_limit;
+ class SessionLimitSessionTestCase extends SessionLimitBaseTestCase {
+ 
+   /**
+-   * getInfo() returns properties that are displayed in the test selection form.
++   * GetInfo() returns properties that are displayed in the test selection form.
+    */
+   public static function getInfo() {
+-    return array(
++    return [
+       'name' => 'Session Limit MutiSession Tests',
+       'description' => 'Ensure the multi session tests for SimpleTest work as expected',
+       'group' => 'Session Limit',
+-    );
++    ];
+   }
+ 
+   /**
+-   * setUp() performs any pre-requisite tasks that need to happen.
++   * SetUp() performs any pre-requisite tasks that need to happen.
+    */
+   public function setUp() {
+     // Enable any modules required for the test.
+@@ -36,8 +37,8 @@ class SessionLimitSessionTestCase extends SessionLimitBaseTestCase {
+   public function testSessionStashAndRestore() {
+ 
+     // Create and log in our privileged user.
+-    $user1 = $this->drupalCreateUser(array('access content'));
+-    $user2 = $this->drupalCreateUser(array('access content'));
++    $user1 = $this->drupalCreateUser(['access content']);
++    $user2 = $this->drupalCreateUser(['access content']);
+ 
+     // Make sure that session_limit does not interfere with
+     // this test of the tests.
+@@ -82,4 +83,5 @@ class SessionLimitSessionTestCase extends SessionLimitBaseTestCase {
+     $this->assertText(t('Log out'), t('User is logged in under session 2.'));
+     $this->assertText($user2->name, t('User2 is logged in under session 2.'));
+   }
++
+ }

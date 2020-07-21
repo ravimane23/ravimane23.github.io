@@ -1,0 +1,415 @@
+diff --git a/src/KeyValueStore/DatabaseStorageList.php b/src/KeyValueStore/DatabaseStorageList.php
+index 96175c9..fdfd533 100644
+--- a/src/KeyValueStore/DatabaseStorageList.php
++++ b/src/KeyValueStore/DatabaseStorageList.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\key_value\KeyValueStore;
+ 
++/**
++ *
++ */
+ class DatabaseStorageList extends DatabaseStorageSortedBase implements KeyValueStoreListInterface {
+ 
+   /**
+@@ -50,7 +53,7 @@ class DatabaseStorageList extends DatabaseStorageSortedBase implements KeyValueS
+   public function set($key, $value) {
+     $this->connection->update($this->table)
+       ->fields([
+-        'value' => $this->serializer->encode($value)
++        'value' => $this->serializer->encode($value),
+       ])
+       ->condition('collection', $this->collection)
+       ->condition('name', (int) $key)
+@@ -63,18 +66,19 @@ class DatabaseStorageList extends DatabaseStorageSortedBase implements KeyValueS
+   public function shift() {
+     // @todo
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public function unshift($value) {
+     // @todo
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+   public function unshiftMultiple(array $values) {
+     // @todo
+   }
++
+ }
+diff --git a/src/KeyValueStore/DatabaseStorageSortedBase.php b/src/KeyValueStore/DatabaseStorageSortedBase.php
+index 14f4d39..e136015 100644
+--- a/src/KeyValueStore/DatabaseStorageSortedBase.php
++++ b/src/KeyValueStore/DatabaseStorageSortedBase.php
+@@ -5,6 +5,9 @@ namespace Drupal\key_value\KeyValueStore;
+ use Drupal\Component\Serialization\SerializationInterface;
+ use Drupal\Core\Database\Connection;
+ 
++/**
++ *
++ */
+ abstract class DatabaseStorageSortedBase implements KeyValueStoreSortedInterface {
+ 
+   /**
+@@ -27,7 +30,10 @@ abstract class DatabaseStorageSortedBase implements KeyValueStoreSortedInterface
+    */
+   protected $table;
+ 
+-  public function __construct($collection, SerializationInterface $serializer, Connection $connection,  $table = 'key_value_sorted') {
++  /**
++   *
++   */
++  public function __construct($collection, SerializationInterface $serializer, Connection $connection, $table = 'key_value_sorted') {
+     $this->collection = $collection;
+     $this->serializer = $serializer;
+     $this->connection = $connection;
+@@ -39,10 +45,10 @@ abstract class DatabaseStorageSortedBase implements KeyValueStoreSortedInterface
+    */
+   public function getCount() {
+     return $this->connection->select($this->table, 't')
+-    ->condition('collection', $this->collection)
+-    ->countQuery()
+-    ->execute()
+-    ->fetchField();
++      ->condition('collection', $this->collection)
++      ->countQuery()
++      ->execute()
++      ->fetchField();
+   }
+ 
+   /**
+@@ -65,4 +71,5 @@ abstract class DatabaseStorageSortedBase implements KeyValueStoreSortedInterface
+     }
+     return $values;
+   }
++
+ }
+diff --git a/src/KeyValueStore/DatabaseStorageSortedSet.php b/src/KeyValueStore/DatabaseStorageSortedSet.php
+index 3090d22..6f9113b 100644
+--- a/src/KeyValueStore/DatabaseStorageSortedSet.php
++++ b/src/KeyValueStore/DatabaseStorageSortedSet.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\key_value\KeyValueStore;
+ 
++/**
++ *
++ */
+ class DatabaseStorageSortedSet extends DatabaseStorageSortedBase implements KeyValueStoreSortedSetInterface {
+ 
+   /**
+@@ -51,6 +54,9 @@ class DatabaseStorageSortedSet extends DatabaseStorageSortedBase implements KeyV
+       ->fetchField();
+   }
+ 
++  /**
++   *
++   */
+   public function getMaxScore() {
+     $query = $this->connection->select($this->table);
+     $query->condition('collection', $this->collection, '=');
+@@ -58,10 +64,14 @@ class DatabaseStorageSortedSet extends DatabaseStorageSortedBase implements KeyV
+     return $query->execute()->fetchField();
+   }
+ 
++  /**
++   *
++   */
+   public function getMinScore() {
+     $query = $this->connection->select($this->table);
+     $query->condition('collection', $this->collection, '=');
+     $query->addExpression('MIN(name)');
+     return $query->execute()->fetchField();
+   }
++
+ }
+diff --git a/src/KeyValueStore/KeyValueDatabaseListFactory.php b/src/KeyValueStore/KeyValueDatabaseListFactory.php
+index 7caf133..5ca4be0 100644
+--- a/src/KeyValueStore/KeyValueDatabaseListFactory.php
++++ b/src/KeyValueStore/KeyValueDatabaseListFactory.php
+@@ -5,6 +5,9 @@ namespace Drupal\key_value\KeyValueStore;
+ use Drupal\Component\Serialization\SerializationInterface;
+ use Drupal\Core\Database\Connection;
+ 
++/**
++ *
++ */
+ class KeyValueDatabaseListFactory implements KeyValueListFactoryInterface {
+ 
+   /**
+@@ -21,7 +24,7 @@ class KeyValueDatabaseListFactory implements KeyValueListFactoryInterface {
+    * @param \Drupal\Component\Serialization\SerializationInterface $serializer
+    * @param \Drupal\Core\Database\Connection $connection
+    */
+-  function __construct(SerializationInterface $serializer, Connection $connection) {
++  public function __construct(SerializationInterface $serializer, Connection $connection) {
+     $this->serializer = $serializer;
+     $this->connection = $connection;
+   }
+@@ -32,4 +35,5 @@ class KeyValueDatabaseListFactory implements KeyValueListFactoryInterface {
+   public function get($collection) {
+     return new DatabaseStorageList($collection, $this->serializer, $this->connection);
+   }
++
+ }
+diff --git a/src/KeyValueStore/KeyValueDatabaseSortedSetFactory.php b/src/KeyValueStore/KeyValueDatabaseSortedSetFactory.php
+index 7bc4921..3c82e4c 100644
+--- a/src/KeyValueStore/KeyValueDatabaseSortedSetFactory.php
++++ b/src/KeyValueStore/KeyValueDatabaseSortedSetFactory.php
+@@ -5,6 +5,9 @@ namespace Drupal\key_value\KeyValueStore;
+ use Drupal\Component\Serialization\SerializationInterface;
+ use Drupal\Core\Database\Connection;
+ 
++/**
++ *
++ */
+ class KeyValueDatabaseSortedSetFactory implements KeyValueSortedSetFactoryInterface {
+ 
+   /**
+@@ -21,7 +24,7 @@ class KeyValueDatabaseSortedSetFactory implements KeyValueSortedSetFactoryInterf
+    * @param \Drupal\Component\Serialization\SerializationInterface $serializer
+    * @param \Drupal\Core\Database\Connection $connection
+    */
+-  function __construct(SerializationInterface $serializer, Connection $connection) {
++  public function __construct(SerializationInterface $serializer, Connection $connection) {
+     $this->serializer = $serializer;
+     $this->connection = $connection;
+   }
+@@ -32,4 +35,5 @@ class KeyValueDatabaseSortedSetFactory implements KeyValueSortedSetFactoryInterf
+   public function get($collection) {
+     return new DatabaseStorageSortedSet($collection, $this->serializer, $this->connection);
+   }
++
+ }
+diff --git a/src/KeyValueStore/KeyValueListFactory.php b/src/KeyValueStore/KeyValueListFactory.php
+index 2c7c60c..3e0e745 100644
+--- a/src/KeyValueStore/KeyValueListFactory.php
++++ b/src/KeyValueStore/KeyValueListFactory.php
+@@ -4,6 +4,9 @@ namespace Drupal\key_value\KeyValueStore;
+ 
+ use Drupal\Core\KeyValueStore\KeyValueFactory;
+ 
++/**
++ *
++ */
+ class KeyValueListFactory extends KeyValueFactory implements KeyValueListFactoryInterface {
+ 
+   const DEFAULT_SERVICE = 'keyvalue.list.database';
+diff --git a/src/KeyValueStore/KeyValueSortedSetFactory.php b/src/KeyValueStore/KeyValueSortedSetFactory.php
+index 32af9c1..c251b24 100644
+--- a/src/KeyValueStore/KeyValueSortedSetFactory.php
++++ b/src/KeyValueStore/KeyValueSortedSetFactory.php
+@@ -4,6 +4,9 @@ namespace Drupal\key_value\KeyValueStore;
+ 
+ use Drupal\Core\KeyValueStore\KeyValueFactory;
+ 
++/**
++ *
++ */
+ class KeyValueSortedSetFactory extends KeyValueFactory implements KeyValueSortedSetFactoryInterface {
+ 
+   const DEFAULT_SERVICE = 'keyvalue.sorted_set.database';
+diff --git a/src/KeyValueStore/KeyValueSortedSetFactoryInterface.php b/src/KeyValueStore/KeyValueSortedSetFactoryInterface.php
+index aafdf00..0fc6b7a 100644
+--- a/src/KeyValueStore/KeyValueSortedSetFactoryInterface.php
++++ b/src/KeyValueStore/KeyValueSortedSetFactoryInterface.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\key_value\KeyValueStore;
+ 
++/**
++ *
++ */
+ interface KeyValueSortedSetFactoryInterface {
+ 
+   /**
+diff --git a/src/KeyValueStore/KeyValueStoreListInterface.php b/src/KeyValueStore/KeyValueStoreListInterface.php
+index 4feda13..5b363f4 100644
+--- a/src/KeyValueStore/KeyValueStoreListInterface.php
++++ b/src/KeyValueStore/KeyValueStoreListInterface.php
+@@ -2,10 +2,13 @@
+ 
+ namespace Drupal\key_value\KeyValueStore;
+ 
++/**
++ *
++ */
+ interface KeyValueStoreListInterface extends KeyValueStoreSortedInterface {
+ 
+   /**
+-   * @param integer $count
++   * @param int $count
+    * @param mixed $value
+    */
+   public function delete($count, $value);
+@@ -43,7 +46,7 @@ interface KeyValueStoreListInterface extends KeyValueStoreSortedInterface {
+   /**
+    * @param mixed $value
+    *
+-   * @return integer
++   * @return int
+    */
+   public function unshift($value);
+ 
+diff --git a/src/KeyValueStore/KeyValueStoreSortedInterface.php b/src/KeyValueStore/KeyValueStoreSortedInterface.php
+index b7972a7..ab46c72 100644
+--- a/src/KeyValueStore/KeyValueStoreSortedInterface.php
++++ b/src/KeyValueStore/KeyValueStoreSortedInterface.php
+@@ -2,17 +2,20 @@
+ 
+ namespace Drupal\key_value\KeyValueStore;
+ 
++/**
++ *
++ */
+ interface KeyValueStoreSortedInterface {
+ 
+   /**
+-   * @return integer
++   * @return int
+    */
+   public function getCount();
+ 
+   /**
+    * @param float $start
+    * @param float $stop
+-   * @param boolean $inclusive
++   * @param bool $inclusive
+    *
+    * @return array
+    */
+diff --git a/src/KeyValueStore/KeyValueStoreSortedSetInterface.php b/src/KeyValueStore/KeyValueStoreSortedSetInterface.php
+index fbd0467..fe2082e 100644
+--- a/src/KeyValueStore/KeyValueStoreSortedSetInterface.php
++++ b/src/KeyValueStore/KeyValueStoreSortedSetInterface.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\key_value\KeyValueStore;
+ 
++/**
++ *
++ */
+ interface KeyValueStoreSortedSetInterface extends KeyValueStoreSortedInterface {
+ 
+   /**
+diff --git a/src/Tests/DatabaseStorageListTest.php b/src/Tests/DatabaseStorageListTest.php
+index 8adb156..857f764 100644
+--- a/src/Tests/DatabaseStorageListTest.php
++++ b/src/Tests/DatabaseStorageListTest.php
+@@ -14,11 +14,17 @@ class DatabaseStorageListTest extends DatabaseStorageSortedTestBase {
+    */
+   protected $store;
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+     $this->store = \Drupal::service('keyvalue.list')->get($this->collection);
+   }
+ 
++  /**
++   *
++   */
+   public function testCalls() {
+     $value0 = $this->randomMachineName();
+     $key = $this->store->push($value0);
+@@ -51,4 +57,5 @@ class DatabaseStorageListTest extends DatabaseStorageSortedTestBase {
+     $value = $this->store->getRange(6, 10);
+     $this->assertIdentical($value, [], 'Non-existing range returned empty array.');
+   }
++
+ }
+diff --git a/src/Tests/DatabaseStorageSortedSetTest.php b/src/Tests/DatabaseStorageSortedSetTest.php
+index 2cc68fe..d15b05e 100644
+--- a/src/Tests/DatabaseStorageSortedSetTest.php
++++ b/src/Tests/DatabaseStorageSortedSetTest.php
+@@ -14,11 +14,17 @@ class DatabaseStorageSortedSetTest extends DatabaseStorageSortedTestBase {
+    */
+   protected $store;
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+     $this->store = \Drupal::service('keyvalue.sorted_set')->get($this->collection);
+   }
+ 
++  /**
++   *
++   */
+   public function testCalls() {
+     $key0 = $this->newKey();
+     $value0 = $this->randomMachineName();
+@@ -75,4 +81,5 @@ class DatabaseStorageSortedSetTest extends DatabaseStorageSortedTestBase {
+     $min_score = $this->store->getMinScore();
+     $this->assertEqual($min_score, $key0, 'The getMinScore method returned correct score.');
+   }
++
+ }
+diff --git a/src/Tests/DatabaseStorageSortedTestBase.php b/src/Tests/DatabaseStorageSortedTestBase.php
+index bf92b0f..84002a4 100644
+--- a/src/Tests/DatabaseStorageSortedTestBase.php
++++ b/src/Tests/DatabaseStorageSortedTestBase.php
+@@ -2,8 +2,11 @@
+ 
+ namespace Drupal\key_value\Tests;
+ 
+-use \Drupal\KernelTests\KernelTestBase;
++use Drupal\KernelTests\KernelTestBase;
+ 
++/**
++ *
++ */
+ abstract class DatabaseStorageSortedTestBase extends KernelTestBase {
+ 
+   static public $modules = ['serialization', 'key_value'];
+@@ -28,6 +31,9 @@ abstract class DatabaseStorageSortedTestBase extends KernelTestBase {
+    */
+   protected $connection;
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+     $this->installSchema('key_value', ['key_value_sorted']);
+@@ -37,6 +43,9 @@ abstract class DatabaseStorageSortedTestBase extends KernelTestBase {
+     $this->connection = \Drupal::service('database');
+   }
+ 
++  /**
++   *
++   */
+   public function assertPairs($expected_pairs) {
+     $result = $this->connection->select('key_value_sorted', 't')
+       ->fields('t', ['name', 'value'])
+@@ -52,6 +61,9 @@ abstract class DatabaseStorageSortedTestBase extends KernelTestBase {
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function assertRecords($expected, $message = NULL) {
+     $count = $this->connection->select('key_value_sorted', 't')
+       ->fields('t')
+@@ -62,7 +74,11 @@ abstract class DatabaseStorageSortedTestBase extends KernelTestBase {
+     $this->assertEqual($count, $expected, $message ? $message : "There are $expected records.");
+   }
+ 
++  /**
++   *
++   */
+   public function newKey() {
+     return (int) (microtime(TRUE) * 1000000);
+   }
++
+ }

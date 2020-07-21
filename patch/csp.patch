@@ -1,0 +1,75 @@
+diff --git a/src/Csp.php b/src/Csp.php
+index bf2cc80..aa7917e 100644
+--- a/src/Csp.php
++++ b/src/Csp.php
+@@ -458,7 +458,7 @@ class Csp {
+     }
+ 
+     // Remove protocol-prefixed hosts if protocol is allowed.
+-    // e.g. 'http: data: example.com https://example.com' -> 'http: data: example.com'
++    // e.g. 'http: data: example.com https://example.com' -> 'http: data: example.com'.
+     $protocols = array_filter($sources, function ($source) {
+       return preg_match('<^(https?|wss?|ftp):$>', $source);
+     });
+diff --git a/src/Form/CspSettingsForm.php b/src/Form/CspSettingsForm.php
+index 5d367f4..226f73e 100644
+--- a/src/Form/CspSettingsForm.php
++++ b/src/Form/CspSettingsForm.php
+@@ -434,7 +434,7 @@ class CspSettingsForm extends ConfigFormBase {
+         '#cspPolicyType' => $policyTypeKey,
+         '#button_type' => 'danger',
+         '#submit' => [
+-          '::submitClearPolicy'
++          '::submitClearPolicy',
+         ],
+       ];
+     }
+diff --git a/tests/src/Unit/CspTest.php b/tests/src/Unit/CspTest.php
+index 1652398..4e2747b 100644
+--- a/tests/src/Unit/CspTest.php
++++ b/tests/src/Unit/CspTest.php
+@@ -223,7 +223,6 @@ class CspTest extends UnitTestCase {
+       $policy->getHeaderValue()
+     );
+ 
+-
+     $policy = new Csp();
+     $policy->setDirective('default-src', Csp::POLICY_SELF);
+     $policy->setDirective('script-src', [Csp::POLICY_SELF]);
+diff --git a/tests/src/Unit/EventSubscriber/CoreCspSubscriberTest.php b/tests/src/Unit/EventSubscriber/CoreCspSubscriberTest.php
+index f2f2382..0881384 100644
+--- a/tests/src/Unit/EventSubscriber/CoreCspSubscriberTest.php
++++ b/tests/src/Unit/EventSubscriber/CoreCspSubscriberTest.php
+@@ -26,6 +26,7 @@ class CoreCspSubscriberTest extends UnitTestCase {
+ 
+   /**
+    * The Module Handler service.
++   *
+    * @var \Drupal\Core\Extension\ModuleHandlerInterface|\PHPUnit\Framework\MockObject\MockObject
+    */
+   private $moduleHandler;
+diff --git a/tests/src/Unit/EventSubscriber/Ie9CspSubscriberTest.php b/tests/src/Unit/EventSubscriber/Ie9CspSubscriberTest.php
+index a8df34c..3a17da3 100644
+--- a/tests/src/Unit/EventSubscriber/Ie9CspSubscriberTest.php
++++ b/tests/src/Unit/EventSubscriber/Ie9CspSubscriberTest.php
+@@ -187,12 +187,10 @@ class Ie9CspSubscriberTest extends UnitTestCase {
+       ],
+     ]);
+ 
+-
+     $policy = new Csp();
+     $policy->setDirective('default-src', [Csp::POLICY_ANY]);
+     $policy->setDirective('style-src', [Csp::POLICY_SELF]);
+ 
+-
+     $alterEvent = new PolicyAlterEvent($policy, $this->response);
+ 
+     $subscriber = new Ie9CspSubscriber($configFactory, $this->moduleHandler);
+@@ -227,7 +225,6 @@ class Ie9CspSubscriberTest extends UnitTestCase {
+       ],
+     ]);
+ 
+-
+     $policy = new Csp();
+     $policy->setDirective('default-src', [Csp::POLICY_SELF]);
+ 

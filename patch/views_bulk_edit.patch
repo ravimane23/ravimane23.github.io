@@ -1,0 +1,52 @@
+diff --git a/src/Plugin/Action/ModifyEntityValues.php b/src/Plugin/Action/ModifyEntityValues.php
+index 44aac88..65b32ff 100644
+--- a/src/Plugin/Action/ModifyEntityValues.php
++++ b/src/Plugin/Action/ModifyEntityValues.php
+@@ -174,7 +174,7 @@ class ModifyEntityValues extends ViewsBulkOperationsActionBase implements Contai
+    */
+   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+ 
+-    // Disable cache to avoid errors with storing files in tempstore
++    // Disable cache to avoid errors with storing files in tempstore.
+     $form_state->disableCache();
+ 
+     // Get view bundles.
+@@ -432,7 +432,6 @@ class ModifyEntityValues extends ViewsBulkOperationsActionBase implements Contai
+       ];
+ 
+       // Force the original value to be hidden unless the checkbox is enabled.
+-
+       $form[$key]['#states'] = [
+         'visible' => [
+           sprintf('[name="%s[%s][_field_selector][%s]"]', $entity_type_id, $bundle, $key) => ['checked' => TRUE],
+@@ -453,7 +452,7 @@ class ModifyEntityValues extends ViewsBulkOperationsActionBase implements Contai
+    * @param array $form
+    *   The form element we're searching.
+    * @param string $title
+-   *   The most recent non-empty title from previous form elements
++   *   The most recent non-empty title from previous form elements.
+    *
+    * @return array|null
+    *   The deepest most element if we can find it.
+@@ -471,7 +470,7 @@ class ModifyEntityValues extends ViewsBulkOperationsActionBase implements Contai
+         $title = $form[$key]['title']['#value'];
+       }
+       if (isset($form[$key]['#type']) && !empty($title)) {
+-        // Fix empty or missing #title in $form
++        // Fix empty or missing #title in $form.
+         if (empty($form[$key]['#title'])) {
+           $form[$key]['#title'] = $title;
+         }
+diff --git a/tests/src/Functional/ViewsBulkEditModifyEntityValuesTest.php b/tests/src/Functional/ViewsBulkEditModifyEntityValuesTest.php
+index 65443c8..8b89770 100644
+--- a/tests/src/Functional/ViewsBulkEditModifyEntityValuesTest.php
++++ b/tests/src/Functional/ViewsBulkEditModifyEntityValuesTest.php
+@@ -99,7 +99,7 @@ class ViewsBulkEditModifyEntityValuesTest extends BrowserTestBase {
+       'action_id' => 'views_bulk_edit',
+       'preconfiguration' => [
+         'label_override' => '',
+-      ]
++      ],
+     ];
+     $configData['display']['default']['display_options']['pager']['options']['items_per_page'] = 10;
+     $configData['display']['default']['display_options']['pager']['options']['offset'] = 0;

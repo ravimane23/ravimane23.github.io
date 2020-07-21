@@ -1,0 +1,610 @@
+diff --git a/js/attributes.js b/js/attributes.js
+index ced3356..b08bb50 100644
+--- a/js/attributes.js
++++ b/js/attributes.js
+@@ -28,11 +28,15 @@
+     };
+     var data = this.getData();
+     for (name in data) {
+-      if (!data.hasOwnProperty(name)) continue;
++      if (!data.hasOwnProperty(name)) { continue;
++      }
+       value = data[name];
+-      if (_.isFunction(value)) value = value();
+-      if (_.isObject(value)) value = _.values(value);
+-      if (_.isArray(value)) value = value.join(' ');
++      if (_.isFunction(value)) { value = value();
++      }
++      if (_.isObject(value)) { value = _.values(value);
++      }
++      if (_.isArray(value)) { value = value.join(' ');
++      }
+       output += ' ' + checkPlain(name) + '="' + checkPlain(value) + '"';
+     }
+     return output;
+@@ -49,11 +53,15 @@
+     var name, value;
+     var data = this.getData();
+     for (name in data) {
+-      if (!data.hasOwnProperty(name)) continue;
++      if (!data.hasOwnProperty(name)) { continue;
++      }
+       value = data[name];
+-      if (_.isFunction(value)) value = value();
+-      if (_.isObject(value)) value = _.values(value);
+-      if (_.isArray(value)) value = value.join(' ');
++      if (_.isFunction(value)) { value = value();
++      }
++      if (_.isObject(value)) { value = _.values(value);
++      }
++      if (_.isArray(value)) { value = value.join(' ');
++      }
+       object[name] = value;
+     }
+     return object;
+@@ -100,7 +108,8 @@
+    *   A specific attribute value, passed by reference.
+    */
+   Attributes.prototype.get = function (name, defaultValue) {
+-    if (!this.exists(name)) this.data[name] = defaultValue;
++    if (!this.exists(name)) { this.data[name] = defaultValue;
++    }
+     return this.data[name];
+   };
+ 
+@@ -220,7 +229,8 @@
+    * @chainable
+    */
+   Attributes.prototype.remove = function (name) {
+-    if (this.exists(name)) delete this.data[name];
++    if (this.exists(name)) { delete this.data[name];
++    }
+     return this;
+   };
+ 
+@@ -348,7 +358,7 @@
+       identifier = identifier.replace('__', '#DOUBLE_UNDERSCORE#');
+     }
+ 
+-    identifier = identifier.replace(Object.keys(filter), Object.keys(filter).map(function(key) { return filter[key]; }));
++    identifier = identifier.replace(Object.keys(filter), Object.keys(filter).map(function (key) { return filter[key]; }));
+ 
+     if (filter['__'] === void 0) {
+       identifier = identifier.replace('#DOUBLE_UNDERSCORE#', '__');
+diff --git a/js/drupal.bootstrap.js b/js/drupal.bootstrap.js
+index 0d0c101..ef48076 100644
+--- a/js/drupal.bootstrap.js
++++ b/js/drupal.bootstrap.js
+@@ -568,7 +568,8 @@
+       // Handle prototype properties separately.
+       if (plugin.prototype !== void 0) {
+         for (var key in plugin.prototype) {
+-          if (!plugin.prototype.hasOwnProperty(key)) continue;
++          if (!plugin.prototype.hasOwnProperty(key)) { continue;
++          }
+           var value = plugin.prototype[key];
+           if (typeof value === 'function') {
+             proto[key] = this.superWrapper(proto[key] || function () {}, value);
+@@ -582,7 +583,8 @@
+ 
+       // Handle static properties.
+       for (key in plugin) {
+-        if (!plugin.hasOwnProperty(key)) continue;
++        if (!plugin.hasOwnProperty(key)) { continue;
++        }
+         value = plugin[key];
+         if (typeof value === 'function') {
+           constructor[key] = this.superWrapper(constructor[key] || function () {}, value);
+diff --git a/js/misc/ajax.js b/js/misc/ajax.js
+index 967ca0b..a3889d1 100644
+--- a/js/misc/ajax.js
++++ b/js/misc/ajax.js
+@@ -40,8 +40,7 @@
+           .removeAttr('data-toggle')
+           .removeAttr('data-original-title')
+           .removeAttr('title')
+-          .tooltip('destroy')
+-        ;
++          .tooltip('destroy');
+ 
+         if (message) {
+           $glyphicon.attr('data-toggle', 'tooltip').attr('title', message).tooltip();
+@@ -71,8 +70,7 @@
+           .removeAttr('data-toggle')
+           .removeAttr('data-original-title')
+           .removeAttr('title')
+-          .tooltip('destroy')
+-        ;
++          .tooltip('destroy');
+       }
+     }
+   };
+@@ -109,7 +107,6 @@
+     }
+   };
+ 
+-
+   /**
+    * Handler for the form redirection completion.
+    *
+diff --git a/js/misc/autocomplete.js b/js/misc/autocomplete.js
+index 81128f1..61fc720 100644
+--- a/js/misc/autocomplete.js
++++ b/js/misc/autocomplete.js
+@@ -26,9 +26,11 @@
+     _response: function () {
+       var index = ++this.requestIndex;
+       return $.proxy(function (content) {
+-        if (index === this.requestIndex) this.__response(content);
++        if (index === this.requestIndex) { this.__response(content);
++        }
+         this.pending--;
+-        if (!this.pending) Drupal.Ajax.prototype.glyphiconStop(this.element);
++        if (!this.pending) { Drupal.Ajax.prototype.glyphiconStop(this.element);
++        }
+       }, this);
+     }
+   });
+diff --git a/js/misc/dialog.ajax.js b/js/misc/dialog.ajax.js
+index c0fceed..7b9919f 100644
+--- a/js/misc/dialog.ajax.js
++++ b/js/misc/dialog.ajax.js
+@@ -59,8 +59,7 @@
+     })
+     .ajaxComplete(function () {
+       Drupal.behaviors.dialog.ajaxUpdateButtons(true);
+-    })
+-  ;
++    });
+ 
+   /**
+    * {@inheritdoc}
+diff --git a/js/misc/form.js b/js/misc/form.js
+index 0b09d16..2b5a7c0 100644
+--- a/js/misc/form.js
++++ b/js/misc/form.js
+@@ -26,5 +26,4 @@
+     }
+   };
+ 
+-
+ })(jQuery, this, Drupal, drupalSettings);
+diff --git a/js/misc/progress.js b/js/misc/progress.js
+index 31d4049..c3a9598 100644
+--- a/js/misc/progress.js
++++ b/js/misc/progress.js
+@@ -17,7 +17,7 @@
+    */
+   Drupal.theme.progressBar = function (id) {
+     return '<div class="progress-wrapper" aria-live="polite">' +
+-             '<div class="message"></div>'+
++             '<div class="message"></div>' +
+              '<div id ="' + id + '" class="progress progress-striped active">' +
+                '<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
+                  '<span class="percentage"></span>' +
+diff --git a/js/misc/states.js b/js/misc/states.js
+index bf9a82b..6ab415a 100644
+--- a/js/misc/states.js
++++ b/js/misc/states.js
+@@ -2,7 +2,7 @@
+  * @file
+  * Extends core/misc/states.js.
+  */
+-(function($) {
++(function ($) {
+ 
+   // Unbind core state.js from document first so we can then override below.
+   $(document).unbind('state:disabled');
+@@ -13,7 +13,7 @@
+    * bubble up to these handlers. We use this system so that themes and modules
+    * can override these state change handlers for particular parts of a page.
+    */
+-  $(document).bind('state:disabled', function(e) {
++  $(document).bind('state:disabled', function (e) {
+     // Only act when this change was triggered by a dependency and not by the
+     // element monitoring itself.
+     if (e.trigger) {
+diff --git a/js/misc/tabledrag.js b/js/misc/tabledrag.js
+index ac41c8f..fe4afa1 100644
+--- a/js/misc/tabledrag.js
++++ b/js/misc/tabledrag.js
+@@ -185,8 +185,7 @@
+         this.toggleColumns();
+       }, this))
+       .wrap('<div class="tabledrag-toggle-weight-wrapper"></div>')
+-      .parent()
+-    ;
++      .parent();
+     $table.before($button);
+ 
+     // Initialize the specified columns (for example, weight or parent columns)
+@@ -247,8 +246,7 @@
+     handle
+       .attr('title', Drupal.t('Drag to re-order'))
+       .attr('data-toggle', 'tooltip')
+-      .append(Drupal.theme('bootstrapIcon', 'move'))
+-    ;
++      .append(Drupal.theme('bootstrapIcon', 'move'));
+ 
+     handle.on('mousedown touchstart pointerdown', function (event) {
+       event.preventDefault();
+diff --git a/js/misc/vertical-tabs.js b/js/misc/vertical-tabs.js
+index 83cfec4..c9682c6 100644
+--- a/js/misc/vertical-tabs.js
++++ b/js/misc/vertical-tabs.js
+@@ -115,7 +115,7 @@
+         var $tabs = $wrapper.find('.nav-tabs');
+         var $content = $wrapper.find('.tab-content');
+         var borderRadius = parseInt($content.css('borderBottomRightRadius'), 10);
+-        var bootstrapTabResize = function() {
++        var bootstrapTabResize = function () {
+           if ($wrapper.hasClass('tabs-left') || $wrapper.hasClass('tabs-right')) {
+             $content.css('min-height', $tabs.outerHeight());
+           }
+diff --git a/js/modal.jquery.ui.bridge.js b/js/modal.jquery.ui.bridge.js
+index a316dd9..a641db3 100644
+--- a/js/modal.jquery.ui.bridge.js
++++ b/js/modal.jquery.ui.bridge.js
+@@ -264,7 +264,6 @@
+               }
+             }
+ 
+-
+             // Handle CSS properties.
+             var cssUnitRegExp = /^([+-]?(?:\d+|\d*\.\d+))([a-z]*|%)?$/;
+             var parseCssUnit = function (value, defaultUnit) {
+@@ -335,7 +334,8 @@
+             ];
+             for (i = 0, l = events.length; i < l; i++) {
+               var event = events[i].toLowerCase();
+-              if (dialogOptions[event] === void 0 || typeof dialogOptions[event] !== 'function') continue;
++              if (dialogOptions[event] === void 0 || typeof dialogOptions[event] !== 'function') { continue;
++              }
+               this.$element.on('dialog' + event, dialogOptions[event]);
+             }
+ 
+@@ -347,7 +347,8 @@
+ 
+             // Handle the reset of the options.
+             for (var name in dialogOptions) {
+-              if (!dialogOptions.hasOwnProperty(name) || dialogOptions[name] === void 0) continue;
++              if (!dialogOptions.hasOwnProperty(name) || dialogOptions[name] === void 0) { continue;
++              }
+ 
+               switch (name) {
+                 case 'appendTo':
+@@ -478,7 +479,7 @@
+             this.createButtons();
+           },
+ 
+-          position: function(position) {
++          position: function (position) {
+             // Reset modal styling.
+             this.$element.css({
+               bottom: 'initial',
+@@ -562,10 +563,10 @@
+         attributes.set('value', iconPosition === 'before' ? icon + value : value + icon);
+ 
+         // Handle disabled.
+-        attributes[button.disabled ? 'set' :'remove']('disabled', 'disabled');
++        attributes[button.disabled ? 'set' : 'remove']('disabled', 'disabled');
+ 
+         if (button.classes) {
+-          attributes.addClass(Object.keys(button.classes).map(function(key) { return button.classes[key]; }));
++          attributes.addClass(Object.keys(button.classes).map(function (key) { return button.classes[key]; }));
+         }
+         if (button['class']) {
+           attributes.addClass(button['class']);
+@@ -581,5 +582,4 @@
+ 
+   });
+ 
+-
+ })(window.jQuery, window.Drupal, window.Drupal.bootstrap, window.Attributes, window.drupalSettings);
+diff --git a/js/modal.js b/js/modal.js
+index 6adea8c..3cd5f36 100644
+--- a/js/modal.js
++++ b/js/modal.js
+@@ -150,8 +150,8 @@
+         }
+         var ret = void 0;
+         this.each(function () {
+-          var $this   = $(this);
+-          var data    = $this.data('bs.modal');
++          var $this      = $(this);
++          var data       = $this.data('bs.modal');
+           var initialize = false;
+ 
+           // Immediately return if there's no instance to invoke a valid method.
+@@ -214,13 +214,15 @@
+           var href    = $this.attr('href');
+           var target  = $this.attr('data-target') || (href && href.replace(/.*(?=#[^\s]+$)/, '')); // strip for ie7
+           var $target = $document.find(target);
+-          var options  = $target.data('bs.modal') ? 'toggle' : $.extend({ remote: !/#/.test(href) && href }, $target.data(), $this.data());
++          var options = $target.data('bs.modal') ? 'toggle' : $.extend({ remote : !/#/.test(href) && href }, $target.data(), $this.data());
+ 
+-          if ($this.is('a')) e.preventDefault();
++          if ($this.is('a')) { e.preventDefault();
++          }
+ 
+           $target.one('show.bs.modal', function (showEvent) {
+             // Only register focus restorer if modal will actually get shown.
+-            if (showEvent.isDefaultPrevented()) return;
++            if (showEvent.isDefaultPrevented()) { return;
++            }
+             $target.one('hidden.bs.modal', function () {
+               $this.is(':visible') && $this.trigger('focus');
+             });
+diff --git a/js/modules/filter/filter.js b/js/modules/filter/filter.js
+index 34d8488..23d9b3d 100644
+--- a/js/modules/filter/filter.js
++++ b/js/modules/filter/filter.js
+@@ -6,7 +6,7 @@
+ (function ($) {
+   'use strict';
+ 
+-  function updateFilterHelpLink () {
++  function updateFilterHelpLink() {
+     var $link = $(this).parents('.filter-wrapper').find('.filter-help > a');
+     var originalLink = $link.data('originalLink');
+     if (!originalLink) {
+diff --git a/js/popover.js b/js/popover.js
+index 5371ea0..b44c526 100644
+--- a/js/popover.js
++++ b/js/popover.js
+@@ -85,8 +85,7 @@ var Drupal = Drupal || {};
+             _this.$activePopover.popover('hide');
+             _this.$activePopover = null;
+           }
+-        })
+-      ;
++        });
+ 
+       var elements = $(context).find('[data-toggle=popover]').toArray();
+       for (var i = 0; i < elements.length; i++) {
+@@ -122,8 +121,7 @@ var Drupal = Drupal || {};
+               $(this).popover('toggle');
+               e.preventDefault();
+               e.stopPropagation();
+-            })
+-          ;
++            });
+         }
+       }
+     },
+@@ -136,10 +134,9 @@ var Drupal = Drupal || {};
+       // Destroy all popovers.
+       $(context).find('[data-toggle="popover"]')
+         .off('click.drupal.bootstrap.popover')
+-        .popover('destroy')
+-      ;
++        .popover('destroy');
+     },
+-    getOption: function(name, defaultValue, element) {
++    getOption: function (name, defaultValue, element) {
+       var $element = element ? $(element) : this.$activePopover;
+       var options = $.extend(true, {}, $.fn.popover.Constructor.DEFAULTS, ($element && $element.data('bs.popover') || {}).options);
+       if (options[name] !== void 0) {
+diff --git a/js/theme-settings.js b/js/theme-settings.js
+index d008a2e..aeb953b 100644
+--- a/js/theme-settings.js
++++ b/js/theme-settings.js
+@@ -157,7 +157,6 @@
+         return summary.join(', ');
+       });
+ 
+-
+       // Advanced.
+       $context.find('[data-drupal-selector="edit-advanced"]').drupalSetSummary(function () {
+         var summary = [];
+@@ -248,7 +247,7 @@
+           var $position = $(this).find(':selected').val();
+           $navbar.removeClass('navbar-fixed-bottom navbar-fixed-top navbar-static-top container');
+           if ($position.length) {
+-            $navbar.addClass('navbar-'+ $position);
++            $navbar.addClass('navbar-' + $position);
+           }
+           else {
+             $navbar.addClass('container');
+diff --git a/js/theme.js b/js/theme.js
+index 2f52c70..1af9bbd 100644
+--- a/js/theme.js
++++ b/js/theme.js
+@@ -7,7 +7,8 @@
+   /**
+    * Fallback for theming an icon if the Icon API module is not installed.
+    */
+-  if (!Drupal.icon) Drupal.icon = { bundles: {} };
++  if (!Drupal.icon) { Drupal.icon = { bundles: {} };
++  };
+   if (!Drupal.theme.icon || Drupal.theme.prototype.icon) {
+     $.extend(Drupal.theme, /** @lends Drupal.theme */ {
+       /**
+@@ -23,7 +24,8 @@
+        * @returns {string}
+        */
+       icon: function (bundle, icon, attributes) {
+-        if (!Drupal.icon.bundles[bundle]) return '';
++        if (!Drupal.icon.bundles[bundle]) { return '';
++        }
+         attributes = Attributes.create(attributes).addClass('icon').set('aria-hidden', 'true');
+         icon = Drupal.icon.bundles[bundle](icon, attributes);
+         return '<span' + attributes + '></span>';
+diff --git a/scripts/bootstrap.php b/scripts/bootstrap.php
+index fe98786..c5c9938 100644
+--- a/scripts/bootstrap.php
++++ b/scripts/bootstrap.php
+@@ -13,11 +13,14 @@ if (class_exists('\Drupal\Core\DrupalKernel') && class_exists('\Drupal')) {
+   return \Drupal::service('kernel');
+ }
+ 
++/**
++ *
++ */
+ function _find_autoloader($dir) {
+   if (file_exists($autoloadFile = $dir . '/autoload.php') || file_exists($autoloadFile = $dir . '/vendor/autoload.php')) {
+-    return include_once($autoloadFile);
++    return include_once $autoloadFile;
+   }
+-  else if (empty($dir) || $dir === DIRECTORY_SEPARATOR) {
++  elseif (empty($dir) || $dir === DIRECTORY_SEPARATOR) {
+     return FALSE;
+   }
+   return _find_autoloader(dirname($dir));
+diff --git a/scripts/gen-theme-setting-docs.php b/scripts/gen-theme-setting-docs.php
+index 9a3ce15..bdf17fa 100755
+--- a/scripts/gen-theme-setting-docs.php
++++ b/scripts/gen-theme-setting-docs.php
+@@ -8,7 +8,7 @@
+ 
+ /**
+  * Note: this script is intended to be executed independently via PHP, e.g.:
+- * $ ./scripts/gen-theme-setting-docs.php
++ * $ ./scripts/gen-theme-setting-docs.php.
+  */
+ 
+ use Drupal\bootstrap\Bootstrap;
+@@ -22,7 +22,8 @@ $kernel = require_once __DIR__ . '/bootstrap.php';
+ 
+ $bootstrap = Bootstrap::getTheme('bootstrap');
+ 
+-/** @var \Drupal\bootstrap\Plugin\Setting\SettingInterface[] $settings */
++/**
++ * @var \Drupal\bootstrap\Plugin\Setting\SettingInterface[] $settings */
+ $settings = array_filter($bootstrap->getSettingPlugin(NULL, TRUE), function (SettingInterface $setting) {
+   return !!$setting->getGroups();
+ });
+diff --git a/src/Bootstrap.php b/src/Bootstrap.php
+index 7c683e3..d41fbb8 100644
+--- a/src/Bootstrap.php
++++ b/src/Bootstrap.php
+@@ -105,7 +105,7 @@ class Bootstrap {
+    *
+    * @todo Enable constant once PHP 5.5 is no longer supported.
+    */
+-//  const PROJECT_API_SEARCH_URL = self::PROJECT_DOCUMENTATION . '/api/bootstrap/' . self::PROJECT_BRANCH . '/search/@query';
++  // Const PROJECT_API_SEARCH_URL = self::PROJECT_DOCUMENTATION . '/api/bootstrap/' . self::PROJECT_BRANCH . '/search/@query';.
+ 
+   /**
+    * The Drupal Bootstrap project page.
+@@ -1336,7 +1336,7 @@ class Bootstrap {
+    *   supported:
+    *   - 'status'
+    *   - 'warning'
+-   *   - 'error'
++   *   - 'error'.
+    * @param bool $repeat
+    *   (optional) If this is FALSE and the message is already set, then the
+    *   message won't be repeated. Defaults to FALSE.
+diff --git a/src/Plugin/Alter/ThemeSuggestions.php b/src/Plugin/Alter/ThemeSuggestions.php
+index db96e66..50983cc 100644
+--- a/src/Plugin/Alter/ThemeSuggestions.php
++++ b/src/Plugin/Alter/ThemeSuggestions.php
+@@ -4,7 +4,6 @@ namespace Drupal\bootstrap\Plugin\Alter;
+ 
+ use Drupal\bootstrap\Bootstrap;
+ use Drupal\bootstrap\Plugin\PluginBase;
+-use Drupal\bootstrap\Utility\Unicode;
+ use Drupal\bootstrap\Utility\Variables;
+ use Drupal\Core\Entity\EntityInterface;
+ 
+diff --git a/src/Plugin/Preprocess/Menu.php b/src/Plugin/Preprocess/Menu.php
+index f51b027..089e398 100644
+--- a/src/Plugin/Preprocess/Menu.php
++++ b/src/Plugin/Preprocess/Menu.php
+@@ -40,7 +40,7 @@ class Menu extends PreprocessBase implements PreprocessInterface {
+         $wrapperAttributes->setAttributes($item['url']->getOption('wrapper_attributes') ?: []);
+         $wrapperAttributes->setAttributes($item['url']->getOption('container_attributes') ?: []);
+         $linkAttributes->setAttributes($item['url']->getOption('attributes') ?: []);
+-        
++
+         // If URL isn't a link, it's rendered as a <span> element. Add the
+         // "navbar-text" class so it doesn't disrupt the navbar items.
+         // @see https://www.drupal.org/project/bootstrap/issues/3053464
+diff --git a/src/Plugin/Provider/Broken.php b/src/Plugin/Provider/Broken.php
+index 6e22f08..833d561 100644
+--- a/src/Plugin/Provider/Broken.php
++++ b/src/Plugin/Provider/Broken.php
+@@ -94,9 +94,7 @@ class Broken extends ProviderBase {
+   }
+ 
+   /****************************************************************************
+-   *
+-   * Deprecated methods
+-   *
++   * Deprecated methods.
+    ***************************************************************************/
+ 
+   /**
+diff --git a/src/Plugin/Provider/ProviderBase.php b/src/Plugin/Provider/ProviderBase.php
+index c9ca104..8c94254 100644
+--- a/src/Plugin/Provider/ProviderBase.php
++++ b/src/Plugin/Provider/ProviderBase.php
+@@ -586,9 +586,7 @@ class ProviderBase extends PluginBase implements ProviderInterface {
+   }
+ 
+   /****************************************************************************
+-   *
+-   * Deprecated methods
+-   *
++   * Deprecated methods.
+    ***************************************************************************/
+ 
+   /**
+diff --git a/src/Plugin/Provider/ProviderInterface.php b/src/Plugin/Provider/ProviderInterface.php
+index 10f52f0..4a19861 100644
+--- a/src/Plugin/Provider/ProviderInterface.php
++++ b/src/Plugin/Provider/ProviderInterface.php
+@@ -237,9 +237,7 @@ interface ProviderInterface extends PluginInspectionInterface, DerivativeInspect
+   public function trackCdnExceptions(callable $callable);
+ 
+   /****************************************************************************
+-   *
+-   * Deprecated methods
+-   *
++   * Deprecated methods.
+    ***************************************************************************/
+ 
+   /**
+diff --git a/src/Theme.php b/src/Theme.php
+index 71358b0..beceb8a 100644
+--- a/src/Theme.php
++++ b/src/Theme.php
+@@ -774,9 +774,7 @@ class Theme {
+   }
+ 
+   /****************************************************************************
+-   *
+-   * Deprecated methods
+-   *
++   * Deprecated methods.
+    ***************************************************************************/
+ 
+   /**
+diff --git a/src/ThemeSettings.php b/src/ThemeSettings.php
+index bee5249..63d4ecb 100644
+--- a/src/ThemeSettings.php
++++ b/src/ThemeSettings.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\bootstrap;
+ 
+ use Drupal\bootstrap\Plugin\Setting\DeprecatedSettingInterface;
+-use Drupal\bootstrap\Plugin\Setting\SettingInterface;
+ use Drupal\Core\Theme\ThemeSettings as CoreThemeSettings;
+ use Drupal\Component\Utility\DiffArray;
+ use Drupal\Component\Utility\NestedArray;
+diff --git a/src/Utility/Crypt.php b/src/Utility/Crypt.php
+index 54d0e4b..ad0485d 100644
+--- a/src/Utility/Crypt.php
++++ b/src/Utility/Crypt.php
+@@ -165,9 +165,7 @@ class Crypt extends CoreCrypt {
+   }
+ 
+   /****************************************************************************
+-   *
+-   * Deprecated methods
+-   *
++   * Deprecated methods.
+    ***************************************************************************/
+ 
+   /**

@@ -1,0 +1,60 @@
+diff --git a/memcache_admin/src/Controller/MemcacheStatisticsController.php b/memcache_admin/src/Controller/MemcacheStatisticsController.php
+index ec84c70..c28a5ff 100644
+--- a/memcache_admin/src/Controller/MemcacheStatisticsController.php
++++ b/memcache_admin/src/Controller/MemcacheStatisticsController.php
+@@ -3,11 +3,9 @@
+ namespace Drupal\memcache_admin\Controller;
+ 
+ use Drupal\Core\Controller\ControllerBase;
+-use Drupal\Core\Datetime\DateFormatter;
+ use Drupal\Core\Link;
+ use Drupal\Core\Messenger\MessengerTrait;
+ use Drupal\Core\Url;
+-use Drupal\Component\Render\HtmlEscapedText;
+ 
+ /**
+  * Memcache Statistics.
+@@ -30,7 +28,7 @@ class MemcacheStatisticsController extends ControllerBase {
+     $servers = [];
+ 
+     // Get the statistics.
+-    $bin      = $this->binMapping($bin);
++    $bin = $this->binMapping($bin);
+     /** @var $memcache \Drupal\memcache\DrupalMemcacheInterface */
+     $memcache = \Drupal::service('memcache.factory')->get($bin, TRUE);
+     $stats    = $memcache->stats($bin, 'default', TRUE);
+@@ -473,7 +471,7 @@ class MemcacheStatisticsController extends ControllerBase {
+     $memcache      = \Drupal::service('memcache.factory')->get(NULL, TRUE);
+     $memcache_bins = $memcache->getBins();
+     $bin           = isset($memcache_bins[$cluster]) ? $memcache_bins[$cluster] : 'default';
+-    $slab = \Drupal::routeMatch()->getParameter('slab');
++    $slab          = \Drupal::routeMatch()->getParameter('slab');
+ 
+     // Provide navigation for the various memcache stats types.
+     $links = [];
+diff --git a/memcache_admin/src/EventSubscriber/MemcacheAdminSubscriber.php b/memcache_admin/src/EventSubscriber/MemcacheAdminSubscriber.php
+index 083de9f..ca0b330 100644
+--- a/memcache_admin/src/EventSubscriber/MemcacheAdminSubscriber.php
++++ b/memcache_admin/src/EventSubscriber/MemcacheAdminSubscriber.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\memcache_admin\EventSubscriber;
+ 
+-use Drupal\Core\Render\Element\HtmlTag;
+-use Drupal\Core\Render\Markup;
+ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+ use Symfony\Component\HttpKernel\KernelEvents;
+diff --git a/src/MemcacheBackend.php b/src/MemcacheBackend.php
+index d85de8e..a83486b 100644
+--- a/src/MemcacheBackend.php
++++ b/src/MemcacheBackend.php
+@@ -109,7 +109,7 @@ class MemcacheBackend implements CacheBackendInterface {
+    *
+    * @param string $cid
+    *   The cache ID.
+-   * @param \stdClass $cache
++   * @param object $cache
+    *   The cache item.
+    *
+    * @return bool

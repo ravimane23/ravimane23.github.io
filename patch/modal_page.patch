@@ -1,0 +1,13 @@
+diff --git a/js/modal-page.js b/js/modal-page.js
+index 1e1e3df..a91b2cc 100644
+--- a/js/modal-page.js
++++ b/js/modal-page.js
+@@ -23,7 +23,7 @@
+         if (typeof settings.modal_page != 'undefined' && settings.modal_page.auto_open) {
+           var auto_open = settings.modal_page.auto_open;
+         }
+-        
++
+         if (auto_open == true && !cookie_please_do_not_show_again) {
+           var delay = $('#js-modal-page-show-modal #delay_display', context).val() * 1000;
+           setTimeout(function () {

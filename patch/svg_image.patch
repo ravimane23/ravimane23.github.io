@@ -1,0 +1,53 @@
+diff --git a/modules/svg_image_responsive/src/Plugin/Field/FieldFormatter/SvgResponsiveImageFormatter.php b/modules/svg_image_responsive/src/Plugin/Field/FieldFormatter/SvgResponsiveImageFormatter.php
+index cac8eab..7268164 100755
+--- a/modules/svg_image_responsive/src/Plugin/Field/FieldFormatter/SvgResponsiveImageFormatter.php
++++ b/modules/svg_image_responsive/src/Plugin/Field/FieldFormatter/SvgResponsiveImageFormatter.php
+@@ -190,8 +190,9 @@ class SvgResponsiveImageFormatter extends ResponsiveImageFormatter {
+    */
+   public static function defaultSettings() {
+     return [
+-        'svg_attributes' => ['width' => '', 'height' => ''], 'svg_render_as_image' => TRUE,
+-      ] + parent::defaultSettings();
++      'svg_attributes' => ['width' => '', 'height' => ''],
++      'svg_render_as_image' => TRUE,
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+diff --git a/src/Plugin/Field/FieldFormatter/SvgImageFormatter.php b/src/Plugin/Field/FieldFormatter/SvgImageFormatter.php
+index 9457677..60cfd1b 100755
+--- a/src/Plugin/Field/FieldFormatter/SvgImageFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/SvgImageFormatter.php
+@@ -183,8 +183,9 @@ class SvgImageFormatter extends ImageFormatter {
+    */
+   public static function defaultSettings() {
+     return [
+-        'svg_attributes' => ['width' => '', 'height' => ''], 'svg_render_as_image' => TRUE,
+-      ] + parent::defaultSettings();
++      'svg_attributes' => ['width' => '', 'height' => ''],
++      'svg_render_as_image' => TRUE,
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+@@ -240,7 +241,7 @@ class SvgImageFormatter extends ImageFormatter {
+     $fileUri = $file->getFileUri();
+ 
+     if (file_exists($fileUri)) {
+-      // Make sure that SVG is safe
++      // Make sure that SVG is safe.
+       $rawSvg = file_get_contents($fileUri);
+       $svgSanitizer = new Sanitizer();
+       return $svgSanitizer->sanitize($rawSvg);
+diff --git a/src/Plugin/Field/FieldWidget/SvgImageWidget.php b/src/Plugin/Field/FieldWidget/SvgImageWidget.php
+index d4bb5d3..813b782 100755
+--- a/src/Plugin/Field/FieldWidget/SvgImageWidget.php
++++ b/src/Plugin/Field/FieldWidget/SvgImageWidget.php
+@@ -4,7 +4,6 @@ namespace Drupal\svg_image\Plugin\Field\FieldWidget;
+ 
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+-use Drupal\Component\Utility\NestedArray;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\file\Entity\File;
+ use Drupal\file\Plugin\Field\FieldWidget\FileWidget;

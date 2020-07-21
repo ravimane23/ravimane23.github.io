@@ -1,0 +1,249 @@
+diff --git a/js/views-autocomplete-filters-dependent.js b/js/views-autocomplete-filters-dependent.js
+index 79fb745..4ec0d48 100644
+--- a/js/views-autocomplete-filters-dependent.js
++++ b/js/views-autocomplete-filters-dependent.js
+@@ -151,8 +151,9 @@
+         $.each(a, function (key, value) {
+           // We should have an array of values for element with multi values.
+           if (value['name'].indexOf('[]') > -1) {
+-            if (!data_string.data[value['name']]) data_string.data[value['name']] = []
++            if (!data_string.data[value['name']]) { data_string.data[value['name']] = []
+             data_string.data[value['name']].push(value['value']);
++            }
+           } else {
+             data_string.data[value['name']] = value['value'];
+           }
+diff --git a/src/Controller/ViewsAutocompleteFiltersController.php b/src/Controller/ViewsAutocompleteFiltersController.php
+index 5458b6c..07048ab 100644
+--- a/src/Controller/ViewsAutocompleteFiltersController.php
++++ b/src/Controller/ViewsAutocompleteFiltersController.php
+@@ -7,7 +7,6 @@ use Drupal\Component\Utility\Unicode;
+ use Drupal\Component\Utility\Xss;
+ use Drupal\Core\Access\AccessResult;
+ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+-use Drupal\views\Plugin\views\display\DisplayPluginBase;
+ use Drupal\views\ViewExecutable;
+ use Drupal\views\Views;
+ use Psr\Log\LoggerInterface;
+@@ -26,7 +25,6 @@ class ViewsAutocompleteFiltersController implements ContainerInjectionInterface
+    */
+   protected $logger;
+ 
+-
+   /**
+    * ViewsAutocompleteFiltersController constructor.
+    *
+@@ -36,7 +34,6 @@ class ViewsAutocompleteFiltersController implements ContainerInjectionInterface
+     $this->logger = $logger;
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -57,7 +54,7 @@ class ViewsAutocompleteFiltersController implements ContainerInjectionInterface
+    * @param string $view_display
+    *   The View display.
+    *
+-   * @return bool.
++   * @return bool
+    */
+   public function access($view_name, $view_display) {
+     // Determine if the given user has access to the view. Note that
+@@ -68,7 +65,8 @@ class ViewsAutocompleteFiltersController implements ContainerInjectionInterface
+     }
+     return AccessResult::forbidden();
+   }
+-    /**
++
++  /**
+    * Retrieves suggestions for taxonomy term autocompletion.
+    *
+    * This function outputs text suggestions in response to Ajax requests
+@@ -102,7 +100,7 @@ class ViewsAutocompleteFiltersController implements ContainerInjectionInterface
+     }
+     // Set display and display handler vars for quick access.
+     $display_handler = $view->display_handler;
+-  
++
+     // Force "Display all values" for arguments set,
+     // to get results no matter of Not Contextual filter present settings.
+     $arguments = $display_handler->getOption('arguments');
+@@ -129,7 +127,7 @@ class ViewsAutocompleteFiltersController implements ContainerInjectionInterface
+     }
+ 
+     // Determine fields which will be used for output.
+-    if (empty($expose_options['autocomplete_field']) && !empty($current_filter['name']) ) {
++    if (empty($expose_options['autocomplete_field']) && !empty($current_filter['name'])) {
+       if ($view->getHandler($view->current_display, 'field', $filters[$filter_name]['id'])) {
+         $field_names = [[$filter_name]['id']];
+         // Force raw data for no autocomplete field defined.
+@@ -148,7 +146,7 @@ class ViewsAutocompleteFiltersController implements ContainerInjectionInterface
+     }
+     // Text field autocomplete filter.
+     elseif (!empty($expose_options['autocomplete_field'])) {
+-      $field_names =[$expose_options['autocomplete_field']];
++      $field_names = [$expose_options['autocomplete_field']];
+     }
+     // For combine fields autocomplete filter.
+     elseif (!empty($current_filter['fields'])) {
+@@ -196,7 +194,7 @@ class ViewsAutocompleteFiltersController implements ContainerInjectionInterface
+     $view->execute();
+     $view->postExecute();
+     $display_handler = $view->display_handler;
+-  
++
+     // Render field on each row and fill matches array.
+     $use_raw_suggestion = !empty($expose_options['autocomplete_raw_suggestion']);
+     $use_raw_dropdown = !empty($expose_options['autocomplete_raw_dropdown']);
+@@ -206,7 +204,7 @@ class ViewsAutocompleteFiltersController implements ContainerInjectionInterface
+       $view->row_index = $index;
+       /** @var \Drupal\views\Plugin\views\style\StylePluginBase $style_plugin */
+       $style_plugin = $display_handler->getPlugin('style');
+-  
++
+       foreach ($field_names as $field_name) {
+         $rendered_field = $raw_field = '';
+         // Render field only if suggestion or dropdown item not in RAW format.
+@@ -227,7 +225,7 @@ class ViewsAutocompleteFiltersController implements ContainerInjectionInterface
+             }
+           }
+         }
+-  
++
+         if (empty($raw_field) && !empty($rendered_field)) {
+           $raw_field = [['value' => $rendered_field]];
+         }
+@@ -260,7 +258,6 @@ class ViewsAutocompleteFiltersController implements ContainerInjectionInterface
+     // @ToDo: No results message
+     // Follow https://www.drupal.org/node/2346973 issue when Drupal core will
+     // provide a solution for such messages.
+-
+     if (!empty($matches)) {
+       $matches = array_values(array_unique($matches, SORT_REGULAR));
+     }
+diff --git a/src/Plugin/views/filter/ViewsAutocompleteFiltersCombine.php b/src/Plugin/views/filter/ViewsAutocompleteFiltersCombine.php
+index 2858405..eb2df02 100644
+--- a/src/Plugin/views/filter/ViewsAutocompleteFiltersCombine.php
++++ b/src/Plugin/views/filter/ViewsAutocompleteFiltersCombine.php
+@@ -14,8 +14,10 @@ use Drupal\views\Plugin\views\filter\Combine;
+  */
+ class ViewsAutocompleteFiltersCombine extends Combine implements ViewsAutocompleteFiltersInterface {
+ 
+-  // Exposed filter options.
+-  var $alwaysMultiple = TRUE;
++  /**
++   * Exposed filter options.
++   */
++  public $alwaysMultiple = TRUE;
+ 
+   use ViewsAutocompleteFiltersTrait;
+ 
+diff --git a/src/Plugin/views/filter/ViewsAutocompleteFiltersInterface.php b/src/Plugin/views/filter/ViewsAutocompleteFiltersInterface.php
+index 34b3f4d..64e4af0 100644
+--- a/src/Plugin/views/filter/ViewsAutocompleteFiltersInterface.php
++++ b/src/Plugin/views/filter/ViewsAutocompleteFiltersInterface.php
+@@ -10,7 +10,7 @@ interface ViewsAutocompleteFiltersInterface {
+   /**
+    * Returns of the handler has 'autocomplete_field' selector.
+    *
+-   * @return boolean
++   * @return bool
+    */
+   public function hasAutocompleteFieldSelector();
+ 
+diff --git a/src/Plugin/views/filter/ViewsAutocompleteFiltersSearchApiFulltext.php b/src/Plugin/views/filter/ViewsAutocompleteFiltersSearchApiFulltext.php
+index c9dfd86..e5bbf04 100644
+--- a/src/Plugin/views/filter/ViewsAutocompleteFiltersSearchApiFulltext.php
++++ b/src/Plugin/views/filter/ViewsAutocompleteFiltersSearchApiFulltext.php
+@@ -14,8 +14,10 @@ use Drupal\search_api\Plugin\views\filter\SearchApiFulltext;
+  */
+ class ViewsAutocompleteFiltersSearchApiFulltext extends SearchApiFulltext implements ViewsAutocompleteFiltersInterface {
+ 
+-  // Exposed filter options.
+-  var $alwaysMultiple = TRUE;
++  /**
++   * Exposed filter options.
++   */
++  public $alwaysMultiple = TRUE;
+ 
+   use ViewsAutocompleteFiltersTrait;
+ 
+diff --git a/src/Plugin/views/filter/ViewsAutocompleteFiltersSearchApiText.php b/src/Plugin/views/filter/ViewsAutocompleteFiltersSearchApiText.php
+index ac9484e..66ae238 100644
+--- a/src/Plugin/views/filter/ViewsAutocompleteFiltersSearchApiText.php
++++ b/src/Plugin/views/filter/ViewsAutocompleteFiltersSearchApiText.php
+@@ -13,8 +13,10 @@ use Drupal\search_api\Plugin\views\filter\SearchApiText;
+  */
+ class ViewsAutocompleteFiltersSearchApiText extends SearchApiText implements ViewsAutocompleteFiltersInterface {
+ 
+-  // Exposed filter options.
+-  var $alwaysMultiple = TRUE;
++  /**
++   * Exposed filter options.
++   */
++  public $alwaysMultiple = TRUE;
+ 
+   use ViewsAutocompleteFiltersTrait;
+ 
+diff --git a/src/Plugin/views/filter/ViewsAutocompleteFiltersString.php b/src/Plugin/views/filter/ViewsAutocompleteFiltersString.php
+index 96e3ba2..a170b69 100644
+--- a/src/Plugin/views/filter/ViewsAutocompleteFiltersString.php
++++ b/src/Plugin/views/filter/ViewsAutocompleteFiltersString.php
+@@ -14,8 +14,10 @@ use Drupal\views\Plugin\views\filter\StringFilter;
+  */
+ class ViewsAutocompleteFiltersString extends StringFilter implements ViewsAutocompleteFiltersInterface {
+ 
+-  // Exposed filter options.
+-  var $alwaysMultiple = TRUE;
++  /**
++   * Exposed filter options.
++   */
++  public $alwaysMultiple = TRUE;
+ 
+   use ViewsAutocompleteFiltersTrait;
+ 
+diff --git a/src/Plugin/views/filter/ViewsAutocompleteFiltersTrait.php b/src/Plugin/views/filter/ViewsAutocompleteFiltersTrait.php
+index 8888157..645a8e0 100644
+--- a/src/Plugin/views/filter/ViewsAutocompleteFiltersTrait.php
++++ b/src/Plugin/views/filter/ViewsAutocompleteFiltersTrait.php
+@@ -9,6 +9,9 @@ use Drupal\Core\Form\FormStateInterface;
+  */
+ trait ViewsAutocompleteFiltersTrait {
+ 
++  /**
++   *
++   */
+   public function defineOptions() {
+     $options = parent::defineOptions();
+ 
+@@ -47,7 +50,8 @@ trait ViewsAutocompleteFiltersTrait {
+ 
+     // Build form elements for the right side of the exposed filter form.
+     $states = [
+-      'visible' => ['
++      'visible' => [
++        '
+           :input[name="options[expose][autocomplete_filter]"]' => ['checked' => TRUE],
+       ],
+     ];
+@@ -137,6 +141,9 @@ trait ViewsAutocompleteFiltersTrait {
+     return $field_options;
+   }
+ 
++  /**
++   *
++   */
+   public function valueForm(&$form, FormStateInterface $form_state) {
+     parent::valueForm($form, $form_state);
+     $exposed = $form_state->get('exposed');
+diff --git a/views_autocomplete_filters.views.inc b/views_autocomplete_filters.views.inc
+index 90534e4..9422bf9 100644
+--- a/views_autocomplete_filters.views.inc
++++ b/views_autocomplete_filters.views.inc
+@@ -1,4 +1,5 @@
+ <?php
++
+ /**
+  * @file
+  * Integration with Views.

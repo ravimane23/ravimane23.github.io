@@ -1,0 +1,201 @@
+diff --git a/field_group.api.php b/field_group.api.php
+index a819779..8bb72fe 100644
+--- a/field_group.api.php
++++ b/field_group.api.php
+@@ -116,7 +116,7 @@ function hook_field_group_form_process_alter(array &$element, &$group, &$complet
+  * @param array $element
+  *   The element being processed.
+  * @param \Drupal\Core\Form\FormStateInterface $form_state
+- *   The form state
++ *   The form state.
+  * @param $complete_form
+  *   The complete form.
+  */
+@@ -138,7 +138,6 @@ function hook_field_group_delete_field_group($group) {
+   // Extra cleanup code.
+ }
+ 
+-
+ /**
+  * @} End of "addtogroup hooks".
+  */
+diff --git a/formatters/html_element/html-element.js b/formatters/html_element/html-element.js
+index d1f1922..f375f47 100644
+--- a/formatters/html_element/html-element.js
++++ b/formatters/html_element/html-element.js
+@@ -27,7 +27,7 @@
+ 
+       });
+     },
+-    renderCollapsible: function($wrapper) {
++    renderCollapsible: function ($wrapper) {
+ 
+       // Turn the legend into a clickable link, but retain span.field-group-format-toggler
+       // for CSS positioning.
+diff --git a/formatters/tabs/horizontal-tabs.css b/formatters/tabs/horizontal-tabs.css
+index 5aa784f..cce6f3c 100644
+--- a/formatters/tabs/horizontal-tabs.css
++++ b/formatters/tabs/horizontal-tabs.css
+@@ -121,4 +121,3 @@ div.field-group-htabs-wrapper .field-group-format-wrapper {
+   clear: both;
+   padding: 0 0 0.6em;
+ }
+-
+diff --git a/includes/field_ui.inc b/includes/field_ui.inc
+index 5c53ff1..57e11ac 100644
+--- a/includes/field_ui.inc
++++ b/includes/field_ui.inc
+@@ -10,7 +10,6 @@ use Drupal\field_group\FieldgroupUi;
+ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+ use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
+ use Drupal\Core\Entity\EntityDisplayBase;
+-use Drupal\Component\Utility\Html;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Link;
+ use Drupal\Core\Render\Element;
+@@ -25,7 +24,7 @@ use Drupal\field_ui\Form\EntityDisplayFormBase;
+  *
+  * @param \Drupal\Core\Entity\EntityDisplayBase $display
+  *
+- * @return \stdClass
++ * @return object
+  */
+ function field_group_field_ui_form_params($form, EntityDisplayBase $display) {
+ 
+@@ -529,7 +528,7 @@ function field_group_format_settings_form(&$group, $form, $form_state) {
+  * @param Object $group
+  * @param array $settings
+  */
+-function field_group_formatter_row_update(& $group, $settings) {
++function field_group_formatter_row_update(&$group, $settings) {
+   // If the row has changed formatter type, update the group object.
+   if (!empty($settings['format']['type']) && $settings['format']['type'] != $group->format_type) {
+     $group->format_type = $settings['format']['type'];
+@@ -545,7 +544,7 @@ function field_group_formatter_row_update(& $group, $settings) {
+  * @param array $settings
+  *   Configuration settings.
+  */
+-function field_group_formatter_settings_update(& $group, $settings) {
++function field_group_formatter_settings_update(&$group, $settings) {
+ 
+   // For format changes we load the defaults.
+   if (empty($settings['settings_edit_form']['settings'])) {
+diff --git a/js/field_group.field_ui.js b/js/field_group.field_ui.js
+index 7aba6df..b5aa57d 100644
+--- a/js/field_group.field_ui.js
++++ b/js/field_group.field_ui.js
+@@ -55,7 +55,6 @@
+     }
+   };
+ 
+-
+   /**
+    * Row handlers for the 'Manage display' screen.
+    */
+diff --git a/src/FieldGroupFormatterBase.php b/src/FieldGroupFormatterBase.php
+index b3297a6..41b33d4 100644
+--- a/src/FieldGroupFormatterBase.php
++++ b/src/FieldGroupFormatterBase.php
+@@ -54,7 +54,7 @@ abstract class FieldGroupFormatterBase extends PluginSettingsBase implements Fie
+    *   The plugin_id for the formatter.
+    * @param mixed $plugin_definition
+    *   The plugin implementation definition.
+-   * @param \stdClass $group
++   * @param object $group
+    *   The group object.
+    * @param array $settings
+    *   The formatter settings.
+diff --git a/src/FieldGroupFormatterPluginManager.php b/src/FieldGroupFormatterPluginManager.php
+index f93afbe..26a690c 100644
+--- a/src/FieldGroupFormatterPluginManager.php
++++ b/src/FieldGroupFormatterPluginManager.php
+@@ -100,6 +100,7 @@ class FieldGroupFormatterPluginManager extends DefaultPluginManager {
+    *   The context to prepare configuration for.
+    * @param array $configuration
+    *   The configuration of the group.
++   *
+    * @return array
+    *   The display properties with defaults added.
+    */
+diff --git a/src/FieldgroupUi.php b/src/FieldgroupUi.php
+index 1c0c98c..2ee67b2 100644
+--- a/src/FieldgroupUi.php
++++ b/src/FieldgroupUi.php
+@@ -55,7 +55,7 @@ class FieldgroupUi {
+   /**
+    * Get the field group delete route for a given group.
+    *
+-   * @param \stdClass $group
++   * @param object $group
+    *   The group to delete.
+    *
+    * @return \Drupal\Core\Url
+diff --git a/src/FormatterHelper.php b/src/FormatterHelper.php
+index 4b84072..adb5bca 100644
+--- a/src/FormatterHelper.php
++++ b/src/FormatterHelper.php
+@@ -114,7 +114,6 @@ class FormatterHelper implements TrustedCallbackInterface {
+     return $element;
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -122,5 +121,4 @@ class FormatterHelper implements TrustedCallbackInterface {
+     return ['entityViewPrender', 'formProcess'];
+   }
+ 
+-
+ }
+diff --git a/src/Plugin/field_group/FieldGroupFormatter/AccordionItem.php b/src/Plugin/field_group/FieldGroupFormatter/AccordionItem.php
+index dd8feac..b64c841 100644
+--- a/src/Plugin/field_group/FieldGroupFormatter/AccordionItem.php
++++ b/src/Plugin/field_group/FieldGroupFormatter/AccordionItem.php
+@@ -52,7 +52,7 @@ class AccordionItem extends FieldGroupFormatterBase {
+     }
+ 
+     if ($this->getSetting('formatter') == 'open') {
+-        $element['#open'] = TRUE;
++      $element['#open'] = TRUE;
+     }
+ 
+     foreach ($element as $key => $value) {
+diff --git a/src/Plugin/field_group/FieldGroupFormatter/Tabs.php b/src/Plugin/field_group/FieldGroupFormatter/Tabs.php
+index de6b562..b9253d2 100644
+--- a/src/Plugin/field_group/FieldGroupFormatter/Tabs.php
++++ b/src/Plugin/field_group/FieldGroupFormatter/Tabs.php
+@@ -4,7 +4,6 @@ namespace Drupal\field_group\Plugin\field_group\FieldGroupFormatter;
+ 
+ use Drupal\Component\Utility\Html;
+ use Drupal\Core\Form\FormState;
+-use Drupal\Core\Render\Element;
+ use Drupal\Core\Render\Element\VerticalTabs;
+ use Drupal\field_group\Element\HorizontalTabs;
+ use Drupal\field_group\FieldGroupFormatterBase;
+diff --git a/tests/src/Functional/EntityDisplayTest.php b/tests/src/Functional/EntityDisplayTest.php
+index 5f0060a..23c762c 100644
+--- a/tests/src/Functional/EntityDisplayTest.php
++++ b/tests/src/Functional/EntityDisplayTest.php
+@@ -23,7 +23,7 @@ class EntityDisplayTest extends BrowserTestBase {
+     'field_test',
+     'field_ui',
+     'field_group',
+-    'field_group_test'
++    'field_group_test',
+   ];
+ 
+   /**
+diff --git a/tests/src/FunctionalJavascript/FieldGroupUiTest.php b/tests/src/FunctionalJavascript/FieldGroupUiTest.php
+index 48b9eb4..a650aeb 100644
+--- a/tests/src/FunctionalJavascript/FieldGroupUiTest.php
++++ b/tests/src/FunctionalJavascript/FieldGroupUiTest.php
+@@ -24,7 +24,7 @@ class FieldGroupUiTest extends WebDriverTestBase {
+   public static $modules = ['node', 'field_ui', 'field_group'];
+ 
+   /**
+-   * The current tested node type
++   * The current tested node type.
+    *
+    * @var string
+    */

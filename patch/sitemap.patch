@@ -1,0 +1,431 @@
+diff --git a/css/sitemap.theme.css b/css/sitemap.theme.css
+index 2e77180..ef7cdde 100644
+--- a/css/sitemap.theme.css
++++ b/css/sitemap.theme.css
+@@ -19,4 +19,3 @@
+ .sitemap-item .item-list ul ul ul {
+   list-style-type: square;
+ }
+-
+diff --git a/js/sitemap.admin.es6.js b/js/sitemap.admin.es6.js
+index 4dff853..e3ee5a0 100644
+--- a/js/sitemap.admin.es6.js
++++ b/js/sitemap.admin.es6.js
+@@ -3,7 +3,7 @@
+  * Attaches administration-specific behavior for the Sitemap module.
+  */
+ 
+-(function($, Drupal) {
++(function ($, Drupal) {
+   /**
+    * Displays and updates the status of plugins on the admin page.
+    *
+@@ -18,7 +18,7 @@
+       $context
+         .find('#sitemap-enabled-wrapper input.form-checkbox')
+         .once('sitemap-enabled')
+-        .each(function() {
++        .each(function () {
+           const $checkbox = $(this);
+           // Retrieve the tabledrag row belonging to this filter.
+           const $row = $context
+diff --git a/sitemap.theme.inc b/sitemap.theme.inc
+index adb8b87..bb97b1a 100644
+--- a/sitemap.theme.inc
++++ b/sitemap.theme.inc
+@@ -5,7 +5,7 @@
+  * Sitemap theme preprocessors.
+  */
+ 
+-use \Drupal\Component\Utility\Html;
++use Drupal\Component\Utility\Html;
+ 
+ /**
+  * Implements hook_preprocess_HOOK().
+diff --git a/src/Controller/SitemapController.php b/src/Controller/SitemapController.php
+index c70d68f..696f4ec 100644
+--- a/src/Controller/SitemapController.php
++++ b/src/Controller/SitemapController.php
+@@ -77,7 +77,7 @@ class SitemapController implements ContainerInjectionInterface {
+         $instance = $this->sitemapManager->createInstance($id, $plugin_config);
+         if ($instance->enabled) {
+           // TODO: Order by $instance->weight
+-          //$plugins[$instance->weight] = $instance->view();
++          // $plugins[$instance->weight] = $instance->view();
+           $plugins[] = $instance->view();
+         }
+       }
+diff --git a/src/Form/SitemapSettingsForm.php b/src/Form/SitemapSettingsForm.php
+index bf9859b..261534e 100644
+--- a/src/Form/SitemapSettingsForm.php
++++ b/src/Form/SitemapSettingsForm.php
+@@ -133,7 +133,7 @@ class SitemapSettingsForm extends ConfigFormBase {
+     ];
+ 
+     $defaultSort = $this->plugins;
+-    $sorted =$this->sortPlugins($this->plugins);
++    $sorted = $this->sortPlugins($this->plugins);
+ 
+     foreach ($sorted as $id => $plugin) {
+       /* @var $plugin \Drupal\sitemap\SitemapBase */
+@@ -220,7 +220,7 @@ class SitemapSettingsForm extends ConfigFormBase {
+     }
+     $config->save();
+ 
+-    //@TODO Is a more targeted cache cleanup possible?
++    // @TODO Is a more targeted cache cleanup possible?
+     drupal_flush_all_caches();
+ 
+     parent::submitForm($form, $form_state);
+@@ -242,7 +242,7 @@ class SitemapSettingsForm extends ConfigFormBase {
+    */
+   protected function sortPlugins($plugins) {
+     // We cannot use array_column here because pluginId is protected.
+-    //$order = array_column($plugins, 'weight', 'publicId');
++    // $order = array_column($plugins, 'weight', 'publicId');.
+     $order = [];
+     foreach ($plugins as $id => $plugin) {
+       $order[$id] = $plugin->weight;
+diff --git a/src/Menu/SitemapMenuLinkTree.php b/src/Menu/SitemapMenuLinkTree.php
+index c20797f..4f7555e 100644
+--- a/src/Menu/SitemapMenuLinkTree.php
++++ b/src/Menu/SitemapMenuLinkTree.php
+@@ -24,7 +24,6 @@ class SitemapMenuLinkTree extends MenuLinkTree {
+       $link = $data->link;
+ 
+       // Removed $link->isEnabled() check.
+-
+       if ($data->access !== NULL && !$data->access instanceof AccessResultInterface) {
+         throw new \DomainException('MenuLinkTreeElement::access must be either NULL or an AccessResultInterface object.');
+       }
+diff --git a/src/Plugin/Sitemap/Frontpage.php b/src/Plugin/Sitemap/Frontpage.php
+index 82663a3..055f80a 100644
+--- a/src/Plugin/Sitemap/Frontpage.php
++++ b/src/Plugin/Sitemap/Frontpage.php
+@@ -4,8 +4,6 @@ namespace Drupal\sitemap\Plugin\Sitemap;
+ 
+ use Drupal\sitemap\SitemapBase;
+ use Drupal\Core\Url;
+-use Drupal\Core\Template\Attribute;
+-use Drupal\Core\Link;
+ use Drupal\Core\Form\FormStateInterface;
+ 
+ /**
+@@ -33,7 +31,7 @@ class Frontpage extends SitemapBase {
+     // Provide a default title.
+     $form['title']['#default_value'] = $this->settings['title'] ?: $this->t('Front page');
+ 
+-    //@TODO: Convert to route instead of relative html path.
++    // @TODO: Convert to route instead of relative html path.
+     $form['rss'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Feed URL'),
+diff --git a/src/Plugin/Sitemap/Vocabulary.php b/src/Plugin/Sitemap/Vocabulary.php
+index 39ee8de..fa34817 100644
+--- a/src/Plugin/Sitemap/Vocabulary.php
++++ b/src/Plugin/Sitemap/Vocabulary.php
+@@ -65,7 +65,7 @@ class Vocabulary extends SitemapBase {
+   const DEFAULT_TERM_RSS_LINK = 'view.taxonomy_term.feed_1|arg_0';
+ 
+ 
+-  //@TODO: Possible to set settings as class properties?
++  // @TODO: Possible to set settings as class properties?
+ 
+   /**
+    * {@inheritdoc}
+@@ -94,12 +94,12 @@ class Vocabulary extends SitemapBase {
+ 
+     $form['term_depth'] = [
+       // @TODO: Number type not submitting?
+-      //'#type' = 'number',
++      // '#type' = 'number',
+       '#type' => 'textfield',
+       '#title' => $this->t('Term depth'),
+       '#default_value' => $this->settings['term_depth'],
+-      //'#min' => self::DEPTH_DISABLED,
+-      //'#max' => self::DEPTH_MAX,
++      // '#min' => self::DEPTH_DISABLED,
++      // '#max' => self::DEPTH_MAX,
+       '#size' => 3,
+       '#description' => $this->t(
+         'Specify how many levels of taxonomy terms should be included. For instance, enter <code>1</code> to only include top-level terms, or <code>@disabled</code> to include no terms. The maximum depth is <code>@max</code>.',
+@@ -121,7 +121,7 @@ class Vocabulary extends SitemapBase {
+     $form['customize_link'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Customize term links'),
+-      '#default_value' => $this->settings['customize_link']
++      '#default_value' => $this->settings['customize_link'],
+     ];
+     $customizeLinkName = 'plugins[vocabulary:' . $vid . '][settings][customize_link]';
+ 
+@@ -228,8 +228,7 @@ class Vocabulary extends SitemapBase {
+         }
+       }
+       else {
+-        // TODO: Support multiple hierarchy? Need to test
+-
++        // TODO: Support multiple hierarchy? Need to test.
+       }
+     }
+ 
+@@ -254,7 +253,7 @@ class Vocabulary extends SitemapBase {
+   /**
+    * Builds a taxonomy term item.
+    *
+-   * @param \stdClass $term
++   * @param object $term
+    *   The term object returned by TermStorage::loadTree()
+    *
+    * @return array|void
+@@ -269,7 +268,7 @@ class Vocabulary extends SitemapBase {
+         '#url' => $this->buildTermLink($term) ?: '',
+         '#show_link' => $this->determineLinkVisibility($term),
+         '#show_count' => $this->determineCountVisibility($term),
+-        '#count' =>  isset($term->count) ? $term->count : '',
++        '#count' => isset($term->count) ? $term->count : '',
+         '#show_feed' => $this->settings['enable_rss'],
+         '#feed' => $this->buildFeedLink($term) ?: '',
+       ];
+@@ -279,7 +278,7 @@ class Vocabulary extends SitemapBase {
+   /**
+    * Checks the threshold count for a term.
+    *
+-   * @param \stdClass $term
++   * @param object $term
+    *   The term object returned by TermStorage::loadTree()
+    */
+   protected function checkTermThreshold(&$term) {
+@@ -307,7 +306,7 @@ class Vocabulary extends SitemapBase {
+   /**
+    * Builds the taxonomy term link.
+    *
+-   * @param \stdClass $term
++   * @param object $term
+    *   The term object returned by TermStorage::loadTree()
+    *
+    * @return string|void
+@@ -329,7 +328,7 @@ class Vocabulary extends SitemapBase {
+   /**
+    * Builds the taxonomy term feed link.
+    *
+-   * @param \stdClass $term
++   * @param object $term
+    *   The term object returned by TermStorage::loadTree()
+    *
+    * @return string|void
+@@ -351,7 +350,7 @@ class Vocabulary extends SitemapBase {
+    * @see https://www.webomelette.com/loading-taxonomy-terms-tree-drupal-8
+    *
+    * @param array $list
+-   * @param \stdClass $object
++   * @param object $object
+    * @param string $vid
+    * @param int $currentDepth
+    * @param int $maxDepth
+@@ -404,9 +403,9 @@ class Vocabulary extends SitemapBase {
+   /**
+    * Determine whether the link for a term should be displayed.
+    *
+-   * @param \stdClass $term
++   * @param object $term
+    *
+-   * @return boolean
++   * @return bool
+    */
+   protected function determineLinkVisibility($term) {
+     if ($this->settings['always_link']) {
+@@ -424,9 +423,9 @@ class Vocabulary extends SitemapBase {
+   /**
+    * Determine whether the usage count for a term should be displayed.
+    *
+-   * @param \stdClass $term
++   * @param object $term
+    *
+-   * @return boolean
++   * @return bool
+    */
+   protected function determineCountVisibility($term) {
+     if ($this->settings['show_count']) {
+@@ -478,6 +477,7 @@ class Vocabulary extends SitemapBase {
+ 
+   /**
+    * Validate the route and argument provided.
++   *
+    * @TODO Implement for form_save and config import.
+    *
+    * @param $string
+@@ -493,7 +493,8 @@ class Vocabulary extends SitemapBase {
+       // TODO Determine if $route has the provided $parts['arg'] parameter.
+     }
+     catch (\Exception $e) {
+-      // TODO
++      // TODO.
+     }
+   }
++
+ }
+diff --git a/src/Tests/SitemapBookTest.php b/src/Tests/SitemapBookTest.php
+index 7ddc3f8..cc4b48f 100644
+--- a/src/Tests/SitemapBookTest.php
++++ b/src/Tests/SitemapBookTest.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\sitemap\Tests;
+ 
+-use \Drupal\node\NodeInterface;
+-
+ /**
+  * Test the display of books based on sitemap settings.
+  *
+@@ -21,14 +19,14 @@ class SitemapBookTest extends SitemapBrowserTestBase {
+   /**
+    * The parent book node.
+    *
+-   * @var NodeInterface
++   * @var \Drupal\node\NodeInterface
+    */
+   protected $book;
+ 
+   /**
+    * Nodes that make up the content of the book.
+    *
+-   * @var NodeInterface[]
++   * @var \Drupal\node\NodeInterface[]
+    */
+   protected $nodes;
+ 
+@@ -100,7 +98,7 @@ class SitemapBookTest extends SitemapBrowserTestBase {
+     // Configure sitemap to show the test book.
+     $this->saveSitemapForm(['plugins[book:' . $bid . '][enabled]' => TRUE]);
+ 
+-    $this->titleTest($this->book->label(), 'book', $bid,  TRUE);
++    $this->titleTest($this->book->label(), 'book', $bid, TRUE);
+   }
+ 
+   // @TODO: test book crud
+@@ -140,7 +138,7 @@ class SitemapBookTest extends SitemapBrowserTestBase {
+    * @param int|null $parent
+    *   (optional) Parent book reference ID. Defaults to NULL.
+    *
+-   * @return NodeInterface
++   * @return \Drupal\node\NodeInterface
+    *   Returns object
+    *
+    * @throws \Exception
+@@ -148,7 +146,7 @@ class SitemapBookTest extends SitemapBrowserTestBase {
+   protected function createBookNode($bid, $parent = NULL) {
+     $edit = [
+       'title[0][value]' => $this->randomMachineName(10),
+-      'book[bid]' => $bid
++      'book[bid]' => $bid,
+     ];
+ 
+     if ($parent !== NULL) {
+diff --git a/src/Tests/SitemapBrowserTestBase.php b/src/Tests/SitemapBrowserTestBase.php
+index ec7c122..130deee 100644
+--- a/src/Tests/SitemapBrowserTestBase.php
++++ b/src/Tests/SitemapBrowserTestBase.php
+@@ -4,6 +4,9 @@ namespace Drupal\sitemap\Tests;
+ 
+ use Drupal\Tests\BrowserTestBase;
+ 
++/**
++ *
++ */
+ abstract class SitemapBrowserTestBase extends BrowserTestBase {
+ 
+   protected $defaultTheme = 'stark';
+diff --git a/src/Tests/SitemapMenuTest.php b/src/Tests/SitemapMenuTest.php
+index 7ff77bf..34e08c3 100644
+--- a/src/Tests/SitemapMenuTest.php
++++ b/src/Tests/SitemapMenuTest.php
+@@ -105,5 +105,4 @@ class SitemapMenuTest extends SitemapMenuTestBase {
+ 
+   // @TODO: test menu crud
+   // @TODO: test multiple menus
+-
+ }
+diff --git a/src/Tests/SitemapTaxonomyTermsTest.php b/src/Tests/SitemapTaxonomyTermsTest.php
+index 9cc42db..c71bac2 100644
+--- a/src/Tests/SitemapTaxonomyTermsTest.php
++++ b/src/Tests/SitemapTaxonomyTermsTest.php
+@@ -62,7 +62,6 @@ class SitemapTaxonomyTermsTest extends SitemapTaxonomyTestBase {
+     $this->assertLink($this->terms[1]->label());
+     $this->assertLink($this->terms[2]->label());
+ 
+-
+     // TODO: Check for empty <li>s as well.
+   }
+ 
+@@ -93,8 +92,7 @@ class SitemapTaxonomyTermsTest extends SitemapTaxonomyTestBase {
+     $this->assertEqual(count($elements), 3, 'Node counts included.');
+ 
+     // TODO: Add another node and check counts.
+-    //@TODO: Test count display when parent term does not meet threshold.
+-
++    // @TODO: Test count display when parent term does not meet threshold.
+   }
+ 
+   /**
+@@ -163,7 +161,6 @@ class SitemapTaxonomyTermsTest extends SitemapTaxonomyTestBase {
+       $this->assertSession()->pageTextContains($term->label());
+     }
+     // TODO: Check for empty <li>s as well.
+-
+     // Test show_count when parent term does not meet threshold.
+     $this->saveSitemapForm(["plugins[vocabulary:$vid][settings][show_count]" => TRUE]);
+     $this->drupalGet('/sitemap');
+@@ -247,4 +244,5 @@ class SitemapTaxonomyTermsTest extends SitemapTaxonomyTestBase {
+     }
+ 
+   }
++
+ }
+diff --git a/src/Tests/SitemapTaxonomyTest.php b/src/Tests/SitemapTaxonomyTest.php
+index c920881..24056fe 100644
+--- a/src/Tests/SitemapTaxonomyTest.php
++++ b/src/Tests/SitemapTaxonomyTest.php
+@@ -51,7 +51,7 @@ class SitemapTaxonomyTest extends SitemapTaxonomyTestBase {
+ 
+     // Set to show all taxonomy terms, even if they are not assigned to any
+     // nodes.
+-    $this->saveSitemapForm([ "plugins[vocabulary:$vid][settings][term_count_threshold]" => -1]);
++    $this->saveSitemapForm(["plugins[vocabulary:$vid][settings][term_count_threshold]" => -1]);
+ 
+     // Assert that the vocabulary description is included in the sitemap when
+     // terms are displayed.
+diff --git a/src/Tests/SitemapTestTrait.php b/src/Tests/SitemapTestTrait.php
+index 6acc181..5aedab1 100644
+--- a/src/Tests/SitemapTestTrait.php
++++ b/src/Tests/SitemapTestTrait.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\sitemap\Tests;
+ 
++/**
++ *
++ */
+ trait SitemapTestTrait {
+ 
+   /**
+@@ -10,7 +13,7 @@ trait SitemapTestTrait {
+    * @param string $title
+    * @param string $plugin_id
+    * @param string $derivative_id
+-   * @param boolean $clear_cache
++   * @param bool $clear_cache
+    *   Some elements do not yet have proper cache tags configured (looking at
+    *   you, vocabulary), so cache must be flushed when plugin configuration
+    *   changes.
+diff --git a/tests/src/Functional/Update/SitemapVersionUpdateTest.php b/tests/src/Functional/Update/SitemapVersionUpdateTest.php
+index 376ab1b..c46d6b1 100644
+--- a/tests/src/Functional/Update/SitemapVersionUpdateTest.php
++++ b/tests/src/Functional/Update/SitemapVersionUpdateTest.php
+@@ -4,7 +4,6 @@ namespace Drupal\Tests\sitemap\Functional\Update;
+ 
+ use Drupal\FunctionalTests\Update\UpdatePathTestBase;
+ use Drupal\sitemap\Plugin\Sitemap\Vocabulary;
+-use Drupal\views\Views;
+ 
+ /**
+  * Tests the 1.x to 2.x upgrade path for Sitemap configuration.

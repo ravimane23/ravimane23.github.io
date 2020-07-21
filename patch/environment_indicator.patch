@@ -1,0 +1,90 @@
+diff --git a/css/environment_indicator.css b/css/environment_indicator.css
+index 98497c3..deedb59 100644
+--- a/css/environment_indicator.css
++++ b/css/environment_indicator.css
+@@ -16,11 +16,20 @@
+   background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.19, rgba(207,207,207,0.3)), color-stop(0.6, rgba(250,250,250,0.3)), color-stop(0.8, rgba(255,255,255,0.3)));
+ }
+ 
+-#environment-indicator .description { font-size: 0.85em; }
+-#environment-indicator .description::before { content: "("; }
+-#environment-indicator .description::after { content: ")"; }
++#environment-indicator .description {
++  font-size: 0.85em;
++}
++#environment-indicator .description::before {
++  content: "(";
++}
++#environment-indicator .description::after {
++  content: ")";
++}
+ 
+-#environment-indicator ul { overflow: hidden; margin: 0; }
++#environment-indicator ul {
++  overflow: hidden;
++  margin: 0;
++}
+ 
+ #environment-indicator ul.environment-switcher-container li {
+   list-style: none;
+@@ -39,7 +48,7 @@
+ }
+ 
+ #environment-indicator ul.environment-switcher-container li a:hover {
+-  background-color: #DDD;
++  background-color: #ddd;
+   -moz-box-shadow: inset 0 1px 5px #333;
+   -webkit-box-shadow: inset 0 1px 5px #333;
+   -o-box-shadow: inset 0 1px 5px #333;
+@@ -59,7 +68,7 @@
+   -moz-border-radius: 5px;
+   -o-border-radius: 5px;
+   border-radius: 5px;
+-  background-color: #EDEDE0;
++  background-color: #edede0;
+ }
+ 
+ .toolbar-bar .toolbar-icon-environment:before {
+diff --git a/js/color.js b/js/color.js
+index cee8884..556a8a5 100644
+--- a/js/color.js
++++ b/js/color.js
+@@ -1,4 +1,4 @@
+-var pad = function(num, totalChars) {
++var pad = function (num, totalChars) {
+     var pad = '0';
+     num = num + '';
+     while (num.length < totalChars) {
+@@ -8,7 +8,7 @@ var pad = function(num, totalChars) {
+ };
+ 
+ // Ratio is between 0 and 1
+-var changeColor = function(color, ratio, darker) {
++var changeColor = function (color, ratio, darker) {
+     // Trim trailing/leading whitespace
+     color = color.replace(/^\s*|\s*$/, '');
+ 
+@@ -34,9 +34,9 @@ var changeColor = function(color, ratio, darker) {
+         alpha = !!rgb && rgb[4] != null ? rgb[4] : null,
+ 
+         // Convert hex to decimal
+-        decimal = !!rgb? [rgb[1], rgb[2], rgb[3]] : color.replace(
++        decimal = !!rgb ? [rgb[1], rgb[2], rgb[3]] : color.replace(
+             /^#?([a-f0-9][a-f0-9])([a-f0-9][a-f0-9])([a-f0-9][a-f0-9])/i,
+-            function() {
++            function () {
+                 return parseInt(arguments[1], 16) + ',' +
+                     parseInt(arguments[2], 16) + ',' +
+                     parseInt(arguments[3], 16);
+@@ -72,9 +72,9 @@ var changeColor = function(color, ratio, darker) {
+             ).toString(16), 2)
+         ].join('');
+ };
+-var lighterColor = function(color, ratio) {
++var lighterColor = function (color, ratio) {
+     return changeColor(color, ratio, false);
+ };
+-var darkerColor = function(color, ratio) {
++var darkerColor = function (color, ratio) {
+     return changeColor(color, ratio, true);
+ };

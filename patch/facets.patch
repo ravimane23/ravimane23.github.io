@@ -1,0 +1,104 @@
+diff --git a/js/dropdown-widget.js b/js/dropdown-widget.js
+index da2e13a..7ad9be2 100644
+--- a/js/dropdown-widget.js
++++ b/js/dropdown-widget.js
+@@ -29,8 +29,8 @@
+       var $links = $ul.find('.facet-item a');
+       var $dropdown = $('<select />');
+       // Preserve all attributes of the list.
+-      $ul.each(function() {
+-        $.each(this.attributes,function(idx, elem) {
++      $ul.each(function () {
++        $.each(this.attributes,function (idx, elem) {
+             $dropdown.attr(elem.name, elem.value);
+         });
+       });
+@@ -43,7 +43,7 @@
+ 
+       var id = $(this).data('drupal-facet-id');
+       // Add aria-labelledby attribute to reference label.
+-      $dropdown.attr('aria-labelledby', "facet_"+id+"_label");
++      $dropdown.attr('aria-labelledby', "facet_" + id + "_label");
+       var default_option_label = settings.facets.dropdown_widget[id]['facet-default-option-label'];
+ 
+       // Add empty text option first.
+@@ -69,7 +69,7 @@
+           $option.attr('selected', 'selected');
+           $link.find('.js-facet-deactivate').remove();
+         }
+-        $option.text(function() {
++        $option.text(function () {
+           // Add hierarchy indicator in case hierarchy is enabled.
+           var $parents = $link.parent('li.facet-item').parents('li.facet-item');
+           var prefix = '';
+diff --git a/js/facets-views-ajax.js b/js/facets-views-ajax.js
+index 01e10f1..4b735e3 100644
+--- a/js/facets-views-ajax.js
++++ b/js/facets-views-ajax.js
+@@ -197,12 +197,12 @@
+   }
+ 
+   // Helper function to add exposed form data to facets url
+-  var addExposedFiltersToFacetsUrl = function(href, view_name, view_display_id) {
++  var addExposedFiltersToFacetsUrl = function (href, view_name, view_display_id) {
+     var $exposed_form = $('form#views-exposed-form-' + view_name.replace(/_/g, '-') + '-' + view_display_id.replace(/_/g, '-'));
+ 
+     var params = Drupal.Views.parseQueryString(href);
+ 
+-    $.each($exposed_form.serializeArray(), function() {
++    $.each($exposed_form.serializeArray(), function () {
+       params[this.name] = this.value;
+     });
+ 
+diff --git a/js/soft-limit.js b/js/soft-limit.js
+index ece6fea..6edc294 100644
+--- a/js/soft-limit.js
++++ b/js/soft-limit.js
+@@ -42,7 +42,7 @@
+     }
+ 
+     // Hide facets over the limit.
+-    facetsList.each(function() {
++    facetsList.each(function () {
+       $(this).children('li:gt(' + zero_based_limit + ')').once('applysoftlimit').hide();
+     });
+ 
+diff --git a/modules/facets_range_widget/js/slider.js b/modules/facets_range_widget/js/slider.js
+index 916e71f..d13e08d 100644
+--- a/modules/facets_range_widget/js/slider.js
++++ b/modules/facets_range_widget/js/slider.js
+@@ -33,7 +33,7 @@
+ 
+     $.extend(defaults, settings);
+ 
+-    $('[id^="' + facet +'"][id$="' + facet +'"]').slider(defaults)
++    $('[id^="' + facet + '"][id$="' + facet + '"]').slider(defaults)
+     .slider('pips', {
+       prefix: settings.prefix,
+       suffix: settings.suffix
+diff --git a/modules/facets_summary/src/Plugin/facets_summary/processor/ResetFacetsProcessor.php b/modules/facets_summary/src/Plugin/facets_summary/processor/ResetFacetsProcessor.php
+index d4cb193..473b066 100644
+--- a/modules/facets_summary/src/Plugin/facets_summary/processor/ResetFacetsProcessor.php
++++ b/modules/facets_summary/src/Plugin/facets_summary/processor/ResetFacetsProcessor.php
+@@ -45,7 +45,7 @@ class ResetFacetsProcessor extends ProcessorPluginBase implements BuildProcessor
+ 
+       if ($facet->getActiveItems()) {
+         // This removes query params when using the query url processor.
+-        if(isset($query_params[$filter_key])){
++        if (isset($query_params[$filter_key])) {
+           foreach ($query_params[$filter_key] as $delta => $param) {
+             if (strpos($param, $url_alias . ':') !== FALSE) {
+               unset($query_params[$filter_key][$delta]);
+diff --git a/tests/facets_events_test/src/EventListener.php b/tests/facets_events_test/src/EventListener.php
+index 183f141..b6e2bd0 100644
+--- a/tests/facets_events_test/src/EventListener.php
++++ b/tests/facets_events_test/src/EventListener.php
+@@ -15,7 +15,7 @@ class EventListener implements EventSubscriberInterface {
+    */
+   public static function getSubscribedEvents() {
+     return [
+-      QueryStringCreated::NAME => 'queryStringCreated'
++      QueryStringCreated::NAME => 'queryStringCreated',
+     ];
+   }
+ 

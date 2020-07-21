@@ -1,0 +1,13 @@
+diff --git a/src/ContributeManager.php b/src/ContributeManager.php
+index bf733a0..7a25e03 100644
+--- a/src/ContributeManager.php
++++ b/src/ContributeManager.php
+@@ -519,7 +519,7 @@ class ContributeManager implements ContributeManagerInterface {
+   /**
+    * Get a user account's badge from Drupal.org.
+    *
+-   * @return string|NULL
++   * @return string|null
+    *   A user account's badge from Drupal.org.
+    */
+   protected function getUserBadge() {

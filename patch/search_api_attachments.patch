@@ -1,0 +1,25 @@
+diff --git a/src/Plugin/QueueWorker/ExtractorQueue.php b/src/Plugin/QueueWorker/ExtractorQueue.php
+index 74faa40..86c8456 100644
+--- a/src/Plugin/QueueWorker/ExtractorQueue.php
++++ b/src/Plugin/QueueWorker/ExtractorQueue.php
+@@ -128,7 +128,7 @@ class ExtractorQueue extends QueueWorkerBase implements ContainerFactoryPluginIn
+       $entity = $this->entityTypeManager->getStorage($data->entity_type)
+         ->load($data->entity_id);
+ 
+-      if(!$entity) {
++      if (!$entity) {
+         return;
+       }
+       $indexes = ContentEntity::getIndexesForEntity($entity);
+diff --git a/src/TextExtractorPluginBase.php b/src/TextExtractorPluginBase.php
+index 5ad991d..9f17139 100644
+--- a/src/TextExtractorPluginBase.php
++++ b/src/TextExtractorPluginBase.php
+@@ -53,7 +53,6 @@ abstract class TextExtractorPluginBase extends PluginBase implements TextExtract
+    */
+   protected $messenger;
+ 
+-
+   /**
+    * {@inheritdoc}
+    */

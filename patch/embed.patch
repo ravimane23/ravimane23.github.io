@@ -1,0 +1,38 @@
+diff --git a/tests/embed_test/src/Controller/EmbedTestController.php b/tests/embed_test/src/Controller/EmbedTestController.php
+index e19a960..6452daf 100644
+--- a/tests/embed_test/src/Controller/EmbedTestController.php
++++ b/tests/embed_test/src/Controller/EmbedTestController.php
+@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
+  */
+ class EmbedTestController extends ControllerBase {
+ 
++  /**
++   *
++   */
+   public function testAccess(Request $request, EditorInterface $editor, EmbedButtonInterface $embed_button) {
+     $text = $request->get('value');
+ 
+diff --git a/tests/src/FunctionalJavascript/EmbedButtonAdminTest.php b/tests/src/FunctionalJavascript/EmbedButtonAdminTest.php
+index 767cf43..dfc480b 100644
+--- a/tests/src/FunctionalJavascript/EmbedButtonAdminTest.php
++++ b/tests/src/FunctionalJavascript/EmbedButtonAdminTest.php
+@@ -144,6 +144,9 @@ class EmbedButtonAdminTest extends WebDriverTestBase {
+     $assert_session->pageTextNotContains($button_label);
+   }
+ 
++  /**
++   *
++   */
+   public function testButtonValidation() {
+     $page = $this->getSession()->getPage();
+     $assert_session = $this->assertSession();
+@@ -172,6 +175,9 @@ class EmbedButtonAdminTest extends WebDriverTestBase {
+     $this->assertFieldByName('type_settings[aircraft_type]', 'rotorcraft');
+   }
+ 
++  /**
++   *
++   */
+   public function testCKEditorButtonConflict() {
+     $page = $this->getSession()->getPage();
+     $assert_session = $this->assertSession();

@@ -1,0 +1,187 @@
+diff --git a/src/Plugin/views/argument_validator/TermMachineName.php b/src/Plugin/views/argument_validator/TermMachineName.php
+index 7a9c8c9..5f8c735 100644
+--- a/src/Plugin/views/argument_validator/TermMachineName.php
++++ b/src/Plugin/views/argument_validator/TermMachineName.php
+@@ -4,7 +4,6 @@ namespace Drupal\taxonomy_machine_name\Plugin\views\argument_validator;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+-use Drupal\taxonomy\Entity\Term;
+ use Drupal\views\Plugin\views\argument_validator\Entity;
+ 
+ /**
+@@ -83,7 +82,7 @@ class TermMachineName extends Entity {
+ 
+     // Not knowing which term will be used if more than one is returned check
+     // each one.
+-    /** @var Term $term */
++    /** @var \Drupal\taxonomy\Entity\Term $term */
+     foreach ($terms as $term) {
+       if (!$this->validateEntity($term)) {
+         return FALSE;
+@@ -99,4 +98,5 @@ class TermMachineName extends Entity {
+ 
+     return TRUE;
+   }
++
+ }
+diff --git a/src/Plugin/views/filter/TaxonomyIndexMachineName.php b/src/Plugin/views/filter/TaxonomyIndexMachineName.php
+index f85e670..adbdaff 100644
+--- a/src/Plugin/views/filter/TaxonomyIndexMachineName.php
++++ b/src/Plugin/views/filter/TaxonomyIndexMachineName.php
+@@ -21,7 +21,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  */
+ class TaxonomyIndexMachineName extends ManyToOne {
+ 
+-  // Stores the exposed input for this filter.
++  /**
++   * Stores the exposed input for this filter.
++   */
+   public $validated_exposed_input = NULL;
+ 
+   /**
+@@ -82,6 +84,9 @@ class TaxonomyIndexMachineName extends ManyToOne {
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function hasExtraOptions() {
+     return TRUE;
+   }
+@@ -93,6 +98,9 @@ class TaxonomyIndexMachineName extends ManyToOne {
+     return $this->valueOptions;
+   }
+ 
++  /**
++   *
++   */
+   protected function defineOptions() {
+     $options = parent::defineOptions();
+ 
+@@ -105,6 +113,9 @@ class TaxonomyIndexMachineName extends ManyToOne {
+     return $options;
+   }
+ 
++  /**
++   *
++   */
+   public function buildExtraOptionsForm(&$form, FormStateInterface $form_state) {
+     $vocabularies = $this->vocabularyStorage->loadMultiple();
+     $options = [];
+@@ -149,6 +160,9 @@ class TaxonomyIndexMachineName extends ManyToOne {
+     ];
+   }
+ 
++  /**
++   *
++   */
+   protected function valueForm(&$form, FormStateInterface $form_state) {
+     $vocabulary = $this->vocabularyStorage->load($this->options['vid']);
+     if (empty($vocabulary) && $this->options['limit']) {
+@@ -253,7 +267,7 @@ class TaxonomyIndexMachineName extends ManyToOne {
+     }
+ 
+     if (!$form_state->get('exposed')) {
+-      // Retain the helper option
++      // Retain the helper option.
+       $this->helper->buildOptionsForm($form, $form_state);
+ 
+       // Show help text if not exposed to end users.
+@@ -261,6 +275,9 @@ class TaxonomyIndexMachineName extends ManyToOne {
+     }
+   }
+ 
++  /**
++   *
++   */
+   protected function valueValidate($form, FormStateInterface $form_state) {
+     // We only validate if they've chosen the text field style.
+     if ($this->options['type'] != 'textfield') {
+@@ -276,6 +293,9 @@ class TaxonomyIndexMachineName extends ManyToOne {
+     $form_state->setValue(['options', 'value'], $tids);
+   }
+ 
++  /**
++   *
++   */
+   public function acceptExposedInput($input) {
+     if (empty($this->options['exposed'])) {
+       return TRUE;
+@@ -288,7 +308,7 @@ class TaxonomyIndexMachineName extends ManyToOne {
+     }
+ 
+     // If view is an attachment and is inheriting exposed filters, then assume
+-    // exposed input has already been validated
++    // exposed input has already been validated.
+     if (!empty($this->view->is_attachment) && $this->view->display_handler->usesExposed()) {
+       $this->validated_exposed_input = (array) $this->view->exposed_raw_input[$this->options['expose']['identifier']];
+     }
+@@ -315,6 +335,9 @@ class TaxonomyIndexMachineName extends ManyToOne {
+     return $rc;
+   }
+ 
++  /**
++   *
++   */
+   public function validateExposed(&$form, FormStateInterface $form_state) {
+     if (empty($this->options['exposed'])) {
+       return;
+@@ -341,10 +364,16 @@ class TaxonomyIndexMachineName extends ManyToOne {
+     }
+   }
+ 
++  /**
++   *
++   */
+   protected function valueSubmit($form, FormStateInterface $form_state) {
+-    // prevent array_filter from messing up our arrays in parent submit.
++    // Prevent array_filter from messing up our arrays in parent submit.
+   }
+ 
++  /**
++   *
++   */
+   public function buildExposeForm(&$form, FormStateInterface $form_state) {
+     parent::buildExposeForm($form, $form_state);
+     if ($this->options['type'] != 'select') {
+@@ -357,8 +386,11 @@ class TaxonomyIndexMachineName extends ManyToOne {
+     ];
+   }
+ 
++  /**
++   *
++   */
+   public function adminSummary() {
+-    // set up $this->valueOptions for the parent summary
++    // Set up $this->valueOptions for the parent summary.
+     $this->valueOptions = [];
+ 
+     if ($this->value) {
+diff --git a/taxonomy_machine_name.api.php b/taxonomy_machine_name.api.php
+index 7f28490..6e60bab 100644
+--- a/taxonomy_machine_name.api.php
++++ b/taxonomy_machine_name.api.php
+@@ -1,6 +1,7 @@
+ <?php
+ 
+ /**
++ * @file
+  * @addtogroup hooks
+  * @{
+  */
+diff --git a/taxonomy_machine_name.views.inc b/taxonomy_machine_name.views.inc
+index 3b1c359..a1d5a57 100644
+--- a/taxonomy_machine_name.views.inc
++++ b/taxonomy_machine_name.views.inc
+@@ -1,5 +1,9 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
+ /**
+  * Implements hook_views_plugins_argument_validator_alter().
+  */

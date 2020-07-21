@@ -1,0 +1,476 @@
+diff --git a/advagg_bundler/tests/modules/advagg_bundler_test/test.css b/advagg_bundler/tests/modules/advagg_bundler_test/test.css
+index 75ddf42..4976d94 100644
+--- a/advagg_bundler/tests/modules/advagg_bundler_test/test.css
++++ b/advagg_bundler/tests/modules/advagg_bundler_test/test.css
+@@ -3,4 +3,4 @@
+  */
+ .body {
+   background: yellow;
+-}
+\ No newline at end of file
++}
+diff --git a/advagg_bundler/tests/modules/advagg_bundler_test/test.js b/advagg_bundler/tests/modules/advagg_bundler_test/test.js
+index ec09066..b93e3e8 100644
+--- a/advagg_bundler/tests/modules/advagg_bundler_test/test.js
++++ b/advagg_bundler/tests/modules/advagg_bundler_test/test.js
+@@ -1 +1 @@
+-(function($) { "use strict"; })
++(function ($) { "use strict"; })
+diff --git a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset.css.optimized.css b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset.css.optimized.css
+index d520e1d..924ca17 100755
+--- a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset.css.optimized.css
++++ b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset.css.optimized.css
+@@ -1 +1,3 @@
+-html{font-family:"sans-serif"}
+\ No newline at end of file
++html {
++  font-family: "sans-serif"
++}
+diff --git a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset_newline.css b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset_newline.css
+index 21aacf2..b7e1313 100755
+--- a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset_newline.css
++++ b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset_newline.css
+@@ -1,2 +1,3 @@
+-@charset "UTF-8";
+-html{font-family:"sans-serif";}
++@charset "UTF-8"; html {
++  font-family:"sans-serif";
++}
+diff --git a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset_sameline.css b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset_sameline.css
+index ba7696d..52b5ab8 100755
+--- a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset_sameline.css
++++ b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/charset_sameline.css
+@@ -1 +1,3 @@
+-@charset "UTF-8";html{font-family:"sans-serif";}
++@charset "UTF-8";html {
++  font-family:"sans-serif";
++}
+diff --git a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/comment_hacks.css.optimized.css b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/comment_hacks.css.optimized.css
+index 7750a68..240d88e 100755
+--- a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/comment_hacks.css.optimized.css
++++ b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/comment_hacks.css.optimized.css
+@@ -1,18 +1,38 @@
+-.test1{display:block}html .clear-block{height:1%}.clear-block{display:block;font:italic bold 12px/30px Georgia,serif}.test2{display:block}.bkslshv1{background-color:#c00}.test3{display:block}.test4{display:block}.comment-in-double-quotes:before{content:"/* ";
++.test1 {
++  display: block
++}html .clear-block {
++  height: 1%
++}.clear-block {
++  display: block;
++  font: italic bold 12px/30px Georgia,serif
++}.test2 {
++  display: block
++}.bkslshv1 {
++  background-color: #c00
++}.test3 {
++  display: block
++}.test4 {
++  display: block
++}.comment-in-double-quotes:before {
++  content: "/* ";
+ }
+ .this_rule_must_stay {
+   color: #f00;
+   background-color: #fff;
+ }
+ .comment-in-double-quotes:after {
+-  content: " */"}.comment-in-single-quotes:before{content:'/*';
++  content: " */"
++}.comment-in-single-quotes:before {
++  content: '/*';
+ }
+ .this_rule_must_stay {
+   color: #f00;
+   background-color: #fff;
+ }
+ .comment-in-single-quotes:after {
+-  content: '*/'}.comment-in-mixed-quotes:before{content:'"/*"';
++  content: '*/'
++}.comment-in-mixed-quotes:before {
++  content: '"/*"';
+ }
+ .this_rule_must_stay {
+   color: #f00;
+@@ -30,4 +50,5 @@
+   background-color: #fff;
+ }
+ .comment-in-quotes-with-escaped:after {
+-  content: "*/\" \ '"}
+\ No newline at end of file
++  content: "*/\" \ '"
++}
+diff --git a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_bom_and_charset.css b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_bom_and_charset.css
+index 9ffae69..be5ab4c 100755
+--- a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_bom_and_charset.css
++++ b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_bom_and_charset.css
+@@ -1,4 +1,3 @@
+-﻿@charset "utf-8";
+-.byte-order-mark-charset-test {
++﻿@charset "utf-8"; .byte-order-mark-charset-test {
+   content: "☃";
+ }
+diff --git a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_charset.css b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_charset.css
+index 949f6ca..1c247af 100755
+--- a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_charset.css
++++ b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_charset.css
+@@ -1,4 +1,3 @@
+-@charset "iso-8859-15";
+-.charset-test {
++@charset "iso-8859-15"; .charset-test {
+   content: "�";
+ }
+diff --git a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_utf16_bom.css b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_utf16_bom.css
+index dcbd5c8..7c37434 100755
+Binary files a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_utf16_bom.css and b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_with_utf16_bom.css differ
+diff --git a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_without_import.css b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_without_import.css
+index 118dfa4..b6ed7c0 100755
+--- a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_without_import.css
++++ b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/css_input_without_import.css
+@@ -1,4 +1,3 @@
+-
+ /**
+  * @file Basic css that does not use import
+  */
+@@ -21,12 +20,9 @@ body {
+  * CSS spec says that all whitespace is valid whitespace, so this selector
+  * should be just as good as the one above.
+  */
+-.this
+-.is
+-.a
+-.test {
+-font: 1em/100% Verdana, sans-serif;
+-color: #494949;
++.this .is .a .test {
++  font: 1em/100% Verdana, sans-serif;
++  color: #494949;
+ }
+ 
+ some :pseudo .thing {
+@@ -35,8 +31,7 @@ some :pseudo .thing {
+ 
+ ::-moz-selection {
+   background: #000;
+-  color:#fff;
+-
++  color: #fff;
+ }
+ ::selection {
+   background: #000;
+@@ -58,8 +53,8 @@ some :pseudo .thing {
+   color: #fff;
+ }
+ 
+-textarea, select {
++textarea,
++select {
+   font: 1em/160% Verdana, sans-serif;
+   color: #494949;
+ }
+-
+diff --git a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/quotes.css b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/quotes.css
+index 3fe0f7d..fecfd08 100755
+--- a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/quotes.css
++++ b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/quotes.css
+@@ -1,31 +1,26 @@
+ /* Example from https://www.w3.org/TR/CSS2/syndata.html#rule-sets */
+ q[example="public class foo\
+-{\
+-    private int x;\
+-\
+-    foo(int x) {\
+-        this.x = x;\
+-    }\
+-\
+-}"] { color: red }
++}"] {
++  color: red
++}
+ 
+ /* A pseudo selector with essential whitespace wrapped in quotes. */
+ q[style*="quotes: none"] {
+-    quotes: none;
++  quotes: none;
+ }
+ 
+ q[style*='quotes: none'] {
+-    quotes: none;
++  quotes: none;
+ }
+ 
+ q:after {
+-    content: ": colon & escaped double \" quotes \".";
++  content: ": colon & escaped double \" quotes \".";
+ }
+ 
+ q:after {
+-    content: ' (brackets & escaped single \' quotes \') ';
++  content: ' (brackets & escaped single \' quotes \') ';
+ }
+ 
+ q:after {
+-    content: "I'm Quote";
++  content: "I'm Quote";
+ }
+diff --git a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/quotes.css.optimized.css b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/quotes.css.optimized.css
+index 97c9529..232f7a9 100755
+--- a/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/quotes.css.optimized.css
++++ b/advagg_css_minify/tests/src/Kernel/Asset/css_test_files/quotes.css.optimized.css
+@@ -1,9 +1,14 @@
+ q[example="public class foo\
+-{\
+-    private int x;\
+-\
+-    foo(int x) {\
+-        this.x = x;\
+-    }\
+-\
+-}"]{color:red}q[style*="quotes: none"]{quotes:none}q[style*='quotes: none']{quotes:none}q:after{content:": colon & escaped double \" quotes \"."}q:after{content:' (brackets & escaped single \' quotes \') '}q:after{content:"I'm Quote"}
+\ No newline at end of file
++}"] {
++  color: red
++}q[style*="quotes: none"] {
++  quotes: none
++}q[style*='quotes: none'] {
++  quotes: none
++}q:after {
++  content: ": colon & escaped double \" quotes \"."
++}q:after {
++  content: ' (brackets & escaped single \' quotes \') '
++}q:after {
++  content: "I'm Quote"
++}
+diff --git a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/ajax.js b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/ajax.js
+index fefe9f3..e80b8c3 100755
+--- a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/ajax.js
++++ b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/ajax.js
+@@ -159,9 +159,9 @@
+     responseText = responseText.replace(/[\n]+\s+/g, '\n');
+ 
+     // We don't need readyState except for status == 0.
+-    readyStateText = xmlhttp.status === 0 ? ('\n' + Drupal.t('ReadyState: !readyState', {'!readyState': xmlhttp.readyState})) : '';
++    readyStateText = xmlhttp.status === 0 ? ('\n' + Drupal.t('ReadyState: !readyState', {'!readyState' : xmlhttp.readyState})) : '';
+ 
+-    customMessage = customMessage ? ('\n' + Drupal.t('CustomMessage: !customMessage', {'!customMessage': customMessage})) : '';
++    customMessage = customMessage ? ('\n' + Drupal.t('CustomMessage: !customMessage', {'!customMessage' : customMessage})) : '';
+ 
+     /**
+      * Formatted and translated error message.
+diff --git a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/jquery.once.js.with-important.js b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/jquery.once.js.with-important.js
+index ced3769..41ee627 100644
+--- a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/jquery.once.js.with-important.js
++++ b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/jquery.once.js.with-important.js
+@@ -4,6 +4,6 @@
+  *   http://opensource.org/licenses/MIT
+  *   http://opensource.org/licenses/GPL-2.0
+  */
+-(function(e){'use strict';if(typeof exports==='object'){e(require('jquery'))}
+-else if(typeof define==='function'&&define.amd){define(['jquery'],e)}
+-else{e(jQuery)}}(function(e){'use strict';var n=function(e){e=e||'once';if(typeof e!=='string'){throw new Error('The jQuery Once id parameter must be a string')};return e};e.fn.once=function(t){var r='jquery-once-'+n(t);return this.filter(function(){return e(this).data(r)!==!0}).data(r,!0)};e.fn.removeOnce=function(e){return this.findOnce(e).removeData('jquery-once-'+n(e))};e.fn.findOnce=function(t){var r='jquery-once-'+n(t);return this.filter(function(){return e(this).data(r)===!0})}}));
+\ No newline at end of file
++(function (e) {'use strict';if(typeof exports === 'object'){e(require('jquery'))}
++else if(typeof define === 'function'&&define.amd){define(['jquery'],e)}
++else{e(jQuery)}}(function (e) {'use strict';var n = function (e) {e = e||'once';if(typeof e !== 'string'){throw new Error('The jQuery Once id parameter must be a string')};return e};e.fn.once = function (t) {var r = 'jquery-once-' + n(t);return this.filter(function () {return e(this).data(r) !== !0}).data(r,!0)};e.fn.removeOnce = function (e) {return this.findOnce(e).removeData('jquery-once-' + n(e))};e.fn.findOnce = function (t) {var r = 'jquery-once-' + n(t);return this.filter(function () {return e(this).data(r) === !0})}}));
+diff --git a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url.min.js b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url.min.js
+index 4e133bd..c8eb09c 100755
+--- a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url.min.js
++++ b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url.min.js
+@@ -1,2 +1,2 @@
+-(function($) { "use strict"; })
++(function ($) { "use strict"; })
+ //# sourceMappingURL=source_mapping_url.min.map
+diff --git a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url.min.js.optimized.js b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url.min.js.optimized.js
+index ec09066..b93e3e8 100755
+--- a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url.min.js.optimized.js
++++ b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url.min.js.optimized.js
+@@ -1 +1 @@
+-(function($) { "use strict"; })
++(function ($) { "use strict"; })
+diff --git a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url_old.min.js b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url_old.min.js
+index b937b86..1a54ed6 100755
+--- a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url_old.min.js
++++ b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url_old.min.js
+@@ -1,2 +1,2 @@
+-(function($) { "use strict"; })
++(function ($) { "use strict"; })
+ //@ sourceMappingURL=source_mapping_url.min.map
+diff --git a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url_old.min.js.optimized.js b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url_old.min.js.optimized.js
+index ec09066..b93e3e8 100755
+--- a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url_old.min.js.optimized.js
++++ b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_mapping_url_old.min.js.optimized.js
+@@ -1 +1 @@
+-(function($) { "use strict"; })
++(function ($) { "use strict"; })
+diff --git a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url.min.js b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url.min.js
+index efb2032..b66e22f 100755
+--- a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url.min.js
++++ b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url.min.js
+@@ -1,2 +1,2 @@
+-(function($) { "use strict"; })
++(function ($) { "use strict"; })
+ //# sourceURL=source_mapping_url.js
+diff --git a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url.min.js.optimized.js b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url.min.js.optimized.js
+index ec09066..b93e3e8 100755
+--- a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url.min.js.optimized.js
++++ b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url.min.js.optimized.js
+@@ -1 +1 @@
+-(function($) { "use strict"; })
++(function ($) { "use strict"; })
+diff --git a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url_old.min.js b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url_old.min.js
+index dd26bd5..6acc5ea 100755
+--- a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url_old.min.js
++++ b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url_old.min.js
+@@ -1,2 +1,2 @@
+-(function($) { "use strict"; })
++(function ($) { "use strict"; })
+ //@ sourceURL=source_mapping_url.js
+diff --git a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url_old.min.js.optimized.js b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url_old.min.js.optimized.js
+index ec09066..b93e3e8 100755
+--- a/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url_old.min.js.optimized.js
++++ b/advagg_js_minify/tests/src/Kernel/Asset/js_test_files/source_url_old.min.js.optimized.js
+@@ -1 +1 @@
+-(function($) { "use strict"; })
++(function ($) { "use strict"; })
+diff --git a/advagg_mod/js/cssrelpreload.js b/advagg_mod/js/cssrelpreload.js
+index 41d963e..bddb91e 100644
+--- a/advagg_mod/js/cssrelpreload.js
++++ b/advagg_mod/js/cssrelpreload.js
+@@ -1,11 +1,11 @@
+ /*! loadCSS rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
+-(function( w ){
++(function ( w ) {
+     // rel=preload support test
+     if( !w.loadCSS ){
+         return;
+     }
+     var rp = loadCSS.relpreload = {};
+-    rp.support = function(){
++    rp.support = function () {
+         try {
+             return w.document.createElement( "link" ).relList.supports( "preload" );
+         } catch (e) {
+@@ -14,7 +14,7 @@
+     };
+ 
+     // loop preload links and fetch using loadCSS
+-    rp.poly = function(){
++    rp.poly = function () {
+         var links = w.document.getElementsByTagName( "link" );
+         for( var i = 0; i < links.length; i++ ){
+             var link = links[ i ];
+@@ -30,15 +30,15 @@
+         rp.poly();
+         var run = w.setInterval( rp.poly, 300 );
+         if( w.addEventListener ){
+-            w.addEventListener( "load", function(){
++            w.addEventListener( "load", function () {
+                 rp.poly();
+                 w.clearInterval( run );
+             } );
+         }
+         if( w.attachEvent ){
+-            w.attachEvent( "onload", function(){
++            w.attachEvent( "onload", function () {
+                 w.clearInterval( run );
+             } )
+         }
+     }
+-}( this ));
+\ No newline at end of file
++}( this ));
+diff --git a/advagg_mod/js/loadCSS.js b/advagg_mod/js/loadCSS.js
+index d7527c6..1e842c8 100644
+--- a/advagg_mod/js/loadCSS.js
++++ b/advagg_mod/js/loadCSS.js
+@@ -1,8 +1,8 @@
+ /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+-(function(w){
++(function (w) {
+     "use strict";
+   /* exported loadCSS */
+-    var loadCSS = function( href, before, media ){
++    var loadCSS = function ( href, before, media ) {
+         // Arguments explained:
+         // `href` [REQUIRED] is the URL for your CSS file.
+         // `before` [OPTIONAL] is the element the script should use as a reference for injecting our stylesheet <link> before
+@@ -30,18 +30,18 @@
+             if( doc.body ){
+                 return cb();
+             }
+-            setTimeout(function(){
++            setTimeout(function () {
+                 ready( cb );
+             });
+         }
+         // Inject link
+         // Note: the ternary preserves the existing behavior of "before" argument, but we could choose to change the argument to "after" in a later release and standardize on ref.nextSibling for all refs
+         // Note: `insertBefore` is used instead of `appendChild`, for safety re: http://www.paulirish.com/2011/surefire-dom-element-insertion/
+-        ready( function(){
++        ready( function () {
+             ref.parentNode.insertBefore( ss, ( before ? ref : ref.nextSibling ) );
+         });
+         // A method (exposed on return object for external use) that mimics onload by polling document.styleSheets until it includes the new sheet.
+-        var onloadcssdefined = function( cb ){
++        var onloadcssdefined = function ( cb ) {
+             var resolvedHref = ss.href;
+             var i = sheets.length;
+             while( i-- ){
+@@ -49,7 +49,7 @@
+                     return cb();
+                 }
+             }
+-            setTimeout(function() {
++            setTimeout(function () {
+                 onloadcssdefined( cb );
+             });
+         };
+diff --git a/src/AdvaggSettersTrait.php b/src/AdvaggSettersTrait.php
+index fd88419..06d2ea5 100644
+--- a/src/AdvaggSettersTrait.php
++++ b/src/AdvaggSettersTrait.php
+@@ -5,7 +5,6 @@ namespace Drupal\advagg;
+ use Drupal\Component\Datetime\TimeInterface;
+ use Drupal\Core\Asset\AssetCollectionOptimizerInterface;
+ use Drupal\Core\Cache\CacheBackendInterface;
+-use Drupal\Core\Datetime\DateFormatInterface;
+ use Drupal\Core\Datetime\DateFormatterInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\File\FileSystemInterface;
+diff --git a/tests/modules/advagg_test/css/test.css b/tests/modules/advagg_test/css/test.css
+index 75ddf42..4976d94 100644
+--- a/tests/modules/advagg_test/css/test.css
++++ b/tests/modules/advagg_test/css/test.css
+@@ -3,4 +3,4 @@
+  */
+ .body {
+   background: yellow;
+-}
+\ No newline at end of file
++}
+diff --git a/tests/src/Kernel/Asset/css_test_files/url_test_child_dir.css b/tests/src/Kernel/Asset/css_test_files/url_test_child_dir.css
+index 8a91715..cab5ce7 100644
+--- a/tests/src/Kernel/Asset/css_test_files/url_test_child_dir.css
++++ b/tests/src/Kernel/Asset/css_test_files/url_test_child_dir.css
+@@ -1,3 +1,3 @@
+ .icon-foo {
+-    background-image: url("images/icon-foo.svg");
++  background-image: url("images/icon-foo.svg");
+ }
+diff --git a/tests/src/Kernel/Asset/css_test_files/url_test_parent_dir.css b/tests/src/Kernel/Asset/css_test_files/url_test_parent_dir.css
+index acd77cc..92ac72b 100644
+--- a/tests/src/Kernel/Asset/css_test_files/url_test_parent_dir.css
++++ b/tests/src/Kernel/Asset/css_test_files/url_test_parent_dir.css
+@@ -1,3 +1,3 @@
+ .icon-foo {
+-    background-image: url("../images/icon-foo.svg");
++  background-image: url("../images/icon-foo.svg");
+ }
+diff --git a/tests/src/Kernel/Asset/css_test_files/url_test_same_dir.css b/tests/src/Kernel/Asset/css_test_files/url_test_same_dir.css
+index 0a88f0c..cae57d1 100644
+--- a/tests/src/Kernel/Asset/css_test_files/url_test_same_dir.css
++++ b/tests/src/Kernel/Asset/css_test_files/url_test_same_dir.css
+@@ -1,3 +1,3 @@
+ .icon-foo {
+-    background-image: url("icon-foo.svg");
++  background-image: url("icon-foo.svg");
+ }

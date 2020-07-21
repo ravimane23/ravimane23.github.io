@@ -1,0 +1,22 @@
+diff --git a/js/file_browser.view.js b/js/file_browser.view.js
+index c596dcd..94d23ea 100644
+--- a/js/file_browser.view.js
++++ b/js/file_browser.view.js
+@@ -9,7 +9,7 @@
+   /**
+    * Renders the file counter based on our internally tracked count.
+    */
+-  function renderFileCounter () {
++  function renderFileCounter() {
+     $('.file-browser-file-counter').each(function () {
+       $(this).remove();
+     });
+@@ -35,7 +35,7 @@
+   /**
+    * Adjusts the padding on the body to account for the fixed actions bar.
+    */
+-  function adjustBodyPadding () {
++  function adjustBodyPadding() {
+     setTimeout(function () {
+       $('body').css('padding-bottom', $('.file-browser-actions').outerHeight() + 'px');
+     }, 2000);

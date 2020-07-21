@@ -1,0 +1,52 @@
+diff --git a/src/Controller/ListUsageController.php b/src/Controller/ListUsageController.php
+index 038a7fa..9b497b9 100644
+--- a/src/Controller/ListUsageController.php
++++ b/src/Controller/ListUsageController.php
+@@ -11,7 +11,6 @@ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Entity\RevisionableInterface;
+ use Drupal\Core\Language\LanguageInterface;
+-use Drupal\Core\Link;
+ use Drupal\entity_usage\EntityUsageInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\Core\Pager\PagerManagerInterface;
+@@ -78,7 +77,7 @@ class ListUsageController extends ControllerBase {
+    * @param \Drupal\entity_usage\EntityUsageInterface $entity_usage
+    *   The EntityUsage service.
+    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+-   * The config factory service.
++   *   The config factory service.
+    * @param \Drupal\Core\Pager\PagerManagerInterface $pager_manager
+    *   The pager manager.
+    */
+diff --git a/src/EntityUsage.php b/src/EntityUsage.php
+index d5ffd6d..b9bdaac 100644
+--- a/src/EntityUsage.php
++++ b/src/EntityUsage.php
+@@ -314,6 +314,7 @@ class EntityUsage implements EntityUsageInterface {
+    * Core doesn't support big integers (bigint) for entity reference fields.
+    * Therefore we consider integers with more than 10 digits (big integer) to be
+    * strings.
++   *
+    * @todo: Fix bigint support once fixed in core. More info on #2680571 and
+    * #2989033.
+    *
+diff --git a/src/Form/EntityUsageSettingsForm.php b/src/Form/EntityUsageSettingsForm.php
+index 5b168f6..8475e3a 100644
+--- a/src/Form/EntityUsageSettingsForm.php
++++ b/src/Form/EntityUsageSettingsForm.php
+@@ -222,12 +222,12 @@ class EntityUsageSettingsForm extends ConfigFormBase {
+       $form['edit_warning_message_entity_types']['entity_types'][$entity_type_id]['#states'] = [
+         'enabled' => [
+           ':input[name="track_enabled_target_entity_types[entity_types][' . $entity_type_id . ']"]' => ['checked' => TRUE],
+-        ]
++        ],
+       ];
+       $form['delete_warning_message_entity_types']['entity_types'][$entity_type_id]['#states'] = [
+         'enabled' => [
+           ':input[name="track_enabled_target_entity_types[entity_types][' . $entity_type_id . ']"]' => ['checked' => TRUE],
+-        ]
++        ],
+       ];
+     }
+ 

@@ -1,0 +1,1411 @@
+diff --git a/js/basic_cart.js b/js/basic_cart.js
+index 266c39b..4f94f00 100755
+--- a/js/basic_cart.js
++++ b/js/basic_cart.js
+@@ -12,53 +12,51 @@
+ 
+ (function ($, Drupal, drupalSettings) {
+   $(function () {
+-  $(".addtocart-quantity-wrapper-container").each(function() {
++  $(".addtocart-quantity-wrapper-container").each(function () {
+                 var this_id = $(this).attr('id');
+                 id_split = this_id.split("_");
+-                var dynamic_id = "quantitydynamictext_"+id_split[1];
++                var dynamic_id = "quantitydynamictext_" + id_split[1];
+ var quantity_label = drupalSettings.basic_cart.label_value ? drupalSettings.basic_cart.label_value : 'Quantity';
+ 
+-                var dynamic_input = '<label for="edit-quantity" class="js-form-required form-required '+ drupalSettings.basic_cart.label_class
+- +'">'+quantity_label+'</label> <input type="text" value="1" class="quantity_dynamic_text form-text required '+drupalSettings.basic_cart.textfield_class
+-+'" id="'+dynamic_id+'">';
++                var dynamic_input = '<label for="edit-quantity" class="js-form-required form-required ' + drupalSettings.basic_cart.label_class
++ + '">' + quantity_label + '</label> <input type="text" value="1" class="quantity_dynamic_text form-text required ' + drupalSettings.basic_cart.textfield_class
+++ '" id="' + dynamic_id + '">';
+                 $(this).html(dynamic_input);
+            });
+ 
+-      $(document).on('click',".basic_cart-get-quantity",function(e) {
++      $(document).on('click',".basic_cart-get-quantity",function (e) {
+         e.preventDefault();   e.stopPropagation();
+         var this_ids = $(this).attr('id');
+         id_splited = this_ids.split("_");
+-        var quantity = $('#quantitydynamictext_'+id_splited[1]).val();
+-        var basic_cart_throbber = '<div id="basic-cart-ajax-progress-throbber_'+id_splited[1]+'" class="basic_cart-ajax-progress-throbber ajax-progress ajax-progress-throbber"><div class="basic_cart-throbber throbber">&nbsp;</div></div>';
+-         $('#forquantitydynamictext_'+id_splited[1]).after(basic_cart_throbber);
++        var quantity = $('#quantitydynamictext_' + id_splited[1]).val();
++        var basic_cart_throbber = '<div id="basic-cart-ajax-progress-throbber_' + id_splited[1] + '" class="basic_cart-ajax-progress-throbber ajax-progress ajax-progress-throbber"><div class="basic_cart-throbber throbber">&nbsp;</div></div>';
++         $('#forquantitydynamictext_' + id_splited[1]).after(basic_cart_throbber);
+          if($(this).hasClass('use-basic_cart-ajax')) {
+-         $.ajax({url: this.href+quantity, success: function(result) {
+-              $(".basic_cart-grid").each(function(){
++         $.ajax({url: this.href + quantity, success: function (result) {
++              $(".basic_cart-grid").each(function () {
+                 $(this).html(result.block);
+               });
+-              $("#"+result.id).hide();
+-              $("#"+result.id).html(result.text);
++              $("#" + result.id).hide();
++              $("#" + result.id).html(result.text);
+               $(".basic_cart-circles").each(function () {
+                 $(this).html(result.count);
+               });
+-              $("#"+result.id).fadeIn('slow').delay(1000).hide(2000);
+-              $('#basic-cart-ajax-progress-throbber_'+id_splited[1]).remove();
++              $("#" + result.id).fadeIn('slow').delay(1000).hide(2000);
++              $('#basic-cart-ajax-progress-throbber_' + id_splited[1]).remove();
+           },
+           error: function (xhr, ajaxOptions, thrownError) {
+-            $('#basic-cart-ajax-progress-throbber_'+id_splited[1]).remove();
+-            if(xhr.status==403) {
+-            $('#ajax-addtocart-message-'+id_splited[1]).html('<p class="messages messages--error">You are not authorized to add</p>').show();
++            $('#basic-cart-ajax-progress-throbber_' + id_splited[1]).remove();
++            if(xhr.status == 403) {
++            $('#ajax-addtocart-message-' + id_splited[1]).html('<p class="messages messages--error">You are not authorized to add</p>').show();
+             }else{
+-            $('#ajax-addtocart-message-'+id_splited[1]).html('<p class="messages messages--error">Contact site administrator</p>').show();
++            $('#ajax-addtocart-message-' + id_splited[1]).html('<p class="messages messages--error">Contact site administrator</p>').show();
+             }
+ 
+           }
+         });
+         }else {
+-          window.location.href = this.href+quantity;
++          window.location.href = this.href + quantity;
+         }
+       });
+   })
+ })(jQuery, Drupal, drupalSettings);
+-
+-
+diff --git a/src/CartInterface.php b/src/CartInterface.php
+index 69b8d32..c6ecdb5 100755
+--- a/src/CartInterface.php
++++ b/src/CartInterface.php
+@@ -36,6 +36,6 @@ interface CartInterface {
+    * @param array $params
+    *   Array to define quantity and entity type.
+    */
+-  public function addToCart($id, array $params = array());
++  public function addToCart($id, array $params = []);
+ 
+ }
+diff --git a/src/CartSession.php b/src/CartSession.php
+index 69469ef..c869882 100755
+--- a/src/CartSession.php
++++ b/src/CartSession.php
+@@ -34,13 +34,13 @@ class CartSession implements CartInterface {
+   public function getCart($nid = NULL) {
+     // print_r($nid); die;.
+     if (isset($nid)) {
+-      return array("cart" => $_SESSION['basic_cart']['cart'][$nid], "cart_quantity" => $_SESSION['basic_cart']['cart_quantity'][$nid]);
++      return ["cart" => $_SESSION['basic_cart']['cart'][$nid], "cart_quantity" => $_SESSION['basic_cart']['cart_quantity'][$nid]];
+     }
+     if (isset($_SESSION['basic_cart']['cart'])) {
+-      return array("cart" => $_SESSION['basic_cart']['cart'], "cart_quantity" => $_SESSION['basic_cart']['cart_quantity']);
++      return ["cart" => $_SESSION['basic_cart']['cart'], "cart_quantity" => $_SESSION['basic_cart']['cart_quantity']];
+     }
+     // Empty cart.
+-    return array("cart" => array(), "cart_quantity" => array());
++    return ["cart" => [], "cart_quantity" => []];
+   }
+ 
+   /**
+@@ -73,7 +73,7 @@ class CartSession implements CartInterface {
+    * @param array $params
+    *   Quantity and entity types.
+    */
+-  public  function addToCart($id, array $params = array()) {
++  public  function addToCart($id, array $params = []) {
+     $config = Settings::cartSettings();
+     if (!empty($params)) {
+       $quantity = $params['quantity'];
+diff --git a/src/CartStorage.php b/src/CartStorage.php
+index 1f39ee9..730f704 100755
+--- a/src/CartStorage.php
++++ b/src/CartStorage.php
+@@ -31,10 +31,10 @@ class CartStorage {
+         ->execute();
+     }
+     catch (\Exception $e) {
+-      drupal_set_message(t('db_insert failed. Message = %message, query= %query', array(
++      drupal_set_message(t('db_insert failed. Message = %message, query= %query', [
+         '%message' => $e->getMessage(),
+         '%query' => $e->query_string,
+-      )
++      ]
+       ), 'error');
+     }
+     return $return_value;
+@@ -62,10 +62,10 @@ class CartStorage {
+         ->execute();
+     }
+     catch (\Exception $e) {
+-      drupal_set_message(t('db_update failed. Message = %message, query= %query', array(
++      drupal_set_message(t('db_update failed. Message = %message, query= %query', [
+         '%message' => $e->getMessage(),
+         '%query' => $e->query_string,
+-      )
++      ]
+       ), 'error');
+     }
+     return $count;
+@@ -107,7 +107,7 @@ class CartStorage {
+    * @see http://drupal.org/node/310072
+    * @see http://drupal.org/node/310075
+    */
+-  public static function load(array $entry = array()) {
++  public static function load(array $entry = []) {
+     // Read all fields from the dbtng_example table.
+     $select = db_select(self::TABLE, 'cart');
+     $select->fields('cart');
+diff --git a/src/CartStorageSelect.php b/src/CartStorageSelect.php
+index 398d092..644d26b 100755
+--- a/src/CartStorageSelect.php
++++ b/src/CartStorageSelect.php
+@@ -79,7 +79,7 @@ class CartStorageSelect {
+    * @return string
+    *   Message
+    */
+-  public  function addToCart($id, array $params = array()) {
++  public  function addToCart($id, array $params = []) {
+     return $this->cart->addToCart($id, $params);
+   }
+ 
+diff --git a/src/CartTable.php b/src/CartTable.php
+index dfb8f03..3a72f34 100755
+--- a/src/CartTable.php
++++ b/src/CartTable.php
+@@ -36,13 +36,13 @@ class CartTable implements CartInterface {
+    */
+   public function getCart($nid = NULL) {
+     if (isset($nid)) {
+-      return array("cart" => $_SESSION['basic_cart']['cart'][$nid], "cart_quantity" => $_SESSION['basic_cart']['cart_quantity'][$nid]);
++      return ["cart" => $_SESSION['basic_cart']['cart'][$nid], "cart_quantity" => $_SESSION['basic_cart']['cart_quantity'][$nid]];
+     }
+     if (isset($_SESSION['basic_cart']['cart'])) {
+-      return array("cart" => $_SESSION['basic_cart']['cart'], "cart_quantity" => $_SESSION['basic_cart']['cart_quantity']);
++      return ["cart" => $_SESSION['basic_cart']['cart'], "cart_quantity" => $_SESSION['basic_cart']['cart_quantity']];
+     }
+     // Empty cart.
+-    return array("cart" => array(), "cart_quantity" => array());
++    return ["cart" => [], "cart_quantity" => []];
+   }
+ 
+   /**
+@@ -84,7 +84,7 @@ class CartTable implements CartInterface {
+    * @param array $params
+    *   Quantity and entity types.
+    */
+-  public  function addToCart($id, array $params = array()) {
++  public  function addToCart($id, array $params = []) {
+     $config = Settings::cartSettings();
+     if (!empty($params)) {
+       $quantity = $params['quantity'];
+@@ -121,7 +121,7 @@ class CartTable implements CartInterface {
+   public function loggedInActionCart() {
+     if (isset($_SESSION['basic_cart']['cart']) && isset($_SESSION['basic_cart']['cart_quantity'])) {
+       foreach ($_SESSION['basic_cart']['cart'] as $id => $value) {
+-        $param = array();
++        $param = [];
+         $param['uid'] = $this->userId;
+         $param['id'] = $id;
+         $param['entitytype'] = $value->getEntityTypeId();
+@@ -136,7 +136,7 @@ class CartTable implements CartInterface {
+         }
+       }
+     }
+-    $param = array();
++    $param = [];
+     $param['uid'] = $this->userId;
+     $exist_data = $this->cartStorage->load($param);
+     foreach ($exist_data as $key) {
+diff --git a/src/Controller/CartController.php b/src/Controller/CartController.php
+index eb65490..fccb2b0 100755
+--- a/src/Controller/CartController.php
++++ b/src/Controller/CartController.php
+@@ -44,7 +44,7 @@ class CartController extends ControllerBase {
+       $route->setDefault('_title', t($config->get('cart_page_title')));
+     }
+ 
+-    return !empty($cart['cart']) ? \Drupal::formBuilder()->getForm('\Drupal\basic_cart\Form\CartForm') : array('#type' => 'markup', '#markup' => t($config->get('empty_cart')));
++    return !empty($cart['cart']) ? \Drupal::formBuilder()->getForm('\Drupal\basic_cart\Form\CartForm') : ['#type' => 'markup', '#markup' => t($config->get('empty_cart'))];
+ 
+   }
+ 
+@@ -105,16 +105,16 @@ class CartController extends ControllerBase {
+     $cart = $utility::getCart();
+     if (isset($cart['cart']) && !empty($cart['cart'])) {
+       $type = node_type_load("basic_cart_order");
+-      $node = $this->entityManager()->getStorage('node')->create(array(
++      $node = $this->entityManager()->getStorage('node')->create([
+         'type' => $type->id(),
+-      ));
++      ]);
+ 
+       $node_create_form = $this->entityFormBuilder()->getForm($node);
+ 
+-      return array(
++      return [
+         '#type' => 'markup',
+         '#markup' => render($node_create_form),
+-      );
++      ];
+     }
+     else {
+ 
+@@ -131,16 +131,16 @@ class CartController extends ControllerBase {
+    */
+   public function orderCreate() {
+     $type = node_type_load("basic_cart_order");
+-    $node = $this->entityManager()->getStorage('node')->create(array(
++    $node = $this->entityManager()->getStorage('node')->create([
+       'type' => $type->id(),
+-    ));
++    ]);
+ 
+     $node_create_form = $this->entityFormBuilder()->getForm($node);
+ 
+-    return array(
++    return [
+       '#type' => 'markup',
+       '#markup' => render($node_create_form),
+-    );
++    ];
+   }
+ 
+   /**
+@@ -184,11 +184,11 @@ class CartController extends ControllerBase {
+   public function thankYouPage() {
+     $utility = new Utility();
+     $config = $utility->checkoutSettings();
+-    return array(
++    return [
+       '#type' => 'markup',
+       '#theme' => 'basic_cart_thank_you',
+       '#basic_cart' => ['title' => $config->get('thankyou')['title'], 'text' => $config->get('thankyou')['text']],
+-    );
++    ];
+   }
+ 
+ }
+diff --git a/src/Form/CartForm.php b/src/Form/CartForm.php
+index 3018203..c11bce9 100755
+--- a/src/Form/CartForm.php
++++ b/src/Form/CartForm.php
+@@ -29,50 +29,49 @@ class CartForm extends FormBase {
+     $form['#theme'] = 'basic_cart_cart_form';
+     $cart = Utility::getCart();
+     $config = Utility::cartSettings();
+-    //$langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+-    //$price = Utility::getTotalPrice();
+-    //$total = Utility::formatPrice($price->total);
+-    //$vat_is_enabled = (int) $config->get('vat_state');
+-   // $vat_value = !empty($vat_is_enabled) && $vat_is_enabled ? Utility::formatPrice($price->vat) : 0;
+-
++    // $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
++    // $price = Utility::getTotalPrice();
++    // $total = Utility::formatPrice($price->total);
++    // $vat_is_enabled = (int) $config->get('vat_state');
++    // $vat_value = !empty($vat_is_enabled) && $vat_is_enabled ? Utility::formatPrice($price->vat) : 0;
+     // And now the form.
+-    $form['cartcontents'] = array(
++    $form['cartcontents'] = [
+       // Make the returned array come back in tree form.
+       '#tree' => TRUE,
+-    );
++    ];
+     // Cart elements.
+     foreach ($cart['cart_quantity'] as $nid => $quantity) {
+       $variable = Utility::quantityPrefixData($nid);
+-      $form['cartcontents'][$nid] = array(
++      $form['cartcontents'][$nid] = [
+         '#type' => $config->get('quantity_status') ? 'textfield' : 'markup',
+         '#size' => 2,
+         '#quantity_id'  => $nid,
+         "#suffix" => Utility::render('basic_cart_quantity_suffix', $variable),
+         "#prefix" => Utility::render('basic_cart_quantity_prefix', $variable),
+         '#default_value' => $quantity,
+-      );
++      ];
+     }
+-    $form['total_price'] = array(
++    $form['total_price'] = [
+       '#markup' => Utility::render('basic_cart_total_price_markup', Utility::getTotalPriceMarkupData()),
+-    );
++    ];
+ 
+     // Buttons.
+-    $form['buttons'] = array(
++    $form['buttons'] = [
+       '#tree' => TRUE,
+-    );
++    ];
+ 
+-    $form['buttons']['update'] = array(
++    $form['buttons']['update'] = [
+       '#type' => 'submit',
+       '#value' => t($config->get('cart_update_button')),
+       '#name' => "update",
+-    );
++    ];
+ 
+     if ($config->get('order_status')) {
+-      $form['buttons']['checkout'] = array(
++      $form['buttons']['checkout'] = [
+         '#type' => 'submit',
+-        '#value' =>(trim($config->get('cart_button_name'))!="" ?$config->get('cart_button_name'):'Checkout'),
++        '#value' => (trim($config->get('cart_button_name')) != "" ? $config->get('cart_button_name') : 'Checkout'),
+         '#name' => "checkout",
+-      );
++      ];
+     }
+ 
+     return $form;
+diff --git a/src/Form/CartSettingsForm.php b/src/Form/CartSettingsForm.php
+index 1eb144a..096e2ab 100755
+--- a/src/Form/CartSettingsForm.php
++++ b/src/Form/CartSettingsForm.php
+@@ -37,19 +37,18 @@ class CartSettingsForm extends ConfigFormBase {
+       return NULL;
+     }
+ 
+-    if(trim($config->get('placeorder_button_name'))==""){  
+-    
+-                $this->config('basic_cart.settings')
+-      ->set('placeorder_button_name','Place Order')->save();
++    if (trim($config->get('placeorder_button_name')) == "") {
++
++      $this->config('basic_cart.settings')
++        ->set('placeorder_button_name', 'Place Order')->save();
+     }
+-    if($config->get('cart_button_name')==""){
+-     $this->config('basic_cart.settings')
+-      ->set('cart_button_name','Checkout')->save();
+-        
++    if ($config->get('cart_button_name') == "") {
++      $this->config('basic_cart.settings')
++        ->set('cart_button_name', 'Checkout')->save();
++
+     }
+ 
+-    
+-    $options = array();
++    $options = [];
+     foreach ($node_types as $node_type => $type) {
+       if ($node_type == 'basic_cart_order' || $node_type == 'basic_cart_connect') {
+         continue;
+@@ -57,225 +56,225 @@ class CartSettingsForm extends ConfigFormBase {
+       $options[$node_type] = $type->get('name');
+     }
+ 
+-    $form['content_type'] = array(
++    $form['content_type'] = [
+       '#title' => t('Content type selection'),
+       '#type' => 'fieldset',
+       '#description' => t('Please select the content types for which you wish to have the "Add to cart" option.'),
+-    );
++    ];
+ 
+-    $form['content_type']['basic_cart_content_types'] = array(
++    $form['content_type']['basic_cart_content_types'] = [
+       '#title' => t('Content types'),
+       '#type' => 'checkboxes',
+       '#options' => $options,
+       '#default_value' => $config->get('content_type'),
+-    );
++    ];
+ 
+-    $form['content_type']['basic_cart_all_content_types'] = array(
++    $form['content_type']['basic_cart_all_content_types'] = [
+       '#type' => 'hidden',
+       '#default_value' => $config->get('content_type'),
+-    );
++    ];
+ 
+-    $form['table'] = array(
++    $form['table'] = [
+       '#title' => t('Store cart data in database table'),
+       '#type' => 'fieldset',
+       '#description' => t('Enable cart to store the data in database instead of session. Data will persist only when user logged in'),
+-    );
++    ];
+ 
+-    $form['table']['basic_cart_use_cart_table'] = array(
++    $form['table']['basic_cart_use_cart_table'] = [
+       '#title' => t('Persist cart data'),
+       '#type' => 'checkbox',
+       '#description' => t('This option will enable to persist cart data even the user is logged out and logging in again'),
+       '#default_value' => $config->get('use_cart_table'),
+-    );
++    ];
+ 
+-    $form['currency'] = array(
++    $form['currency'] = [
+       '#title' => t('Currency and price'),
+       '#type' => 'fieldset',
+       '#description' => t('Please select the currency in which the prices will be calculated.'),
+-    );
++    ];
+ 
+-    $form['currency']['basic_cart_currency_status'] = array(
++    $form['currency']['basic_cart_currency_status'] = [
+       '#title' => t('Enable Currency'),
+       '#type' => 'checkbox',
+       '#description' => t('Enable Currency for your cart price,this will available only if price is enabled'),
+       '#default_value' => $config->get('currency_status'),
+-    );
++    ];
+ 
+-    $form['currency']['basic_cart_currency'] = array(
++    $form['currency']['basic_cart_currency'] = [
+       '#title' => t('Currency'),
+       '#type' => 'textfield',
+       '#description' => t("Please choose the currency."),
+       '#default_value' => $config->get('currency'),
+-    );
++    ];
+ 
+-    $form['currency']['basic_cart_price_format'] = array(
++    $form['currency']['basic_cart_price_format'] = [
+       '#title' => t('Price format'),
+       '#type' => 'select',
+       '#options' => Utility::listPriceFormats(),
+       '#description' => t("Please choose the format in which the price will be shown."),
+       '#default_value' => $config->get('price_format'),
+-    );
++    ];
+ 
+-    $form['currency']['basic_cart_quantity_status'] = array(
++    $form['currency']['basic_cart_quantity_status'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Enable quantity'),
+       '#default_value' => $config->get('quantity_status'),
+       '#description' => t('Enable quantity  for your cart, if quantity not enabled you can add to a cart without quantity'),
+-    );
++    ];
+ 
+-    $form['currency']['basic_cart_price_status'] = array(
++    $form['currency']['basic_cart_price_status'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Enable price'),
+       '#default_value' => $config->get('price_status'),
+       '#description' => t('Enable price for your cart, if price not enabled you can add to a cart without price'),
+-    );
++    ];
+ 
+-    $form['currency']['basic_cart_total_price_status'] = array(
++    $form['currency']['basic_cart_total_price_status'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Enable total price'),
+       '#default_value' => $config->get('total_price_status'),
+       '#description' => t('Enable total price for your cart, if total price is not enabled your cart would not have total price calcutaion'),
+-    );
++    ];
+ 
+-    $form['vat'] = array(
++    $form['vat'] = [
+       '#title' => t('VAT'),
+       '#type' => 'fieldset',
+-    );
++    ];
+ 
+-    $form['vat']['basic_cart_vat_state'] = array(
++    $form['vat']['basic_cart_vat_state'] = [
+       '#title' => t('Check if you want to apply the VAT tax on the total amount in the checkout process.'),
+       '#type' => 'checkbox',
+       '#default_value' => $config->get('vat_state'),
+-    );
++    ];
+ 
+-    $form['vat']['basic_cart_vat_value'] = array(
++    $form['vat']['basic_cart_vat_value'] = [
+       '#title' => t('VAT value'),
+       '#type' => 'textfield',
+       '#description' => t("Please enter VAT value."),
+       '#field_suffix' => '%',
+       '#size' => 10,
+       '#default_value' => $config->get('vat_value'),
+-    );
++    ];
+ 
+-    $form['order'] = array(
++    $form['order'] = [
+       '#title' => t('Basic Cart Order'),
+       '#type' => 'fieldset',
+-    );
++    ];
+ 
+-    $form['order']['basic_cart_order_status'] = array(
++    $form['order']['basic_cart_order_status'] = [
+       '#title' => t('Check if you want to create order for the cart.'),
+       '#type' => 'checkbox',
+       '#default_value' => $config->get('order_status'),
+-    );
++    ];
+ 
+-    $form['redirect'] = array(
++    $form['redirect'] = [
+       '#title' => t('Redirect user after adding an item to the shopping cart'),
+       '#type' => 'fieldset',
+-    );
++    ];
+ 
+-    $form['redirect']['basic_cart_add_to_cart_redirect'] = array(
++    $form['redirect']['basic_cart_add_to_cart_redirect'] = [
+       '#title' => t('Add to cart redirect'),
+       '#type' => 'textfield',
+       '#description' => t("Enter the page you wish to redirect the customer to when an item is added to the cart, or &lt;none&gt; for no redirect."),
+       '#default_value' => $config->get('add_to_cart_redirect'),
+-    );
++    ];
+ 
+-    $form['configure'] = array(
++    $form['configure'] = [
+       '#title' => t('Configure texts'),
+       '#type' => 'fieldset',
+     // '#description' => t('Please configure text to be shown in your cart'),.
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_cart_page_title'] = array(
++    $form['configure']['basic_cart_cart_page_title'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Page title'),
+       '#default_value' => $config->get('cart_page_title'),
+       '#description' => t('Please configure page title to be shown in your cart page'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_empty_cart'] = array(
++    $form['configure']['basic_cart_empty_cart'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Empty Cart'),
+       '#default_value' => $config->get('empty_cart'),
+       '#description' => t('Please configure a text when your cart is empty'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_cart_block_title'] = array(
++    $form['configure']['basic_cart_cart_block_title'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Block Title'),
+       '#default_value' => $config->get('cart_block_title'),
+       '#description' => t('Please configure your cart block title'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_view_cart_button'] = array(
++    $form['configure']['basic_cart_view_cart_button'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('View cart'),
+       '#default_value' => $config->get('view_cart_button'),
+       '#description' => t('Please configure your text on view cart button'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_cart_update_button'] = array(
++    $form['configure']['basic_cart_cart_update_button'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Update cart button'),
+       '#default_value' => $config->get('cart_update_button'),
+       '#description' => t('Please configure your text on update cart button'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_cart_updated_message'] = array(
++    $form['configure']['basic_cart_cart_updated_message'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Cart updated message'),
+       '#default_value' => $config->get('cart_updated_message'),
+       '#description' => t('Please configure message to show after the cart updated'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_quantity_label'] = array(
++    $form['configure']['basic_cart_quantity_label'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Quantity label'),
+       '#default_value' => $config->get('quantity_label'),
+       '#description' => t('Please configure your text for quantity label,this will available only if quantity is enabled'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_price_label'] = array(
++    $form['configure']['basic_cart_price_label'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Price label'),
+       '#default_value' => $config->get('price_label'),
+       '#description' => t('Please configure your text for price label,this will available only if price is enabled'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_total_price_label'] = array(
++    $form['configure']['basic_cart_total_price_label'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Total price label'),
+       '#default_value' => $config->get('total_price_label'),
+       '#description' => t('Please configure your text for total price label,this will available only if total price is enabled'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_add_to_cart_button'] = array(
++    $form['configure']['basic_cart_add_to_cart_button'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Add to Cart'),
+       '#default_value' => $config->get('add_to_cart_button'),
+       '#description' => t('Please configure your text on update cart button'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_added_to_cart_message'] = array(
++    $form['configure']['basic_cart_added_to_cart_message'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Added to Cart'),
+       '#default_value' => $config->get('added_to_cart_message'),
+       '#description' => t('Please configure your text on to appear after the entity is added to cart'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_cart_button_name'] = array(
++    $form['configure']['basic_cart_cart_button_name'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Basic Cart Button Name'),
+       '#default_value' => $config->get('cart_button_name'),
+       '#description' => t('Please configure your text on to appear On Checkout Form'),
+-    );
++    ];
+ 
+-    $form['configure']['basic_cart_placeorder_button_name'] = array(
++    $form['configure']['basic_cart_placeorder_button_name'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Basic Cart Placeorder Button Name'),
+       '#default_value' => $config->get('placeorder_button_name'),
+       '#description' => t('Please configure your text on to appear On Create Order Form'),
+-    );
++    ];
+     return parent::buildForm($form, $form_state);
+   }
+ 
+diff --git a/src/Form/CheckOutSettingsForm.php b/src/Form/CheckOutSettingsForm.php
+index 152e80a..c53c433 100755
+--- a/src/Form/CheckOutSettingsForm.php
++++ b/src/Form/CheckOutSettingsForm.php
+@@ -31,79 +31,79 @@ class CheckOutSettingsForm extends ConfigFormBase {
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     $config = $this->config('basic_cart.checkout');
+-    $form['email_messages'] = array(
++    $form['email_messages'] = [
+       '#title' => t('Email messages'),
+       '#type' => 'fieldset',
+       '#description' => t('Here you can customize the mails sent to the site administrator and customer, after an order is placed.'),
+-    );
++    ];
+ 
+-    $form['email_messages']['basic_cart_administrator_emails'] = array(
++    $form['email_messages']['basic_cart_administrator_emails'] = [
+       '#title' => t('Administrator emails'),
+       '#type' => 'textarea',
+       '#description' => t('After each placed order, an email with the order details will be sent to all the addresses from the list above. Please add one email address per line.'),
+       '#default_value' => $config->get('admin_emails') ? $config->get('admin_emails') : \Drupal::config('system.site')->get('mail'),
+-    );
++    ];
+ 
+-    $form['email_messages']['basic_cart_subject_admin'] = array(
++    $form['email_messages']['basic_cart_subject_admin'] = [
+       '#title' => t('Subject'),
+       '#type' => 'textfield',
+       '#description' => t("Subject field for the administrator's email."),
+       '#default_value' => $config->get('admin')['subject'],
+-    );
++    ];
+ 
+-    $form['email_messages']['basic_cart_administer_message'] = array(
++    $form['email_messages']['basic_cart_administer_message'] = [
+       '#title' => t('Admin email'),
+       '#type' => 'textarea',
+       '#description' => t('This email will be sent to the site administrator just after an order is placed. Please see all available tokens below. For listing the products, please use: [basic_cart_order:products]'),
+       '#default_value' => $config->get('admin')['body'],
+-    );
++    ];
+ 
+-    $form['email_messages']['basic_cart_send_emailto_user'] = array(
++    $form['email_messages']['basic_cart_send_emailto_user'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Send an email to the customer after an order is placed'),
+       '#default_value' => $config->get('send_emailto_user'),
+-    );
++    ];
+ 
+-    $form['email_messages']['basic_cart_subject_user'] = array(
++    $form['email_messages']['basic_cart_subject_user'] = [
+       '#title' => t('Subject'),
+       '#type' => 'textfield',
+       '#description' => t("Subject field for the user's email."),
+       '#default_value' => $config->get('user')['subject'],
+-    );
++    ];
+ 
+-    $form['email_messages']['basic_cart_user_message'] = array(
++    $form['email_messages']['basic_cart_user_message'] = [
+       '#title' => t('User email'),
+       '#type' => 'textarea',
+       '#description' => t('This email will be sent to the user just after an order is placed. Please see all available tokens below. For listing the products, please use: [basic_cart_order:products]'),
+       '#default_value' => $config->get('user')['body'],
+-    );
++    ];
+ 
+-    $form['thankyou'] = array(
++    $form['thankyou'] = [
+       '#title' => t('Thank you page'),
+       '#type' => 'fieldset',
+       '#description' => t('Thank you page customization.'),
+-    );
++    ];
+ 
+-    $form['thankyou']['basic_cart_thankyou_page_title'] = array(
++    $form['thankyou']['basic_cart_thankyou_page_title'] = [
+       '#title' => t('Title'),
+       '#type' => 'textfield',
+       '#description' => t("Thank you page title."),
+       '#default_value' => $config->get('thankyou')['title'],
+-    );
++    ];
+ 
+-    $form['thankyou']['basic_cart_thankyou_page_text'] = array(
++    $form['thankyou']['basic_cart_thankyou_page_text'] = [
+       '#title' => t('Text'),
+       '#type' => 'textarea',
+       '#description' => t('Thank you page text.'),
+       '#default_value' => $config->get('thankyou')['text'],
+-    );
++    ];
+ 
+-    $form['thankyou']['basic_cart_thankyou_custom_page'] = array(
++    $form['thankyou']['basic_cart_thankyou_custom_page'] = [
+       '#title' => t('Redirect to custom thankyou page url'),
+       '#type' => 'textfield',
+       '#description' => t('Redirect to your custom url after the successfull order creation.(if value given, page will be redirected to given url, instead of showing thankyou page content above)'),
+       '#default_value' => $config->get('thankyou')['custom_page'],
+-    );
++    ];
+ 
+     return parent::buildForm($form, $form_state);
+   }
+@@ -112,13 +112,13 @@ class CheckOutSettingsForm extends ConfigFormBase {
+    * {@inheritdoc}
+    */
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+-    $admin = array("subject" => $form_state->getValue('basic_cart_subject_admin'), "body" => $form_state->getValue('basic_cart_administer_message'));
+-    $user = array("subject" => $form_state->getValue('basic_cart_subject_user'), "body" => $form_state->getValue('basic_cart_user_message'));
+-    $thankyou = array(
++    $admin = ["subject" => $form_state->getValue('basic_cart_subject_admin'), "body" => $form_state->getValue('basic_cart_administer_message')];
++    $user = ["subject" => $form_state->getValue('basic_cart_subject_user'), "body" => $form_state->getValue('basic_cart_user_message')];
++    $thankyou = [
+       "title" => $form_state->getValue('basic_cart_thankyou_page_title'),
+       "text" => $form_state->getValue('basic_cart_thankyou_page_text'),
+       "custom_page" => $form_state->getValue('basic_cart_thankyou_custom_page'),
+-    );
++    ];
+     $this->config('basic_cart.checkout')
+       ->set('admin_emails', $form_state->getValue('basic_cart_administrator_emails'))
+       ->set('admin', $admin)
+diff --git a/src/Plugin/Block/CartBlock.php b/src/Plugin/Block/CartBlock.php
+index d23d612..eedbf03 100755
+--- a/src/Plugin/Block/CartBlock.php
++++ b/src/Plugin/Block/CartBlock.php
+@@ -20,13 +20,13 @@ class CartBlock extends BlockBase {
+    */
+   public function build() {
+     $config = Utility::cartSettings();
+-    return array(
++    return [
+       '#theme' => 'basic_cart_cart_template',
+       '#basic_cart' => Utility::getCartData(),
+       '#type' => 'markup',
+       '#title' => $config->get('cart_block_title'),
+-      '#cache' => array('max-age' => 0),
+-    );
++      '#cache' => ['max-age' => 0],
++    ];
+   }
+ 
+ }
+diff --git a/src/Plugin/Block/CountBlock.php b/src/Plugin/Block/CountBlock.php
+index 086af02..7aba8e6 100755
+--- a/src/Plugin/Block/CountBlock.php
++++ b/src/Plugin/Block/CountBlock.php
+@@ -23,11 +23,11 @@ class CountBlock extends BlockBase {
+   public function build() {
+ 
+     $config = $this->getConfiguration();
+-    $render = array(
++    $render = [
+       '#theme' => 'basic_cart_count_block',
+       '#cartcount' => Utility::cartCount(),
+-      '#cache' => array('max-age' => 0),
+-    );
++      '#cache' => ['max-age' => 0],
++    ];
+     if ($config['float']) {
+       $render['#float'] = SafeMarkup::checkPlain($config['float'])->__toString();
+     }
+@@ -64,7 +64,7 @@ class CountBlock extends BlockBase {
+ 
+     $config = $this->getConfiguration();
+ 
+-    $form['size'] = array(
++    $form['size'] = [
+       '#type' => 'select',
+       '#options' => [
+         '32x26' => '32x26',
+@@ -75,43 +75,43 @@ class CountBlock extends BlockBase {
+       '#title' => $this->t('Cart Icon Size'),
+       '#description' => $this->t('Cart icon size'),
+       '#default_value' => isset($config['size']) ? $config['size'] : '48x29',
+-    );
++    ];
+ 
+-    $form['float'] = array(
++    $form['float'] = [
+       '#type' => 'select',
+       '#options' => ['none' => 'none', 'right' => 'right', 'left' => 'left'],
+       '#title' => $this->t('Float'),
+       '#description' => $this->t('Cart icon floated to right or left'),
+       '#default_value' => isset($config['float']) ? $config['float'] : '',
+-    );
+-    $form['top'] = array(
++    ];
++    $form['top'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Top'),
+       '#description' => $this->t('Top positon value in pixel'),
+       '#default_value' => isset($config['top']) ? $config['top'] : '',
+       '#size' => 3,
+-    );
+-    $form['bottom'] = array(
++    ];
++    $form['bottom'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Bottom'),
+       '#description' => $this->t('Bottom positon value in pixel'),
+       '#default_value' => isset($config['bottom']) ? $config['bottom'] : '',
+       '#size' => 3,
+-    );
+-    $form['left'] = array(
++    ];
++    $form['left'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Left'),
+       '#description' => $this->t('Left positon value in pixel'),
+       '#default_value' => isset($config['left']) ? $config['left'] : '',
+       '#size' => 3,
+-    );
+-    $form['right'] = array(
++    ];
++    $form['right'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Right'),
+       '#description' => $this->t('Right positon value in pixel'),
+       '#default_value' => isset($config['right']) ? $config['right'] : '',
+       '#size' => 3,
+-    );
++    ];
+     return $form;
+   }
+ 
+diff --git a/src/Plugin/Field/FieldFormatter/AddToCartFormatter.php b/src/Plugin/Field/FieldFormatter/AddToCartFormatter.php
+index 9787f97..831ec55 100755
+--- a/src/Plugin/Field/FieldFormatter/AddToCartFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/AddToCartFormatter.php
+@@ -26,12 +26,12 @@ class AddToCartFormatter extends FormatterBase {
+    * {@inheritdoc}
+    */
+   public static function defaultSettings() {
+-    return array(
++    return [
+       'addtocart_wrapper_container_class' => '',
+       'addtocart_button_container_class' => '',
+       'addtocart_button_class' => '',
+       'addtocart_message_wrapper_class' => '',
+-    ) + parent::defaultSettings();
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+@@ -46,7 +46,7 @@ class AddToCartFormatter extends FormatterBase {
+       $addtocart_message_wrapper_class = SafeMarkup::checkPlain($this->getSetting('addtocart_message_wrapper_class'))->__toString();
+ 
+       $config = \Drupal::config('basic_cart.settings');
+-      $elements = array();
++      $elements = [];
+       $option = [
+         'query' => ['entitytype' => $entity->getEntityTypeId(), 'quantity' => ''],
+         'absolute' => TRUE,
+@@ -78,27 +78,27 @@ class AddToCartFormatter extends FormatterBase {
+    */
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+ 
+-    $element = array();
+-    $element['addtocart_wrapper_container_class'] = array(
++    $element = [];
++    $element['addtocart_wrapper_container_class'] = [
+       '#type' => 'textfield',
+       '#title' => t('Add to cart wrapper class (css)'),
+       '#default_value' => $this->getSetting('addtocart_wrapper_container_class'),
+-    );
+-    $element['addtocart_button_container_class'] = array(
++    ];
++    $element['addtocart_button_container_class'] = [
+       '#type' => 'textfield',
+       '#title' => t('Add to cart button container class (css)'),
+       '#default_value' => $this->getSetting('addtocart_button_container_class'),
+-    );
+-    $element['addtocart_button_class'] = array(
++    ];
++    $element['addtocart_button_class'] = [
+       '#type' => 'textfield',
+       '#title' => t('Add to cart button class (css)'),
+       '#default_value' => $this->getSetting('addtocart_button_class'),
+-    );
+-    $element['addtocart_message_wrapper_class'] = array(
++    ];
++    $element['addtocart_message_wrapper_class'] = [
+       '#type' => 'textfield',
+       '#title' => t('Add to cart button class (css)'),
+       '#default_value' => $this->getSetting('addtocart_message_wrapper_class'),
+-    );
++    ];
+     return $element;
+   }
+ 
+diff --git a/src/Plugin/Field/FieldFormatter/AddToCartWithQuantityFormatter.php b/src/Plugin/Field/FieldFormatter/AddToCartWithQuantityFormatter.php
+index 78df1b9..92696c9 100755
+--- a/src/Plugin/Field/FieldFormatter/AddToCartWithQuantityFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/AddToCartWithQuantityFormatter.php
+@@ -26,7 +26,7 @@ class AddToCartWithQuantityFormatter extends FormatterBase {
+    * {@inheritdoc}
+    */
+   public static function defaultSettings() {
+-    return array(
++    return [
+       'quantity_addtocart_wrapper_container_class' => '',
+       'quantity_addtocart_button_container_class' => '',
+       'quantity_addtocart_button_class' => '',
+@@ -35,7 +35,7 @@ class AddToCartWithQuantityFormatter extends FormatterBase {
+       'quantity_addtocart_quantity_textfield_class' => '',
+       'quantity_addtocart_quantity_label_class' => '',
+       'quantity_addtocart_quantity_label_value' => '',
+-    ) + parent::defaultSettings();
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+@@ -55,7 +55,7 @@ class AddToCartWithQuantityFormatter extends FormatterBase {
+ 
+     $entity = $items->getEntity();
+     $config = \Drupal::config('basic_cart.settings');
+-    $elements = array();
++    $elements = [];
+ 
+     $option = [
+       'query' => ['entitytype' => $entity->getEntityTypeId(), 'quantity' => ''],
+@@ -94,47 +94,47 @@ class AddToCartWithQuantityFormatter extends FormatterBase {
+    */
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+ 
+-    $element = array();
+-    $element['quantity_addtocart_wrapper_container_class'] = array(
++    $element = [];
++    $element['quantity_addtocart_wrapper_container_class'] = [
+       '#type' => 'textfield',
+       '#title' => t('Add to cart wrapper class (css)'),
+       '#default_value' => $this->getSetting('quantity_addtocart_wrapper_container_class'),
+-    );
+-    $element['quantity_addtocart_button_container_class'] = array(
++    ];
++    $element['quantity_addtocart_button_container_class'] = [
+       '#type' => 'textfield',
+       '#title' => t('Add to cart button container class (css)'),
+       '#default_value' => $this->getSetting('quantity_addtocart_button_container_class'),
+-    );
+-    $element['quantity_addtocart_button_class'] = array(
++    ];
++    $element['quantity_addtocart_button_class'] = [
+       '#type' => 'textfield',
+       '#title' => t('Add to cart button class (css)'),
+       '#default_value' => $this->getSetting('quantity_addtocart_button_class'),
+-    );
+-    $element['quantity_addtocart_message_wrapper_class'] = array(
++    ];
++    $element['quantity_addtocart_message_wrapper_class'] = [
+       '#type' => 'textfield',
+       '#title' => t('Add to cart button class (css)'),
+       '#default_value' => $this->getSetting('quantity_addtocart_message_wrapper_class'),
+-    );
+-    $element['quantity_addtocart_quantity_wrapper_container_class'] = array(
++    ];
++    $element['quantity_addtocart_quantity_wrapper_container_class'] = [
+       '#type' => 'textfield',
+       '#title' => t('Quantity wrapper class (css)'),
+       '#default_value' => $this->getSetting('quantity_addtocart_quantity_wrapper_container_class'),
+-    );
+-    $element['quantity_addtocart_quantity_textfield_class'] = array(
++    ];
++    $element['quantity_addtocart_quantity_textfield_class'] = [
+       '#type' => 'textfield',
+       '#title' => t('Quantity textfield class (css)'),
+       '#default_value' => $this->getSetting('quantity_addtocart_quantity_textfield_class'),
+-    );
+-    $element['quantity_addtocart_quantity_label_class'] = array(
++    ];
++    $element['quantity_addtocart_quantity_label_class'] = [
+       '#type' => 'textfield',
+       '#title' => t('Quantity label class (css)'),
+       '#default_value' => $this->getSetting('quantity_addtocart_quantity_label_class'),
+-    );
+-    $element['quantity_addtocart_quantity_label_value'] = array(
++    ];
++    $element['quantity_addtocart_quantity_label_value'] = [
+       '#type' => 'textfield',
+       '#title' => t('Quantity label value'),
+       '#default_value' => $this->getSetting('quantity_addtocart_quantity_label_value'),
+-    );
++    ];
+     return $element;
+   }
+ 
+diff --git a/src/Plugin/Field/FieldType/AddToCartItem.php b/src/Plugin/Field/FieldType/AddToCartItem.php
+index fa946c2..77d31a8 100755
+--- a/src/Plugin/Field/FieldType/AddToCartItem.php
++++ b/src/Plugin/Field/FieldType/AddToCartItem.php
+@@ -26,15 +26,15 @@ class AddToCartItem extends FieldItemBase {
+    * {@inheritdoc}
+    */
+   public static function schema(FieldStorageDefinitionInterface $field_definition) {
+-    return array(
+-      'columns' => array(
+-        'value' => array(
++    return [
++      'columns' => [
++        'value' => [
+           'type' => 'int',
+           'size' => 'tiny',
+           'not null' => FALSE,
+-        ),
+-      ),
+-    );
++        ],
++      ],
++    ];
+   }
+ 
+   /**
+diff --git a/src/Plugin/Field/FieldWidget/AddToCartWidget.php b/src/Plugin/Field/FieldWidget/AddToCartWidget.php
+index 648c821..4cd162f 100755
+--- a/src/Plugin/Field/FieldWidget/AddToCartWidget.php
++++ b/src/Plugin/Field/FieldWidget/AddToCartWidget.php
+@@ -25,13 +25,13 @@ class AddToCartWidget extends WidgetBase {
+    */
+   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+     $value = isset($items[$delta]->value) ? $items[$delta]->value : '';
+-    $element += array(
++    $element += [
+       '#type' => 'checkbox',
+       '#default_value' => $value,
+       '#size' => 1,
+       '#maxlength' => 1,
+-    );
+-    return array('value' => $element);
++    ];
++    return ['value' => $element];
+   }
+-  
++
+ }
+diff --git a/src/Settings.php b/src/Settings.php
+index edd37e0..c6d4c0a 100755
+--- a/src/Settings.php
++++ b/src/Settings.php
+@@ -104,17 +104,17 @@ class Settings {
+   public static function listPriceFormats() {
+     $config = self::cartSettings();
+     $currency = $config->get('currency');
+-    return array(
+-      0 => t('1 234,00 @currency', array('@currency' => $currency)),
+-      1 => t('1 234.00 @currency', array('@currency' => $currency)),
+-      2 => t('1,234.00 @currency', array('@currency' => $currency)),
+-      3 => t('1.234,00 @currency', array('@currency' => $currency)),
+-
+-      4 => t('@currency 1 234,00', array('@currency' => $currency)),
+-      5 => t('@currency 1 234.00', array('@currency' => $currency)),
+-      6 => t('@currency 1,234.00', array('@currency' => $currency)),
+-      7 => t('@currency 1.234,00', array('@currency' => $currency)),
+-    );
++    return [
++      0 => t('1 234,00 @currency', ['@currency' => $currency]),
++      1 => t('1 234.00 @currency', ['@currency' => $currency]),
++      2 => t('1,234.00 @currency', ['@currency' => $currency]),
++      3 => t('1.234,00 @currency', ['@currency' => $currency]),
++
++      4 => t('@currency 1 234,00', ['@currency' => $currency]),
++      5 => t('@currency 1 234.00', ['@currency' => $currency]),
++      6 => t('@currency 1,234.00', ['@currency' => $currency]),
++      7 => t('@currency 1.234,00', ['@currency' => $currency]),
++    ];
+   }
+ 
+   /**
+@@ -127,11 +127,11 @@ class Settings {
+ 
+     $config = self::cartSettings();
+     // Building the return array.
+-    $return = array(
++    $return = [
+       'price' => 0,
+       'vat' => 0,
+       'total' => 0,
+-    );
++    ];
+     $cart = static::getCart();
+ 
+     if (empty($cart)) {
+diff --git a/src/Utility.php b/src/Utility.php
+index 9a0fb91..235296e 100755
+--- a/src/Utility.php
++++ b/src/Utility.php
+@@ -4,7 +4,6 @@ namespace Drupal\basic_cart;
+ 
+ use Drupal\Core\Url;
+ use Drupal\Core\Link;
+-use Drupal\Core\Render;
+ use Drupal\field\Entity\FieldConfig;
+ use Drupal\field\Entity\FieldStorageConfig;
+ 
+@@ -95,7 +94,7 @@ class Utility extends Settings {
+    * @param array $params
+    *   Quantity and entity types.
+    */
+-  public static function addToCart($id, array $params = array()) {
++  public static function addToCart($id, array $params = []) {
+     $storage = static::getStorage();
+     $storage->addToCart($id, $params);
+   }
+@@ -129,11 +128,11 @@ class Utility extends Settings {
+     $fields['bundle_types'] = $bundles;
+     if ($type == self::FIELD_ORDERCONNECT) {
+ 
+-      $fields['bundle_types'] = array(
++      $fields['bundle_types'] = [
+         'basic_cart_order' => 'basic_cart_order',
+-      );
+-      $fields['fields'] = array(
+-        'basic_cart_content' => array(
++      ];
++      $fields['fields'] = [
++        'basic_cart_content' => [
+           'type' => 'entity_reference_quantity',
+           'entity_type' => 'node',
+           'bundle' => 'basic_cart_order',
+@@ -142,32 +141,32 @@ class Utility extends Settings {
+           'required' => FALSE,
+           'description' => t('Basic cart reference content'),
+           'cardinality' => -1,
+-          'formatter' => array(
+-            'default' => array(
++          'formatter' => [
++            'default' => [
+               'label' => 'inline',
+               'type' => 'entity_reference_quantity_label',
+               'settings' => ['view_mode' => 'basic_cart_order'],
+-            ),
++            ],
+             'search_result' => 'default',
+             'teaser' => 'default',
+-          ),
+-          'widget' => array(
++          ],
++          'widget' => [
+             'type' => 'entity_reference_quantity_autocomplete',
+             'cardinality' => -1,
+-          ),
+-          'settings' => array(
++          ],
++          'settings' => [
+             'handler' => 'default:node',
+-            'handler_settings' => array(
++            'handler_settings' => [
+               "target_bundles" => $bundles,
+-            ),
+-          ),
++            ],
++          ],
+ 
+-        ),
+-      );
++        ],
++      ];
+     }
+     else {
+-      $fields['fields'] = array(
+-        'add_to_cart_price' => array(
++      $fields['fields'] = [
++        'add_to_cart_price' => [
+           'type' => 'decimal',
+           'entity_type' => 'node',
+           'title' => t($config->get('price_label')),
+@@ -175,17 +174,18 @@ class Utility extends Settings {
+           'required' => FALSE,
+           'description' => t("Please enter this item's price."),
+           'cardinality' => 1,
+-          'widget' => array('type' => 'number'),
+-          'formatter' => array(
+-            'default' => array(
++          'widget' => ['type' => 'number'],
++          'formatter' => [
++            'default' => [
+               'label' => 'inline',
+               'type' => 'number_decimal',
+               'weight' => 11,
+-            ), 'search_result' => 'default',
++            ],
++            'search_result' => 'default',
+             'teaser' => 'default',
+-          ),
+-        ),
+-        'add_to_cart' => array(
++          ],
++        ],
++        'add_to_cart' => [
+           'type' => 'addtocart',
+           'entity_type' => 'node',
+           'title' => t($config->get('add_to_cart_button')),
+@@ -193,25 +193,27 @@ class Utility extends Settings {
+           'required' => FALSE,
+           'description' => 'Enable add to cart button',
+           'cardinality' => 1,
+-          'widget' => array('type' => 'addtocart'),
+-          'formatter' => array(
+-            'default' => array(
++          'widget' => ['type' => 'addtocart'],
++          'formatter' => [
++            'default' => [
+               'label' => 'hidden',
+               'weight' => 11,
+               'type' => $config->get('quantity_status') ? 'addtocartwithquantity' : 'addtocart',
+-            ), 'search_result' => array(
++            ],
++            'search_result' => [
+               'label' => 'hidden',
+               'weight' => 11,
+               'type' => 'addtocart',
+-            ), 'teaser' => array(
++            ],
++            'teaser' => [
+               'label' => 'hidden',
+               'weight' => 11,
+               'type' => 'addtocart',
+-            ),
+-          ),
++            ],
++          ],
+ 
+-        ),
+-      );
++        ],
++      ];
+ 
+     }
+     return (object) $fields;
+@@ -231,12 +233,12 @@ class Utility extends Settings {
+     foreach ($fields->fields as $field_name => $config) {
+       $field_storage = FieldStorageConfig::loadByName($config['entity_type'], $field_name);
+       if (empty($field_storage)) {
+-        FieldStorageConfig::create(array(
++        FieldStorageConfig::create([
+           'field_name' => $field_name,
+           'entity_type' => $config['entity_type'],
+           'type' => $config['type'],
+           'cardinality' => $config['cardinality'],
+-        ))->save();
++        ])->save();
+       }
+     }
+     foreach ($fields->bundle_types as $bundle) {
+@@ -252,14 +254,14 @@ class Utility extends Settings {
+       }
+ 
+       foreach ($fields->fields as $field_name => $config) {
+-        $config_array = array(
++        $config_array = [
+           'field_name' => $field_name,
+           'entity_type' => $config['entity_type'],
+           'bundle' => $bundle,
+           'label' => $config['label'],
+           'required' => $config['required'],
+           'cardinality' => $config['cardinality'],
+-        );
++        ];
+ 
+         if (isset($config['settings'])) {
+           $config_array['settings'] = $config['settings'];
+@@ -317,7 +319,7 @@ class Utility extends Settings {
+       }
+     }
+   }
+-  
++
+   /**
+    * Remove Fields from content types.
+    */
+@@ -364,11 +366,11 @@ class Utility extends Settings {
+   public static function getCartData() {
+     $config = self::cartSettings();
+     $cart = self::getCart();
+-    //$quantity_enabled = $config->get('quantity_status');
++    // $quantity_enabled = $config->get('quantity_status');
+     $total_price = self::getTotalPrice();
+-    $cart_cart = isset($cart['cart']) ? $cart['cart'] : array();
++    $cart_cart = isset($cart['cart']) ? $cart['cart'] : [];
+ 
+-    $basic_cart = array();
++    $basic_cart = [];
+     $basic_cart['config']['quantity_enabled'] = $config->get('quantity_status');
+     $basic_cart['empty']['text'] = $config->get('empty_cart');
+ 
+@@ -421,13 +423,13 @@ class Utility extends Settings {
+     $vat_is_enabled = (int) $config->get('vat_state');
+     $vat_value = !empty($vat_is_enabled) && $vat_is_enabled ? Utility::formatPrice($price->vat) : 0;
+ 
+-    $basic_cart = array(
++    $basic_cart = [
+       'total_price' => $total,
+       'vat_enabled' => $vat_is_enabled,
+       'vat_value' => $vat_value,
+       'total_price_label' => $config->get('total_price_label'),
+       'total_vat_label' => 'Total VAT',
+-    );
++    ];
+     return $basic_cart;
+   }
+ 
+@@ -439,9 +441,9 @@ class Utility extends Settings {
+    */
+   public static function quantityPrefixData($nid) {
+     global $base_url;
+-    $url = new Url('basic_cart.cartremove', array("nid" => $nid));
++    $url = new Url('basic_cart.cartremove', ["nid" => $nid]);
+     $cart = Utility::getCart($nid);
+-    $basic_cart = array();
++    $basic_cart = [];
+     $basic_cart['delete_url'] = $url->toString();
+     $basic_cart['module_url'] = $base_url . '/' . drupal_get_path('module', 'basic_cart');
+     $basic_cart['notempty'] = FALSE;
+@@ -455,7 +457,7 @@ class Utility extends Settings {
+       $unit_price = isset($unit_price[0]['value']) ? $unit_price[0]['value'] : 0;
+       $title = $cart['cart']->get('title')->getValue()[0]['value'];
+       // Price and currency.
+-      $url = new Url('entity.node.canonical', array("node" => $nid));
++      $url = new Url('entity.node.canonical', ["node" => $nid]);
+       $link = new Link($title, $url);
+       $unit_price = isset($unit_price) ? $unit_price : 0;
+       $unit_price = Utility::formatPrice($unit_price);

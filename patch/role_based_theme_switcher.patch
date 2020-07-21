@@ -1,0 +1,47 @@
+diff --git a/tests/src/Functional/RoleBasedPathTest.php b/tests/src/Functional/RoleBasedPathTest.php
+index e7784cf..75e8b37 100644
+--- a/tests/src/Functional/RoleBasedPathTest.php
++++ b/tests/src/Functional/RoleBasedPathTest.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ /*
+  * To change this license header, choose License Headers in Project Properties.
+  * To change this template file, choose Tools | Templates
+@@ -10,7 +11,7 @@ namespace Drupal\Tests\role_based_theme_switcher\Functional;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+- * Description of RoleBasedPathTest
++ * Description of RoleBasedPathTest.
+  *
+  * @author pen
+  */
+diff --git a/tests/src/Unit/RolebasedTest.php b/tests/src/Unit/RolebasedTest.php
+index 2587e72..c76a1c0 100644
+--- a/tests/src/Unit/RolebasedTest.php
++++ b/tests/src/Unit/RolebasedTest.php
+@@ -5,17 +5,22 @@ namespace Drupal\Tests\role_based_theme_switcher\Unit;
+ use Drupal\Tests\UnitTestCase;
+ 
+ /**
+- *
+  * Test for Role check.
+  *
+  * @group role_based_theme_switcher
+  **/
+ class RolebasedTest extends UnitTestCase {
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+   }
+ 
++  /**
++   *
++   */
+   public function testStub() {
+     $role = ['authenticated', 'administrator'];
+     // Create a stub for the SomeClass class.

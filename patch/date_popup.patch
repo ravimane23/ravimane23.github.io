@@ -1,0 +1,12 @@
+diff --git a/src/DatePopupSearchApi.php b/src/DatePopupSearchApi.php
+index 43a7183..dfb409d 100644
+--- a/src/DatePopupSearchApi.php
++++ b/src/DatePopupSearchApi.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\date_popup;
+ 
+-
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\search_api\Plugin\views\filter\SearchApiDate;
+ 

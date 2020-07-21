@@ -1,0 +1,26 @@
+diff --git a/src/Annotation/VoteResultFunction.php b/src/Annotation/VoteResultFunction.php
+index 46f2060..4133f0b 100644
+--- a/src/Annotation/VoteResultFunction.php
++++ b/src/Annotation/VoteResultFunction.php
+@@ -43,7 +43,7 @@ class VoteResultFunction extends Plugin {
+    *
+    * @ingroup plugin_translatable
+    *
+-   * @var \Drupal\Core\Annotation\Translation (optional)
++   * @var \Drupal\Core\Annotation\Translationoptional
+    */
+   public $description = '';
+ 
+diff --git a/src/VoteTypeForm.php b/src/VoteTypeForm.php
+index eeeb360..e8a08e7 100644
+--- a/src/VoteTypeForm.php
++++ b/src/VoteTypeForm.php
+@@ -22,7 +22,7 @@ class VoteTypeForm extends EntityForm {
+   protected $entityTypeManager;
+ 
+   /**
+-   * @var EntityFieldManagerInterface
++   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+    */
+   protected $entityFieldManager;
+ 

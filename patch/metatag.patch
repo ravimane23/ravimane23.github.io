@@ -1,0 +1,417 @@
+diff --git a/metatag_verification/tests/src/Functional/MetatagVerificationTagsTest.php b/metatag_verification/tests/src/Functional/MetatagVerificationTagsTest.php
+index cfc7ed2..fd770ea 100644
+--- a/metatag_verification/tests/src/Functional/MetatagVerificationTagsTest.php
++++ b/metatag_verification/tests/src/Functional/MetatagVerificationTagsTest.php
+@@ -22,7 +22,7 @@ class MetatagVerificationTagsTest extends MetatagTagsTestBase {
+     'pinterest',
+     'pocket',
+     'yandex',
+-    'zoom_domain_verification'
++    'zoom_domain_verification',
+   ];
+ 
+   /**
+diff --git a/metatag_views/src/Controller/MetatagViewsTranslationController.php b/metatag_views/src/Controller/MetatagViewsTranslationController.php
+index cf23142..28e8336 100644
+--- a/metatag_views/src/Controller/MetatagViewsTranslationController.php
++++ b/metatag_views/src/Controller/MetatagViewsTranslationController.php
+@@ -36,7 +36,7 @@ class MetatagViewsTranslationController extends ControllerBase {
+    * @var \Drupal\Core\Language\LanguageManagerInterface
+    */
+   protected $languageManager;
+-  
++
+   /**
+    * The request stack.
+    *
+@@ -163,7 +163,7 @@ class MetatagViewsTranslationController extends ControllerBase {
+         // configuration can still be edited.
+         // {@code}
+         // '#access' => ($langcode == $original_langcode) || $operations_access,
+-        // {@endcode}
++        // {@endcode}.
+       ];
+     }
+ 
+diff --git a/src/Command/GenerateGroupCommand.php b/src/Command/GenerateGroupCommand.php
+index ca8cbab..423fbb1 100644
+--- a/src/Command/GenerateGroupCommand.php
++++ b/src/Command/GenerateGroupCommand.php
+@@ -5,11 +5,8 @@ namespace Drupal\metatag\Command;
+ use Symfony\Component\Console\Input\InputInterface;
+ use Symfony\Component\Console\Input\InputOption;
+ use Symfony\Component\Console\Output\OutputInterface;
+-use Drupal\Console\Core\Command\Shared\CommandTrait;
+ use Drupal\Console\Command\Shared\ModuleTrait;
+-use Drupal\Console\Command\Shared\FormTrait;
+ use Drupal\Console\Command\Shared\ConfirmationTrait;
+-use Drupal\Console\Core\Style\DrupalStyle;
+ use Drupal\metatag\Generator\MetatagGroupGenerator;
+ use Drupal\Console\Extension\Manager;
+ use Drupal\Console\Core\Utils\ChainQueue;
+@@ -50,7 +47,7 @@ class GenerateGroupCommand extends Command {
+   protected $chainQueue;
+ 
+   /**
+-   * @var Validator
++   * @var \Drupal\Console\Utils\Validator
+    */
+   protected $validator;
+ 
+@@ -63,7 +60,7 @@ class GenerateGroupCommand extends Command {
+    *   The extension manager object.
+    * @param \Drupal\Console\Core\Utils\ChainQueue $chainQueue
+    *   The chain queue object.
+-   * @param Validator $validator
++   * @param \Drupal\Console\Utils\Validator $validator
+    */
+   public function __construct(
+       MetatagGroupGenerator $generator,
+@@ -89,43 +86,43 @@ class GenerateGroupCommand extends Command {
+       ->setHelp($this->trans('commands.generate.metatag.group.help'))
+       ->addOption(
+         'base_class',
+-        null,
++        NULL,
+         InputOption::VALUE_REQUIRED,
+         $this->trans('commands.common.options.base_class')
+       )
+       ->addOption(
+         'module',
+-        null,
++        NULL,
+         InputOption::VALUE_REQUIRED,
+         $this->trans('commands.common.options.module')
+       )
+       ->addOption(
+         'label',
+-        null,
++        NULL,
+         InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.group.options.label')
+       )
+       ->addOption(
+         'description',
+-        null,
++        NULL,
+         InputOption::VALUE_OPTIONAL,
+         $this->trans('commands.generate.metatag.group.options.description')
+       )
+       ->addOption(
+         'plugin-id',
+-        null,
++        NULL,
+         InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.group.options.plugin_id')
+       )
+       ->addOption(
+         'class-name',
+-        null,
++        NULL,
+         InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.group.options.class_name')
+       )
+       ->addOption(
+         'weight',
+-        null,
++        NULL,
+         InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.group.options.weight')
+       );
+diff --git a/src/Command/GenerateTagCommand.php b/src/Command/GenerateTagCommand.php
+index 02b1bba..91a2370 100644
+--- a/src/Command/GenerateTagCommand.php
++++ b/src/Command/GenerateTagCommand.php
+@@ -5,8 +5,6 @@ namespace Drupal\metatag\Command;
+ use Drupal\Console\Command\Shared\ConfirmationTrait;
+ use Drupal\Console\Command\Shared\FormTrait;
+ use Drupal\Console\Command\Shared\ModuleTrait;
+-use Drupal\Console\Core\Command\Shared\CommandTrait;
+-use Drupal\Console\Core\Style\DrupalStyle;
+ use Drupal\Console\Core\Utils\ChainQueue;
+ use Drupal\Console\Core\Utils\StringConverter;
+ use Drupal\Console\Extension\Manager;
+@@ -67,7 +65,7 @@ class GenerateTagCommand extends Command {
+   protected $chainQueue;
+ 
+   /**
+-   * @var Validator
++   * @var \Drupal\Console\Utils\Validator
+    */
+   protected $validator;
+ 
+@@ -84,7 +82,7 @@ class GenerateTagCommand extends Command {
+    *   The string converter object.
+    * @param \Drupal\Console\Core\Utils\ChainQueue $chainQueue
+    *   The chain queue object.
+-   * @param Validator $validator
++   * @param \Drupal\Console\Utils\Validator $validator
+    */
+   public function __construct(
+       MetatagManagerInterface $metatagManager,
+@@ -112,29 +110,29 @@ class GenerateTagCommand extends Command {
+       ->setName('generate:plugin:metatag:tag')
+       ->setDescription($this->trans('commands.generate.metatag.tag.description'))
+       ->setHelp($this->trans('commands.generate.metatag.tag.help'))
+-      ->addOption('base_class', null, InputOption::VALUE_REQUIRED,
++      ->addOption('base_class', NULL, InputOption::VALUE_REQUIRED,
+         $this->trans('commands.common.options.base_class'))
+-      ->addOption('module', null, InputOption::VALUE_REQUIRED,
++      ->addOption('module', NULL, InputOption::VALUE_REQUIRED,
+         $this->trans('commands.common.options.module'))
+-      ->addOption('name', null, InputOption::VALUE_REQUIRED,
++      ->addOption('name', NULL, InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.tag.options.name'))
+-      ->addOption('label', null, InputOption::VALUE_REQUIRED,
++      ->addOption('label', NULL, InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.tag.options.label'))
+-      ->addOption('description', null, InputOption::VALUE_OPTIONAL,
++      ->addOption('description', NULL, InputOption::VALUE_OPTIONAL,
+         $this->trans('commands.generate.metatag.tag.options.description'))
+-      ->addOption('plugin-id', null, InputOption::VALUE_REQUIRED,
++      ->addOption('plugin-id', NULL, InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.tag.options.plugin_id'))
+-      ->addOption('class-name', null, InputOption::VALUE_REQUIRED,
++      ->addOption('class-name', NULL, InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.tag.options.class_name'))
+-      ->addOption('group', null, InputOption::VALUE_REQUIRED,
++      ->addOption('group', NULL, InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.tag.options.group'))
+-      ->addOption('weight', null, InputOption::VALUE_REQUIRED,
++      ->addOption('weight', NULL, InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.tag.options.weight'))
+-      ->addOption('type', null, InputOption::VALUE_REQUIRED,
++      ->addOption('type', NULL, InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.tag.options.type'))
+-      ->addOption('secure', null, InputOption::VALUE_REQUIRED,
++      ->addOption('secure', NULL, InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.tag.options.secure'))
+-      ->addOption('multiple', null, InputOption::VALUE_REQUIRED,
++      ->addOption('multiple', NULL, InputOption::VALUE_REQUIRED,
+         $this->trans('commands.generate.metatag.tag.options.multiple'));
+   }
+ 
+@@ -247,7 +245,6 @@ class GenerateTagCommand extends Command {
+       $input->setOption('class-name', $class_name);
+     }
+ 
+-
+     // --group option.
+     $group = $input->getOption('group');
+     if (empty($group)) {
+diff --git a/src/Form/MetatagSettingsForm.php b/src/Form/MetatagSettingsForm.php
+index ee8335c..68e4b88 100644
+--- a/src/Form/MetatagSettingsForm.php
++++ b/src/Form/MetatagSettingsForm.php
+@@ -2,10 +2,8 @@
+ 
+ namespace Drupal\metatag\Form;
+ 
+-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+ use Drupal\Core\Form\ConfigFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\metatag\MetatagManagerInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+diff --git a/src/Plugin/Field/MetatagEntityFieldItemList.php b/src/Plugin/Field/MetatagEntityFieldItemList.php
+index f48c90d..bdc6a3e 100644
+--- a/src/Plugin/Field/MetatagEntityFieldItemList.php
++++ b/src/Plugin/Field/MetatagEntityFieldItemList.php
+@@ -22,5 +22,4 @@ class MetatagEntityFieldItemList extends FieldItemList {
+     return NULL;
+   }
+ 
+-
+ }
+diff --git a/src/Plugin/metatag/Tag/Title.php b/src/Plugin/metatag/Tag/Title.php
+index d1dd70b..7629bc2 100644
+--- a/src/Plugin/metatag/Tag/Title.php
++++ b/src/Plugin/metatag/Tag/Title.php
+@@ -41,5 +41,4 @@ class Title extends MetaNameBase {
+   //   return $element;
+   // }
+   // {@endcode}
+-
+ }
+diff --git a/src/Plugin/migrate/process/d6/NodewordsEntities.php b/src/Plugin/migrate/process/d6/NodewordsEntities.php
+index 9159d3f..7fab881 100644
+--- a/src/Plugin/migrate/process/d6/NodewordsEntities.php
++++ b/src/Plugin/migrate/process/d6/NodewordsEntities.php
+@@ -359,7 +359,6 @@ class NodewordsEntities extends ProcessPluginBase {
+       // @todo 'video:series' => '',
+       // @todo 'video:tag' => '',
+       // @todo 'video:writer' => '',
+-
+       // From metatag_opengraph_products.metatag.inc:
+       // https://www.drupal.org/project/metatag/issues/2835925
+       'product:price:amount' => 'product_price_amount',
+@@ -388,7 +387,6 @@ class NodewordsEntities extends ProcessPluginBase {
+       // @todo 'product:shipping_weight:units' => '',
+       // @todo 'product:expiration_time' => '',
+       // @todo 'product:condition' => '',
+-
+       // Pinterest.
+       // @todo '' => 'pinterest_id',
+       // @todo '' => 'pinterest_description',
+@@ -397,7 +395,6 @@ class NodewordsEntities extends ProcessPluginBase {
+       // @todo '' => 'pinterest_media',
+       // @todo '' => 'pinterest_nopin',
+       // @todo '' => 'pinterest_nosearch',
+-
+       // From metatag_twitter_cards.metatag.inc:
+       'twitter:app:country' => 'twitter_cards_app_store_country',
+       'twitter:app:id:googleplay' => 'twitter_cards_app_id_googleplay',
+diff --git a/src/Plugin/migrate/process/d7/MetatagEntities.php b/src/Plugin/migrate/process/d7/MetatagEntities.php
+index 6f709ae..8b204a0 100644
+--- a/src/Plugin/migrate/process/d7/MetatagEntities.php
++++ b/src/Plugin/migrate/process/d7/MetatagEntities.php
+@@ -345,7 +345,6 @@ class MetatagEntities extends ProcessPluginBase {
+       // @todo 'video:series' => '',
+       // @todo 'video:tag' => '',
+       // @todo 'video:writer' => '',
+-
+       // From metatag_opengraph_products.metatag.inc:
+       // https://www.drupal.org/project/metatag/issues/2835925
+       'product:price:amount' => 'product_price_amount',
+@@ -374,7 +373,6 @@ class MetatagEntities extends ProcessPluginBase {
+       // @todo 'product:shipping_weight:units' => '',
+       // @todo 'product:expiration_time' => '',
+       // @todo 'product:condition' => '',
+-
+       // Pinterest.
+       // @todo '' => 'pinterest_id',
+       // @todo '' => 'pinterest_description',
+@@ -383,7 +381,6 @@ class MetatagEntities extends ProcessPluginBase {
+       // @todo '' => 'pinterest_media',
+       // @todo '' => 'pinterest_nopin',
+       // @todo '' => 'pinterest_nosearch',
+-
+       // From metatag_twitter_cards.metatag.inc:
+       'twitter:app:country' => 'twitter_cards_app_store_country',
+       'twitter:app:id:googleplay' => 'twitter_cards_app_id_googleplay',
+diff --git a/src/Plugin/migrate/source/d6/NodewordsField.php b/src/Plugin/migrate/source/d6/NodewordsField.php
+index 00a1c7f..aeb664b 100644
+--- a/src/Plugin/migrate/source/d6/NodewordsField.php
++++ b/src/Plugin/migrate/source/d6/NodewordsField.php
+@@ -30,17 +30,17 @@ class NodewordsField extends DrupalSqlBase {
+     $instances = [];
+     foreach (parent::initializeIterator() as $instance) {
+       switch ($instance['type']) {
+-        // define('NODEWORDS_TYPE_NODE', 5);
++        // define('NODEWORDS_TYPE_NODE', 5);.
+         case 5:
+           $instance['entity_type'] = 'node';
+           break;
+ 
+-        // define('NODEWORDS_TYPE_TERM', 6);
++        // define('NODEWORDS_TYPE_TERM', 6);.
+         case 6:
+           $instance['entity_type'] = 'taxonomy_term';
+           break;
+ 
+-        // define('NODEWORDS_TYPE_USER', 8);
++        // define('NODEWORDS_TYPE_USER', 8);.
+         case 8:
+           $instance['entity_type'] = 'user';
+           break;
+diff --git a/src/Plugin/migrate/source/d6/NodewordsFieldInstance.php b/src/Plugin/migrate/source/d6/NodewordsFieldInstance.php
+index c035355..42fc131 100644
+--- a/src/Plugin/migrate/source/d6/NodewordsFieldInstance.php
++++ b/src/Plugin/migrate/source/d6/NodewordsFieldInstance.php
+@@ -72,17 +72,17 @@ class NodewordsFieldInstance extends DrupalSqlBase {
+       $entity_type = NULL;
+       switch ($instance['type']) {
+         case 5:
+-          // define('NODEWORDS_TYPE_NODE',       5);
++          // define('NODEWORDS_TYPE_NODE',       5);.
+           $entity_type = 'node';
+           break;
+ 
+         case 6:
+-          // define('NODEWORDS_TYPE_TERM',       6);
++          // define('NODEWORDS_TYPE_TERM',       6);.
+           $entity_type = 'taxonomy_term';
+           break;
+ 
+         case 8:
+-          // define('NODEWORDS_TYPE_USER',       8);
++          // define('NODEWORDS_TYPE_USER',       8);.
+           $entity_type = 'user';
+           break;
+ 
+diff --git a/tests/src/Functional/MetatagCustomRouteTest.php b/tests/src/Functional/MetatagCustomRouteTest.php
+index 3f39e01..56d0e86 100644
+--- a/tests/src/Functional/MetatagCustomRouteTest.php
++++ b/tests/src/Functional/MetatagCustomRouteTest.php
+@@ -35,7 +35,6 @@ class MetatagCustomRouteTest extends BrowserTestBase {
+    */
+   protected $defaultTheme = 'stark';
+ 
+-
+   /**
+    * Run tests on the custom route.
+    */
+diff --git a/tests/src/Functional/MetatagTagsTestBase.php b/tests/src/Functional/MetatagTagsTestBase.php
+index 624fd9f..86387d2 100644
+--- a/tests/src/Functional/MetatagTagsTestBase.php
++++ b/tests/src/Functional/MetatagTagsTestBase.php
+@@ -194,7 +194,7 @@ abstract class MetatagTagsTestBase extends BrowserTestBase {
+       // otherwise it defaults to just looking for a meta tag matching:
+       // {@code}
+       // <$testTag $testNameAttribute=$tag_name $testValueAttribute=$value />
+-      // {@endcode}
++      // {@endcode}.
+       $method = $this->getMethodFromTagCallback($tag_name, 'TestOutputXpath');
+       if (method_exists($this, $method)) {
+         $xpath_string = $this->$method();
+diff --git a/tests/src/Functional/MetatagXssTest.php b/tests/src/Functional/MetatagXssTest.php
+index 5243223..2cc2389 100644
+--- a/tests/src/Functional/MetatagXssTest.php
++++ b/tests/src/Functional/MetatagXssTest.php
+@@ -216,7 +216,7 @@ class MetatagXssTest extends BrowserTestBase {
+     // Check the body text.
+     // {@code}
+     // $this->assertNoTitle($this->xssTitleString);
+-    // {@endcode}
++    // {@endcode}.
+     $this->assertNoRaw($this->xssTitleString);
+   }
+ 
+diff --git a/tests/src/Kernel/Plugin/migrate/source/d6/NodewordsFieldInstanceTest.php b/tests/src/Kernel/Plugin/migrate/source/d6/NodewordsFieldInstanceTest.php
+index e4eb91d..653690c 100644
+--- a/tests/src/Kernel/Plugin/migrate/source/d6/NodewordsFieldInstanceTest.php
++++ b/tests/src/Kernel/Plugin/migrate/source/d6/NodewordsFieldInstanceTest.php
+@@ -39,6 +39,9 @@ class NodewordsFieldInstanceTest extends MigrateSqlSourceTestBase {
+     'metatag',
+   ];
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('node');
+diff --git a/tests/src/Kernel/Plugin/migrate/source/d7/MetatagFieldInstanceTest.php b/tests/src/Kernel/Plugin/migrate/source/d7/MetatagFieldInstanceTest.php
+index 3da7b45..b495be0 100644
+--- a/tests/src/Kernel/Plugin/migrate/source/d7/MetatagFieldInstanceTest.php
++++ b/tests/src/Kernel/Plugin/migrate/source/d7/MetatagFieldInstanceTest.php
+@@ -36,6 +36,9 @@ class MetatagFieldInstanceTest extends MigrateSqlSourceTestBase {
+     'metatag',
+   ];
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('node');
+@@ -54,7 +57,7 @@ class MetatagFieldInstanceTest extends MigrateSqlSourceTestBase {
+       ]);
+       $node_type->save();
+     }
+-    //    ['taxonomy_term', ['test_vocabulary' => 'test_vocabulary']],
++    // ['taxonomy_term', ['test_vocabulary' => 'test_vocabulary']],
+     //    Vocabulary::create(['name' => 'test_vocabulary']);
+     // Setup vocabulary.
+     Vocabulary::create([

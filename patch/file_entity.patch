@@ -1,0 +1,4803 @@
+diff --git a/file_entity.api.php b/file_entity.api.php
+index bdee6ef..3b25382 100644
+--- a/file_entity.api.php
++++ b/file_entity.api.php
+@@ -64,7 +64,7 @@ function hook_file_transfer($uri, array $headers) {
+ function hook_file_type($file) {
+   // Assign all files uploaded by anonymous users to a special file type.
+   if (\Drupal::currentUser()->isAnonymous()) {
+-    return array('untrusted_files');
++    return ['untrusted_files'];
+   }
+ }
+ 
+@@ -78,7 +78,7 @@ function hook_file_type($file) {
+  */
+ function hook_file_type_alter(&$types, $file) {
+   // Choose a specific, non-first, file type.
+-  $types = array($types[4]);
++  $types = [$types[4]];
+ }
+ 
+ /**
+diff --git a/file_entity.file.inc b/file_entity.file.inc
+index 0b1dd27..0981443 100644
+--- a/file_entity.file.inc
++++ b/file_entity.file.inc
+@@ -12,7 +12,7 @@ use Drupal\file_entity\Entity\FileType;
+  * Implements hook_file_type().
+  */
+ function file_entity_file_type(FileInterface $file) {
+-  $types = array();
++  $types = [];
+   foreach (FileType::loadEnabled() as $type) {
+     if (file_entity_match_mimetypes($type->getMimeTypes(), $file->getMimeType())) {
+       $types[] = $type->id();
+@@ -26,7 +26,7 @@ function file_entity_file_type(FileInterface $file) {
+  * Implements hook_file_metadata_info().
+  */
+ function file_entity_file_metadata_info() {
+-  $info['width'] = array('label' => t('Width'), 'type' => 'integer');
+-  $info['height'] = array('label' => t('Height'), 'type' => 'integer');
++  $info['width'] = ['label' => t('Width'), 'type' => 'integer'];
++  $info['height'] = ['label' => t('Height'), 'type' => 'integer'];
+   return $info;
+ }
+diff --git a/file_entity.theme.inc b/file_entity.theme.inc
+index 1a1ce4f..6433955 100644
+--- a/file_entity.theme.inc
++++ b/file_entity.theme.inc
+@@ -15,15 +15,15 @@ function theme_file_entity_file_link($variables) {
+   $icon_directory = $variables['icon_directory'];
+ 
+   $url = 'file/' . $file->fid;
+-  $icon = theme('file_icon', array('file' => $file, 'icon_directory' => $icon_directory));
++  $icon = theme('file_icon', ['file' => $file, 'icon_directory' => $icon_directory]);
+ 
+   // Set options as per anchor format described at
+   // http://microformats.org/wiki/file-format-examples
+-  $options = array(
+-    'attributes' => array(
++  $options = [
++    'attributes' => [
+       'type' => $file->filemime . '; length=' . $file->filesize,
+-    ),
+-  );
++    ],
++  ];
+ 
+   // Use the description as the link text if available.
+   if (empty($file->description)) {
+diff --git a/file_entity.tokens.inc b/file_entity.tokens.inc
+index 563fb9f..381cf18 100644
+--- a/file_entity.tokens.inc
++++ b/file_entity.tokens.inc
+@@ -4,49 +4,49 @@
+  * @file
+  * Token integration for the file_entity module.
+  */
++
+ use Drupal\Core\Url;
+ use Drupal\file_entity\Entity\FileType;
+ use Drupal\Core\Render\BubbleableMetadata;
+-use Drupal\Component\Utility\Html;
+ 
+ /**
+  * Implements hook_token_info().
+  */
+ function file_entity_token_info() {
+   // File type tokens.
+-  $info['types']['file-type'] = array(
++  $info['types']['file-type'] = [
+     'name' => t('File type'),
+     'description' => t('Tokens associated with file types.'),
+     'needs-data' => 'file_type',
+-  );
+-  $info['tokens']['file-type']['name'] = array(
++  ];
++  $info['tokens']['file-type']['name'] = [
+     'name' => t('Name'),
+     'description' => t('The name of the file type.'),
+-  );
+-  $info['tokens']['file-type']['machine-name'] = array(
++  ];
++  $info['tokens']['file-type']['machine-name'] = [
+     'name' => t('Machine-readable name'),
+     'description' => t('The unique machine-readable name of the file type.'),
+-  );
+-  $info['tokens']['file-type']['count'] = array(
++  ];
++  $info['tokens']['file-type']['count'] = [
+     'name' => t('File count'),
+     'description' => t('The number of files belonging to the file type.'),
+-  );
+-  $info['tokens']['file-type']['edit-url'] = array(
++  ];
++  $info['tokens']['file-type']['edit-url'] = [
+     'name' => t('Edit URL'),
+     'description' => t("The URL of the file type's edit page."),
+-  );
++  ];
+ 
+   // File tokens.
+-  $info['tokens']['file']['type'] = array(
++  $info['tokens']['file']['type'] = [
+     'name' => t('File type'),
+     'description' => t('The file type of the file.'),
+     'type' => 'file-type',
+-  );
+-  $info['tokens']['file']['download-url'] = array(
++  ];
++  $info['tokens']['file']['download-url'] = [
+     'name' => t('Download URL'),
+     'description' => t('The URL to download the file directly.'),
+     'type' => 'url',
+-  );
++  ];
+ 
+   return $info;
+ }
+@@ -62,9 +62,9 @@ function file_entity_token_info_alter(&$info) {
+  * Implements hook_tokens().
+  */
+ function file_entity_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+-  $replacements = array();
++  $replacements = [];
+ 
+-  $url_options = array('absolute' => TRUE);
++  $url_options = ['absolute' => TRUE];
+   if (isset($options['langcode'])) {
+     $langcode = $options['langcode'];
+     $url_options['language'] = \Drupal::languageManager()->getLanguage($langcode);
+@@ -95,7 +95,7 @@ function file_entity_tokens($type, $tokens, array $data, array $options, Bubblea
+     // Chained token relationships.
+     $token_service = \Drupal::service('token');
+     if (($file_type_tokens = $token_service->findWithPrefix($tokens, 'type')) && $file_type = FileType::load($file->bundle())) {
+-      $replacements += $token_service->generate('file-type', $file_type_tokens, array('file_type' => $file_type), $options, $bubbleable_metadata);
++      $replacements += $token_service->generate('file-type', $file_type_tokens, ['file_type' => $file_type], $options, $bubbleable_metadata);
+     }
+     if ($download_url_tokens = $token_service->findWithPrefix($tokens, 'download-url')) {
+       $replacements += $token_service->generate('url', $download_url_tokens, $file->downloadUrl()->toString(), $options, $bubbleable_metadata);
+diff --git a/file_entity.views.inc b/file_entity.views.inc
+index 57d182f..a3cb348 100644
+--- a/file_entity.views.inc
++++ b/file_entity.views.inc
+@@ -17,143 +17,143 @@ function file_entity_views_data_alter(&$data) {
+   $data['file_managed']['table']['base']['access query tag'] = 'file_access';
+ 
+   // File Name.
+-  $data['file_managed']['filename'] = array(
++  $data['file_managed']['filename'] = [
+     'title' => t('Filename'),
+     'help' => t('File name with optional link to view.'),
+-    'field' => array(
++    'field' => [
+       'id' => 'file_name',
+-    ),
+-    'sort' => array(
++    ],
++    'sort' => [
+       'id' => 'standard',
+-    ),
+-    'filter' => array(
++    ],
++    'filter' => [
+       'id' => 'string',
+-    ),
+-    'argument' => array(
++    ],
++    'argument' => [
+       'id' => 'string',
+-    ),
+-  );
++    ],
++  ];
+ 
+   // File type.
+-  $data['file_managed']['type'] = array(
++  $data['file_managed']['type'] = [
+     'title' => t('Type'),
+     'help' => t('The type of the file (for example, "audio", "image", "video", etc).'),
+-    'field' => array(
++    'field' => [
+       'id' => 'file_entity_type',
+-    ),
+-    'sort' => array(
++    ],
++    'sort' => [
+       'id' => 'standard',
+-    ),
+-    'filter' => array(
++    ],
++    'filter' => [
+       'id' => 'bundle',
+-    ),
+-  );
++    ],
++  ];
+ 
+   // File schema type.
+-  $data['file_managed']['schema_type'] = array(
++  $data['file_managed']['schema_type'] = [
+     'title' => t('Schema type'),
+     'help' => t('Filter files by schema, such as public or private.'),
+-    'filter' => array(
++    'filter' => [
+       'handler' => 'views_handler_filter_schema_type',
+-    ),
+-  );
++    ],
++  ];
+ 
+   // Rendered file.
+-  $data['file_managed']['rendered'] = array(
++  $data['file_managed']['rendered'] = [
+     'title' => t('Rendered'),
+     'help' => t('Display the file in a specific view mode.'),
+-    'field' => array(
++    'field' => [
+       'handler' => 'views_handler_field_file_rendered',
+       'click sortable' => TRUE,
+       'real field' => 'fid',
+-      'additional fields' => array(
++      'additional fields' => [
+         'fid',
+-      ),
+-    ),
+-  );
++      ],
++    ],
++  ];
+ 
+   // View link.
+-  $data['file_managed']['link'] = array(
++  $data['file_managed']['link'] = [
+     'title' => t('Link'),
+     'help' => t('Provide a simple link to the file entity.'),
+-    'field' => array(
++    'field' => [
+       'handler' => 'views_handler_field_file_link',
+       'real field' => 'fid',
+-      'additional fields' => array(
++      'additional fields' => [
+         'fid',
+-      ),
+-    ),
+-  );
++      ],
++    ],
++  ];
+ 
+   // View link.
+-  $data['file_managed']['view'] = array(
+-    'field' => array(
++  $data['file_managed']['view'] = [
++    'field' => [
+       'title' => t('Link to file'),
+       'help' => t('Provide a simple link to the file.'),
+       'id' => 'file_entity_link',
+-    ),
+-  );
++    ],
++  ];
+ 
+   // Edit link.
+-  $data['file_managed']['edit'] = array(
++  $data['file_managed']['edit'] = [
+     'title' => t('Edit link'),
+     'help' => t('Provide a simple link to edit the file entity.'),
+-    'field' => array(
++    'field' => [
+       'id' => 'file_entity_link_edit',
+       'real field' => 'fid',
+-    ),
+-  );
++    ],
++  ];
+ 
+   // Delete link.
+-  $data['file_managed']['delete'] = array(
++  $data['file_managed']['delete'] = [
+     'title' => t('Delete link'),
+     'help' => t('Provide a simple link to delete the file entity.'),
+-    'field' => array(
++    'field' => [
+       'id' => 'file_entity_link_delete',
+       'real field' => 'fid',
+-    ),
+-  );
++    ],
++  ];
+ 
+   // Download link.
+-  $data['file_managed']['download'] = array(
++  $data['file_managed']['download'] = [
+     'title' => t('Download link'),
+     'help' => t('Provide a simple link to download the file entity.'),
+-    'field' => array(
++    'field' => [
+       'id' => 'file_entity_link_download',
+       'real field' => 'fid',
+-    ),
+-  );
++    ],
++  ];
+ 
+   // Usage link.
+-  $data['file_managed']['usage'] = array(
++  $data['file_managed']['usage'] = [
+     'title' => t('Usage link'),
+     'help' => t('Provide a simple link to view the usage of the file entity.'),
+-    'field' => array(
++    'field' => [
+       'handler' => 'views_handler_field_file_link_usage',
+       'click sortable' => TRUE,
+       'real field' => 'fid',
+-      'additional fields' => array(
++      'additional fields' => [
+         'fid',
+-      ),
+-    ),
+-    'sort' => array(
++      ],
++    ],
++    'sort' => [
+       'handler' => 'views_handler_sort',
+-    ),
+-  );
++    ],
++  ];
+ 
+-  $data['file_managed']['bulk_form'] = array(
++  $data['file_managed']['bulk_form'] = [
+     'title' => 'File operations bulk form',
+     'help' => 'Form elements to perform operations on multiple files at once.',
+-    'field' => array(
++    'field' => [
+       'id' => 'bulk_form',
+-    ),
+-  );
++    ],
++  ];
+ 
+   // @todo This should really be added in file.views.inc
+-  $data['file_usage']['table']['join'] = array(
+-    'file_managed' => array(
++  $data['file_usage']['table']['join'] = [
++    'file_managed' => [
+       'field' => 'fid',
+       'left_field' => 'fid',
+-    ),
+-  );
++    ],
++  ];
+ }
+diff --git a/src/Controller/FileController.php b/src/Controller/FileController.php
+index 4d54140..d86c877 100644
+--- a/src/Controller/FileController.php
++++ b/src/Controller/FileController.php
+@@ -16,7 +16,7 @@ use Drupal\Core\File\FileSystemInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Class FileController
++ * Class FileController.
+  */
+ class FileController extends ControllerBase {
+ 
+@@ -44,46 +44,46 @@ class FileController extends ControllerBase {
+   }
+ 
+   /**
+-   * Upload
++   * Upload.
+    */
+   public function FileAddUpload() {
+ 
+   }
+ 
+   /**
+-   * File
++   * File.
+    */
+   public function FileAddUploadFile() {
+ 
+   }
+ 
+   /**
+-   * Usage
++   * Usage.
+    *
+    * @param $file
+    */
+   public function FileUsage($file) {
+-    //@TODO: File Usage here.
++    // @TODO: File Usage here.
+   }
+ 
+   /**
+    * Returns a HTTP response for a file being downloaded.
+    *
+-   * @param FileInterface $file
++   * @param \Drupal\file\FileInterface $file
+    *   The file to download, as an entity.
+    *
+-   * @return Response
++   * @return \Symfony\Component\HttpFoundation\Response
+    *   The file to download, as a response.
+    */
+   public function download(FileInterface $file) {
+     // Ensure there is a valid token to download this file.
+     if (!$this->config('file_entity.settings')->get('allow_insecure_download')) {
+       if (!isset($_GET['token']) || $_GET['token'] !== $file->getDownloadToken()) {
+-        return new Response(t('Access to file @url denied', array('@url' => $file->getFileUri())), 403);
++        return new Response(t('Access to file @url denied', ['@url' => $file->getFileUri()]), 403);
+       }
+     }
+ 
+-    $headers = array(
++    $headers = [
+       'Content-Type' => Unicode::mimeHeaderEncode($file->getMimeType()),
+       'Content-Disposition' => 'attachment; filename="' . Unicode::mimeHeaderEncode($this->fileSystem->basename($file->getFileUri())) . '"',
+       'Content-Length' => $file->getSize(),
+@@ -91,19 +91,19 @@ class FileController extends ControllerBase {
+       'Pragma' => 'no-cache',
+       'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+       'Expires' => '0',
+-    );
++    ];
+ 
+     // Let other modules alter the download headers.
+     \Drupal::moduleHandler()->alter('file_download_headers', $headers, $file);
+ 
+     // Let other modules know the file is being downloaded.
+-    \Drupal::moduleHandler()->invokeAll('file_transfer', array($file->getFileUri(), $headers));
++    \Drupal::moduleHandler()->invokeAll('file_transfer', [$file->getFileUri(), $headers]);
+ 
+     try {
+       return new BinaryFileResponse($file->getFileUri(), 200, $headers);
+     }
+     catch (FileNotFoundException $e) {
+-      return new Response(t('File @uri not found', array('@uri' =>$file->getFileUri())), 404);
++      return new Response(t('File @uri not found', ['@uri' => $file->getFileUri()]), 404);
+     }
+   }
+ 
+@@ -141,4 +141,5 @@ class FileController extends ControllerBase {
+       return AjaxResponse::create()->addCommand(new CloseDialogCommand($dialog_selector));
+     }
+   }
++
+ }
+diff --git a/src/Entity/FileEntity.php b/src/Entity/FileEntity.php
+index 0e55f2f..8f6db96 100644
+--- a/src/Entity/FileEntity.php
++++ b/src/Entity/FileEntity.php
+@@ -40,7 +40,7 @@ class FileEntity extends File implements FileEntityInterface {
+   protected function loadMetadata() {
+     if ($this->metadata === NULL) {
+       // Load and unserialize metadata.
+-      $results = \Drupal::database()->query("SELECT * FROM {file_metadata} WHERE fid = :fid", array(':fid' => $this->id()));
++      $results = \Drupal::database()->query("SELECT * FROM {file_metadata} WHERE fid = :fid", [':fid' => $this->id()]);
+       foreach ($results as $result) {
+         $this->metadata[$result->name] = unserialize($result->value);
+       }
+@@ -85,15 +85,15 @@ class FileEntity extends File implements FileEntityInterface {
+    */
+   public static function preCreate(EntityStorageInterface $storage, array &$values) {
+     parent::preCreate($storage, $values);
+-    $values += array(
++    $values += [
+       'type' => FILE_TYPE_NONE,
+-    );
++    ];
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function __construct(array $values, $entity_type, $bundle = FALSE, $translations = array()) {
++  public function __construct(array $values, $entity_type, $bundle = FALSE, $translations = []) {
+     if (!$bundle) {
+       $values['type'] = FILE_TYPE_NONE;
+       $bundle = FILE_TYPE_NONE;
+@@ -102,11 +102,10 @@ class FileEntity extends File implements FileEntityInterface {
+     parent::__construct($values, $entity_type, $bundle, $translations);
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+-  public function url($rel = 'canonical', $options = array()) {
++  public function url($rel = 'canonical', $options = []) {
+     // While self::urlInfo() will throw an exception if the entity is new,
+     // the expected result for a URL is always a string.
+     if ($this->isNew() || !$this->hasLinkTemplate($rel)) {
+@@ -205,13 +204,13 @@ class FileEntity extends File implements FileEntityInterface {
+           ->condition('fid', $this->id())
+           ->execute();
+       }
+-      $query = \Drupal::database()->insert('file_metadata')->fields(array('fid', 'name', 'value'));
++      $query = \Drupal::database()->insert('file_metadata')->fields(['fid', 'name', 'value']);
+       foreach ($this->getAllMetadata() as $name => $value) {
+-        $query->values(array(
++        $query->values([
+           'fid' => $this->id(),
+           'name' => $name,
+           'value' => serialize($value),
+-        ));
++        ]);
+       }
+       $query->execute();
+       $this->metadataChanged = FALSE;
+@@ -272,9 +271,9 @@ class FileEntity extends File implements FileEntityInterface {
+    * Update the image dimensions on the given image field on the given entity.
+    *
+    * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
+-   *    The entity to be updated.
++   *   The entity to be updated.
+    * @param string $image_field
+-   *    The field to be updated.
++   *   The field to be updated.
+    */
+   protected function updateImageFieldDimensionsByEntity(FieldableEntityInterface $entity, $image_field) {
+     foreach (array_keys($entity->getTranslationLanguages()) as $langcode) {
+@@ -335,54 +334,54 @@ class FileEntity extends File implements FileEntityInterface {
+       ->setSetting('target_type', 'file_type');
+ 
+     $fields['filename']
+-      ->setDisplayOptions('view', array(
++      ->setDisplayOptions('view', [
+         'type' => 'string',
+         'label' => 'hidden',
+         'weight' => -5,
+-      ))
++      ])
+       ->setDisplayConfigurable('view', TRUE)
+-      ->setDisplayOptions('form', array(
++      ->setDisplayOptions('form', [
+         'type' => 'string_textfield',
+         'weight' => -5,
+-      ))
++      ])
+       ->setDisplayConfigurable('form', TRUE);
+ 
+     $fields['uri']
+-      ->setDisplayOptions('view', array(
++      ->setDisplayOptions('view', [
+         'type' => 'file_image',
+         'label' => 'hidden',
+         'weight' => -5,
+-      ))
++      ])
+       ->setDisplayConfigurable('view', TRUE);
+ 
+     $fields['uid']
+-      ->setDisplayOptions('view', array(
++      ->setDisplayOptions('view', [
+         'type' => 'uri_link',
+         'weight' => 1,
+-      ))
++      ])
+       ->setDisplayConfigurable('view', TRUE)
+-      ->setDisplayOptions('form', array(
++      ->setDisplayOptions('form', [
+         'type' => 'entity_reference_autocomplete',
+         'weight' => -1,
+-        'settings' => array(
++        'settings' => [
+           'match_operator' => 'CONTAINS',
+           'size' => '60',
+           'autocomplete_type' => 'tags',
+           'placeholder' => '',
+-        )
+-      ));
++        ],
++      ]);
+ 
+     $fields['filemime']
+-      ->setDisplayOptions('view', array(
++      ->setDisplayOptions('view', [
+         'type' => 'string',
+         'weight' => 2,
+-      ))
++      ])
+       ->setDisplayConfigurable('view', TRUE);
+     $fields['filesize']
+-      ->setDisplayOptions('view', array(
++      ->setDisplayOptions('view', [
+         'type' => 'file_size',
+         'weight' => 3,
+-      ))
++      ])
+       ->setDisplayConfigurable('view', TRUE);
+ 
+     return $fields;
+@@ -394,7 +393,7 @@ class FileEntity extends File implements FileEntityInterface {
+    * @return bool
+    *   TRUE if the file is using a readable stream wrapper, or FALSE otherwise.
+    */
+-  function isReadable() {
++  public function isReadable() {
+     $scheme = StreamWrapperManager::getScheme($this->getFileUri());
+     $wrappers = \Drupal::service('stream_wrapper_manager')->getWrappers(StreamWrapperInterface::READ);
+     return !empty($wrappers[$scheme]);
+@@ -446,10 +445,10 @@ class FileEntity extends File implements FileEntityInterface {
+    * @return \Drupal\Core\Url
+    *   An Url object for the download url.
+    */
+-  public function downloadUrl($options = array()) {
+-    $url = new Url('file_entity.file_download', array('file' => $this->id()), $options);
++  public function downloadUrl($options = []) {
++    $url = new Url('file_entity.file_download', ['file' => $this->id()], $options);
+     if (!\Drupal::config('file_entity.settings')->get('allow_insecure_download')) {
+-      $url->setOption('query', array('token' => $this->getDownloadToken()));
++      $url->setOption('query', ['token' => $this->getDownloadToken()]);
+     }
+     return $url;
+   }
+@@ -483,7 +482,7 @@ class FileEntity extends File implements FileEntityInterface {
+    *   Machine name of file type that should be used for given file.
+    */
+   protected function determineType() {
+-    $types = \Drupal::moduleHandler()->invokeAll('file_type', array($this));
++    $types = \Drupal::moduleHandler()->invokeAll('file_type', [$this]);
+     \Drupal::moduleHandler()->alter('file_type', $types, $this);
+ 
+     return empty($types) ? NULL : reset($types);
+diff --git a/src/Entity/FileEntityViewBuilder.php b/src/Entity/FileEntityViewBuilder.php
+index cba068d..ed61e4e 100644
+--- a/src/Entity/FileEntityViewBuilder.php
++++ b/src/Entity/FileEntityViewBuilder.php
+@@ -5,9 +5,6 @@ namespace Drupal\file_entity\Entity;
+ use Drupal\Core\Cache\Cache;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityViewBuilder;
+-use Drupal\Core\Field\BaseFieldDefinition;
+-use Drupal\Core\Field\FormatterInterface;
+-use Drupal\image\Entity\ImageStyle;
+ 
+ /**
+  * View builder for File Entity.
+@@ -28,11 +25,12 @@ class FileEntityViewBuilder extends EntityViewBuilder {
+     foreach (\Drupal::service('file.usage')->listUsage($entity) as $module => $module_references) {
+       foreach ($module_references as $type => $ids) {
+         if (\Drupal::entityTypeManager()->hasDefinition($type)) {
+-          $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], array($type . ':' . key($ids)));
++          $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], [$type . ':' . key($ids)]);
+           break 2;
+         }
+       }
+     }
+     return $build;
+   }
++
+ }
+diff --git a/src/Entity/FileType.php b/src/Entity/FileType.php
+index befcc9b..56afa43 100644
+--- a/src/Entity/FileType.php
++++ b/src/Entity/FileType.php
+@@ -74,7 +74,7 @@ class FileType extends ConfigEntityBundleBase implements FileTypeInterface {
+    *
+    * @var array
+    */
+-  protected $mimetypes = array();
++  protected $mimetypes = [];
+ 
+   /**
+    * {@inheritdoc}
+@@ -87,7 +87,7 @@ class FileType extends ConfigEntityBundleBase implements FileTypeInterface {
+    * {@inheritdoc}
+    */
+   public function getMimeTypes() {
+-    return $this->mimetypes ?: array();
++    return $this->mimetypes ?: [];
+   }
+ 
+   /**
+@@ -115,7 +115,7 @@ class FileType extends ConfigEntityBundleBase implements FileTypeInterface {
+    * {@inheritdoc}
+    */
+   public static function loadEnabled($status = TRUE) {
+-    $types = array();
++    $types = [];
+     foreach (self::loadMultiple() as $id => $type) {
+       if ($type->status == $status) {
+         $types[$id] = $type;
+@@ -134,4 +134,5 @@ class FileType extends ConfigEntityBundleBase implements FileTypeInterface {
+     }
+     return ($b->status() - $a->status());
+   }
++
+ }
+diff --git a/src/FileEntityAccessControlHandler.php b/src/FileEntityAccessControlHandler.php
+index 885910e..10e768d 100644
+--- a/src/FileEntityAccessControlHandler.php
++++ b/src/FileEntityAccessControlHandler.php
+@@ -3,12 +3,10 @@
+ namespace Drupal\file_entity;
+ 
+ use Drupal\Core\Access\AccessResult;
+-use Drupal\Core\Language\LanguageInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Session\AccountInterface;
+ use Drupal\Core\StreamWrapper\StreamWrapperManager;
+ use Drupal\file\FileAccessControlHandler;
+-use Drupal\file_entity\Entity\FileEntity;
+ 
+ /**
+  * Defines the access control handler for the file entity type.
+@@ -28,7 +26,7 @@ class FileEntityAccessControlHandler extends FileAccessControlHandler {
+   /**
+    * {@inheritdoc}
+    */
+-  public function createAccess($entity_bundle = NULL, AccountInterface $account = NULL, array $context = array(), $return_as_object = FALSE) {
++  public function createAccess($entity_bundle = NULL, AccountInterface $account = NULL, array $context = [], $return_as_object = FALSE) {
+     $account = $this->prepareUser($account);
+     $result = AccessResult::allowedIfHasPermission($account, 'bypass file access')
+       ->orIf(parent::createAccess($entity_bundle, $account, $context, TRUE));
+@@ -46,7 +44,7 @@ class FileEntityAccessControlHandler extends FileAccessControlHandler {
+    * {@inheritdoc}
+    */
+   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+-    /** @var FileEntity $entity */
++    /** @var \Drupal\file_entity\Entity\FileEntity $entity */
+     $is_owner = $entity->getOwnerId() === $account->id();
+ 
+     if ($operation == 'view') {
+@@ -65,7 +63,7 @@ class FileEntityAccessControlHandler extends FileAccessControlHandler {
+ 
+     // User can perform these operations if they have the "any" permission or if
+     // they own it and have the "own" permission.
+-    if (in_array($operation, array('download', 'update', 'delete'))) {
++    if (in_array($operation, ['download', 'update', 'delete'])) {
+       $permission_action = $operation == 'update' ? 'edit' : $operation;
+       $type = $entity->get('type')->target_id;
+       return AccessResult::allowedIfHasPermission($account, "$permission_action any $type files")
+@@ -77,4 +75,5 @@ class FileEntityAccessControlHandler extends FileAccessControlHandler {
+     // @todo Merge that in here somehow?
+     return parent::checkAccess($entity, $operation, $account);
+   }
++
+ }
+diff --git a/src/FileEntityInterface.php b/src/FileEntityInterface.php
+index b8fd71e..7ffcbae 100644
+--- a/src/FileEntityInterface.php
++++ b/src/FileEntityInterface.php
+@@ -49,4 +49,5 @@ interface FileEntityInterface extends FileInterface {
+    *   An array of metadata properties.
+    */
+   public function getAllMetadata();
++
+ }
+diff --git a/src/FileEntityPermissions.php b/src/FileEntityPermissions.php
+index 145d4d9..d080b0e 100644
+--- a/src/FileEntityPermissions.php
++++ b/src/FileEntityPermissions.php
+@@ -19,14 +19,14 @@ class FileEntityPermissions {
+    * file details' permissions to show which stream wrappers they apply to.
+    */
+   public function extendPermissionDetails() {
+-    $wrappers = file_entity_get_public_and_private_stream_wrapper_names() + array(
+-      'public' => array($this->t('None')),
+-      'private' => array($this->t('None')),
+-    );
++    $wrappers = file_entity_get_public_and_private_stream_wrapper_names() + [
++      'public' => [$this->t('None')],
++      'private' => [$this->t('None')],
++    ];
+ 
+-    $permissions = array();
+-    $permissions['view files']['description'] = $this->t('Includes the following stream wrappers: %wrappers.', array('%wrappers' => implode(', ', $wrappers['public'])));
+-    $permissions['view own private files']['description'] = $this->t('Includes the following stream wrappers: %wrappers.', array('%wrappers' => implode(', ', $wrappers['private'])));
++    $permissions = [];
++    $permissions['view files']['description'] = $this->t('Includes the following stream wrappers: %wrappers.', ['%wrappers' => implode(', ', $wrappers['public'])]);
++    $permissions['view own private files']['description'] = $this->t('Includes the following stream wrappers: %wrappers.', ['%wrappers' => implode(', ', $wrappers['private'])]);
+     return $permissions;
+   }
+ 
+@@ -38,30 +38,30 @@ class FileEntityPermissions {
+    */
+   public function fileTypePermissions() {
+     // Generate standard file permissions for all applicable file types.
+-    $permissions = array();
++    $permissions = [];
+     foreach (FileType::loadEnabled() as $type) {
+       /** @var \Drupal\file_entity\Entity\FileType $type */
+       $id = $type->id();
+-      $permissions += array(
+-        "edit own $id files" => array(
+-          'title' => $this->t('%type_name: Edit own files', array('%type_name' => $type->label())),
+-        ),
+-        "edit any $id files" => array(
+-          'title' => $this->t('%type_name: Edit any files', array('%type_name' => $type->label())),
+-        ),
+-        "delete own $id files" => array(
+-          'title' => $this->t('%type_name: Delete own files', array('%type_name' => $type->label())),
+-        ),
+-        "delete any $id files" => array(
+-          'title' => $this->t('%type_name: Delete any files', array('%type_name' => $type->label())),
+-        ),
+-        "download own $id files" => array(
+-          'title' => $this->t('%type_name: Download own files', array('%type_name' => $type->label())),
+-        ),
+-        "download any $id files" => array(
+-          'title' => $this->t('%type_name: Download any files', array('%type_name' => $type->label())),
+-        ),
+-      );
++      $permissions += [
++        "edit own $id files" => [
++          'title' => $this->t('%type_name: Edit own files', ['%type_name' => $type->label()]),
++        ],
++        "edit any $id files" => [
++          'title' => $this->t('%type_name: Edit any files', ['%type_name' => $type->label()]),
++        ],
++        "delete own $id files" => [
++          'title' => $this->t('%type_name: Delete own files', ['%type_name' => $type->label()]),
++        ],
++        "delete any $id files" => [
++          'title' => $this->t('%type_name: Delete any files', ['%type_name' => $type->label()]),
++        ],
++        "download own $id files" => [
++          'title' => $this->t('%type_name: Download own files', ['%type_name' => $type->label()]),
++        ],
++        "download any $id files" => [
++          'title' => $this->t('%type_name: Download any files', ['%type_name' => $type->label()]),
++        ],
++      ];
+     }
+     return $permissions;
+   }
+diff --git a/src/FileEntityServiceProvider.php b/src/FileEntityServiceProvider.php
+index f89d21b..a955539 100644
+--- a/src/FileEntityServiceProvider.php
++++ b/src/FileEntityServiceProvider.php
+@@ -21,27 +21,28 @@ class FileEntityServiceProvider extends ServiceProviderBase {
+     $modules = $container->getParameter('container.modules');
+     if (isset($modules['hal'])) {
+       // Add a normalizer service for file entities.
+-      $service_definition = new Definition(FileEntityNormalizer::class, array(
++      $service_definition = new Definition(FileEntityNormalizer::class, [
+         new Reference('hal.link_manager'),
+         new Reference('entity_type.manager'),
+         new Reference('module_handler'),
+         new Reference('entity_type.repository'),
+         new Reference('entity_field.manager'),
+ 
+-      ));
++      ]);
+       // The priority must be higher than that of
+-      // serializer.normalizer.file_entity.hal in hal.services.yml
+-      $service_definition->addTag('normalizer', array('priority' => 30));
++      // serializer.normalizer.file_entity.hal in hal.services.yml.
++      $service_definition->addTag('normalizer', ['priority' => 30]);
+       $container->setDefinition('serializer.normalizer.entity.file_entity', $service_definition);
+ 
+       // Add a normalizer service for file fields.
+-      $service_definition = new Definition(FileItemNormalizer::class, array(
++      $service_definition = new Definition(FileItemNormalizer::class, [
+         new Reference('hal.link_manager'),
+         new Reference('serializer.entity_resolver'),
+-      ));
++      ]);
+       // Supersede EntityReferenceItemNormalizer.
+-      $service_definition->addTag('normalizer', array('priority' => 20));
++      $service_definition->addTag('normalizer', ['priority' => 20]);
+       $container->setDefinition('serializer.normalizer.entity_reference_item.file_entity', $service_definition);
+     }
+   }
++
+ }
+diff --git a/src/FileTypeInterface.php b/src/FileTypeInterface.php
+index aaa5a79..2140274 100644
+--- a/src/FileTypeInterface.php
++++ b/src/FileTypeInterface.php
+@@ -8,6 +8,7 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
+  * File type entity interface.
+  */
+ interface FileTypeInterface extends ConfigEntityInterface {
++
+   /**
+    * Get the description of this file type.
+    *
+@@ -59,4 +60,5 @@ interface FileTypeInterface extends ConfigEntityInterface {
+    *   An array of entity objects indexed by their IDs.
+    */
+   public static function loadEnabled($status = TRUE);
++
+ }
+diff --git a/src/FileTypeListBuilder.php b/src/FileTypeListBuilder.php
+index d0a3cb8..6cb96fc 100644
+--- a/src/FileTypeListBuilder.php
++++ b/src/FileTypeListBuilder.php
+@@ -4,7 +4,6 @@ namespace Drupal\file_entity;
+ 
+ use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+ use Drupal\Core\Entity\EntityInterface;
+-use Drupal\file_entity\Entity\FileType;
+ 
+ /**
+  * Builds a list of file types.
+@@ -18,10 +17,10 @@ class FileTypeListBuilder extends ConfigEntityListBuilder {
+    */
+   public function buildHeader() {
+     $header['label'] = t('Label');
+-    $header['description'] = array(
++    $header['description'] = [
+       'data' => t('Description'),
+-      'class' => array(RESPONSIVE_PRIORITY_MEDIUM),
+-    );
++      'class' => [RESPONSIVE_PRIORITY_MEDIUM],
++    ];
+     $header['status'] = t('Status');
+     return $header + parent::buildHeader();
+   }
+@@ -30,13 +29,14 @@ class FileTypeListBuilder extends ConfigEntityListBuilder {
+    * {@inheritdoc}
+    */
+   public function buildRow(EntityInterface $entity) {
+-    /** @var FileType $entity */
+-    $row['label'] = array(
++    /** @var \Drupal\file_entity\Entity\FileType $entity */
++    $row['label'] = [
+       'data' => $entity->label(),
+-      'class' => array('menu-label'),
+-    );
++      'class' => ['menu-label'],
++    ];
+     $row['description']['data'] = ['#markup' => $entity->getDescription()];
+     $row['status'] = $entity->status() ? t('Enabled') : t('Disabled');
+     return $row + parent::buildRow($entity);
+   }
++
+ }
+diff --git a/src/Form/FileAddArchiveForm.php b/src/Form/FileAddArchiveForm.php
+index fd0c583..fe4f604 100644
+--- a/src/Form/FileAddArchiveForm.php
++++ b/src/Form/FileAddArchiveForm.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\file_entity\Form;
+ 
+ use Drupal\Core\Archiver\ArchiverManager;
+-use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Form\FormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\file\Entity\File;
+@@ -77,37 +76,37 @@ class FileAddArchiveForm extends FormBase {
+     $options = $form_state->get('options') ? $form_state->get('options') : $options;
+     $validators = $this->getUploadValidators($options);
+ 
+-    $form['upload'] = array(
++    $form['upload'] = [
+       '#type' => 'managed_file',
+       '#title' => $this->t('Upload an archive file'),
+       '#upload_location' => 'public://',
+       '#progress_indicator' => 'bar',
+-      '#default_value' => $form_state->has('file') ? array($form_state->get('file')->id()) : NULL,
++      '#default_value' => $form_state->has('file') ? [$form_state->get('file')->id()] : NULL,
+       '#required' => TRUE,
+-      '#description' => $this->t('Files must be less than <strong>%valid_size</strong><br> Allowed file types: <strong>%valid_extension</strong>', array('%valid_size' => format_size($validators['file_validate_size'][0]), '%valid_extension' => $validators['file_validate_extensions'][0])),
++      '#description' => $this->t('Files must be less than <strong>%valid_size</strong><br> Allowed file types: <strong>%valid_extension</strong>', ['%valid_size' => format_size($validators['file_validate_size'][0]), '%valid_extension' => $validators['file_validate_extensions'][0]]),
+       '#upload_validators' => $validators,
+-    );
++    ];
+ 
+-    $form['pattern'] = array(
++    $form['pattern'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Pattern'),
+       '#description' => $this->t('Only files matching this pattern will be imported. For example, to import all jpg and gif files, the pattern would be <strong>.*jpg|.*gif</strong>. Use <strong>.*</strong> to extract all files in the archive.'),
+       '#default_value' => '.*',
+       '#required' => TRUE,
+-    );
++    ];
+ 
+-    $form['remove_archive'] = array(
++    $form['remove_archive'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Remove archive'),
+       '#description' => $this->t('Removes archive after extraction.'),
+       '#default_value' => FALSE,
+-    );
++    ];
+ 
+-    $form['actions'] = array('#type' => 'actions');
+-    $form['actions']['submit'] = array(
++    $form['actions'] = ['#type' => 'actions'];
++    $form['actions']['submit'] = [
+       '#type' => 'submit',
+       '#value' => t('Submit'),
+-    );
++    ];
+ 
+     return $form;
+   }
+@@ -123,7 +122,7 @@ class FileAddArchiveForm extends FormBase {
+         $extract_dir = $this->config('system.file')->get('default_scheme') . '://' . pathinfo($archive->getFilename(), PATHINFO_FILENAME);
+         $extract_dir = $this->fileSystem->getDestinationFilename($extract_dir, FileSystemInterface::EXISTS_RENAME);
+         if (!$this->fileSystem->prepareDirectory($extract_dir, FileSystemInterface::MODIFY_PERMISSIONS | FileSystemInterface::CREATE_DIRECTORY)) {
+-          throw new \Exception(t('Unable to prepare, the directory %dir for extraction.', array('%dir' => $extract_dir)));
++          throw new \Exception(t('Unable to prepare, the directory %dir for extraction.', ['%dir' => $extract_dir]));
+         }
+         $archiver->extract($extract_dir);
+         $pattern = '/' . $form_state->getValue('pattern') . '/';
+@@ -143,9 +142,9 @@ class FileAddArchiveForm extends FormBase {
+             $this->fileSystem->unlink($file->uri);
+           }
+         }
+-        $this->messenger->addMessage($this->t('Extracted %file and added @count new files.', array('%file' => $archive->getFilename(), '@count' => count($files))));
++        $this->messenger->addMessage($this->t('Extracted %file and added @count new files.', ['%file' => $archive->getFilename(), '@count' => count($files)]));
+         if ($form_state->getValue('remove_archive')) {
+-          $this->messenger->addMessage($this->t('Archive %name was removed from the system.', array('%name' => $archive->getFilename())));
++          $this->messenger->addMessage($this->t('Archive %name was removed from the system.', ['%name' => $archive->getFilename()]));
+           $archive->delete();
+         }
+         else {
+@@ -154,7 +153,7 @@ class FileAddArchiveForm extends FormBase {
+         }
+       }
+       else {
+-        $form_state->setErrorByName('', $this->t('Cannot extract %file, not a valid archive.', array('%file' => $archive->getFileUri())));
++        $form_state->setErrorByName('', $this->t('Cannot extract %file, not a valid archive.', ['%file' => $archive->getFileUri()]));
+       }
+     }
+     $this->redirect('entity.file.collection')->send();
+diff --git a/src/Form/FileAddForm.php b/src/Form/FileAddForm.php
+index 7b47cfc..c78f55b 100644
+--- a/src/Form/FileAddForm.php
++++ b/src/Form/FileAddForm.php
+@@ -89,8 +89,8 @@ class FileAddForm extends FormBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public function buildForm(array $form, FormStateInterface $form_state, array $options = array()) {
+-    $step = in_array($form_state->get('step'), array(1, 2, 3, 4)) ? $form_state->get('step') : 1;
++  public function buildForm(array $form, FormStateInterface $form_state, array $options = []) {
++    $step = in_array($form_state->get('step'), [1, 2, 3, 4]) ? $form_state->get('step') : 1;
+     $form_state->set('step', $step);
+     $form_state->set('options', $options);
+ 
+@@ -117,13 +117,14 @@ class FileAddForm extends FormBase {
+    * Generate form fields for the first step in the add file wizard.
+    *
+    * @param array $form
+-   *   Holds form data
+-   * @param FormStateInterface $form_state
+-   *   Holds form state data
++   *   Holds form data.
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
++   *   Holds form state data.
++   *
+    * @return array
+    *   Returns form data
+    */
+-  function stepUpload(array $form, FormStateInterface $form_state) {
++  public function stepUpload(array $form, FormStateInterface $form_state) {
+     $options = [
+       'file_extensions' => \Drupal::config('file_entity.settings')
+         ->get('default_allowed_extensions'),
+@@ -131,28 +132,28 @@ class FileAddForm extends FormBase {
+     $options = $form_state->get('options') ? $form_state->get('options') : $options;
+     $validators = $this->getUploadValidators($options);
+ 
+-    $form['upload'] = array(
++    $form['upload'] = [
+       '#type' => 'managed_file',
+       '#title' => t('Upload a new file'),
+       '#upload_location' => $this->getUploadDestinationUri($form_state->get('options')),
+       '#upload_validators' => $validators,
+       '#progress_indicator' => 'bar',
+       '#required' => TRUE,
+-      '#default_value' => $form_state->has('file') ? array($form_state->get('file')->id()) : NULL,
+-    );
++      '#default_value' => $form_state->has('file') ? [$form_state->get('file')->id()] : NULL,
++    ];
+ 
+-    $file_upload_help = array(
++    $file_upload_help = [
+       '#theme' => 'file_upload_help',
+       '#upload_validators' => $form['upload']['#upload_validators'],
+-    );
++    ];
+     $form['upload']['#description'] = $this->renderer->render($file_upload_help);
+ 
+-    $form['actions'] = array('#type' => 'actions');
+-    $form['actions']['next'] = array(
++    $form['actions'] = ['#type' => 'actions'];
++    $form['actions']['next'] = [
+       '#type' => 'submit',
+       '#button_type' => 'primary',
+       '#value' => t('Next'),
+-    );
++    ];
+ 
+     return $form;
+   }
+@@ -170,11 +171,11 @@ class FileAddForm extends FormBase {
+    *
+    * @see token_replace()
+    */
+-  function getUploadDestinationUri(array $params, array $data = array()) {
+-    $params += array(
++  public function getUploadDestinationUri(array $params, array $data = []) {
++    $params += [
+       'uri_scheme' => $this->config('system.file')->get('default_scheme'),
+       'file_directory' => '',
+-    );
++    ];
+ 
+     $destination = trim($params['file_directory'], '/');
+ 
+@@ -193,29 +194,29 @@ class FileAddForm extends FormBase {
+    * @param $form
+    * @param $form_state
+    */
+-  function stepFileType(array $form, FormStateInterface $form_state) {
++  public function stepFileType(array $form, FormStateInterface $form_state) {
+     $file = $form_state->get('file');
+ 
+-    $form['type'] = array(
++    $form['type'] = [
+       '#type' => 'radios',
+       '#title' => t('File type'),
+       '#options' => $this->getCandidateFileTypes($file),
+       '#default_value' => $form_state->get('type'),
+       '#required' => TRUE,
+-    );
++    ];
+ 
+-    $form['actions'] = array('#type' => 'actions');
+-    $form['actions']['previous'] = array(
++    $form['actions'] = ['#type' => 'actions'];
++    $form['actions']['previous'] = [
+       '#type' => 'submit',
+       '#value' => t('Previous'),
+-      '#limit_validation_errors' => array(),
+-    );
++      '#limit_validation_errors' => [],
++    ];
+ 
+-    $form['actions']['next'] = array(
++    $form['actions']['next'] = [
+       '#type' => 'submit',
+       '#button_type' => 'primary',
+       '#value' => t('Next'),
+-    );
++    ];
+ 
+     return $form;
+   }
+@@ -231,10 +232,10 @@ class FileAddForm extends FormBase {
+    * @return array
+    *   An array of file type bundles that support the file's mime type.
+    */
+-  function getCandidateFileTypes(FileInterface $file) {
+-    $types = \Drupal::moduleHandler()->invokeAll('file_type', array($file));
++  public function getCandidateFileTypes(FileInterface $file) {
++    $types = \Drupal::moduleHandler()->invokeAll('file_type', [$file]);
+     \Drupal::moduleHandler()->alter('file_type', $types, $file);
+-    $candidates = array();
++    $candidates = [];
+     foreach ($types as $type) {
+ 
+       if ($has_access = $this->entityTypeManager->getAccessControlHandler('file')
+@@ -248,48 +249,49 @@ class FileAddForm extends FormBase {
+   }
+ 
+   /**
+-   * Form Step 3
++   * Form Step 3.
+    *
+    * @param $form
+    * @param $form_state
++   *
+    * @return mixed
+    */
+-  function stepScheme(array $form, FormStateInterface $form_state) {
+-    $options = array();
++  public function stepScheme(array $form, FormStateInterface $form_state) {
++    $options = [];
+     foreach (\Drupal::service('stream_wrapper_manager')->getDescriptions(StreamWrapperInterface::WRITE_VISIBLE) as $scheme => $description) {
+       $options[$scheme] = Html::escape($description);
+     }
+ 
+-    $form['scheme'] = array(
++    $form['scheme'] = [
+       '#type' => 'radios',
+       '#title' => t('Destination'),
+       '#options' => $options,
+       '#default_value' => $form_state->get('scheme') ?: $this->config('system.file')->get('default_scheme'),
+       '#required' => TRUE,
+-    );
++    ];
+ 
+-    $form['actions'] = array('#type' => 'actions');
+-    $form['actions']['previous'] = array(
++    $form['actions'] = ['#type' => 'actions'];
++    $form['actions']['previous'] = [
+       '#type' => 'submit',
+       '#value' => t('Previous'),
+-      '#limit_validation_errors' => array(),
+-    );
+-    $form['actions']['next'] = array(
++      '#limit_validation_errors' => [],
++    ];
++    $form['actions']['next'] = [
+       '#type' => 'submit',
+       '#button_type' => 'primary',
+       '#value' => t('Next'),
+-    );
++    ];
+ 
+     return $form;
+   }
+ 
+   /**
+-   * Step 4
++   * Step 4.
+    *
+    * @param $form
+    * @param $form_state
+    */
+-  function stepFields(array $form, FormStateInterface $form_state) {
++  public function stepFields(array $form, FormStateInterface $form_state) {
+ 
+     // Load the file and overwrite the filetype set on the previous screen.
+     /** @var \Drupal\file\FileInterface$file*/
+@@ -298,18 +300,17 @@ class FileAddForm extends FormBase {
+     $form_state->set('form_display', EntityFormDisplay::collectRenderDisplay($file, 'default'));
+     $form_state->get('form_display')->buildForm($file, $form, $form_state);
+ 
+-
+-    $form['actions'] = array('#type' => 'actions');
+-    $form['actions']['previous'] = array(
++    $form['actions'] = ['#type' => 'actions'];
++    $form['actions']['previous'] = [
+       '#type' => 'submit',
+       '#value' => t('Previous'),
+-      '#limit_validation_errors' => array(),
+-    );
+-    $form['actions']['submit'] = array(
++      '#limit_validation_errors' => [],
++    ];
++    $form['actions']['submit'] = [
+       '#type' => 'submit',
+       '#button_type' => 'primary',
+       '#value' => t('Save'),
+-    );
++    ];
+ 
+     return $form;
+   }
+@@ -339,13 +340,13 @@ class FileAddForm extends FormBase {
+     $current_step = $form_state->get('step');
+ 
+     // Store select values in $form_state.
+-    foreach (array('type', 'scheme') as $key) {
++    foreach (['type', 'scheme'] as $key) {
+       if ($form_state->hasValue($key)) {
+         $form_state->set($key, $form_state->getValue($key));
+       }
+     }
+ 
+-    $steps_to_check = array(2, 3);
++    $steps_to_check = [2, 3];
+     if ($trigger == 'edit-previous') {
+       // If the previous button was hit,
+       // the step checking order should be reversed 3, 2.
+@@ -358,7 +359,7 @@ class FileAddForm extends FormBase {
+       $file = $form_state->get('file');
+     }
+     else {
+-      $file = File::load($form_state->getValue(array('upload', 0)));
++      $file = File::load($form_state->getValue(['upload', 0]));
+       $form_state->set('file', $file);
+     }
+ 
+@@ -428,7 +429,6 @@ class FileAddForm extends FormBase {
+ 
+     }
+ 
+-
+     // Form id's can vary depending on how many other forms are displayed, so we
+     // need to do string comparissons. e.g edit-submit--2.
+     if (strpos($trigger, 'edit-next') !== FALSE) {
+@@ -458,15 +458,15 @@ class FileAddForm extends FormBase {
+       // Change the file from temporary to permanent.
+       $file->status = FILE_STATUS_PERMANENT;
+ 
+-      // Save entity
++      // Save entity.
+       $file->save();
+ 
+       $form_state->set('file', $file);
+ 
+-      $this->messenger->addMessage(t('@type %name was uploaded.', array(
++      $this->messenger->addMessage(t('@type %name was uploaded.', [
+         '@type' => $file->type->entity->label(),
+-        '%name' => $file->getFilename()
+-      )));
++        '%name' => $file->getFilename(),
++      ]));
+ 
+       // Figure out destination.
+       if (\Drupal::currentUser()->hasPermission('administer files')) {
+@@ -481,4 +481,5 @@ class FileAddForm extends FormBase {
+     }
+ 
+   }
++
+ }
+diff --git a/src/Form/FileDeleteMultipleForm.php b/src/Form/FileDeleteMultipleForm.php
+index b67fd3f..6edbee3 100644
+--- a/src/Form/FileDeleteMultipleForm.php
++++ b/src/Form/FileDeleteMultipleForm.php
+@@ -21,9 +21,9 @@ class FileDeleteMultipleForm extends ConfirmFormBase {
+   /**
+    * The array of files to delete.
+    *
+-   * @var FileInterface[]
++   * @var \Drupal\file\FileInterface[]
+    */
+-  protected $files = array();
++  protected $files = [];
+ 
+   /**
+    * The tempstore factory.
+@@ -103,12 +103,12 @@ class FileDeleteMultipleForm extends ConfirmFormBase {
+       $form_state->setRedirect('entity.file.collection');
+     }
+ 
+-    $form['files'] = array(
++    $form['files'] = [
+       '#theme' => 'item_list',
+       '#items' => array_map(function (FileInterface $file) {
+         return Html::escape($file->label());
+       }, $this->files),
+-    );
++    ];
+     $form = parent::buildForm($form, $form_state);
+ 
+     return $form;
+diff --git a/src/Form/FileEditForm.php b/src/Form/FileEditForm.php
+index a81cba7..dd815cf 100644
+--- a/src/Form/FileEditForm.php
++++ b/src/Form/FileEditForm.php
+@@ -2,15 +2,10 @@
+ 
+ namespace Drupal\file_entity\Form;
+ 
+-use Drupal\Component\Datetime\TimeInterface;
+ use Drupal\Core\Entity\ContentEntityForm;
+-use Drupal\Core\Entity\EntityRepositoryInterface;
+-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+ use Drupal\Core\File\FileSystemInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Render\RendererInterface;
+ use Drupal\file\Entity\File;
+-use Drupal\file\FileInterface;
+ use Drupal\file_entity\Entity\FileEntity;
+ use Drupal\file_entity\Entity\FileType;
+ use Drupal\file_entity\UploadValidatorsTrait;
+@@ -61,7 +56,7 @@ class FileEditForm extends ContentEntityForm {
+    * {@inheritdoc}
+    */
+   public function form(array $form, FormStateInterface $form_state) {
+-    /** @var FileInterface $file */
++    /** @var \Drupal\file\Entity\FileInterface $file */
+     $file = $this->entity;
+ 
+     if ($this->operation == 'edit') {
+@@ -72,29 +67,29 @@ class FileEditForm extends ContentEntityForm {
+         $type = FileType::load($file->bundle())->label();
+       }
+ 
+-      $form['#title'] = $this->t('<em>Edit @type</em> "@title"', array(
++      $form['#title'] = $this->t('<em>Edit @type</em> "@title"', [
+         '@type' => $type,
+         '@title' => $file->label(),
+-      ));
++      ]);
+ 
+       // Add a 'replace this file' upload field if the file is writeable.
+       if ($file->isWritable()) {
+         // Set up replacement file validation.
+-        $replacement_options = array();
++        $replacement_options = [];
+         // Replacement file must have the same extension as the original file.
+         $replacement_options['file_extensions'] = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
+ 
+-        $form['replace_upload'] = array(
++        $form['replace_upload'] = [
+           '#type' => 'managed_file',
+           '#title' => $this->t('Replace file'),
+           '#upload_validators' => $this->getUploadValidators($replacement_options),
+-        );
++        ];
+ 
+-        $file_upload_help = array(
++        $file_upload_help = [
+           '#theme' => 'file_upload_help',
+           '#description' => $this->t('This file will replace the existing file. This action cannot be undone.'),
+           '#upload_validators' => $form['replace_upload']['#upload_validators'],
+-        );
++        ];
+         $form['replace_upload']['#description'] = $this->renderer->render($file_upload_help);
+       }
+     }
+@@ -110,7 +105,7 @@ class FileEditForm extends ContentEntityForm {
+     $insert = $file->isNew();
+     $file->save();
+ 
+-    $t_args = array('%title' => $file->label());
++    $t_args = ['%title' => $file->label()];
+ 
+     if ($insert) {
+       $this->messenger()->addMessage(t('%title has been created.', $t_args));
+@@ -160,10 +155,11 @@ class FileEditForm extends ContentEntityForm {
+       $replacement = $form_state->getValue('replace_upload')[0];
+       if ($replacement instanceof FileEntity) {
+         $entity_replacement = $replacement;
+-      } else {
++      }
++      else {
+         $entity_replacement = File::load($replacement);
+       }
+-      $log_args = array('@old' => $this->entity->getFilename(), '@new' => $entity_replacement->getFileName());
++      $log_args = ['@old' => $this->entity->getFilename(), '@new' => $entity_replacement->getFileName()];
+       // Move file from temp to permanent home.
+       if ($this->fileSystem->copy($entity_replacement->getFileUri(), $this->entity->getFileUri(), FileSystemInterface::EXISTS_REPLACE)) {
+         $entity_replacement->delete();
+@@ -175,4 +171,5 @@ class FileEditForm extends ContentEntityForm {
+     }
+     parent::submitForm($form, $form_state);
+   }
++
+ }
+diff --git a/src/Form/FileSettingsForm.php b/src/Form/FileSettingsForm.php
+index 896e0fb..2404a36 100644
+--- a/src/Form/FileSettingsForm.php
++++ b/src/Form/FileSettingsForm.php
+@@ -7,7 +7,8 @@ use Drupal\Core\Form\ConfigFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ 
+ /**
+- * Class FileSettingsForm
++ * Class FileSettingsForm.
++ *
+  * @package Drupal\file_entity\Form
+  */
+ class FileSettingsForm extends ConfigFormBase {
+@@ -35,81 +36,81 @@ class FileSettingsForm extends ConfigFormBase {
+    * {@inheritdoc}
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+-    $form['max_filesize'] = array(
++    $form['max_filesize'] = [
+       '#type' => 'textfield',
+       '#title' => t('Maximum upload size'),
+       '#default_value' => \Drupal::config('file_entity.settings')->get('max_filesize'),
+-      '#description' => t('Enter a value like "512" (bytes), "80 KB" (kilobytes) or "50 MB" (megabytes) in order to restrict the allowed file size. If left empty the file sizes will be limited only by PHP\'s maximum post and file upload sizes (current max limit <strong>%limit</strong>).', array('%limit' => format_size(Environment::getUploadMaxSize()))),
++      '#description' => t('Enter a value like "512" (bytes), "80 KB" (kilobytes) or "50 MB" (megabytes) in order to restrict the allowed file size. If left empty the file sizes will be limited only by PHP\'s maximum post and file upload sizes (current max limit <strong>%limit</strong>).', ['%limit' => format_size(Environment::getUploadMaxSize())]),
+       '#element_validate' => ['\Drupal\file\Plugin\Field\FieldType\FileItem::validateMaxFilesize'],
+       '#size' => 10,
+-    );
++    ];
+ 
+-    $form['default_allowed_extensions'] = array(
++    $form['default_allowed_extensions'] = [
+       '#type' => 'textfield',
+       '#title' => t('Default allowed file extensions'),
+       '#default_value' => \Drupal::config('file_entity.settings')->get('default_allowed_extensions'),
+       '#description' => t('Separate extensions with a space or comma and do not include the leading dot.'),
+       '#element_validate' => ['\Drupal\file\Plugin\Field\FieldType\FileItem::validateExtensions'],
+       '#maxlength' => NULL,
+-    );
++    ];
+ 
+-    $form['file_entity_alt'] = array(
++    $form['file_entity_alt'] = [
+       '#type' => 'textfield',
+       '#title' => t('Alt attribute'),
+       '#description' => t('The text to use as value for the <em>img</em> tag <em>alt</em> attribute.'),
+       '#default_value' => \Drupal::config('file_entity.settings')->get('alt'),
+-    );
++    ];
+ 
+-    $form['file_entity_title'] = array(
++    $form['file_entity_title'] = [
+       '#type' => 'textfield',
+       '#title' => t('Title attribute'),
+       '#description' => t('The text to use as value for the <em>img</em> tag <em>title</em> attribute.'),
+       '#default_value' => \Drupal::config('file_entity.settings')->get('title'),
+-    );
++    ];
+ 
+     // Provide default token values.
+     if (\Drupal::moduleHandler()->moduleExists('token')) {
+-      $form['token_help'] = array(
++      $form['token_help'] = [
+         '#theme' => 'token_tree_link',
+-        '#token_types' => array('file'),
+-      );
++        '#token_types' => ['file'],
++      ];
+       $form['file_entity_alt']['#description'] .= t('This field supports tokens. Default tokens depend on the <a href=":token">Token module</a> to work correctly. The ":value" version of the token (just raw value, no markup) should be used for performance and to avoid theme issues.', [':token' => 'https://drupal.org/project/token']);
+       $form['file_entity_title']['#description'] .= t('This field supports tokens. Default tokens depend on the <a href=":token">Token module</a> to work correctly. The ":value" version of the token (just raw value, no markup) should be used for performance and to avoid theme issues', [':token' => 'https://drupal.org/project/token']);
+     }
+ 
+-    $form['file_upload_wizard'] = array(
++    $form['file_upload_wizard'] = [
+       '#type' => 'fieldset',
+       '#title' => t('File upload wizard'),
+       '#collapsible' => TRUE,
+       '#collapsed' => FALSE,
+       '#description' => t('Configure the steps available when uploading a new file.'),
+-    );
++    ];
+ 
+-    $form['file_upload_wizard']['wizard_skip_file_type'] = array(
++    $form['file_upload_wizard']['wizard_skip_file_type'] = [
+       '#type' => 'checkbox',
+       '#title' => t('Skip filetype selection.'),
+       '#default_value' => \Drupal::config('file_entity.settings')->get('wizard_skip_file_type'),
+       '#description' => t('The file type selection step is only available if the uploaded file falls into two or more file types. If this step is skipped, files with no available file type or two or more file types will not be assigned a file type.'),
+-    );
++    ];
+ 
+-    $form['file_upload_wizard']['wizard_skip_scheme'] = array(
++    $form['file_upload_wizard']['wizard_skip_scheme'] = [
+       '#type' => 'checkbox',
+       '#title' => t('Skip scheme selection.'),
+       '#default_value' => \Drupal::config('file_entity.settings')->get('wizard_skip_scheme'),
+       '#description' => t('The scheme selection step is only available if two or more file destinations, such as public local files served by the webserver and private local files served by Drupal, are available. If this step is skipped, files will automatically be saved using the default download method.'),
+-    );
++    ];
+ 
+-    $form['file_upload_wizard']['wizard_skip_fields'] = array(
++    $form['file_upload_wizard']['wizard_skip_fields'] = [
+       '#type' => 'checkbox',
+       '#title' => t('Skip available fields.'),
+       '#default_value' => \Drupal::config('file_entity.settings')->get('wizard_skip_fields'),
+       '#description' => t('The field selection step is only available if the file type the file belongs to has any available fields. If this step is skipped, any fields on the file will be left blank.'),
+-    );
++    ];
+ 
+-    $form['actions']['submit'] = array(
++    $form['actions']['submit'] = [
+       '#type' => 'submit',
+       '#value' => t('Save'),
+-    );
++    ];
+ 
+     return $form;
+   }
+@@ -137,4 +138,5 @@ class FileSettingsForm extends ConfigFormBase {
+ 
+     $this->messenger()->addMessage(t('File Settings have been succesfully saved.'));
+   }
++
+ }
+diff --git a/src/Form/FileTypeDisableForm.php b/src/Form/FileTypeDisableForm.php
+index cee0788..49b35b8 100644
+--- a/src/Form/FileTypeDisableForm.php
++++ b/src/Form/FileTypeDisableForm.php
+@@ -5,7 +5,6 @@ namespace Drupal\file_entity\Form;
+ use Drupal\Core\Entity\EntityConfirmFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Url;
+-use Drupal\file_entity\Entity\FileType;
+ 
+ /**
+  * Builds the form to disable a file type.
+@@ -18,7 +17,7 @@ class FileTypeDisableForm extends EntityConfirmFormBase {
+   public function getQuestion() {
+     return t(
+       'Are you sure you want to disable the file type %name?',
+-      array('%name' => $this->entity->label())
++      ['%name' => $this->entity->label()]
+     );
+   }
+ 
+@@ -33,12 +32,12 @@ class FileTypeDisableForm extends EntityConfirmFormBase {
+    * {@inheritdoc}
+    */
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+-    /** @var FileType $type */
++    /** @var \Drupal\file_entity\Entity\FileType $type */
+     $type = $this->entity;
+     $type->disable()->save();
+     $this->messenger()->addMessage(t(
+       'The file type %label has been disabled.',
+-      array('%label' => $type->label())
++      ['%label' => $type->label()]
+     ));
+     $form_state->setRedirect('entity.file_type.collection');
+   }
+@@ -49,4 +48,5 @@ class FileTypeDisableForm extends EntityConfirmFormBase {
+   public function getCancelUrl() {
+     return new Url('entity.file_type.collection');
+   }
++
+ }
+diff --git a/src/Form/FileTypeEnableForm.php b/src/Form/FileTypeEnableForm.php
+index d333471..187dc89 100644
+--- a/src/Form/FileTypeEnableForm.php
++++ b/src/Form/FileTypeEnableForm.php
+@@ -5,7 +5,6 @@ namespace Drupal\file_entity\Form;
+ use Drupal\Core\Entity\EntityConfirmFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Url;
+-use Drupal\file_entity\Entity\FileType;
+ 
+ /**
+  * Builds the form to enable a file type.
+@@ -18,7 +17,7 @@ class FileTypeEnableForm extends EntityConfirmFormBase {
+   public function getQuestion() {
+     return t(
+       'Are you sure you want to enable the file type %name?',
+-      array('%name' => $this->entity->label())
++      ['%name' => $this->entity->label()]
+     );
+   }
+ 
+@@ -33,12 +32,12 @@ class FileTypeEnableForm extends EntityConfirmFormBase {
+    * {@inheritdoc}
+    */
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+-    /** @var FileType $type */
++    /** @var \Drupal\file_entity\Entity\FileType $type */
+     $type = $this->entity;
+     $type->enable()->save();
+     $this->messenger()->addMessage(t(
+       'The file type %label has been enabled.',
+-      array('%label' => $type->label())
++      ['%label' => $type->label()]
+     ));
+     $form_state->setRedirect('entity.file_type.collection');
+   }
+@@ -49,4 +48,5 @@ class FileTypeEnableForm extends EntityConfirmFormBase {
+   public function getCancelUrl() {
+     return new Url('entity.file_type.collection');
+   }
++
+ }
+diff --git a/src/Form/FileTypeForm.php b/src/Form/FileTypeForm.php
+index 89356ad..96c7e7d 100644
+--- a/src/Form/FileTypeForm.php
++++ b/src/Form/FileTypeForm.php
+@@ -6,7 +6,6 @@ use Drupal\Core\Entity\EntityForm;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\file_entity\Entity\FileType;
+ use Drupal\file_entity\Mimetypes;
+ 
+ /**
+@@ -23,65 +22,65 @@ class FileTypeForm extends EntityForm {
+     /* @var FileType $type */
+     $type = $this->entity;
+ 
+-    $form['label'] = array(
++    $form['label'] = [
+       '#title' => t('Label'),
+       '#type' => 'textfield',
+       '#default_value' => $type->label(),
+       '#description' => t('The human-readable name of the file type.'),
+       '#required' => TRUE,
+       '#size' => 30,
+-    );
++    ];
+ 
+-    $form['id'] = array(
++    $form['id'] = [
+       '#type' => 'machine_name',
+       '#default_value' => $type->id(),
+       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
+-      '#machine_name' => array(
++      '#machine_name' => [
+         'exists' => 'Drupal\file_entity\Entity\FileType::load',
+-        'source' => array('label'),
+-      ),
++        'source' => ['label'],
++      ],
+       '#description' => t('A unique machine-readable name for this file type. It must only contain lowercase letters, numbers, and underscores.'),
+-    );
++    ];
+ 
+-    $form['description'] = array(
++    $form['description'] = [
+       '#title' => t('Description'),
+       '#type' => 'textarea',
+       '#default_value' => $type->getDescription(),
+       '#description' => t('A brief description of this file type.'),
+-    );
++    ];
+ 
+-    $form['mimetypes'] = array(
++    $form['mimetypes'] = [
+       '#type' => 'textarea',
+       '#title' => t('MIME types'),
+       '#description' => t('Enter one MIME type per line.'),
+       '#default_value' => implode("\n", $type->getMimeTypes()),
+-    );
++    ];
+ 
+     $mimetypes = new Mimetypes(\Drupal::moduleHandler());
+ 
+-    $form['mimetype_list'] = array(
++    $form['mimetype_list'] = [
+       '#type' => 'details',
+       '#title' => t('Known MIME types'),
+       '#collapsed' => TRUE,
+-    );
+-    $form['mimetype_list']['list'] = array(
++    ];
++    $form['mimetype_list']['list'] = [
+       '#theme' => 'item_list',
+       '#items' => $mimetypes->get(),
+-    );
++    ];
+ 
+-    $form['actions'] = array('#type' => 'actions');
++    $form['actions'] = ['#type' => 'actions'];
+ 
+-    $form['actions']['submit'] = array(
++    $form['actions']['submit'] = [
+       '#type' => 'submit',
+       '#value' => t('Save'),
+-    );
++    ];
+     // Arbitrary expressions in empty() allowed in PHP 5.5 only.
+     $id = $type->id();
+     if (!empty($id)) {
+-      $form['actions']['delete'] = array(
++      $form['actions']['delete'] = [
+         '#type' => 'submit',
+         '#value' => t('Delete'),
+-      );
++      ];
+     }
+ 
+     return $form;
+@@ -96,7 +95,7 @@ class FileTypeForm extends EntityForm {
+     $id = trim($form_state->getValue('id'));
+     // '0' is invalid, since elsewhere we check it using empty().
+     if ($id == '0') {
+-      $form_state->setError($form['id'], $this->t("Invalid machine-readable name. Enter a name other than %invalid.", array('%invalid' => $id)));
++      $form_state->setError($form['id'], $this->t("Invalid machine-readable name. Enter a name other than %invalid.", ['%invalid' => $id]));
+     }
+   }
+ 
+@@ -106,7 +105,7 @@ class FileTypeForm extends EntityForm {
+   public function save(array $form, FormStateInterface $form_state) {
+     $status = $this->entity->save();
+ 
+-    $t_args = array('%name' => $this->entity->label());
++    $t_args = ['%name' => $this->entity->label()];
+ 
+     if ($status == SAVED_UPDATED) {
+       $this->messenger()->addMessage(t('The file type %name has been updated.', $t_args));
+@@ -130,4 +129,5 @@ class FileTypeForm extends EntityForm {
+     }
+     parent::copyFormValuesToEntity($entity, $form, $form_state);
+   }
++
+ }
+diff --git a/src/Mimetypes.php b/src/Mimetypes.php
+index ae638e2..9fd8193 100644
+--- a/src/Mimetypes.php
++++ b/src/Mimetypes.php
+@@ -1,6 +1,7 @@
+ <?php
+ 
+ namespace Drupal\file_entity;
++
+ use Drupal\Core\File\MimeType\ExtensionMimeTypeGuesser;
+ 
+ /**
+@@ -26,4 +27,5 @@ class Mimetypes extends ExtensionMimeTypeGuesser {
+     }
+     return $this->mapping['mimetypes'];
+   }
++
+ }
+diff --git a/src/Normalizer/FileEntityNormalizer.php b/src/Normalizer/FileEntityNormalizer.php
+index e2077b2..d6879b2 100644
+--- a/src/Normalizer/FileEntityNormalizer.php
++++ b/src/Normalizer/FileEntityNormalizer.php
+@@ -19,14 +19,14 @@ class FileEntityNormalizer extends ContentEntityNormalizer {
+   /**
+    * {@inheritdoc}
+    */
+-  public function normalize($entity, $format = NULL, array $context = array()) {
++  public function normalize($entity, $format = NULL, array $context = []) {
+     $data = parent::normalize($entity, $format, $context);
+     if (!isset($context['included_fields']) || in_array('data', $context['included_fields'])) {
+       // Save base64-encoded file contents to the "data" property.
+       $file_data = base64_encode(file_get_contents($entity->getFileUri()));
+-      $data += array(
+-        'data' => array(array('value' => $file_data)),
+-      );
++      $data += [
++        'data' => [['value' => $file_data]],
++      ];
+     }
+     return $data;
+   }
+@@ -34,7 +34,7 @@ class FileEntityNormalizer extends ContentEntityNormalizer {
+   /**
+    * {@inheritdoc}
+    */
+-  public function denormalize($data, $class, $format = NULL, array $context = array()) {
++  public function denormalize($data, $class, $format = NULL, array $context = []) {
+     // Avoid 'data' being treated as a field.
+     $file_data = $data['data'][0]['value'];
+     unset($data['data']);
+@@ -47,8 +47,9 @@ class FileEntityNormalizer extends ContentEntityNormalizer {
+       $entity->setFileUri($uri);
+     }
+     else {
+-      throw new \RuntimeException(new FormattableMarkup('Failed to write @filename.', array('@filename' => $entity->getFilename())));
++      throw new \RuntimeException(new FormattableMarkup('Failed to write @filename.', ['@filename' => $entity->getFilename()]));
+     }
+     return $entity;
+   }
++
+ }
+diff --git a/src/Normalizer/FileItemNormalizer.php b/src/Normalizer/FileItemNormalizer.php
+index b7e1445..6ff153e 100644
+--- a/src/Normalizer/FileItemNormalizer.php
++++ b/src/Normalizer/FileItemNormalizer.php
+@@ -31,7 +31,7 @@ class FileItemNormalizer extends EntityReferenceItemNormalizer {
+   /**
+    * {@inheritdoc}
+    */
+-  public function normalize($field_item, $format = NULL, array $context = array()) {
++  public function normalize($field_item, $format = NULL, array $context = []) {
+     /** @var $field_item \Drupal\file\Plugin\Field\FieldType\FileItem */
+ 
+     $data = parent::normalize($field_item, $format, $context);
+diff --git a/src/Plugin/Action/FileDelete.php b/src/Plugin/Action/FileDelete.php
+index 5d44e8f..d0cc00c 100644
+--- a/src/Plugin/Action/FileDelete.php
++++ b/src/Plugin/Action/FileDelete.php
+@@ -48,7 +48,7 @@ class FileDelete extends ActionBase implements ContainerFactoryPluginInterface {
+    * {@inheritdoc}
+    */
+   public function execute($entity = NULL) {
+-    $this->executeMultiple(array($entity));
++    $this->executeMultiple([$entity]);
+   }
+ 
+   /**
+@@ -72,5 +72,4 @@ class FileDelete extends ActionBase implements ContainerFactoryPluginInterface {
+     return $return_as_object ? $result : $result->isAllowed();
+   }
+ 
+-
+ }
+diff --git a/src/Plugin/Action/FileSetPermanent.php b/src/Plugin/Action/FileSetPermanent.php
+index df59be0..764e9a9 100644
+--- a/src/Plugin/Action/FileSetPermanent.php
++++ b/src/Plugin/Action/FileSetPermanent.php
+@@ -6,7 +6,6 @@ use Drupal\Core\Access\AccessResult;
+ use Drupal\Core\Action\ActionBase;
+ use Drupal\Core\Session\AccountInterface;
+ use Drupal\file\FileInterface;
+-use Drupal\file_entity\Entity\FileEntity;
+ 
+ /**
+  * Sets the file status to permanent.
+@@ -23,7 +22,7 @@ class FileSetPermanent extends ActionBase {
+    * {@inheritdoc}
+    */
+   public function execute($entity = NULL) {
+-    /** @var FileEntity $entity */
++    /** @var \Drupal\file_entity\Entity\FileEntity $entity */
+     $entity->setPermanent();
+     $entity->save();
+   }
+@@ -36,5 +35,4 @@ class FileSetPermanent extends ActionBase {
+     return $return_as_object ? $result : $result->isAllowed();
+   }
+ 
+-
+ }
+diff --git a/src/Plugin/Action/FileSetTemporary.php b/src/Plugin/Action/FileSetTemporary.php
+index cb403cf..99fa1b6 100644
+--- a/src/Plugin/Action/FileSetTemporary.php
++++ b/src/Plugin/Action/FileSetTemporary.php
+@@ -6,7 +6,6 @@ use Drupal\Core\Access\AccessResult;
+ use Drupal\Core\Action\ActionBase;
+ use Drupal\Core\Session\AccountInterface;
+ use Drupal\file\FileInterface;
+-use Drupal\file_entity\Entity\FileEntity;
+ 
+ /**
+  * Sets the file status to temporary.
+@@ -23,7 +22,7 @@ class FileSetTemporary extends ActionBase {
+    * {@inheritdoc}
+    */
+   public function execute($entity = NULL) {
+-    /** @var FileEntity $entity */
++    /** @var \Drupal\file_entity\Entity\FileEntity $entity */
+     $entity->setTemporary();
+     $entity->save();
+   }
+diff --git a/src/Plugin/Field/FieldFormatter/FileAudioFormatter.php b/src/Plugin/Field/FieldFormatter/FileAudioFormatter.php
+index 472c25a..7f3d316 100644
+--- a/src/Plugin/Field/FieldFormatter/FileAudioFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/FileAudioFormatter.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\file_entity\Plugin\Field\FieldFormatter;
+ 
+-
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Form\FormStateInterface;
+@@ -51,7 +50,7 @@ class FileAudioFormatter extends FileFormatterBase implements ContainerFactoryPl
+    * @param array $third_party_settings
+    *   Any third party settings settings.
+    * @param \Drupal\Core\Render\RendererInterface $renderer
+-   *   The rendered service
++   *   The rendered service.
+    */
+   public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, RendererInterface $renderer) {
+     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
+@@ -78,42 +77,42 @@ class FileAudioFormatter extends FileFormatterBase implements ContainerFactoryPl
+    * {@inheritdoc}
+    */
+   public static function defaultSettings() {
+-    return array(
++    return [
+       'controls' => TRUE,
+       'autoplay' => FALSE,
+       'loop' => FALSE,
+       'multiple_file_behavior' => 'tags',
+-    ) + parent::defaultSettings();
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+-    $element['controls'] = array(
++    $element['controls'] = [
+       '#title' => t('Show audio controls'),
+       '#type' => 'checkbox',
+       '#default_value' => $this->getSetting('controls'),
+-    );
+-    $element['autoplay'] = array(
++    ];
++    $element['autoplay'] = [
+       '#title' => t('Autoplay'),
+       '#type' => 'checkbox',
+       '#default_value' => $this->getSetting('autoplay'),
+-    );
+-    $element['loop'] = array(
++    ];
++    $element['loop'] = [
+       '#title' => t('Loop'),
+       '#type' => 'checkbox',
+       '#default_value' => $this->getSetting('loop'),
+-    );
+-    $element['multiple_file_behavior'] = array(
++    ];
++    $element['multiple_file_behavior'] = [
+       '#title' => t('Display of multiple files'),
+       '#type' => 'radios',
+-      '#options' => array(
+-        'tags' => t('Use multiple @tag tags, each with a single source.', array('@tag' => '<audio>')),
+-        'sources' => t('Use multiple sources within a single @tag tag.', array('@tag' => '<audio>')),
+-      ),
++      '#options' => [
++        'tags' => t('Use multiple @tag tags, each with a single source.', ['@tag' => '<audio>']),
++        'sources' => t('Use multiple sources within a single @tag tag.', ['@tag' => '<audio>']),
++      ],
+       '#default_value' => $this->getSetting('multiple_file_behavior'),
+-    );
++    ];
+ 
+     return $element;
+   }
+@@ -122,11 +121,11 @@ class FileAudioFormatter extends FileFormatterBase implements ContainerFactoryPl
+    * {@inheritdoc}
+    */
+   public function settingsSummary() {
+-    $summary = array();
+-    $summary[] = t('Controls: %controls', array('%controls' => $this->getSetting('controls') ? 'visible' : 'hidden'));
+-    $summary[] = t('Autoplay: %autoplay', array('%autoplay' => $this->getSetting('autoplay') ? t('yes') : t('no')));
+-    $summary[] = t('Loop: %loop', array('%loop' => $this->getSetting('loop') ? t('yes') : t('no')));
+-    $summary[] = t('Multiple files: %multiple', array('%multiple' => $this->getSetting('multiple_file_behavior')));
++    $summary = [];
++    $summary[] = t('Controls: %controls', ['%controls' => $this->getSetting('controls') ? 'visible' : 'hidden']);
++    $summary[] = t('Autoplay: %autoplay', ['%autoplay' => $this->getSetting('autoplay') ? t('yes') : t('no')]);
++    $summary[] = t('Loop: %loop', ['%loop' => $this->getSetting('loop') ? t('yes') : t('no')]);
++    $summary[] = t('Multiple files: %multiple', ['%multiple' => $this->getSetting('multiple_file_behavior')]);
+     return $summary;
+   }
+ 
+@@ -134,9 +133,9 @@ class FileAudioFormatter extends FileFormatterBase implements ContainerFactoryPl
+    * {@inheritdoc}
+    */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+-    $elements = array();
++    $elements = [];
+     $multiple_file_behavior = $this->getSetting('multiple_file_behavior');
+-    $source_files = array();
++    $source_files = [];
+     // Because we can have the files grouped in a single audio tag, we do a
+     // grouping in case the multiple file behavior is not 'tags'.
+     foreach ($this->getEntitiesToView($items, $langcode) as $delta => $file) {
+@@ -145,27 +144,27 @@ class FileAudioFormatter extends FileFormatterBase implements ContainerFactoryPl
+         $source_attributes->setAttribute('src', file_create_url($file->getFileUri()));
+         $source_attributes->setAttribute('type', $file->getMimeType());
+         if ($multiple_file_behavior == 'tags') {
+-          $source_files[] = array(array('file' => $file, 'source_attributes' => $source_attributes));
++          $source_files[] = [['file' => $file, 'source_attributes' => $source_attributes]];
+         }
+         else {
+-          $source_files[0][] = array('file' => $file, 'source_attributes' => $source_attributes);
++          $source_files[0][] = ['file' => $file, 'source_attributes' => $source_attributes];
+         }
+       }
+     }
+     if (!empty($source_files)) {
+       // Prepare the audio attributes according to the settings.
+       $audio_attributes = new Attribute();
+-      foreach (array('controls', 'autoplay', 'loop') as $attribute) {
++      foreach (['controls', 'autoplay', 'loop'] as $attribute) {
+         if ($this->getSetting($attribute)) {
+           $audio_attributes->setAttribute($attribute, $attribute);
+         }
+       }
+       foreach ($source_files as $delta => $files) {
+-        $elements[$delta] = array(
++        $elements[$delta] = [
+           '#theme' => 'file_entity_audio',
+           '#attributes' => $audio_attributes,
+           '#files' => $files,
+-        );
++        ];
+         foreach ($files as $file) {
+           $this->renderer->addCacheableDependency($elements[$delta], $file['file']);
+         }
+diff --git a/src/Plugin/Field/FieldFormatter/FileDownloadLinkFormatter.php b/src/Plugin/Field/FieldFormatter/FileDownloadLinkFormatter.php
+index 8f4b3b2..5b72851 100644
+--- a/src/Plugin/Field/FieldFormatter/FileDownloadLinkFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/FileDownloadLinkFormatter.php
+@@ -68,7 +68,7 @@ class FileDownloadLinkFormatter extends FileFormatterBase implements ContainerFa
+    * @param array $third_party_settings
+    *   Any third party settings settings.
+    * @param \Drupal\Core\Render\RendererInterface $renderer
+-   *   The rendered service
++   *   The rendered service.
+    */
+   public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, RendererInterface $renderer, ModuleHandlerInterface $module_handler, Token $token) {
+     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
+@@ -105,22 +105,22 @@ class FileDownloadLinkFormatter extends FileFormatterBase implements ContainerFa
+       '#description' => t("This text is shown instead of the download link if the user doesn't have permission to download the file."),
+       '#default_value' => $this->getSetting('access_message'),
+     ];
+-    $element['text'] = array(
++    $element['text'] = [
+       '#type' => 'textfield',
+       '#title' => t('Link text'),
+       '#description' => t('This field supports tokens.'),
+       '#default_value' => $this->getSetting('text'),
+-    );
++    ];
+     // If we have the token module available, add the token tree link.
+     if ($this->module_handler->moduleExists('token')) {
+-      $token_types = array('file');
++      $token_types = ['file'];
+       if (!empty($form['#entity_type'])) {
+         $token_types[] = $form['#entity_type'];
+       }
+-      $element['token_tree_link'] = array(
++      $element['token_tree_link'] = [
+         '#theme' => 'token_tree_link',
+         '#token_types' => $token_types,
+-      );
++      ];
+     }
+ 
+     return $element;
+@@ -140,7 +140,7 @@ class FileDownloadLinkFormatter extends FileFormatterBase implements ContainerFa
+    * {@inheritdoc}
+    */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+-    $elements = array();
++    $elements = [];
+     // For token replace, we also want to use the parent entity of the file.
+     $parent_entity = $items->getParent()->getValue();
+     if (!empty($parent_entity)) {
+@@ -157,7 +157,7 @@ class FileDownloadLinkFormatter extends FileFormatterBase implements ContainerFa
+       $link_text = $this->token->replace($this->getSetting('text'), $token_data);
+       // Set options as per anchor format described at
+       // http://microformats.org/wiki/file-format-examples
+-      $download_url = $file->downloadUrl(array('attributes' => array('type' => $mime_type . '; length=' . $file->getSize())));
++      $download_url = $file->downloadUrl(['attributes' => ['type' => $mime_type . '; length=' . $file->getSize()]]);
+       if ($file->access('download')) {
+         $elements[$delta] = [
+           '#theme' => 'file_entity_download_link',
+diff --git a/src/Plugin/Field/FieldFormatter/FileImageFormatter.php b/src/Plugin/Field/FieldFormatter/FileImageFormatter.php
+index 0aa812a..e947940 100644
+--- a/src/Plugin/Field/FieldFormatter/FileImageFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/FileImageFormatter.php
+@@ -98,12 +98,14 @@ class FileImageFormatter extends ImageFormatter {
+     $summary = parent::settingsSummary();
+     if ($this->getSetting('title') == '_none') {
+       $summary[] = $this->t('Title attribute is hidden.');
+-    } else {
++    }
++    else {
+       $summary[] = $this->t('Field used for the image title attribute: @title', ['@title' => $this->getSetting('title')]);
+     }
+     if ($this->getSetting('alt') == '_none') {
+       $summary[] = $this->t('Alt attribute is hidden.');
+-    } else {
++    }
++    else {
+       $summary[] = $this->t('Field used for the image alt attribute: @alt', ['@alt' => $this->getSetting('alt')]);
+     }
+ 
+diff --git a/src/Plugin/Field/FieldFormatter/FileImageResponsiveFormatter.php b/src/Plugin/Field/FieldFormatter/FileImageResponsiveFormatter.php
+index 0a22fbd..217fdaa 100644
+--- a/src/Plugin/Field/FieldFormatter/FileImageResponsiveFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/FileImageResponsiveFormatter.php
+@@ -28,15 +28,16 @@ use Drupal\Core\Utility\LinkGeneratorInterface;
+ class FileImageResponsiveFormatter extends ImageFormatter {
+ 
+   /**
+-   * @var EntityStorageInterface
++   * @var \Drupal\Core\Entity\EntityStorageInterface
+    */
+   protected $responsiveImageStyleStorage;
+ 
+-  /*
++  /**
+    * The image style entity storage.
+    *
+    * @var \Drupal\Core\Entity\EntityStorageInterface
+    */
++
+   protected $imageStyleStorage;
+ 
+   /**
+@@ -111,10 +112,10 @@ class FileImageResponsiveFormatter extends ImageFormatter {
+    * {@inheritdoc}
+    */
+   public static function defaultSettings() {
+-    return array(
++    return [
+       'responsive_image_style' => '',
+       'image_link' => '',
+-    );
++    ];
+   }
+ 
+   /**
+@@ -126,7 +127,7 @@ class FileImageResponsiveFormatter extends ImageFormatter {
+ 
+     // Collect cache tags to be added for each item in the field.
+     $responsive_image_style = $this->responsiveImageStyleStorage->load($this->getSetting('responsive_image_style'));
+-    $image_styles_to_load = array();
++    $image_styles_to_load = [];
+     $cache_tags = [];
+     if ($responsive_image_style) {
+       $cache_tags = Cache::mergeTags($cache_tags, $responsive_image_style->getCacheTags());
+@@ -148,16 +149,16 @@ class FileImageResponsiveFormatter extends ImageFormatter {
+       $url = file_url_transform_relative(file_create_url($file->getFileUri()));
+     }
+ 
+-    $elements[] = array(
++    $elements[] = [
+       '#theme' => 'responsive_image_formatter',
+       '#item' => $item,
+       '#item_attributes' => $item_attributes,
+       '#responsive_image_style_id' => $responsive_image_style ? $responsive_image_style->id() : '',
+       '#url' => !empty($url) ? $url : NULL,
+-      '#cache' => array(
++      '#cache' => [
+         'tags' => $cache_tags,
+-      ),
+-    );
++      ],
++    ];
+ 
+     return $elements;
+   }
+@@ -172,7 +173,7 @@ class FileImageResponsiveFormatter extends ImageFormatter {
+    */
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+     $elements = parent::settingsForm($form, $form_state);
+-    $responsive_image_options = array();
++    $responsive_image_options = [];
+     $responsive_image_styles = $this->responsiveImageStyleStorage->loadMultiple();
+     if ($responsive_image_styles && !empty($responsive_image_styles)) {
+       foreach ($responsive_image_styles as $machine_name => $responsive_image_style) {
+@@ -182,17 +183,17 @@ class FileImageResponsiveFormatter extends ImageFormatter {
+       }
+     }
+ 
+-    $elements['responsive_image_style'] = array(
++    $elements['responsive_image_style'] = [
+       '#title' => t('Responsive image style'),
+       '#type' => 'select',
+       '#default_value' => $this->getSetting('responsive_image_style'),
+       '#required' => TRUE,
+       '#options' => $responsive_image_options,
+-      '#description' => array(
++      '#description' => [
+         '#markup' => $this->linkGenerator->generate($this->t('Configure Responsive Image Styles'), new Url('entity.responsive_image_style.collection')),
+         '#access' => $this->currentUser->hasPermission('administer responsive image styles'),
+-      ),
+-    );
++      ],
++    ];
+ 
+     unset($elements['image_link']['#options']['content']);
+     unset($elements['image_style']);
+@@ -207,11 +208,11 @@ class FileImageResponsiveFormatter extends ImageFormatter {
+ 
+     $responsive_image_style = $this->responsiveImageStyleStorage->load($this->getSetting('responsive_image_style'));
+     if ($responsive_image_style) {
+-      $summary[] = t('Responsive image style: @responsive_image_style', array('@responsive_image_style' => $responsive_image_style->label()));
++      $summary[] = t('Responsive image style: @responsive_image_style', ['@responsive_image_style' => $responsive_image_style->label()]);
+ 
+-      $link_types = array(
++      $link_types = [
+         'file' => t('Linked to file'),
+-      );
++      ];
+       // Display this setting only if image is linked.
+       if (isset($link_types[$this->getSetting('image_link')])) {
+         $summary[] = $link_types[$this->getSetting('image_link')];
+diff --git a/src/Plugin/Field/FieldFormatter/FileSizeFormatter.php b/src/Plugin/Field/FieldFormatter/FileSizeFormatter.php
+index 6efef04..70568d4 100644
+--- a/src/Plugin/Field/FieldFormatter/FileSizeFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/FileSizeFormatter.php
+@@ -5,7 +5,6 @@ namespace Drupal\file_entity\Plugin\Field\FieldFormatter;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Field\FormatterBase;
+-use Drupal\Core\Render\Element;
+ 
+ /**
+  * Implementation of the 'filesize' formatter for the file_entity files.
+@@ -48,4 +47,5 @@ class FileSizeFormatter extends FormatterBase {
+ 
+     return $elements;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/FileVideoFormatter.php b/src/Plugin/Field/FieldFormatter/FileVideoFormatter.php
+index add1343..e72e625 100644
+--- a/src/Plugin/Field/FieldFormatter/FileVideoFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/FileVideoFormatter.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\file_entity\Plugin\Field\FieldFormatter;
+ 
+-
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Form\FormStateInterface;
+@@ -51,7 +50,7 @@ class FileVideoFormatter extends FileFormatterBase implements ContainerFactoryPl
+    * @param array $third_party_settings
+    *   Any third party settings settings.
+    * @param \Drupal\Core\Render\RendererInterface $renderer
+-   *   The rendered service
++   *   The rendered service.
+    */
+   public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, RendererInterface $renderer) {
+     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
+@@ -79,7 +78,7 @@ class FileVideoFormatter extends FileFormatterBase implements ContainerFactoryPl
+    */
+   public static function defaultSettings() {
+ 
+-    return array(
++    return [
+       'controls' => TRUE,
+       'autoplay' => FALSE,
+       'loop' => FALSE,
+@@ -88,63 +87,63 @@ class FileVideoFormatter extends FileFormatterBase implements ContainerFactoryPl
+       'width' => NULL,
+       'height' => NULL,
+       'multiple_file_behavior' => 'tags',
+-    ) + parent::defaultSettings();
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+-    $element['controls'] = array(
++    $element['controls'] = [
+       '#title' => t('Show video controls'),
+       '#type' => 'checkbox',
+       '#default_value' => $this->getSetting('controls'),
+-    );
+-    $element['autoplay'] = array(
++    ];
++    $element['autoplay'] = [
+       '#title' => t('Autoplay'),
+       '#type' => 'checkbox',
+       '#default_value' => $this->getSetting('autoplay'),
+-    );
+-    $element['loop'] = array(
++    ];
++    $element['loop'] = [
+       '#title' => t('Loop'),
+       '#type' => 'checkbox',
+       '#default_value' => $this->getSetting('loop'),
+-    );
+-    $element['muted'] = array(
++    ];
++    $element['muted'] = [
+       '#title' => t('Muted'),
+       '#type' => 'checkbox',
+       '#default_value' => $this->getSetting('muted'),
+-    );
+-    $element['playsinline'] = array(
++    ];
++    $element['playsinline'] = [
+       '#title' => t('Plays inline'),
+       '#type' => 'checkbox',
+       '#default_value' => $this->getSetting('playsinline'),
+-    );
+-    $element['width'] = array(
++    ];
++    $element['width'] = [
+       '#type' => 'textfield',
+       '#title' => t('Width'),
+       '#default_value' => $this->getSetting('width'),
+       '#size' => 5,
+       '#maxlength' => 5,
+       '#field_suffix' => t('pixels'),
+-    );
+-    $element['height'] = array(
++    ];
++    $element['height'] = [
+       '#type' => 'textfield',
+       '#title' => t('Height'),
+       '#default_value' => $this->getSetting('height'),
+       '#size' => 5,
+       '#maxlength' => 5,
+       '#field_suffix' => t('pixels'),
+-    );
+-    $element['multiple_file_behavior'] = array(
++    ];
++    $element['multiple_file_behavior'] = [
+       '#title' => t('Display of multiple files'),
+       '#type' => 'radios',
+-      '#options' => array(
+-        'tags' => t('Use multiple @tag tags, each with a single source.', array('@tag' => '<video>')),
+-        'sources' => t('Use multiple sources within a single @tag tag.', array('@tag' => '<video>')),
+-      ),
++      '#options' => [
++        'tags' => t('Use multiple @tag tags, each with a single source.', ['@tag' => '<video>']),
++        'sources' => t('Use multiple sources within a single @tag tag.', ['@tag' => '<video>']),
++      ],
+       '#default_value' => $this->getSetting('multiple_file_behavior'),
+-    );
++    ];
+ 
+     return $element;
+   }
+@@ -153,21 +152,21 @@ class FileVideoFormatter extends FileFormatterBase implements ContainerFactoryPl
+    * {@inheritdoc}
+    */
+   public function settingsSummary() {
+-    $summary = array();
+-    $summary[] = t('Controls: %controls', array('%controls' => $this->getSetting('controls') ? 'visible' : 'hidden'));
+-    $summary[] = t('Autoplay: %autoplay', array('%autoplay' => $this->getSetting('autoplay') ? t('yes') : t('no')));
+-    $summary[] = t('Loop: %loop', array('%loop' => $this->getSetting('loop') ? t('yes') : t('no')));
+-    $summary[] = t('Muted: %muted', array('%muted' => $this->getSetting('muted') ? t('yes') : t('no')));
+-    $summary[] = t('Plays inline: %playsinline', array('%playsinline' => $this->getSetting('playsinline') ? t('yes') : t('no')));
++    $summary = [];
++    $summary[] = t('Controls: %controls', ['%controls' => $this->getSetting('controls') ? 'visible' : 'hidden']);
++    $summary[] = t('Autoplay: %autoplay', ['%autoplay' => $this->getSetting('autoplay') ? t('yes') : t('no')]);
++    $summary[] = t('Loop: %loop', ['%loop' => $this->getSetting('loop') ? t('yes') : t('no')]);
++    $summary[] = t('Muted: %muted', ['%muted' => $this->getSetting('muted') ? t('yes') : t('no')]);
++    $summary[] = t('Plays inline: %playsinline', ['%playsinline' => $this->getSetting('playsinline') ? t('yes') : t('no')]);
+     $width = $this->getSetting('width');
+     $height = $this->getSetting('height');
+     if ($width && $height) {
+-      $summary[] = t('Size: %width x %height pixels', array(
++      $summary[] = t('Size: %width x %height pixels', [
+         '%width' => $this->getSetting('width'),
+-        '%height' => $this->getSetting('height')
+-      ));
++        '%height' => $this->getSetting('height'),
++      ]);
+     }
+-    $summary[] = t('Multiple files: %multiple', array('%multiple' => $this->getSetting('multiple_file_behavior')));
++    $summary[] = t('Multiple files: %multiple', ['%multiple' => $this->getSetting('multiple_file_behavior')]);
+     return $summary;
+   }
+ 
+@@ -175,9 +174,9 @@ class FileVideoFormatter extends FileFormatterBase implements ContainerFactoryPl
+    * {@inheritdoc}
+    */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+-    $elements = array();
++    $elements = [];
+     $multiple_file_behavior = $this->getSetting('multiple_file_behavior');
+-    $source_files = array();
++    $source_files = [];
+     // Because we can have the files grouped in a single video tag, we do a
+     // grouping in case the multiple file behavior is not 'tags'.
+     foreach ($this->getEntitiesToView($items, $langcode) as $delta => $file) {
+@@ -186,10 +185,10 @@ class FileVideoFormatter extends FileFormatterBase implements ContainerFactoryPl
+         $source_attributes->setAttribute('src', file_create_url($file->getFileUri()));
+         $source_attributes->setAttribute('type', $file->getMimeType());
+         if ($multiple_file_behavior == 'tags') {
+-          $source_files[$delta] = array(array('file' => $file, 'source_attributes' => $source_attributes));
++          $source_files[$delta] = [['file' => $file, 'source_attributes' => $source_attributes]];
+         }
+         else {
+-          $source_files[0][] = array('file' => $file, 'source_attributes' => $source_attributes);
++          $source_files[0][] = ['file' => $file, 'source_attributes' => $source_attributes];
+         }
+       }
+     }
+@@ -197,7 +196,7 @@ class FileVideoFormatter extends FileFormatterBase implements ContainerFactoryPl
+     if (!empty($source_files)) {
+       // Prepare the video attributes according to the settings.
+       $video_attributes = new Attribute();
+-      foreach (array('controls', 'autoplay', 'loop', 'muted', 'playsinline') as $attribute) {
++      foreach (['controls', 'autoplay', 'loop', 'muted', 'playsinline'] as $attribute) {
+         if ($this->getSetting($attribute)) {
+           $video_attributes->setAttribute($attribute, $attribute);
+         }
+@@ -209,11 +208,11 @@ class FileVideoFormatter extends FileFormatterBase implements ContainerFactoryPl
+         $video_attributes->setAttribute('height', $height);
+       }
+       foreach ($source_files as $delta => $files) {
+-        $elements[$delta] = array(
++        $elements[$delta] = [
+           '#theme' => 'file_entity_video',
+           '#attributes' => $video_attributes,
+           '#files' => $files,
+-        );
++        ];
+         foreach ($files as $file) {
+           $this->renderer->addCacheableDependency($elements[$delta], $file['file']);
+         }
+@@ -222,4 +221,5 @@ class FileVideoFormatter extends FileFormatterBase implements ContainerFactoryPl
+ 
+     return $elements;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldWidget/FileEditableWidget.php b/src/Plugin/Field/FieldWidget/FileEditableWidget.php
+index fb42e25..935127d 100644
+--- a/src/Plugin/Field/FieldWidget/FileEditableWidget.php
++++ b/src/Plugin/Field/FieldWidget/FileEditableWidget.php
+@@ -20,6 +20,9 @@ use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
+  */
+ class FileEditableWidget extends FileWidget {
+ 
++  /**
++   *
++   */
+   public static function process($element, FormStateInterface $form_state, $form) {
+     $element = parent::process($element, $form_state, $form);
+ 
+diff --git a/src/Plugin/views/argument/Type.php b/src/Plugin/views/argument/Type.php
+index 5c772bf..91385df 100644
+--- a/src/Plugin/views/argument/Type.php
++++ b/src/Plugin/views/argument/Type.php
+@@ -15,21 +15,21 @@ class Type extends StringArgument {
+   /**
+    * {@inheritdoc}
+    */
+-  function summaryName($data) {
++  public function summaryName($data) {
+     return $this->fileType($data->{$this->name_alias});
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  function title() {
++  public function title() {
+     return $this->fileType($this->argument);
+   }
+ 
+   /**
+    * Helper function to return the human-readable type of the file.
+    */
+-  function fileType($type) {
++  public function fileType($type) {
+     if ($file_entity = FileType::load($type)) {
+       return $file_entity->label();
+     }
+@@ -37,4 +37,5 @@ class Type extends StringArgument {
+       return t('Undefined');
+     }
+   }
++
+ }
+diff --git a/src/Plugin/views/field/FileName.php b/src/Plugin/views/field/FileName.php
+index c77f449..7f19c32 100644
+--- a/src/Plugin/views/field/FileName.php
++++ b/src/Plugin/views/field/FileName.php
+@@ -24,9 +24,9 @@ class FileName extends FieldPluginBase {
+   public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+     parent::init($view, $display, $options);
+ 
+-    // Don't add the additional fields to groupby
++    // Don't add the additional fields to groupby.
+     if (!empty($this->options['link_to_file'])) {
+-      $this->additional_fields['fid'] = array('table' => 'file_managed', 'field' => 'fid');
++      $this->additional_fields['fid'] = ['table' => 'file_managed', 'field' => 'fid'];
+     }
+   }
+ 
+@@ -35,7 +35,7 @@ class FileName extends FieldPluginBase {
+    */
+   protected function defineOptions() {
+     $options = parent::defineOptions();
+-    $options['link_to_file'] = array('default' => FALSE, 'bool' => TRUE);
++    $options['link_to_file'] = ['default' => FALSE, 'bool' => TRUE];
+     return $options;
+   }
+ 
+@@ -43,12 +43,12 @@ class FileName extends FieldPluginBase {
+    * Provide link to file option.
+    */
+   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
+-    $form['link_to_file'] = array(
++    $form['link_to_file'] = [
+       '#title' => t('Link this field to view the file'),
+       '#description' => t("Enable to override this field's links."),
+       '#type' => 'checkbox',
+       '#default_value' => !empty($this->options['link_to_file']),
+-    );
++    ];
+     parent::buildOptionsForm($form, $form_state);
+   }
+ 
+diff --git a/src/Plugin/views/field/Type.php b/src/Plugin/views/field/Type.php
+index faa96b8..f0baabb 100644
+--- a/src/Plugin/views/field/Type.php
++++ b/src/Plugin/views/field/Type.php
+@@ -18,7 +18,7 @@ class Type extends FieldPluginBase {
+   /**
+    * Renders the type of the field.
+    *
+-   * @param ResultRow $values
++   * @param \Drupal\views\ResultRow $values
+    *   Row Result Values.
+    *
+    * @return string
+diff --git a/src/Plugin/views/filter/SchemeType.php b/src/Plugin/views/filter/SchemeType.php
+index 65aaf9e..405c5fa 100644
+--- a/src/Plugin/views/filter/SchemeType.php
++++ b/src/Plugin/views/filter/SchemeType.php
+@@ -13,11 +13,11 @@ class SchemeType extends InOperator {
+   /**
+    * {@inheritdoc}
+    */
+-  function getValueOptions() {
++  public function getValueOptions() {
+     if (!isset($this->valueOptions)) {
+       $this->valueTitle = t('File Schema types');
+       $types = \Drupal::service('stream_wrapper_manager')->getWrappers(StreamWrapperInterface::VISIBLE);
+-      $options = array();
++      $options = [];
+       foreach ($types as $type => $info) {
+         $options[$type] = $info['name'];
+       }
+@@ -30,7 +30,7 @@ class SchemeType extends InOperator {
+   /**
+    * {@inheritdoc}
+    */
+-  function opSimple() {
++  public function opSimple() {
+     if (empty($this->value)) {
+       return;
+     }
+@@ -38,7 +38,7 @@ class SchemeType extends InOperator {
+ 
+     // We use array_values() because the checkboxes keep keys and that can cause
+     // array addition problems.
+-    $statements = array();
++    $statements = [];
+ 
+     $not_in = $this->operator == 'not in' ? TRUE : FALSE;
+     $schema_operator = $not_in ? 'NOT LIKE' : 'LIKE';
+@@ -50,4 +50,5 @@ class SchemeType extends InOperator {
+ 
+     $this->query->addWhereExpression($this->options['group'], implode($composite, $statements));
+   }
++
+ }
+diff --git a/src/Plugin/views/filter/Type.php b/src/Plugin/views/filter/Type.php
+index d19fb44..bc88a58 100644
+--- a/src/Plugin/views/filter/Type.php
++++ b/src/Plugin/views/filter/Type.php
+@@ -26,7 +26,7 @@ class Type extends InOperator {
+       $types = FileType::loadMultiple();
+ 
+       // Creates associative array of candidates.
+-      $candidates = array();
++      $candidates = [];
+       foreach ($types as $type) {
+         $candidates[$type->id()] = $type->label();
+       }
+diff --git a/src/Routing/RouteSubscriber.php b/src/Routing/RouteSubscriber.php
+index 4b57dcb..3b239ad 100644
+--- a/src/Routing/RouteSubscriber.php
++++ b/src/Routing/RouteSubscriber.php
+@@ -19,4 +19,5 @@ class RouteSubscriber extends RouteSubscriberBase {
+       $route->setOption('_admin_route', TRUE);
+     }
+   }
++
+ }
+diff --git a/src/UploadValidatorsTrait.php b/src/UploadValidatorsTrait.php
+index 0eb9f41..db0d2ba 100644
+--- a/src/UploadValidatorsTrait.php
++++ b/src/UploadValidatorsTrait.php
+@@ -20,14 +20,14 @@ trait UploadValidatorsTrait {
+    *   An array suitable for passing to file_save_upload() or for a managed_file
+    *   or upload element's '#upload_validators' property.
+    */
+-  public function getUploadValidators(array $options = array()) {
++  public function getUploadValidators(array $options = []) {
+     // Set up file upload validators.
+-    $validators = array();
++    $validators = [];
+ 
+     // Validate file extensions. If there are no file extensions in $params and
+     // there are no Media defaults, there is no file extension validation.
+     if (!empty($options['file_extensions'])) {
+-      $validators['file_validate_extensions'] = array($options['file_extensions']);
++      $validators['file_validate_extensions'] = [$options['file_extensions']];
+     }
+ 
+     // Cap the upload size according to the system or user defined limit.
+@@ -45,15 +45,15 @@ trait UploadValidatorsTrait {
+     }
+ 
+     // There is always a file size limit due to the PHP server limit.
+-    $validators['file_validate_size'] = array($max_filesize);
++    $validators['file_validate_size'] = [$max_filesize];
+ 
+     // Add image validators.
+-    $options += array('min_resolution' => 0, 'max_resolution' => 0);
++    $options += ['min_resolution' => 0, 'max_resolution' => 0];
+     if ($options['min_resolution'] || $options['max_resolution']) {
+-      $validators['file_validate_image_resolution'] = array(
++      $validators['file_validate_image_resolution'] = [
+         $options['max_resolution'],
+         $options['min_resolution'],
+-      );
++      ];
+     }
+ 
+     // Add other custom upload validators from options.
+diff --git a/tests/src/Functional/FileEntityAccessTest.php b/tests/src/Functional/FileEntityAccessTest.php
+index e732ba1..d2479ea 100644
+--- a/tests/src/Functional/FileEntityAccessTest.php
++++ b/tests/src/Functional/FileEntityAccessTest.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\Tests\file_entity\Functional;
+ 
+-use Drupal\file\FileInterface;
+-use Drupal\file_entity\FileEntityAccessControlHandler;
+ use Drupal\node\Entity\Node;
+ use Drupal\Component\Render\FormattableMarkup;
+ 
+@@ -24,13 +22,16 @@ class FileEntityAccessTest extends FileEntityTestBase {
+   /**
+    * The File Entity access controller.
+    *
+-   * @var FileEntityAccessControlHandler
++   * @var \Drupal\file_entity\FileEntityAccessControlHandler
+    */
+   protected $accessControlHandler;
+ 
+-  function setUp() {
++  /**
++   *
++   */
++  public function setUp() {
+     parent::setUp();
+-    $this->setUpFiles(array('uid' => 0));
++    $this->setUpFiles(['uid' => 0]);
+     $this->accessControlHandler = $this->container->get('entity_type.manager')->getAccessControlHandler('file');
+ 
+     // Unset the fact that file_entity_install() adds the 'view files'
+@@ -38,14 +39,14 @@ class FileEntityAccessTest extends FileEntityTestBase {
+     // test the file_entity_access() function.
+     $roles = user_roles();
+     foreach ($roles as $rid => $role) {
+-      user_role_revoke_permissions($rid, array('view files'));
++      user_role_revoke_permissions($rid, ['view files']);
+     }
+   }
+ 
+   /**
+    * Asserts FileEntityAccessControlHandler correctly grants or denies access.
+    */
+-  function assertFileEntityAccess($ops, $file, $account) {
++  public function assertFileEntityAccess($ops, $file, $account) {
+     $this->accessControlHandler->resetCache();
+     foreach ($ops as $op => $expected) {
+       $this->assertEqual(
+@@ -60,64 +61,64 @@ class FileEntityAccessTest extends FileEntityTestBase {
+   /**
+    * Runs basic tests for file_entity_access function.
+    */
+-  function testFileEntityAccess() {
+-    /** @var FileInterface $file */
++  public function testFileEntityAccess() {
++    /** @var \Drupal\file\FileInterface $file */
+     $file = reset($this->files['image']);
+ 
+     // Ensures user with 'bypass file access' permission can do everything.
+-    $web_user = $this->drupalCreateUser(array('bypass file access'));
+-    $this->assertFileEntityAccess(array('create' => TRUE), NULL, $web_user);
+-    $this->assertFileEntityAccess(array('view' => TRUE, 'download' => TRUE, 'update' => TRUE, 'delete' => TRUE), $file, $web_user);
++    $web_user = $this->drupalCreateUser(['bypass file access']);
++    $this->assertFileEntityAccess(['create' => TRUE], NULL, $web_user);
++    $this->assertFileEntityAccess(['view' => TRUE, 'download' => TRUE, 'update' => TRUE, 'delete' => TRUE], $file, $web_user);
+ 
+     // A user with 'administer files' should not access CRUD operations.
+-    $web_user = $this->drupalCreateUser(array('administer files'));
+-    $this->assertFileEntityAccess(array('view' => FALSE, 'download' => FALSE, 'update' => FALSE, 'delete' => FALSE), $file, $web_user);
++    $web_user = $this->drupalCreateUser(['administer files']);
++    $this->assertFileEntityAccess(['view' => FALSE, 'download' => FALSE, 'update' => FALSE, 'delete' => FALSE], $file, $web_user);
+ 
+     // User cannot 'view files'.
+-    $web_user = $this->drupalCreateUser(array('create files'));
+-    $this->assertFileEntityAccess(array('view' => FALSE), $file, $web_user);
++    $web_user = $this->drupalCreateUser(['create files']);
++    $this->assertFileEntityAccess(['view' => FALSE], $file, $web_user);
+     // But can upload new ones.
+-    $this->assertFileEntityAccess(array('create' => TRUE), NULL, $web_user);
++    $this->assertFileEntityAccess(['create' => TRUE], NULL, $web_user);
+ 
+     // User can view own files but no other files.
+-    $web_user = $this->drupalCreateUser(array('create files', 'view own files'));
+-    $this->assertFileEntityAccess(array('view' => FALSE), $file, $web_user);
++    $web_user = $this->drupalCreateUser(['create files', 'view own files']);
++    $this->assertFileEntityAccess(['view' => FALSE], $file, $web_user);
+     $file->setOwner($web_user)->save();
+-    $this->assertFileEntityAccess(array('view' => TRUE), $file, $web_user);
++    $this->assertFileEntityAccess(['view' => TRUE], $file, $web_user);
+ 
+     // User can download own files but no other files.
+-    $web_user = $this->drupalCreateUser(array('create files', 'download own image files'));
+-    $this->assertFileEntityAccess(array('download' => FALSE), $file, $web_user);
++    $web_user = $this->drupalCreateUser(['create files', 'download own image files']);
++    $this->assertFileEntityAccess(['download' => FALSE], $file, $web_user);
+     $file->setOwner($web_user)->save();
+-    $this->assertFileEntityAccess(array('download' => TRUE), $file, $web_user);
++    $this->assertFileEntityAccess(['download' => TRUE], $file, $web_user);
+ 
+     // User can update own files but no other files.
+-    $web_user = $this->drupalCreateUser(array('create files', 'view own files', 'edit own image files'));
+-    $this->assertFileEntityAccess(array('update' => FALSE), $file, $web_user);
++    $web_user = $this->drupalCreateUser(['create files', 'view own files', 'edit own image files']);
++    $this->assertFileEntityAccess(['update' => FALSE], $file, $web_user);
+     $file->setOwner($web_user)->save();
+-    $this->assertFileEntityAccess(array('update' => TRUE), $file, $web_user);
++    $this->assertFileEntityAccess(['update' => TRUE], $file, $web_user);
+ 
+     // User can delete own files but no other files.
+-    $web_user = $this->drupalCreateUser(array('create files', 'view own files', 'edit own image files', 'delete own image files'));
+-    $this->assertFileEntityAccess(array('delete' => FALSE), $file, $web_user);
++    $web_user = $this->drupalCreateUser(['create files', 'view own files', 'edit own image files', 'delete own image files']);
++    $this->assertFileEntityAccess(['delete' => FALSE], $file, $web_user);
+     $file->setOwner($web_user)->save();
+-    $this->assertFileEntityAccess(array('delete' => TRUE), $file, $web_user);
++    $this->assertFileEntityAccess(['delete' => TRUE], $file, $web_user);
+ 
+     // User can view any file.
+-    $web_user = $this->drupalCreateUser(array('create files', 'view files'));
+-    $this->assertFileEntityAccess(array('view' => TRUE), $file, $web_user);
++    $web_user = $this->drupalCreateUser(['create files', 'view files']);
++    $this->assertFileEntityAccess(['view' => TRUE], $file, $web_user);
+ 
+     // User can download any file.
+-    $web_user = $this->drupalCreateUser(array('create files', 'download any image files'));
+-    $this->assertFileEntityAccess(array('download' => TRUE), $file, $web_user);
++    $web_user = $this->drupalCreateUser(['create files', 'download any image files']);
++    $this->assertFileEntityAccess(['download' => TRUE], $file, $web_user);
+ 
+     // User can edit any file.
+-    $web_user = $this->drupalCreateUser(array('create files', 'view files', 'edit any image files'));
+-    $this->assertFileEntityAccess(array('update' => TRUE), $file, $web_user);
++    $web_user = $this->drupalCreateUser(['create files', 'view files', 'edit any image files']);
++    $this->assertFileEntityAccess(['update' => TRUE], $file, $web_user);
+ 
+     // User can delete any file.
+-    $web_user = $this->drupalCreateUser(array('create files', 'view files', 'edit any image files', 'delete any image files'));
+-    $this->assertFileEntityAccess(array('delete' => TRUE), $file, $web_user);
++    $web_user = $this->drupalCreateUser(['create files', 'view files', 'edit any image files', 'delete any image files']);
++    $this->assertFileEntityAccess(['delete' => TRUE], $file, $web_user);
+   }
+ 
+   /**
+@@ -127,14 +128,14 @@ class FileEntityAccessTest extends FileEntityTestBase {
+    *  file/%
+    *  file/%/download
+    *  file/%/edit
+-   *  file/%/delete
++   *  file/%/delete.
+    */
+-  function testFileEntityPageAccess() {
+-    $web_user = $this->drupalCreateUser(array());
++  public function testFileEntityPageAccess() {
++    $web_user = $this->drupalCreateUser([]);
+     $this->drupalLogin($web_user);
+     $this->drupalGet('file/add');
+     $this->assertResponse(403, 'Users without access can not access the file add page');
+-    $web_user = $this->drupalCreateUser(array('create files'));
++    $web_user = $this->drupalCreateUser(['create files']);
+     $this->drupalLogin($web_user);
+     $this->drupalGet('file/add');
+     $this->assertResponse(200, 'Users with access can access the file add page');
+@@ -142,25 +143,25 @@ class FileEntityAccessTest extends FileEntityTestBase {
+     $file = reset($this->files['text']);
+ 
+     // This fails.. No clue why but, tested manually and works as should.
+-    $web_user = $this->drupalCreateUser(array('view own files'));
++    $web_user = $this->drupalCreateUser(['view own files']);
+     $this->drupalLogin($web_user);
+     $this->drupalGet("file/{$file->id()}");
+     $this->assertResponse(403, 'Users without access can not access the file view page');
+-    $web_user = $this->drupalCreateUser(array('view files'));
++    $web_user = $this->drupalCreateUser(['view files']);
+     $this->drupalLogin($web_user);
+     $this->drupalGet("file/{$file->id()}");
+     $this->assertResponse(200, 'Users with access can access the file view page');
+ 
+     $url = "file/{$file->id()}/download";
+-    $web_user = $this->drupalCreateUser(array());
++    $web_user = $this->drupalCreateUser([]);
+     $this->drupalLogin($web_user);
+-    $this->drupalGet($url, array('query' => array('token' => $file->getDownloadToken())));
++    $this->drupalGet($url, ['query' => ['token' => $file->getDownloadToken()]]);
+     $this->assertResponse(403, 'Users without access can not download the file');
+-    $web_user = $this->drupalCreateUser(array('download any document files'));
++    $web_user = $this->drupalCreateUser(['download any document files']);
+     $this->drupalLogin($web_user);
+-    $this->drupalGet($url, array('query' => array('token' => $file->getDownloadToken())));
++    $this->drupalGet($url, ['query' => ['token' => $file->getDownloadToken()]]);
+     $this->assertResponse(200, 'Users with access can download the file');
+-    $this->drupalGet($url, array('query' => array('token' => 'invalid-token')));
++    $this->drupalGet($url, ['query' => ['token' => 'invalid-token']]);
+     $this->assertResponse(403, 'Cannot download file with in invalid token.');
+     $this->drupalGet($url);
+     $this->assertResponse(403, 'Cannot download file without a token.');
+@@ -168,20 +169,20 @@ class FileEntityAccessTest extends FileEntityTestBase {
+     $this->drupalGet($url);
+     $this->assertResponse(200, 'Users with access can download the file without a token when allow_insecure_download is set.');
+ 
+-    $web_user = $this->drupalCreateUser(array());
++    $web_user = $this->drupalCreateUser([]);
+     $this->drupalLogin($web_user);
+     $this->drupalGet("file/{$file->id()}/edit");
+     $this->assertResponse(403, 'Users without access can not access the file edit page');
+-    $web_user = $this->drupalCreateUser(array('edit any document files'));
++    $web_user = $this->drupalCreateUser(['edit any document files']);
+     $this->drupalLogin($web_user);
+     $this->drupalGet("file/{$file->id()}/edit");
+     $this->assertResponse(200, 'Users with access can access the file edit page');
+ 
+-    $web_user = $this->drupalCreateUser(array());
++    $web_user = $this->drupalCreateUser([]);
+     $this->drupalLogin($web_user);
+     $this->drupalGet("file/{$file->id()}/delete");
+     $this->assertResponse(403, 'Users without access can not access the file delete page');
+-    $web_user = $this->drupalCreateUser(array('delete any document files'));
++    $web_user = $this->drupalCreateUser(['delete any document files']);
+     $this->drupalLogin($web_user);
+     $this->drupalGet("file/{$file->id()}/delete");
+     $this->assertResponse(200, 'Users with access can access the file delete page');
+@@ -190,11 +191,11 @@ class FileEntityAccessTest extends FileEntityTestBase {
+   /**
+    * Test to see if we have access to download private files when granted the permissions.
+    */
+-  function testFileEntityPrivateDownloadAccess() {
++  public function testFileEntityPrivateDownloadAccess() {
+     $original_file = next($this->files['text']);
+ 
+     foreach ($this->getPrivateDownloadAccessCases() as $case) {
+-      /** @var FileInterface $file */
++      /** @var \Drupal\file\FileInterface $file */
+       $file = file_copy($original_file, 'private://');
+       $user_name = 'anonymous';
+ 
+@@ -210,14 +211,14 @@ class FileEntityAccessTest extends FileEntityTestBase {
+       }
+ 
+       // Check if the physical file is there.
+-      $arguments = array(
++      $arguments = [
+         '%name' => $file->getFilename(),
+         '%username' => $user_name,
+         '%uri' => $file->getFileUri(),
+-      );
++      ];
+       $this->assertTrue(is_file($file->getFileUri()), new FormattableMarkup('File %name owned by %username successfully created at %uri.', $arguments));
+       $url = file_create_url($file->getFileUri());
+-      $message_file_info = ' ' . new FormattableMarkup('File %uri was checked.', array('%uri' => $file->getFileUri()));
++      $message_file_info = ' ' . new FormattableMarkup('File %uri was checked.', ['%uri' => $file->getFileUri()]);
+ 
+       // Try to download the file.
+       $this->drupalGet($url);
+diff --git a/tests/src/Functional/FileEntityAdminTest.php b/tests/src/Functional/FileEntityAdminTest.php
+index 7f0bda6..d6486d7 100644
+--- a/tests/src/Functional/FileEntityAdminTest.php
++++ b/tests/src/Functional/FileEntityAdminTest.php
+@@ -6,7 +6,6 @@ use Drupal\field\Entity\FieldConfig;
+ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\file_entity\Entity\FileEntity;
+ use Drupal\node\Entity\Node;
+-use Drupal\user\Entity\User;
+ use Drupal\views\Entity\View;
+ 
+ /**
+@@ -16,19 +15,24 @@ use Drupal\views\Entity\View;
+  */
+ class FileEntityAdminTest extends FileEntityTestBase {
+ 
+-  /** @var User */
++  /**
++   * @var \Drupal\user\Entity\User*/
+   protected $userAdmin;
+ 
+-  /** @var User */
++  /**
++   * @var \Drupal\user\Entity\User*/
+   protected $userBasic;
+ 
+-  /** @var User */
++  /**
++   * @var \Drupal\user\Entity\User*/
+   protected $userViewOwn;
+ 
+-  /** @var User */
++  /**
++   * @var \Drupal\user\Entity\User*/
+   protected $userViewPrivate;
+ 
+-  /** @var User */
++  /**
++   * @var \Drupal\user\Entity\User*/
+   protected $userEditDelete;
+ 
+   /**
+@@ -52,20 +56,20 @@ class FileEntityAdminTest extends FileEntityTestBase {
+     // correctly.
+     $roles = user_roles();
+     foreach ($roles as $rid => $role) {
+-      user_role_revoke_permissions($rid, array('view files'));
++      user_role_revoke_permissions($rid, ['view files']);
+     }
+ 
+-    $this->userAdmin = $this->drupalCreateUser(array('administer files', 'bypass file access'));
+-    $this->userBasic = $this->drupalCreateUser(array('administer files'));
+-    $this->userViewOwn = $this->drupalCreateUser(array('administer files', 'view own private files'));
+-    $this->userViewPrivate = $this->drupalCreateUser(array('administer files', 'view private files'));
+-    $this->userEditDelete = $this->drupalCreateUser(array(
++    $this->userAdmin = $this->drupalCreateUser(['administer files', 'bypass file access']);
++    $this->userBasic = $this->drupalCreateUser(['administer files']);
++    $this->userViewOwn = $this->drupalCreateUser(['administer files', 'view own private files']);
++    $this->userViewPrivate = $this->drupalCreateUser(['administer files', 'view private files']);
++    $this->userEditDelete = $this->drupalCreateUser([
+       'administer files',
+       'edit any document files',
+       'delete any document files',
+       'edit any image files',
+       'delete any image files',
+-    ));
++    ]);
+ 
+     // Enable the enhanced Files view.
+     View::load('files')->disable()->save();
+@@ -78,13 +82,13 @@ class FileEntityAdminTest extends FileEntityTestBase {
+   public function testFilesAdminSort() {
+     $this->drupalLogin($this->userAdmin);
+     $i = 0;
+-    foreach (array('dd', 'aa', 'DD', 'bb', 'cc', 'CC', 'AA', 'BB') as $prefix) {
+-      $this->createFileEntity(array('filename' => $prefix . $this->randomMachineName(6), 'created' => $i * 90000));
++    foreach (['dd', 'aa', 'DD', 'bb', 'cc', 'CC', 'AA', 'BB'] as $prefix) {
++      $this->createFileEntity(['filename' => $prefix . $this->randomMachineName(6), 'created' => $i * 90000]);
+       $i++;
+     }
+ 
+     // Test that the default sort by file_managed.created DESC fires properly.
+-    $files_query = array();
++    $files_query = [];
+     foreach (\Drupal::entityQuery('file')->sort('created', 'DESC')->execute() as $fid) {
+       $files_query[] = FileEntity::load($fid)->label();
+     }
+@@ -100,12 +104,12 @@ class FileEntityAdminTest extends FileEntityTestBase {
+ 
+     // Compare the rendered HTML node list to a query for the files ordered by
+     // filename to account for possible database-dependent sort order.
+-    $files_query = array();
++    $files_query = [];
+     foreach (\Drupal::entityQuery('file')->sort('filename')->execute() as $fid) {
+       $files_query[] = FileEntity::load($fid)->label();
+     }
+ 
+-    $this->drupalGet('admin/content/files', array('query' => array('sort' => 'asc', 'order' => 'filename')));
++    $this->drupalGet('admin/content/files', ['query' => ['sort' => 'asc', 'order' => 'filename']]);
+     $list = $this->xpath($xpath);
+     $entries = [];
+     foreach ($list as $entry) {
+@@ -120,27 +124,27 @@ class FileEntityAdminTest extends FileEntityTestBase {
+   public function testFilesAdminPages() {
+     $this->drupalLogin($this->userAdmin);
+ 
+-    /** @var FileEntity[] $files */
+-    $files['public_image'] = $this->createFileEntity(array(
++    /** @var \Drupal\file_entity\Entity\FileEntity[] $files */
++    $files['public_image'] = $this->createFileEntity([
+       'scheme' => 'public',
+       'uid' => $this->userBasic->id(),
+       'type' => 'image',
+-    ));
+-    $files['public_document'] = $this->createFileEntity(array(
++    ]);
++    $files['public_document'] = $this->createFileEntity([
+       'scheme' => 'public',
+       'uid' => $this->userViewOwn->id(),
+       'type' => 'document',
+-    ));
+-    $files['private_image'] = $this->createFileEntity(array(
++    ]);
++    $files['private_image'] = $this->createFileEntity([
+       'scheme' => 'private',
+       'uid' => $this->userBasic->id(),
+       'type' => 'image',
+-    ));
+-    $files['private_document'] = $this->createFileEntity(array(
++    ]);
++    $files['private_document'] = $this->createFileEntity([
+       'scheme' => 'private',
+       'uid' => $this->userViewOwn->id(),
+       'type' => 'document',
+-    ));
++    ]);
+ 
+     // Verify view, edit, and delete links for any file.
+     $this->drupalGet('admin/content/files');
+@@ -172,7 +176,6 @@ class FileEntityAdminTest extends FileEntityTestBase {
+     // @todo Drupal 8 always shows bulk selection, test specific actions
+     //   instead.
+     // $this->assertNoFieldByName('bulk_form[' . $files['public_image']->id() . ']', '', 'No bulk form checkbox found.');
+-
+     // Verify private file is displayed with permission.
+     $this->drupalLogout();
+     $this->drupalLogin($this->userViewOwn);
+@@ -242,8 +245,8 @@ class FileEntityAdminTest extends FileEntityTestBase {
+     $this->assertLinkByHref('file/1/delete');
+     $this->assertLinkByHref('file/2/delete');
+     $this->drupalGet('file/1/delete');
+-    $this->assertTitle(t('Are you sure you want to delete the file @filename? | Drupal', array('@filename' => FileEntity::load(1)->label())));
+-    $this->drupalPostForm(NULL, array(), 'Delete');
++    $this->assertTitle(t('Are you sure you want to delete the file @filename? | Drupal', ['@filename' => FileEntity::load(1)->label()]));
++    $this->drupalPostForm(NULL, [], 'Delete');
+     $this->assertNoLinkByHref('file/1/delete');
+     $this->assertLinkByHref('file/2/delete');
+ 
+@@ -254,13 +257,13 @@ class FileEntityAdminTest extends FileEntityTestBase {
+     $this->assertTrue(FileEntity::load(4)->isPermanent());
+     $this->assertTrue(FileEntity::load(5)->isPermanent());
+ 
+-    $this->drupalGet('admin/content/files', array('query' => array('order' => 'fid')));
+-    $edit = array(
++    $this->drupalGet('admin/content/files', ['query' => ['order' => 'fid']]);
++    $edit = [
+       'action' => 'file_temporary_action',
+       'bulk_form[0]' => 1,
+       'bulk_form[1]' => 1,
+       'bulk_form[2]' => 1,
+-    );
++    ];
+     $this->drupalPostForm(NULL, $edit, 'Apply to selected items');
+ 
+     \Drupal::entityTypeManager()->getStorage('file')->resetCache();
+@@ -269,12 +272,12 @@ class FileEntityAdminTest extends FileEntityTestBase {
+     $this->assertFalse(FileEntity::load(4)->isPermanent());
+     $this->assertTrue(FileEntity::load(5)->isPermanent());
+ 
+-    $this->drupalGet('admin/content/files', array('query' => array('order' => 'fid')));
+-    $edit = array(
++    $this->drupalGet('admin/content/files', ['query' => ['order' => 'fid']]);
++    $edit = [
+       'action' => 'file_permanent_action',
+       'bulk_form[0]' => 1,
+       'bulk_form[1]' => 1,
+-    );
++    ];
+     $this->drupalPostForm(NULL, $edit, 'Apply to selected items');
+ 
+     \Drupal::entityTypeManager()->getStorage('file')->resetCache();
+@@ -284,16 +287,16 @@ class FileEntityAdminTest extends FileEntityTestBase {
+     $this->assertTrue(FileEntity::load(5)->isPermanent());
+ 
+     // Test bulk delete.
+-    $this->drupalGet('admin/content/files', array('query' => array('order' => 'fid')));
+-    $edit = array(
++    $this->drupalGet('admin/content/files', ['query' => ['order' => 'fid']]);
++    $edit = [
+       'action' => 'file_delete_action',
+       'bulk_form[0]' => 1,
+       'bulk_form[1]' => 1,
+-    );
++    ];
+     $this->drupalPostForm(NULL, $edit, 'Apply to selected items');
+     $this->assertTitle(t('Are you sure you want to delete these files? | Drupal'));
+     $this->assertLink('Cancel');
+-    $this->drupalPostForm(NULL, array(), 'Delete');
++    $this->drupalPostForm(NULL, [], 'Delete');
+ 
+     \Drupal::entityTypeManager()->getStorage('file')->resetCache();
+     $this->assertNull(FileEntity::load(2), 'File 2 is deleted.');
+@@ -305,9 +308,9 @@ class FileEntityAdminTest extends FileEntityTestBase {
+    * Tests the file usage view.
+    */
+   public function testUsageView() {
+-    $this->container->get('module_installer')->install(array('node'));
++    $this->container->get('module_installer')->install(['node']);
+     \Drupal::service('router.builder')->rebuild();
+-    $file = $this->createFileEntity(array('uid' => $this->userAdmin));
++    $file = $this->createFileEntity(['uid' => $this->userAdmin]);
+     // @todo Next line causes an exception, core issue https://www.drupal.org/node/2462283
+     $this->drupalLogin($this->userAdmin);
+ 
+@@ -322,29 +325,29 @@ class FileEntityAdminTest extends FileEntityTestBase {
+ 
+     // Attach a file field to article nodes.
+     $content_type = $this->drupalCreateContentType();
+-    $field_storage = FieldStorageConfig::create(array(
++    $field_storage = FieldStorageConfig::create([
+       'field_name' => 'used_file',
+       'entity_type' => 'node',
+       'type' => 'file',
+-    ));
++    ]);
+     $field_storage->save();
+-    $field_instance = FieldConfig::create(array(
++    $field_instance = FieldConfig::create([
+       'field_storage' => $field_storage,
+       'entity_type' => 'node',
+       'bundle' => $content_type->id(),
+-    ));
++    ]);
+     $field_instance->save();
+ 
+     // Create a node using a file.
+-    $node = Node::create(array(
++    $node = Node::create([
+       'title' => 'An article that uses a file',
+       'type' => $content_type->id(),
+-      'used_file' => array(
++      'used_file' => [
+         'target_id' => $file->id(),
+         'display' => 1,
+         'description' => '',
+-      ),
+-    ));
++      ],
++    ]);
+     $node->save();
+     \Drupal::entityTypeManager()->getStorage('node')->resetCache();
+     \Drupal::entityTypeManager()->getStorage('file')->resetCache();
+@@ -363,4 +366,5 @@ class FileEntityAdminTest extends FileEntityTestBase {
+     $this->clickLink('Usage');
+     $this->assertResponse(200);
+   }
++
+ }
+diff --git a/tests/src/Functional/FileEntityCacheTagsTest.php b/tests/src/Functional/FileEntityCacheTagsTest.php
+index 366db9e..522d8a4 100644
+--- a/tests/src/Functional/FileEntityCacheTagsTest.php
++++ b/tests/src/Functional/FileEntityCacheTagsTest.php
+@@ -22,11 +22,14 @@ class FileEntityCacheTagsTest extends FileEntityTestBase {
+   /**
+    * @var array
+    */
+-  public static $modules = array('node', 'views');
++  public static $modules = ['node', 'views'];
+ 
+   protected $adminUser;
+ 
+-  function setUp() {
++  /**
++   *
++   */
++  public function setUp() {
+     parent::setUp();
+ 
+     $this->enablePageCaching();
+@@ -35,69 +38,69 @@ class FileEntityCacheTagsTest extends FileEntityTestBase {
+   /**
+    * Check file edit functionality.
+    */
+-  function testFileEntityEdit() {
++  public function testFileEntityEdit() {
+     // Create two files.
+     $file1 = $this->createFileEntity();
+     $file2 = $this->createFileEntity();
+ 
+     $content_type = $this->drupalCreateContentType();
+-    $field_storage = FieldStorageConfig::create(array(
++    $field_storage = FieldStorageConfig::create([
+       'field_name' => 'used_file',
+       'entity_type' => 'node',
+       'type' => 'file',
+       'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
+-    ));
++    ]);
+     $field_storage->save();
+-    $field_instance = FieldConfig::create(array(
++    $field_instance = FieldConfig::create([
+       'field_storage' => $field_storage,
+       'entity_type' => 'node',
+       'bundle' => $content_type->id(),
+-    ));
++    ]);
+     $field_instance->save();
+ 
+     // Create three nodes, the first has file 1, the second both files, the
+     // third only the second.
+-    $node1 = Node::create(array(
++    $node1 = Node::create([
+       'title' => 'An article that uses a file',
+       'promote' => 1,
+       'type' => $content_type->id(),
+-      'used_file' => array(
++      'used_file' => [
+         'target_id' => $file1->id(),
+         'display' => 1,
+         'description' => '',
+-      ),
+-    ));
++      ],
++    ]);
+     $node1->save();
+ 
+-    $node2 = Node::create(array(
++    $node2 = Node::create([
+       'title' => 'An article that uses a file',
+       'promote' => 1,
+       'type' => $content_type->id(),
+-      'used_file' => array(
+-        array(
++      'used_file' => [
++        [
+           'target_id' => $file1->id(),
+           'display' => 1,
+           'description' => '',
+-        ),
+-        array(
++        ],
++        [
+           'target_id' => $file2->id(),
+           'display' => 1,
+           'description' => '',
+-        ),
+-      ),
+-    ));
++        ],
++      ],
++    ]);
+     $node2->save();
+ 
+-    $node3 = Node::create(array(
++    $node3 = Node::create([
+       'title' => 'An article that uses a file',
+       'promote' => 1,
+       'type' => $content_type->id(),
+-      'used_file' => array(
++      'used_file' => [
+         'target_id' => $file2->id(),
+         'display' => 1,
+         'description' => '',
+-      ),
+-    ));
++      ],
++    ]);
+     $node3->save();
+ 
+     // Check cache tags.
+@@ -145,17 +148,17 @@ class FileEntityCacheTagsTest extends FileEntityTestBase {
+    * @param string $hit_or_miss
+    *   'HIT' if a page cache hit is expected, 'MISS' otherwise.
+    *
+-   * @param array|FALSE $tags
++   * @param array|false $tags
+    *   When expecting a page cache hit, you may optionally specify an array of
+    *   expected cache tags. While FALSE, the cache tags will not be verified.
+    */
+   protected function verifyPageCache(Url $url, $hit_or_miss, $tags = FALSE) {
+     $this->drupalGet($url);
+-    $message = new FormattableMarkup('Page cache @hit_or_miss for %path.', array('@hit_or_miss' => $hit_or_miss, '%path' => $url->toString()));
++    $message = new FormattableMarkup('Page cache @hit_or_miss for %path.', ['@hit_or_miss' => $hit_or_miss, '%path' => $url->toString()]);
+     $this->assertEqual($this->drupalGetHeader('X-Drupal-Cache'), $hit_or_miss, $message);
+     if ($hit_or_miss === 'HIT' && is_array($tags)) {
+       $absolute_url = $url->setAbsolute()->toString();
+-      $cid_parts = array($absolute_url, 'html');
++      $cid_parts = [$absolute_url, 'html'];
+       $cid = implode(':', $cid_parts);
+       $cache_entry = \Drupal::cache('render')->get($cid);
+       sort($cache_entry->tags);
+diff --git a/tests/src/Functional/FileEntityCreationTest.php b/tests/src/Functional/FileEntityCreationTest.php
+index d676c24..fae8b50 100644
+--- a/tests/src/Functional/FileEntityCreationTest.php
++++ b/tests/src/Functional/FileEntityCreationTest.php
+@@ -16,7 +16,7 @@ use Drupal\file_entity\Entity\FileType;
+  */
+ class FileEntityCreationTest extends FileEntityTestBase {
+ 
+-  public static $modules = array('views');
++  public static $modules = ['views'];
+ 
+   /**
+    * {@inheritdoc}
+@@ -24,12 +24,12 @@ class FileEntityCreationTest extends FileEntityTestBase {
+   public function setUp() {
+     parent::setUp();
+ 
+-    $web_user = $this->drupalCreateUser(array('create files',
++    $web_user = $this->drupalCreateUser(['create files',
+       'edit own document files',
+       'administer files',
+       'administer site configuration',
+       'view private files',
+-    ));
++    ]);
+     $this->drupalLogin($web_user);
+   }
+ 
+@@ -47,12 +47,12 @@ class FileEntityCreationTest extends FileEntityTestBase {
+ 
+     $test_file = $this->getTestFile('text');
+     // Create a file.
+-    $edit = array();
++    $edit = [];
+     $edit['files[upload]'] = \Drupal::service('file_system')->realpath($test_file->uri);
+     $this->drupalPostForm('file/add', $edit, t('Next'));
+ 
+     // Check that the document file has been uploaded.
+-    $this->assertRaw(t('@type %name was uploaded.', array('@type' => 'Document', '%name' => 'text-0_0.txt')), t('Document file uploaded.'));
++    $this->assertRaw(t('@type %name was uploaded.', ['@type' => 'Document', '%name' => 'text-0_0.txt']), t('Document file uploaded.'));
+ 
+     // Check that the file exists in the database.
+     $file = $this->getFileByFilename('text-0_0.txt');
+@@ -69,7 +69,7 @@ class FileEntityCreationTest extends FileEntityTestBase {
+   public function testFileEntityCreationMultipleSteps() {
+     $test_file = $this->getTestFile('text');
+     // Create a file.
+-    $edit = array();
++    $edit = [];
+     $edit['files[upload]'] = \Drupal::service('file_system')->realpath($test_file->uri);
+     $this->drupalGet('file/add');
+     $this->assertEmpty($this->xpath('//input[@id="edit-upload-remove-button"]'), 'Remove');
+@@ -83,12 +83,12 @@ class FileEntityCreationTest extends FileEntityTestBase {
+     $this->assertFieldChecked('edit-scheme-public', 'Public Scheme is checked');
+ 
+     // Submit form and set scheme to private.
+-    $edit = array();
++    $edit = [];
+     $edit['scheme'] = 'private';
+     $this->drupalPostForm(NULL, $edit, t('Next'));
+ 
+     // Check that the document file has been uploaded.
+-    $this->assertRaw(t('@type %name was uploaded.', array('@type' => 'Document', '%name' => 'text-0_0.txt')), t('Document file uploaded.'));
++    $this->assertRaw(t('@type %name was uploaded.', ['@type' => 'Document', '%name' => 'text-0_0.txt']), t('Document file uploaded.'));
+ 
+     // Check that the file exists in the database.
+     $file = $this->getFileByFilename('text-0_0.txt');
+@@ -108,13 +108,13 @@ class FileEntityCreationTest extends FileEntityTestBase {
+ 
+     // Create an image.
+     $test_file = $this->getTestFile('image');
+-    $edit = array('files[upload]' => \Drupal::service('file_system')->realpath($test_file->uri));
++    $edit = ['files[upload]' => \Drupal::service('file_system')->realpath($test_file->uri)];
+     $this->drupalPostForm('file/add', $edit, t('Next'));
+ 
+-    $data = array(
++    $data = [
+       'field_image_title_text' => 'My image',
+       'field_image_alt_text' => 'A test image',
+-    );
++    ];
+ 
+     // Find the alt and title fields on the next step.
+     foreach ($data as $field => $value) {
+@@ -122,7 +122,7 @@ class FileEntityCreationTest extends FileEntityTestBase {
+     }
+ 
+     // Set fields.
+-    $edit = array();
++    $edit = [];
+     foreach ($data as $field => $value) {
+       $edit[$field . '[0][value]'] = $value;
+     }
+@@ -149,7 +149,7 @@ class FileEntityCreationTest extends FileEntityTestBase {
+       'label' => 'Archive',
+       'status' => TRUE,
+       'mimetypes' => [
+-        'application/gzip'
++        'application/gzip',
+       ],
+     ]);
+ 
+diff --git a/tests/src/Functional/FileEntityEditTest.php b/tests/src/Functional/FileEntityEditTest.php
+index cf7727a..97ebd50 100644
+--- a/tests/src/Functional/FileEntityEditTest.php
++++ b/tests/src/Functional/FileEntityEditTest.php
+@@ -16,31 +16,34 @@ class FileEntityEditTest extends FileEntityTestBase {
+ 
+   public static $modules = ['block'];
+ 
+-  function setUp() {
++  /**
++   *
++   */
++  public function setUp() {
+     parent::setUp();
+     // Add the tasks and actions blocks.
+     $this->drupalPlaceBlock('local_actions_block');
+     $this->drupalPlaceBlock('local_tasks_block');
+ 
+-    $this->web_user = $this->drupalCreateUser(array('edit own document files', 'create files'));
+-    $this->admin_user = $this->drupalCreateUser(array('bypass file access', 'administer files'));
++    $this->web_user = $this->drupalCreateUser(['edit own document files', 'create files']);
++    $this->admin_user = $this->drupalCreateUser(['bypass file access', 'administer files']);
+   }
+ 
+   /**
+    * Check file edit functionality.
+    */
+-  function testFileEntityEdit() {
++  public function testFileEntityEdit() {
+     $this->drupalLogin($this->web_user);
+ 
+     $test_file = $this->getTestFile('text');
+     $name_key = "filename[0][value]";
+ 
+     // Create file to edit.
+-    $edit = array();
++    $edit = [];
+     $edit['files[upload]'] = \Drupal::service('file_system')->realpath($test_file->uri);
+     $this->drupalPostForm('file/add', $edit, t('Next'));
+     if ($this->xpath('//input[@name="scheme"]')) {
+-      $this->drupalPostForm(NULL, array(), t('Next'));
++      $this->drupalPostForm(NULL, [], t('Next'));
+     }
+ 
+     // Check that the file exists in the database.
+@@ -55,7 +58,7 @@ class FileEntityEditTest extends FileEntityTestBase {
+ 
+     // Check that the name field is displayed with the correct value.
+     $active = t('(active tab)');
+-    $link_text = t('@local-task-title<span class="element-invisible">@active</span>', array('@local-task-title' => t('Edit'), '@active' => $active));
++    $link_text = t('@local-task-title<span class="element-invisible">@active</span>', ['@local-task-title' => t('Edit'), '@active' => $active]);
+     $this->assertText(strip_tags($link_text), 0, t('Edit tab found and marked active.'));
+     $this->assertFieldByName($name_key, $file->label(), t('Name field displayed.'));
+ 
+@@ -63,7 +66,7 @@ class FileEntityEditTest extends FileEntityTestBase {
+     $this->assertNoFieldByName('op', t('Delete'), 'Delete button not found.');
+ 
+     // Edit the content of the file.
+-    $edit = array();
++    $edit = [];
+     $edit[$name_key] = $this->randomMachineName(8);
+     // Stay on the current page, without reloading.
+     $this->drupalPostForm(NULL, $edit, t('Save'));
+@@ -75,29 +78,29 @@ class FileEntityEditTest extends FileEntityTestBase {
+   /**
+    * Check changing file associated user fields.
+    */
+-  function testFileEntityAssociatedUser() {
++  public function testFileEntityAssociatedUser() {
+     $this->drupalLogin($this->admin_user);
+ 
+     // Create file to edit.
+     $test_file = $this->getTestFile('text');
+-    $edit = array();
++    $edit = [];
+     $edit['files[upload]'] = \Drupal::service('file_system')->realpath($test_file->uri);
+     $this->drupalPostForm('file/add', $edit, t('Next'));
+-    $this->drupalPostForm(NULL, array(), t('Next'));
++    $this->drupalPostForm(NULL, [], t('Next'));
+ 
+     // Check that the file was associated with the currently logged in user.
+     $file = $this->getFileByFilename('text-0_0.txt');
+     $this->assertIdentical($file->getOwnerId(), $this->admin_user->id(), 'File associated with admin user.');
+ 
+     // Try to change the 'associated user' field to an invalid user name.
+-    $edit = array(
++    $edit = [
+       'uid[0][target_id]' => 'invalid-name',
+-    );
++    ];
+     $this->drupalPostForm('file/' . $file->id() . '/edit', $edit, t('Save'));
+     $this->assertText('There are no entities matching "invalid-name".');
+ 
+     // Change the associated user field to the anonymous user (uid 0).
+-    $edit = array();
++    $edit = [];
+     $edit['uid[0][target_id]'] = 'Anonymous (0)';
+     $this->drupalPostForm('file/' . $file->id() . '/edit', $edit, t('Save'));
+     \Drupal::entityTypeManager()->getStorage('file')->resetCache();
+@@ -106,7 +109,7 @@ class FileEntityEditTest extends FileEntityTestBase {
+ 
+     // Change the associated user field to another user's name (that is not
+     // logged in).
+-    $edit = array();
++    $edit = [];
+     $edit['uid[0][target_id]'] = $this->web_user->label();
+     $this->drupalPostForm('file/' . $file->id() . '/edit', $edit, t('Save'));
+     \Drupal::entityTypeManager()->getStorage('file')->resetCache();
+@@ -118,4 +121,5 @@ class FileEntityEditTest extends FileEntityTestBase {
+     $this->drupalGet('file/' . $file->id() . '/edit');
+     $this->assertNoFieldByName('uid[0][target_id]');
+   }
++
+ }
+diff --git a/tests/src/Functional/FileEntityFileTypeClassificationTest.php b/tests/src/Functional/FileEntityFileTypeClassificationTest.php
+index 3588855..0aebc39 100644
+--- a/tests/src/Functional/FileEntityFileTypeClassificationTest.php
++++ b/tests/src/Functional/FileEntityFileTypeClassificationTest.php
+@@ -23,7 +23,7 @@ class FileEntityFileTypeClassificationTest extends BrowserTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array('file');
++  public static $modules = ['file'];
+ 
+   /**
+    * {@inheritdoc}
+@@ -39,9 +39,9 @@ class FileEntityFileTypeClassificationTest extends BrowserTestBase {
+    * @return
+    *   The file's file type as a string.
+    */
+-  function getFileType($file) {
++  public function getFileType($file) {
+     $type = \Drupal::database()->select('file_managed', 'fm')
+-      ->fields('fm', array('type'))
++      ->fields('fm', ['type'])
+       ->condition('fid', $file->id(), '=')
+       ->execute()
+       ->fetchAssoc();
+@@ -52,7 +52,7 @@ class FileEntityFileTypeClassificationTest extends BrowserTestBase {
+   /**
+    * Test that existing files are properly classified by file type.
+    */
+-  function testFileTypeClassification() {
++  public function testFileTypeClassification() {
+     // Get test text and image files.
+     $file = current($this->getTestFiles('text'));
+     $text_file = File::create((array) $file);
+@@ -63,7 +63,7 @@ class FileEntityFileTypeClassificationTest extends BrowserTestBase {
+ 
+     // Enable file entity which adds adds a file type property to files and
+     // queues up existing files for classification.
+-    \Drupal::service('module_installer')->install(array('file_entity'));
++    \Drupal::service('module_installer')->install(['file_entity']);
+     $change_summary = \Drupal::entityDefinitionUpdateManager()->getChangeSummary();
+     $this->assertTrue(empty($change_summary), 'No entity definition changes pending');
+ 
+diff --git a/tests/src/Functional/FileEntityPathautoTest.php b/tests/src/Functional/FileEntityPathautoTest.php
+index 54712b3..df5650e 100644
+--- a/tests/src/Functional/FileEntityPathautoTest.php
++++ b/tests/src/Functional/FileEntityPathautoTest.php
+@@ -21,7 +21,7 @@ class FileEntityPathautoTest extends FileEntityTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array('pathauto');
++  public static $modules = ['pathauto'];
+ 
+   /**
+    * Tests Pathauto support.
+diff --git a/tests/src/Functional/FileEntityReplaceTest.php b/tests/src/Functional/FileEntityReplaceTest.php
+index dedc6d5..673fec9 100644
+--- a/tests/src/Functional/FileEntityReplaceTest.php
++++ b/tests/src/Functional/FileEntityReplaceTest.php
+@@ -28,7 +28,7 @@ class FileEntityReplaceTest extends FileEntityTestBase {
+     $file = reset($this->files['text']);
+ 
+     // Create a user with file edit permissions.
+-    $user = $this->drupalCreateUser(array('edit any document files'));
++    $user = $this->drupalCreateUser(['edit any document files']);
+     $this->drupalLogin($user);
+ 
+     // Test that the Upload widget appears for a local file.
+@@ -36,18 +36,18 @@ class FileEntityReplaceTest extends FileEntityTestBase {
+     $this->assertFieldByName('files[replace_upload]');
+ 
+     // Test that file saves without uploading a file.
+-    $this->drupalPostForm(NULL, array(), t('Save'));
+-    $this->assertText(t('@file has been updated.', array('@file' => $file->getFilename()))/*, 'File was updated without file upload.'*/);
++    $this->drupalPostForm(NULL, [], t('Save'));
++    $this->assertText(t('@file has been updated.', ['@file' => $file->getFilename()])/*, 'File was updated without file upload.'*/);
+ 
+     // Get the next text file to use as a replacement.
+     $original = clone $file;
+     $replacement = next($this->files['text']);
+ 
+     // Test that the file saves when uploading a replacement file.
+-    $edit = array();
++    $edit = [];
+     $edit['files[replace_upload]'] = \Drupal::service('file_system')->realpath($replacement->getFileUri());
+     $this->drupalPostForm('file/' . $file->id() . '/edit', $edit, t('Save'));
+-    $this->assertText(t('@file has been updated.', array('@file' => $file->getFilename()))/*, 'File was updated with file upload.'*/);
++    $this->assertText(t('@file has been updated.', ['@file' => $file->getFilename()])/*, 'File was updated with file upload.'*/);
+ 
+     // Re-load the file from the database.
+     /** @var \Drupal\file\FileInterface $file */
+@@ -66,22 +66,22 @@ class FileEntityReplaceTest extends FileEntityTestBase {
+ 
+     // Test that validation works by uploading a non-text file as a replacement.
+     $this->drupalPostForm('file/' . $file->id() . '/edit', $edit, t('Save'));
+-    $this->assertRaw(t('The specified file %file could not be uploaded.', array('%file' => $image->getFilename())), 'File validation works, upload failed correctly.');
++    $this->assertRaw(t('The specified file %file could not be uploaded.', ['%file' => $image->getFilename()]), 'File validation works, upload failed correctly.');
+     $this->assertText('Only files with the following extensions are allowed: txt.');
+ 
+     $replacement = next($this->files['text']);
+ 
+     // Test the file upload.
+-    $edit = array();
++    $edit = [];
+     $edit['files[replace_upload]'] = \Drupal::service('file_system')->realpath($replacement->getFileUri());
+     $this->drupalPostForm('file/' . $file->id() . '/edit', $edit, t('Upload'));
+     $this->assertText('text-2.txt');
+-    $this->drupalPostForm(NULL, array(), t('Save'));
+-    $this->assertText(t('@file has been updated.', array('@file' => $file->getFilename()))/*, 'File was updated with file upload.'*/);
++    $this->drupalPostForm(NULL, [], t('Save'));
++    $this->assertText(t('@file has been updated.', ['@file' => $file->getFilename()])/*, 'File was updated with file upload.'*/);
+ 
+     // Create a non-local file record.
+     /** @var \Drupal\file\FileInterface $file2 */
+-    $file2 = File::create(array('type' => 'image'));
++    $file2 = File::create(['type' => 'image']);
+     $file2->setFileUri('http://' . $this->randomMachineName());
+     $file2->getFilename(\Drupal::service('file_system')->basename($file2->getFileUri()));
+     $file2->setMimeType('image/oembed');
+@@ -94,4 +94,5 @@ class FileEntityReplaceTest extends FileEntityTestBase {
+     $this->assertNoFieldByName('files[replace_upload]');
+ 
+   }
++
+ }
+diff --git a/tests/src/Functional/FileEntityServicesTest.php b/tests/src/Functional/FileEntityServicesTest.php
+index b947254..943d2ec 100644
+--- a/tests/src/Functional/FileEntityServicesTest.php
++++ b/tests/src/Functional/FileEntityServicesTest.php
+@@ -14,7 +14,7 @@ use GuzzleHttp\Exception\ClientException;
+ use GuzzleHttp\RequestOptions;
+ 
+ /**
+- * Tests File entity REST services
++ * Tests File entity REST services.
+  *
+  * @group file_entity
+  */
+@@ -25,11 +25,11 @@ class FileEntityServicesTest extends FileEntityTestBase {
+    *
+    * @var string[]
+    */
+-  public static $modules = array(
++  public static $modules = [
+     'node',
+     'hal',
+-    'rest'
+-  );
++    'rest',
++  ];
+ 
+   /**
+    * Tests that a file field is correctly handled with REST.
+@@ -61,36 +61,36 @@ class FileEntityServicesTest extends FileEntityTestBase {
+     ]);
+ 
+     // Add a file field to the resttest content type.
+-    $file_field_storage = FieldStorageConfig::create(array(
++    $file_field_storage = FieldStorageConfig::create([
+       'type' => 'file',
+       'entity_type' => 'node',
+       'field_name' => 'field_file',
+-    ));
++    ]);
+     $file_field_storage->save();
+-    $file_field = FieldConfig::create(array(
++    $file_field = FieldConfig::create([
+       'field_storage' => $file_field_storage,
+       'entity_type' => 'node',
+       'bundle' => 'resttest',
+-    ));
++    ]);
+     $file_field->save();
+ 
+     // Create a file.
+     $file_uri = 'public://' . $this->randomMachineName() . '.txt';
+     file_put_contents($file_uri, 'This is some file contents');
+-    $file = File::create(array('uri' => $file_uri, 'status' => FILE_STATUS_PERMANENT, 'uid' => 1));
++    $file = File::create(['uri' => $file_uri, 'status' => FILE_STATUS_PERMANENT, 'uid' => 1]);
+     $file->save();
+ 
+     // Create a node with a file.
+-    $node = Node::create(array(
++    $node = Node::create([
+       'title' => 'A node with a file',
+       'type' => 'resttest',
+-      'field_file' => array(
++      'field_file' => [
+         'target_id' => $file->id(),
+         'display' => 0,
+         'description' => 'An attached file',
+-      ),
++      ],
+       'status' => TRUE,
+-    ));
++    ]);
+     $node->save();
+ 
+     // GET node.
+diff --git a/tests/src/Functional/FileEntityTestBase.php b/tests/src/Functional/FileEntityTestBase.php
+index 19a4068..a7d1e92 100644
+--- a/tests/src/Functional/FileEntityTestBase.php
++++ b/tests/src/Functional/FileEntityTestBase.php
+@@ -2,9 +2,7 @@
+ 
+ namespace Drupal\Tests\file_entity\Functional;
+ 
+-use Drupal\Core\Config\Config;
+ use Drupal\file\Entity\File;
+-use Drupal\file\FileInterface;
+ use Drupal\file_entity\Entity\FileType;
+ use Drupal\file_entity\Entity\FileEntity;
+ use Drupal\Tests\BrowserTestBase;
+@@ -20,19 +18,19 @@ abstract class FileEntityTestBase extends BrowserTestBase {
+   /**
+    * @var array
+    */
+-  public static $modules = array('file_entity');
++  public static $modules = ['file_entity'];
+ 
+   /**
+    * File entity config.
+    *
+-   * @var Config
++   * @var \Drupal\Core\Config\Config
+    */
+   protected $config;
+ 
+   /**
+-   * @var FileInterface[][]
++   * @var \Drupal\file\Entity\FileInterface[][]
+    */
+-  protected $files = array();
++  protected $files = [];
+ 
+   /**
+    * {@inheritdoc}
+@@ -50,14 +48,14 @@ abstract class FileEntityTestBase extends BrowserTestBase {
+   /**
+    * Set up some sample text and image files.
+    */
+-  protected function setUpFiles($defaults = array()) {
++  protected function setUpFiles($defaults = []) {
+     // Populate defaults array.
+-    $defaults += array(
++    $defaults += [
+       'uid' => 1,
+       'status' => FILE_STATUS_PERMANENT,
+-    );
++    ];
+ 
+-    $types = array('text', 'image');
++    $types = ['text', 'image'];
+     foreach ($types as $type) {
+       foreach ($this->getTestFiles($type) as $file) {
+         foreach ($defaults as $key => $value) {
+@@ -78,12 +76,12 @@ abstract class FileEntityTestBase extends BrowserTestBase {
+    *
+    * @return \Drupal\Core\Entity\EntityInterface|static
+    */
+-  protected function createFileType($type = array()) {
+-    $type += array(
++  protected function createFileType($type = []) {
++    $type += [
+       'id' => strtolower($this->randomMachineName()),
+       'label' => 'Test',
+-      'mimetypes' => array('image/jpeg', 'image/gif', 'image/png', 'image/tiff'),
+-    );
++      'mimetypes' => ['image/jpeg', 'image/gif', 'image/png', 'image/tiff'],
++    ];
+     $entity = FileType::create($type);
+     $entity->save();
+     return $entity;
+@@ -102,46 +100,46 @@ abstract class FileEntityTestBase extends BrowserTestBase {
+    *   - "owner" Optional boolean indicating if the user is a file owner.
+    */
+   protected function getPrivateDownloadAccessCases() {
+-    return array(
+-      array(
++    return [
++      [
+         'message' => "File owners cannot download their own files unless they are granted the 'view own private files' permission.",
+-        'permissions' => array(),
++        'permissions' => [],
+         'expect' => 403,
+         'owner' => TRUE,
+-      ),
+-      array(
++      ],
++      [
+         'message' => "File owners can download their own files as they have been granted the 'view own private files' permission.",
+-        'permissions' => array('view own private files'),
++        'permissions' => ['view own private files'],
+         'expect' => 200,
+         'owner' => TRUE,
+-      ),
+-      array(
++      ],
++      [
+         'message' => "Anonymous users cannot download private files.",
+         'permissions' => NULL,
+         'expect' => 403,
+-      ),
+-      array(
++      ],
++      [
+         'message' => "Authenticated users cannot download each other's private files.",
+-        'permissions' => array(),
++        'permissions' => [],
+         'expect' => 403,
+-      ),
+-      array(
++      ],
++      [
+         'message' => "Users who can view public files are not able to download private files.",
+-        'permissions' => array('view files'),
++        'permissions' => ['view files'],
+         'expect' => 403,
+-      ),
+-      array(
++      ],
++      [
+         'message' => "Users who bypass file access can download any file.",
+-        'permissions' => array('bypass file access'),
++        'permissions' => ['bypass file access'],
+         'expect' => 200,
+-      ),
+-    );
++      ],
++    ];
+   }
+ 
+   /**
+    * Retrieves a sample file of the specified type.
+    */
+-  function getTestFile($type_name, $size = NULL) {
++  public function getTestFile($type_name, $size = NULL) {
+     // Get a file to upload.
+     $file = current($this->getTestFiles($type_name, $size));
+ 
+@@ -162,7 +160,7 @@ abstract class FileEntityTestBase extends BrowserTestBase {
+    * @return \Drupal\file\FileInterface
+    *   A file object matching $filename.
+    */
+-  function getFileByFilename($filename, $reset = FALSE) {
++  public function getFileByFilename($filename, $reset = FALSE) {
+     $files = \Drupal::entityTypeManager()->getStorage('file')->loadByProperties(['filename' => $filename], $reset);
+     // Load the first file returned from the database.
+     $returned_file = reset($files);
+@@ -175,12 +173,12 @@ abstract class FileEntityTestBase extends BrowserTestBase {
+    * @param array $values
+    *   (optional) Values of the new file. Default values are supplied.
+    *
+-   * @return FileEntity
++   * @return \Drupal\file\Entity\FileEntity
+    *   The newly created file.
+    */
+-  protected function createFileEntity($values = array()) {
++  protected function createFileEntity($values = []) {
+     // Populate defaults array.
+-    $values += array(
++    $values += [
+       // Prefix filename with non-latin characters to ensure that all
+       // file-related tests work with international filenames.
+       'filename' => 'Файл для тестирования ' . $this->randomMachineName(),
+@@ -189,7 +187,7 @@ abstract class FileEntityTestBase extends BrowserTestBase {
+       'status' => FILE_STATUS_PERMANENT,
+       'contents' => "file_put_contents() doesn't seem to appreciate empty strings so let's put in some data.",
+       'scheme' => \Drupal::config('system.file')->get('default_scheme'),
+-    );
++    ];
+ 
+     $values['uri'] = $values['scheme'] . '://' . $values['filename'];
+ 
+diff --git a/tests/src/Functional/FileEntityTokenTest.php b/tests/src/Functional/FileEntityTokenTest.php
+index 6a4e1da..3054105 100644
+--- a/tests/src/Functional/FileEntityTokenTest.php
++++ b/tests/src/Functional/FileEntityTokenTest.php
+@@ -11,48 +11,58 @@ use Drupal\Core\Render\BubbleableMetadata;
+  */
+ class FileEntityTokenTest extends FileEntityTestBase {
+ 
+-  function setUp() {
++  /**
++   *
++   */
++  public function setUp() {
+     parent::setUp();
+     $this->setUpFiles();
+   }
+ 
+-  function testFileEntityTokens() {
+-    $tokens = array(
++  /**
++   *
++   */
++  public function testFileEntityTokens() {
++    $tokens = [
+       'type' => 'Document',
+       'type:name' => 'Document',
+       'type:machine-name' => 'document',
+       'type:count' => count($this->files['text']),
+-    );
+-    $this->assertTokens('file', array('file' => $this->files['text'][0]), $tokens);
++    ];
++    $this->assertTokens('file', ['file' => $this->files['text'][0]], $tokens);
+ 
+-    $tokens = array(
++    $tokens = [
+       'type' => 'Image',
+       'type:name' => 'Image',
+       'type:machine-name' => 'image',
+       'type:count' => count($this->files['image']),
+-    );
+-    $this->assertTokens('file', array('file' => $this->files['image'][0]), $tokens);
++    ];
++    $this->assertTokens('file', ['file' => $this->files['image'][0]], $tokens);
+   }
+ 
+-  function assertTokens($type, array $data, array $tokens, array $options = array()) {
++  /**
++   *
++   */
++  public function assertTokens($type, array $data, array $tokens, array $options = []) {
+     $token_input = array_combine(array_keys($tokens), array_keys($tokens));
+     $bubbleable_metadata = new BubbleableMetadata();
+     $values = \Drupal::token()->generate($type, $token_input, $data, $options, $bubbleable_metadata);
+     foreach ($tokens as $token => $expected) {
+       if (!isset($expected)) {
+-        $this->assertTrue(!isset($values[$token]), t("Token value for [@type:@token] was not generated.", array('@type' => $type, '@token' => $token)));
++        $this->assertTrue(!isset($values[$token]), t("Token value for [@type:@token] was not generated.", ['@type' => $type, '@token' => $token]));
+       }
+       elseif (!isset($values[$token])) {
+-        $this->fail(t("Token value for [@type:@token] was not generated.", array('@type' => $type, '@token' => $token)));
++        $this->fail(t("Token value for [@type:@token] was not generated.", ['@type' => $type, '@token' => $token]));
+       }
+       elseif (!empty($options['regex'])) {
+-        $this->assertTrue(preg_match('/^' . $expected . '$/', $values[$token]), t("Token value for [@type:@token] was '@actual', matching regular expression pattern '@expected'.", array('@type' => $type, '@token' => $token, '@actual' => $values[$token], '@expected' => $expected)));
++        $this->assertTrue(preg_match('/^' . $expected . '$/', $values[$token]), t("Token value for [@type:@token] was '@actual', matching regular expression pattern '@expected'.", ['@type' => $type, '@token' => $token, '@actual' => $values[$token], '@expected' => $expected]));
+       }
+       else {
+-        $this->assertIdentical($values[$token], $expected, t("Token value for [@type:@token] was '@actual', expected value '@expected'.", array('@type' => $type, '@token' => $token, '@actual' => $values[$token], '@expected' => $expected)));
++        $this->assertIdentical($values[$token], $expected, t("Token value for [@type:@token] was '@actual', expected value '@expected'.", ['@type' => $type, '@token' => $token, '@actual' => $values[$token], '@expected' => $expected]));
+       }
+     }
+ 
+     return $values;
+   }
++
+ }
+diff --git a/tests/src/Functional/FileEntityTypeTest.php b/tests/src/Functional/FileEntityTypeTest.php
+index 8bb7e1f..76673b7 100644
+--- a/tests/src/Functional/FileEntityTypeTest.php
++++ b/tests/src/Functional/FileEntityTypeTest.php
+@@ -27,7 +27,7 @@ class FileEntityTypeTest extends FileEntityTestBase {
+    */
+   public function testAdminPages() {
+     // Create a user with file type administration access.
+-    $user = $this->drupalCreateUser(array('administer file types'));
++    $user = $this->drupalCreateUser(['administer file types']);
+     $this->drupalLogin($user);
+ 
+     $this->drupalGet('admin/structure/file-types');
+@@ -40,7 +40,7 @@ class FileEntityTypeTest extends FileEntityTestBase {
+   public function testCreate() {
+     $type_machine_type = 'foo';
+     $type_machine_label = 'foobar';
+-    $this->createFileType(array('id' => $type_machine_type, 'label' => $type_machine_label));
++    $this->createFileType(['id' => $type_machine_type, 'label' => $type_machine_label]);
+     $loaded_type = FileType::load($type_machine_type);
+     $this->assertEqual($loaded_type->label(), $type_machine_label, "Was able to create a type and retreive it.");
+   }
+@@ -50,62 +50,61 @@ class FileEntityTypeTest extends FileEntityTestBase {
+    */
+   public function testTypeWithCandidates() {
+     // Create multiple file types with the same mime types.
+-    $types = array(
+-      'image1' => $this->createFileType(array('id' => 'image1', 'label' => 'Image 1')),
+-      'image2' => $this->createFileType(array('id' => 'image2', 'label' => 'Image 2')),
+-    );
++    $types = [
++      'image1' => $this->createFileType(['id' => 'image1', 'label' => 'Image 1']),
++      'image2' => $this->createFileType(['id' => 'image2', 'label' => 'Image 2']),
++    ];
+ 
+     // Attach a text field to one of the file types.
+     $field_name = mb_strtolower($this->randomMachineName());
+-    $field_storage = FieldStorageConfig::create(array(
++    $field_storage = FieldStorageConfig::create([
+       'field_name' => $field_name,
+       'entity_type' => 'file',
+       'type' => 'string',
+-    ));
++    ]);
+     $field_storage->save();
+-    $field_instance = FieldConfig::create(array(
++    $field_instance = FieldConfig::create([
+       'field_storage' => $field_storage,
+       'entity_type' => 'file',
+       'bundle' => 'image2',
+-    ));
++    ]);
+     $field_instance->save();
+     \Drupal::service('entity_display.repository')->getFormDisplay('file', 'image2')
+-      ->setComponent($field_name, array(
++      ->setComponent($field_name, [
+         'type' => 'text_textfield',
+-      ))
++      ])
+       ->save();
+ 
+-
+     // Create a user with file creation access.
+-    $user = $this->drupalCreateUser(array('create files'));
++    $user = $this->drupalCreateUser(['create files']);
+     $this->drupalLogin($user);
+ 
+     // Step 1: Upload file.
+     $file = reset($this->files['image']);
+-    $edit = array();
++    $edit = [];
+     $edit['files[upload]'] = \Drupal::service('file_system')->realpath($file->getFileUri());
+     $this->drupalPostForm('file/add', $edit, t('Next'));
+ 
+     // Step 2: Select file type candidate.
+     $this->assertText('Image 1');
+     $this->assertText('Image 2');
+-    $edit = array();
++    $edit = [];
+     $edit['type'] = 'image2';
+     $this->drupalPostForm(NULL, $edit, t('Next'));
+ 
+     // Step 3: Select file scheme candidate.
+     $this->assertText('Public local files served by the webserver.');
+     $this->assertText('Private local files served by Drupal.');
+-    $edit = array();
++    $edit = [];
+     $edit['scheme'] = 'public';
+     $this->drupalPostForm(NULL, $edit, t('Next'));
+ 
+     // Step 4: Complete field widgets.
+-    $edit = array();
++    $edit = [];
+     $edit["{$field_name}[0][value]"] = $this->randomMachineName();
+     $edit['filename[0][value]'] = $this->randomMachineName();
+     $this->drupalPostForm(NULL, $edit, t('Save'));
+-    $this->assertRaw(t('@type %name was uploaded.', array('@type' => 'Image 2', '%name' => $edit['filename[0][value]'])));
++    $this->assertRaw(t('@type %name was uploaded.', ['@type' => 'Image 2', '%name' => $edit['filename[0][value]']]));
+ 
+     // Check that the file exists in the database.
+     $file = $this->getFileByFilename($edit['filename[0][value]']);
+@@ -121,45 +120,45 @@ class FileEntityTypeTest extends FileEntityTestBase {
+   public function testTypeWithoutCandidates() {
+     // Attach a text field to the default image file type.
+     $field_name = mb_strtolower($this->randomMachineName());
+-    $field_storage = FieldStorageConfig::create(array(
++    $field_storage = FieldStorageConfig::create([
+       'field_name' => $field_name,
+       'entity_type' => 'file',
+       'type' => 'string',
+-    ));
++    ]);
+     $field_storage->save();
+-    $field_instance = FieldConfig::create(array(
++    $field_instance = FieldConfig::create([
+       'field_storage' => $field_storage,
+       'entity_type' => 'file',
+       'bundle' => 'image',
+-    ));
++    ]);
+     $field_instance->save();
+     \Drupal::entityTypeManager()->getStorage('entity_form_display')->load('file.image.default')
+-      ->setComponent($field_name, array(
+-      'type' => 'text_textfield',
+-      ))
++      ->setComponent($field_name, [
++        'type' => 'text_textfield',
++      ])
+       ->save();
+ 
+     // Create a user with file creation access.
+-    $user = $this->drupalCreateUser(array('create files'));
++    $user = $this->drupalCreateUser(['create files']);
+     $this->drupalLogin($user);
+ 
+     // Step 1: Upload file.
+     $file = reset($this->files['image']);
+-    $edit = array();
++    $edit = [];
+     $edit['files[upload]'] = \Drupal::service('file_system')->realpath($file->getFileUri());
+     $this->drupalPostForm('file/add', $edit, t('Next'));
+ 
+     // Step 2: Scheme selection.
+     if ($this->xpath('//input[@name="scheme"]')) {
+-      $this->drupalPostForm(NULL, array(), t('Next'));
++      $this->drupalPostForm(NULL, [], t('Next'));
+     }
+ 
+     // Step 3: Complete field widgets.
+-    $edit = array();
++    $edit = [];
+     $edit["{$field_name}[0][value]"] = $this->randomMachineName();
+     $edit['filename[0][value]'] = $this->randomMachineName();
+     $this->drupalPostForm(NULL, $edit, t('Save'));
+-    $this->assertRaw(t('@type %name was uploaded.', array('@type' => 'Image', '%name' => $edit['filename[0][value]'])));
++    $this->assertRaw(t('@type %name was uploaded.', ['@type' => 'Image', '%name' => $edit['filename[0][value]']]));
+ 
+     // Check that the file exists in the database.
+     $file = $this->getFileByFilename($edit['filename[0][value]']);
+@@ -176,22 +175,22 @@ class FileEntityTypeTest extends FileEntityTestBase {
+     $this->drupalGet('admin/structure/file-types');
+     $this->assertResponse(403);
+ 
+-    $user = $this->drupalCreateUser(array('administer file types'));
++    $user = $this->drupalCreateUser(['administer file types']);
+     $this->drupalLogin($user);
+ 
+     $this->drupalGet('admin/structure/file-types');
+     $this->assertResponse(200);
+ 
+     // Create new file type.
+-    $edit = array(
++    $edit = [
+       'label' => t('Test type'),
+       'id' => 'test_type',
+       'description' => t('This is dummy file type used just for testing.'),
+       'mimetypes' => 'image/png',
+-    );
++    ];
+     $this->drupalGet('admin/structure/file-types/add');
+     $this->drupalPostForm(NULL, $edit, t('Save'));
+-    $this->assertText(t('The file type @type has been added.', array('@type' => $edit['label'])));
++    $this->assertText(t('The file type @type has been added.', ['@type' => $edit['label']]));
+     $this->assertText($edit['label']);
+     $this->assertText($edit['description']);
+     $this->assertLink(t('Disable'));
+@@ -210,29 +209,29 @@ class FileEntityTypeTest extends FileEntityTestBase {
+ 
+     // Modify file type.
+     $edit['label'] = t('New type label');
+-    $this->drupalPostForm(NULL, array('label' => $edit['label']), t('Save'));
+-    $this->assertText(t('The file type @type has been updated.', array('@type' => $edit['label'])));
++    $this->drupalPostForm(NULL, ['label' => $edit['label']], t('Save'));
++    $this->assertText(t('The file type @type has been updated.', ['@type' => $edit['label']]));
+     $this->assertText($edit['label']);
+ 
+     // Disable and re-enable file type.
+     $this->drupalGet('admin/structure/file-types/manage/' . $edit['id'] . '/disable');
+-    $this->assertText(t('Are you sure you want to disable the file type @type?', array('@type' => $edit['label'])));
+-    $this->drupalPostForm(NULL, array(), t('Disable'));
+-    $this->assertText(t('The file type @type has been disabled.', array('@type' => $edit['label'])));
++    $this->assertText(t('Are you sure you want to disable the file type @type?', ['@type' => $edit['label']]));
++    $this->drupalPostForm(NULL, [], t('Disable'));
++    $this->assertText(t('The file type @type has been disabled.', ['@type' => $edit['label']]));
+     $this->assertFieldByXPath("//tbody//tr[5]//td[1]", $edit['label']);
+     $this->assertLink(t('Enable'));
+     $this->assertLinkByHref('admin/structure/file-types/manage/' . $edit['id'] . '/enable');
+     $this->drupalGet('admin/structure/file-types/manage/' . $edit['id'] . '/enable');
+-    $this->assertText(t('Are you sure you want to enable the file type @type?', array('@type' => $edit['label'])));
+-    $this->drupalPostForm(NULL, array(), t('Enable'));
+-    $this->assertText(t('The file type @type has been enabled.', array('@type' => $edit['label'])));
++    $this->assertText(t('Are you sure you want to enable the file type @type?', ['@type' => $edit['label']]));
++    $this->drupalPostForm(NULL, [], t('Enable'));
++    $this->assertText(t('The file type @type has been enabled.', ['@type' => $edit['label']]));
+     $this->assertFieldByXPath("//tbody//tr[4]//td[1]", $edit['label']);
+ 
+     // Delete newly created type.
+     $this->drupalGet('admin/structure/file-types/manage/' . $edit['id'] . '/delete');
+-    $this->assertText(t('Are you sure you want to delete the file type @type?', array('@type' => $edit['label'])));
+-    $this->drupalPostForm(NULL, array(), t('Delete'));
+-    $this->assertText(t('The file type @type has been deleted.', array('@type' => $edit['label'])));
++    $this->assertText(t('Are you sure you want to delete the file type @type?', ['@type' => $edit['label']]));
++    $this->drupalPostForm(NULL, [], t('Delete'));
++    $this->assertText(t('The file type @type has been deleted.', ['@type' => $edit['label']]));
+     $this->drupalGet('admin/structure/file-types');
+     $this->assertNoText($edit['label']);
+ 
+@@ -240,8 +239,9 @@ class FileEntityTypeTest extends FileEntityTestBase {
+     $this->drupalGet('admin/structure/file-types/manage/image/edit');
+     $this->assertRaw(t('Image'));
+     $this->assertText("image/*");
+-    $this->drupalPostForm(NULL, array('label' => t('Funky images')), t('Save'));
+-    $this->assertText(t('The file type @type has been updated.', array('@type' => t('Funky images'))));
++    $this->drupalPostForm(NULL, ['label' => t('Funky images')], t('Save'));
++    $this->assertText(t('The file type @type has been updated.', ['@type' => t('Funky images')]));
+     $this->assertText(t('Funky image'));
+   }
++
+ }
+diff --git a/tests/src/Functional/FileEntityUnitTest.php b/tests/src/Functional/FileEntityUnitTest.php
+index ba67329..44957af 100644
+--- a/tests/src/Functional/FileEntityUnitTest.php
++++ b/tests/src/Functional/FileEntityUnitTest.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\Tests\file_entity\Functional;
+ 
+ use Drupal\file\Entity\File;
+-use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser;
+ 
+ /**
+  * Test basic file entity functionality.
+@@ -14,7 +13,10 @@ use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser;
+  */
+ class FileEntityUnitTest extends FileEntityTestBase {
+ 
+-  function setUp() {
++  /**
++   *
++   */
++  public function setUp() {
+     parent::setUp();
+     $this->setUpFiles();
+   }
+@@ -22,22 +24,25 @@ class FileEntityUnitTest extends FileEntityTestBase {
+   /**
+    * Regression tests for core issue http://drupal.org/node/1239376.
+    */
+-  function testMimeTypeMappings() {
+-    $tests = array(
++  public function testMimeTypeMappings() {
++    $tests = [
+       'public://test.ogg' => 'audio/ogg',
+       'public://test.m4v' => 'video/x-m4v',
+       'public://test.mka' => 'audio/x-matroska',
+       'public://test.mkv' => 'video/x-matroska',
+       'public://test.webp' => 'image/webp',
+-    );
+-    /** @var MimeTypeExtensionGuesser $guesser */
++    ];
++    /** @var \Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser $guesser */
+     $guesser = $this->container->get('file.mime_type.guesser.extension');
+     foreach ($tests as $input => $expected) {
+       $this->assertEqual($expected, $guesser->guess($input));
+     }
+   }
+ 
+-  function testFileEntity() {
++  /**
++   *
++   */
++  public function testFileEntity() {
+     $file = reset($this->files['text']);
+ 
+     // Test entity ID, revision ID, and bundle.
+@@ -50,9 +55,12 @@ class FileEntityUnitTest extends FileEntityTestBase {
+     $this->assertEqual($uri['path'], "file/{$file->fid}");*/
+   }
+ 
+-  function testImageDimensions() {
+-    $files = array();
+-    $text_fids = array();
++  /**
++   *
++   */
++  public function testImageDimensions() {
++    $files = [];
++    $text_fids = [];
+     // Test hook_file_insert().
+     // Files have been saved as part of setup (in FileEntityTestHelper::setUpFiles).
+     foreach ($this->files['image'] as $file) {
+@@ -144,13 +152,14 @@ class FileEntityUnitTest extends FileEntityTestBase {
+       'Updated image width retrieved by file load.'
+     );
+ 
+-    //Test hook_file_delete().
++    // Test hook_file_delete().
+     $file->delete();
+     $this->assertEquals(0, \Drupal::database()->query(
+         'SELECT COUNT(*) FROM {file_metadata} WHERE fid = :fid',
+-        array(':fid' => 'fid')
++        [':fid' => 'fid']
+       )->fetchField(),
+       'Row deleted in {file_dimensions} when deleting the file.'
+     );
+   }
++
+ }
+diff --git a/tests/src/FunctionalJavascript/FileEntitySettingsTest.php b/tests/src/FunctionalJavascript/FileEntitySettingsTest.php
+index 421f123..f674c1f 100644
+--- a/tests/src/FunctionalJavascript/FileEntitySettingsTest.php
++++ b/tests/src/FunctionalJavascript/FileEntitySettingsTest.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\Tests\file_entity\FunctionalJavascript;
+ 
+-use Drupal\Core\Config\Config;
+ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+ use Drupal\Tests\TestFileCreationTrait;
+ 
+@@ -30,7 +29,7 @@ class FileEntitySettingsTest extends WebDriverTestBase {
+   /**
+    * File entity config.
+    *
+-   * @var Config
++   * @var \Drupal\Core\Config\Config
+    */
+   protected $config;
+ 
+@@ -48,7 +47,7 @@ class FileEntitySettingsTest extends WebDriverTestBase {
+   public function testFileImageFormatterSettings() {
+     $assert_session = $this->assertSession();
+     $account = $this->drupalCreateUser([
+-      'administer file display'
++      'administer file display',
+     ]);
+ 
+     $this->drupalLogin($account);
+@@ -90,4 +89,5 @@ class FileEntitySettingsTest extends WebDriverTestBase {
+     $assert_session->responseNotContains('alt="Alt text"', 'Alt attribute is hidden.');
+     $assert_session->responseNotContains('title="Title text"', 'Title attribute is hidden.');
+   }
++
+ }
+diff --git a/tests/src/Kernel/FileEntityNormalizerTest.php b/tests/src/Kernel/FileEntityNormalizerTest.php
+index 9aee743..83c2823 100644
+--- a/tests/src/Kernel/FileEntityNormalizerTest.php
++++ b/tests/src/Kernel/FileEntityNormalizerTest.php
+@@ -26,7 +26,7 @@ class FileEntityNormalizerTest extends KernelTestBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public static $modules = array(
++  public static $modules = [
+     'simpletest',
+     'field',
+     'file',
+@@ -39,7 +39,7 @@ class FileEntityNormalizerTest extends KernelTestBase {
+     'rest',
+     'hal',
+     'system',
+-  );
++  ];
+ 
+   /**
+    * {@inheritdoc}
+@@ -49,8 +49,8 @@ class FileEntityNormalizerTest extends KernelTestBase {
+     $this->installEntitySchema('node');
+     $this->installEntitySchema('file');
+     $this->installEntitySchema('user');
+-    $this->installSchema('file', array('file_usage'));
+-    $this->installSchema('file_entity', array('file_metadata'));
++    $this->installSchema('file', ['file_usage']);
++    $this->installSchema('file_entity', ['file_metadata']);
+ 
+     // Set the file route to provide entity URI for serialization.
+     $route_collection = new RouteCollection();
+@@ -63,42 +63,42 @@ class FileEntityNormalizerTest extends KernelTestBase {
+    */
+   public function testFileFieldSerializePersist() {
+     // Create a node type.
+-    $node_type = NodeType::create(array('type' => $this->randomMachineName()));
++    $node_type = NodeType::create(['type' => $this->randomMachineName()]);
+     $node_type->save();
+ 
+     // Create a file.
+     $file_name = $this->randomMachineName() . '.txt';
+     file_put_contents("public://$file_name", $this->randomString());
+-    $file = File::create(array(
++    $file = File::create([
+       'uri' => "public://$file_name",
+-    ));
++    ]);
+     $file->save();
+ 
+     // Attach a file field to the node type.
+-    $file_field_storage = FieldStorageConfig::create(array(
++    $file_field_storage = FieldStorageConfig::create([
+       'type' => 'file',
+       'entity_type' => 'node',
+       'field_name' => 'field_file',
+-    ));
++    ]);
+     $file_field_storage->save();
+-    $file_field_instance = FieldConfig::create(array(
++    $file_field_instance = FieldConfig::create([
+       'field_storage' => $file_field_storage,
+       'entity_type' => 'node',
+       'bundle' => $node_type->id(),
+-    ));
++    ]);
+     $file_field_instance->save();
+ 
+     // Create a node referencing the file.
+-    $node = Node::create(array(
++    $node = Node::create([
+       'title' => 'A node with a file',
+       'type' => $node_type->id(),
+-      'field_file' => array(
++      'field_file' => [
+         'target_id' => $file->id(),
+         'display' => 0,
+         'description' => 'An attached file',
+-      ),
++      ],
+       'status' => TRUE,
+-    ));
++    ]);
+ 
+     // Export.
+     $serialized = $this->container->get('serializer')->serialize($node, 'hal_json');
+@@ -110,23 +110,22 @@ class FileEntityNormalizerTest extends KernelTestBase {
+     $this->assertEquals($node->toArray()['field_file'], $deserialized->toArray()['field_file'], "File field persists.");
+   }
+ 
+-
+   /**
+    * Tests that file entities are correctly serialized, including file contents.
+    */
+   public function testFileSerialize() {
+ 
+-    FileType::create(array(
++    FileType::create([
+       'id' => 'undefined',
+-    ))->save();
++    ])->save();
+     foreach ($this->getTestFiles() as $file_obj) {
+       $file_contents = file_get_contents($file_obj->uri);
+ 
+       // Create file entity.
+-      $file = File::create(array(
++      $file = File::create([
+         'uri' => $file_obj->uri,
+         'status' => TRUE,
+-      ));
++      ]);
+       $file->save();
+ 
+       // Serialize.
+@@ -149,7 +148,7 @@ class FileEntityNormalizerTest extends KernelTestBase {
+       $this->assertTrue(file_exists($file_obj->uri), "A file was created on disk");
+ 
+       // Assert file is equal.
+-      foreach (array('filename', 'uri', 'filemime', 'filesize', 'type') as $property) {
++      foreach (['filename', 'uri', 'filemime', 'filesize', 'type'] as $property) {
+         $this->assertEquals($file->get($property)->value, $last_file->get($property)->value);
+       }
+       $this->assertEquals($file->get('type')->target_id, $last_file->get('type')->target_id);
+@@ -162,44 +161,44 @@ class FileEntityNormalizerTest extends KernelTestBase {
+    */
+   public function testImageFieldSerializePersist() {
+     // Create a node type.
+-    $node_type = NodeType::create(array('type' => $this->randomMachineName()));
++    $node_type = NodeType::create(['type' => $this->randomMachineName()]);
+     $node_type->save();
+ 
+     // Create a file.
+     $file_name = $this->randomMachineName() . '.jpg';
+     file_put_contents("public://$file_name", $this->randomString());
+-    $image = File::create(array(
++    $image = File::create([
+       'uri' => "public://$file_name",
+-    ));
++    ]);
+     $image->save();
+ 
+     // Attach a file field to the node type.
+-    $image_field_storage = FieldStorageConfig::create(array(
++    $image_field_storage = FieldStorageConfig::create([
+       'type' => 'image',
+       'entity_type' => 'node',
+       'field_name' => 'field_image',
+-    ));
++    ]);
+     $image_field_storage->save();
+-    $file_field_instance = FieldConfig::create(array(
++    $file_field_instance = FieldConfig::create([
+       'field_storage' => $image_field_storage,
+       'entity_type' => 'node',
+       'bundle' => $node_type->id(),
+-    ));
++    ]);
+     $file_field_instance->save();
+ 
+     // Create a node referencing the image.
+-    $node = Node::create(array(
++    $node = Node::create([
+       'title' => 'A node with a image',
+       'type' => $node_type->id(),
+-      'field_image' => array(
++      'field_image' => [
+         'target_id' => $image->id(),
+         'alt' => 'the image alternative',
+         'title' => 'the title',
+         'width' => 50,
+         'height' => 50,
+-      ),
++      ],
+       'status' => TRUE,
+-    ));
++    ]);
+ 
+     // Export.
+     $serialized = $this->container->get('serializer')->serialize($node, 'hal_json');
+diff --git a/views/views_handler_field_file_rendered.inc b/views/views_handler_field_file_rendered.inc
+index d677374..12f277c 100644
+--- a/views/views_handler_field_file_rendered.inc
++++ b/views/views_handler_field_file_rendered.inc
+@@ -11,35 +11,43 @@
+  * @ingroup views_field_handlers
+  */
+ class views_handler_field_file_rendered extends views_handler_field_entity {
+-  function option_definition() {
++
++  /**
++   *
++   */
++  public function option_definition() {
+     $options = parent::option_definition();
+-    $options['file_view_mode'] = array('default' => 'default');
++    $options['file_view_mode'] = ['default' => 'default'];
+     return $options;
+   }
+ 
+   /**
+    * Provide file_view_mode option for to file display.
+    */
+-  function options_form(&$form, &$form_state) {
++  public function options_form(&$form, &$form_state) {
+     parent::options_form($form, $form_state);
+ 
+     $entity_info = entity_get_info('file');
+-    $options = array('default' => t('Default'));
++    $options = ['default' => t('Default')];
+     foreach ($entity_info['view modes'] as $file_view_mode => $file_view_mode_info) {
+       $options[$file_view_mode] = $file_view_mode_info['label'];
+     }
+ 
+-    $form['file_view_mode'] = array(
++    $form['file_view_mode'] = [
+       '#title' => t('File view mode'),
+       '#description' => t('Select a view mode. Note that only the file will be rendered and not any of its fields.'),
+       '#type' => 'select',
+       '#default_value' => $this->options['file_view_mode'],
+       '#options' => $options,
+-    );
++    ];
+   }
+ 
+-  function render($values) {
++  /**
++   *
++   */
++  public function render($values) {
+     $file = $this->get_value($values);
+     return file_view_file($file, $this->options['file_view_mode']);
+   }
++
+ }
+diff --git a/views/views_plugin_row_file_rss.inc b/views/views_plugin_row_file_rss.inc
+index 0a11a9d..84b3f84 100644
+--- a/views/views_plugin_row_file_rss.inc
++++ b/views/views_plugin_row_file_rss.inc
+@@ -4,6 +4,7 @@
+  * @file
+  * Contains the file RSS row style plugin.
+  */
++
+ use Drupal\views\Plugin\views\row\RowPluginBase;
+ 
+ /**
+@@ -11,18 +12,25 @@ use Drupal\views\Plugin\views\row\RowPluginBase;
+  * and formats it as an RSS item.
+  */
+ class views_plugin_row_file_rss extends RowPluginBase {
+-  // Basic properties that let the row style follow relationships.
+-  var $base_table = 'file_managed';
+-  var $base_field = 'fid';
++  /**
++   * Basic properties that let the row style follow relationships.
++   */
++  public $base_table = 'file_managed';
++  public $base_field = 'fid';
+ 
+-  // Stores the files loaded with pre_render.
+-  var $files = array();
++  /**
++   * Stores the files loaded with pre_render.
++   */
++  public $files = [];
+ 
+-  function option_definition() {
++  /**
++   *
++   */
++  public function option_definition() {
+     $options = parent::option_definition();
+ 
+-    $options['item_length'] = array('default' => 'default');
+-    $options['links'] = array('default' => FALSE, 'bool' => TRUE);
++    $options['item_length'] = ['default' => 'default'];
++    $options['links'] = ['default' => FALSE, 'bool' => TRUE];
+ 
+     return $options;
+   }
+@@ -30,7 +38,7 @@ class views_plugin_row_file_rss extends RowPluginBase {
+   /**
+    * Override init function to convert fulltext view-mode to full.
+    */
+-  function init(&$view, &$display, $options = NULL) {
++  public function init(&$view, &$display, $options = NULL) {
+     parent::init($view, $display, $options);
+ 
+     if ($this->options['item_length'] == 'fulltext') {
+@@ -38,28 +46,31 @@ class views_plugin_row_file_rss extends RowPluginBase {
+     }
+   }
+ 
+-  function options_form(&$form, &$form_state) {
++  /**
++   *
++   */
++  public function options_form(&$form, &$form_state) {
+     parent::options_form($form, $form_state);
+ 
+-    $form['item_length'] = array(
++    $form['item_length'] = [
+       '#type' => 'select',
+       '#title' => t('Display type'),
+       '#options' => $this->options_form_summary_options(),
+       '#default_value' => $this->options['item_length'],
+-    );
+-    $form['links'] = array(
++    ];
++    $form['links'] = [
+       '#type' => 'checkbox',
+       '#title' => t('Display links'),
+       '#default_value' => $this->options['links'],
+-    );
++    ];
+   }
+ 
+   /**
+    * Return the main options, which are shown in the summary title.
+    */
+-  function options_form_summary_options() {
++  public function options_form_summary_options() {
+     $entity_info = entity_get_info('file');
+-    $options = array();
++    $options = [];
+     if (!empty($entity_info['view modes'])) {
+       foreach ($entity_info['view modes'] as $mode => $settings) {
+         $options[$mode] = $settings['label'];
+@@ -70,14 +81,19 @@ class views_plugin_row_file_rss extends RowPluginBase {
+     return $options;
+   }
+ 
+-  function summary_title() {
++  /**
++   *
++   */
++  public function summary_title() {
+     $options = $this->options_form_summary_options();
+     return check_plain($options[$this->options['item_length']]);
+   }
+ 
+-
+-  function pre_render($values) {
+-    $fids = array();
++  /**
++   *
++   */
++  public function pre_render($values) {
++    $fids = [];
+     foreach ($values as $row) {
+       $fids[] = $row->{$this->field_alias};
+     }
+@@ -86,8 +102,11 @@ class views_plugin_row_file_rss extends RowPluginBase {
+     }
+   }
+ 
+-  function render($row) {
+-    // For the most part, this code is taken from node_feed() in node.module
++  /**
++   *
++   */
++  public function render($row) {
++    // For the most part, this code is taken from node_feed() in node.module.
+     global $base_url;
+ 
+     $fid = $row->{$this->field_alias};
+@@ -110,27 +129,26 @@ class views_plugin_row_file_rss extends RowPluginBase {
+ 
+     $uri = entity_uri('file', $file);
+     $user = user_load($file->uid);
+-    $file->link = url($uri['path'], $uri['options'] + array('absolute' => TRUE));
+-    $file->rss_namespaces = array();
+-    $file->rss_elements = array(
+-      array(
++    $file->link = url($uri['path'], $uri['options'] + ['absolute' => TRUE]);
++    $file->rss_namespaces = [];
++    $file->rss_elements = [
++      [
+         'key' => 'pubDate',
+         'value' => gmdate('r', $file->timestamp),
+-      ),
+-      array(
++      ],
++      [
+         'key' => 'dc:creator',
+         'value' => $user->name,
+-      ),
+-      array(
++      ],
++      [
+         'key' => 'guid',
+         'value' => $file->fid . ' at ' . $base_url,
+-        'attributes' => array('isPermaLink' => 'false'),
+-      ),
+-    );
++        'attributes' => ['isPermaLink' => 'false'],
++      ],
++    ];
+ 
+     // The file gets built and modules add to or modify $file->rss_elements
+     // and $file->rss_namespaces.
+-
+     $build_mode = $display_mode;
+ 
+     $build = file_view($file, $build_mode);
+@@ -142,7 +160,7 @@ class views_plugin_row_file_rss extends RowPluginBase {
+     elseif (function_exists('rdf_get_namespaces')) {
+       // Merge RDF namespaces in the XML namespaces in case they are used
+       // further in the RSS content.
+-      $xml_rdf_namespaces = array();
++      $xml_rdf_namespaces = [];
+       foreach (rdf_get_namespaces() as $prefix => $uri) {
+         $xml_rdf_namespaces['xmlns:' . $prefix] = $uri;
+       }
+@@ -167,10 +185,11 @@ class views_plugin_row_file_rss extends RowPluginBase {
+     $item->elements = $file->rss_elements;
+     $item->fid = $file->fid;
+ 
+-    return theme($this->theme_functions(), array(
++    return theme($this->theme_functions(), [
+       'view' => $this->view,
+       'options' => $this->options,
+-      'row' => $item
+-    ));
++      'row' => $item,
++    ]);
+   }
++
+ }

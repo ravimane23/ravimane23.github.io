@@ -1,0 +1,700 @@
+diff --git a/src/Cache/CacheBase.php b/src/Cache/CacheBase.php
+index fbe5089..fc4f591 100644
+--- a/src/Cache/CacheBase.php
++++ b/src/Cache/CacheBase.php
+@@ -2,7 +2,7 @@
+ 
+ namespace Drupal\redis\Cache;
+ 
+-use \DateInterval;
++use DateInterval;
+ use Drupal\Component\Assertion\Inspector;
+ use Drupal\Component\Serialization\SerializationInterface;
+ use Drupal\Core\Cache\Cache;
+@@ -14,7 +14,6 @@ use Drupal\redis\RedisPrefixTrait;
+  * Base class for redis cache backends.
+  *
+  *  *
+- *
+  */
+ abstract class CacheBase implements CacheBackendInterface {
+ 
+@@ -115,6 +114,7 @@ abstract class CacheBase implements CacheBackendInterface {
+ 
+   /**
+    * CacheBase constructor.
++   *
+    * @param $bin
+    *   The cache bin for which the object is created.
+    * @param \Drupal\Component\Serialization\SerializationInterface $serializer
+@@ -177,7 +177,7 @@ abstract class CacheBase implements CacheBackendInterface {
+    *
+    * @see static::deleteMultiple()
+    */
+-  protected abstract function doDeleteMultiple(array $cids);
++  abstract protected function doDeleteMultiple(array $cids);
+ 
+   /**
+    * Callback to be invoked after a database transaction gets committed.
+@@ -236,6 +236,7 @@ abstract class CacheBase implements CacheBackendInterface {
+     }
+     return $expire - \Drupal::time()->getRequestTime();
+   }
++
+   /**
+    * Return the key for the tag used to specify the bin of cache-entries.
+    */
+@@ -323,7 +324,7 @@ abstract class CacheBase implements CacheBackendInterface {
+ 
+     // Ensure the entry does not predate the last delete all time.
+     $last_delete_timestamp = $this->getLastDeleteAll();
+-    if ($last_delete_timestamp && ((float)$values['created']) < $last_delete_timestamp) {
++    if ($last_delete_timestamp && ((float) $values['created']) < $last_delete_timestamp) {
+       return FALSE;
+     }
+ 
+@@ -388,6 +389,7 @@ abstract class CacheBase implements CacheBackendInterface {
+ 
+     return $hash;
+   }
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -418,7 +420,7 @@ abstract class CacheBase implements CacheBackendInterface {
+   }
+ 
+   /**
+-   *  Returns the last delete all timestamp.
++   * Returns the last delete all timestamp.
+    *
+    * @return float
+    *   The last delete timestamp as a timestamp with a millisecond precision.
+diff --git a/src/Cache/Predis.php b/src/Cache/Predis.php
+index 3e75e95..342e741 100644
+--- a/src/Cache/Predis.php
++++ b/src/Cache/Predis.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\redis\Cache;
+ 
++use Predis\Client;
+ use Drupal\Component\Serialization\SerializationInterface;
+ use Drupal\Core\Cache\Cache;
+ use Drupal\Core\Cache\CacheTagsChecksumInterface;
+@@ -26,7 +27,7 @@ class Predis extends CacheBase {
+    * @param \Drupal\redis\Cache\SerializationInterface $serializer
+    *   The serialization class to use.
+    */
+-  public function __construct($bin, \Predis\Client $client, CacheTagsChecksumInterface $checksum_provider, SerializationInterface $serializer) {
++  public function __construct($bin, Client $client, CacheTagsChecksumInterface $checksum_provider, SerializationInterface $serializer) {
+     parent::__construct($bin, $serializer);
+     $this->client = $client;
+     $this->checksumProvider = $checksum_provider;
+diff --git a/src/Client/PhpRedis.php b/src/Client/PhpRedis.php
+index f9fc11c..91e3e7a 100644
+--- a/src/Client/PhpRedis.php
++++ b/src/Client/PhpRedis.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\redis\Client;
+ 
+-use Drupal\Core\Logger\RfcLogLevel;
+ use Drupal\Core\Site\Settings;
+ use Drupal\redis\ClientInterface;
+ 
+diff --git a/src/Client/Predis.php b/src/Client/Predis.php
+index 747d73a..15a40d9 100644
+--- a/src/Client/Predis.php
++++ b/src/Client/Predis.php
+@@ -5,18 +5,20 @@ namespace Drupal\redis\Client;
+ use Drupal\redis\ClientInterface;
+ use Predis\Client;
+ 
+-
+ /**
+  * Predis client specific implementation.
+  */
+ class Predis implements ClientInterface {
+ 
++  /**
++   *
++   */
+   public function getClient($host = NULL, $port = NULL, $base = NULL, $password = NULL, $replicationHosts = NULL) {
+     $connectionInfo = [
+       'password' => $password,
+       'host'     => $host,
+       'port'     => $port,
+-      'database' => $base
++      'database' => $base,
+     ];
+ 
+     foreach ($connectionInfo as $key => $value) {
+@@ -45,7 +47,7 @@ class Predis implements ClientInterface {
+         }
+       }
+ 
+-      $options = ['replication' => true];
++      $options = ['replication' => TRUE];
+       $client = new Client($parameters, $options);
+     }
+     else {
+@@ -55,7 +57,11 @@ class Predis implements ClientInterface {
+ 
+   }
+ 
++  /**
++   *
++   */
+   public function getName() {
+     return 'Predis';
+   }
++
+ }
+diff --git a/src/ClientFactory.php b/src/ClientFactory.php
+index e8df702..14d327e 100644
+--- a/src/ClientFactory.php
++++ b/src/ClientFactory.php
+@@ -1,6 +1,7 @@
+ <?php
+ 
+ namespace Drupal\redis;
++
+ use Drupal\Core\Site\Settings;
+ 
+ /**
+@@ -72,6 +73,9 @@ class ClientFactory {
+    */
+   protected static $_client;
+ 
++  /**
++   *
++   */
+   public static function hasClient() {
+     return isset(self::$_client);
+   }
+@@ -96,32 +100,25 @@ class ClientFactory {
+    *
+    * @return ClientInterface
+    */
+-  public static function getClientInterface()
+-  {
+-    if (!isset(self::$_clientInterface))
+-    {
++  public static function getClientInterface() {
++    if (!isset(self::$_clientInterface)) {
+       $settings = Settings::get('redis.connection', []);
+-      if (!empty($settings['interface']))
+-      {
++      if (!empty($settings['interface'])) {
+         $className = self::getClass(self::REDIS_IMPL_CLIENT, $settings['interface']);
+         self::$_clientInterface = new $className();
+       }
+-      elseif (class_exists('Predis\Client'))
+-      {
++      elseif (class_exists('Predis\Client')) {
+         // Transparent and arbitrary preference for Predis library.
+         $className = self::getClass(self::REDIS_IMPL_CLIENT, 'Predis');
+         self::$_clientInterface = new $className();
+       }
+-      elseif (class_exists('Redis'))
+-      {
++      elseif (class_exists('Redis')) {
+         // Fallback on PhpRedis if available.
+         $className = self::getClass(self::REDIS_IMPL_CLIENT, 'PhpRedis');
+         self::$_clientInterface = new $className();
+       }
+-      else
+-      {
+-        if (!isset(self::$_clientInterface))
+-        {
++      else {
++        if (!isset(self::$_clientInterface)) {
+           throw new \Exception("No client interface set.");
+         }
+       }
+@@ -207,9 +204,9 @@ class ClientFactory {
+   /**
+    * For unit testing only reset internals.
+    */
+-  static public function reset() {
+-    self::$_clientInterface = null;
+-    self::$_client = null;
++  public static function reset() {
++    self::$_clientInterface = NULL;
++    self::$_client = NULL;
+   }
+-}
+ 
++}
+diff --git a/src/ClientInterface.php b/src/ClientInterface.php
+index 38b314f..3639593 100644
+--- a/src/ClientInterface.php
++++ b/src/ClientInterface.php
+@@ -6,6 +6,7 @@ namespace Drupal\redis;
+  * Client proxy, client handling class tied to the bare minimum.
+  */
+ interface ClientInterface {
++
+   /**
+    * Get the connected client instance.
+    *
+@@ -23,4 +24,5 @@ interface ClientInterface {
+    * @return string
+    */
+   public function getName();
++
+ }
+diff --git a/src/Controller/ReportController.php b/src/Controller/ReportController.php
+index 4a4415c..e035ae5 100755
+--- a/src/Controller/ReportController.php
++++ b/src/Controller/ReportController.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\redis\Controller;
+ 
++use Predis\Client;
+ use Drupal\Core\Controller\ControllerBase;
+ use Drupal\Core\Datetime\DateFormatterInterface;
+ use Drupal\Core\Url;
+@@ -296,7 +297,7 @@ class ReportController extends ControllerBase {
+         yield from $keys;
+       }
+     }
+-    elseif ($this->redis instanceof \Predis\Client) {
++    elseif ($this->redis instanceof Client) {
+       yield from new Keyspace($this->redis, $match, $count);
+     }
+   }
+diff --git a/src/Flood/FloodFactory.php b/src/Flood/FloodFactory.php
+index 65e169d..2cc221a 100644
+--- a/src/Flood/FloodFactory.php
++++ b/src/Flood/FloodFactory.php
+@@ -46,4 +46,5 @@ class FloodFactory {
+     $class_name = $this->clientFactory->getClass(ClientFactory::REDIS_IMPL_FLOOD);
+     return new $class_name($this->clientFactory, $this->requestStack);
+   }
++
+ }
+diff --git a/src/Lock/LockFactory.php b/src/Lock/LockFactory.php
+index 6e8c8b1..007b04a 100644
+--- a/src/Lock/LockFactory.php
++++ b/src/Lock/LockFactory.php
+@@ -34,4 +34,5 @@ class LockFactory {
+     $class_name = $this->clientFactory->getClass($persistent ? ClientFactory::REDIS_IMPL_PERSISTENT_LOCK : ClientFactory::REDIS_IMPL_LOCK);
+     return new $class_name($this->clientFactory);
+   }
++
+ }
+diff --git a/src/Lock/PhpRedis.php b/src/Lock/PhpRedis.php
+index 5876e3d..27a0734 100644
+--- a/src/Lock/PhpRedis.php
++++ b/src/Lock/PhpRedis.php
+@@ -45,8 +45,8 @@ class PhpRedis extends LockBackendAbstract {
+    * {@inheritdoc}
+    */
+   public function acquire($name, $timeout = 30.0) {
+-    $key    = $this->getKey($name);
+-    $id     = $this->getLockId();
++    $key = $this->getKey($name);
++    $id  = $this->getLockId();
+ 
+     // Insure that the timeout is at least 1 ms.
+     $timeout = max($timeout, 0.001);
+@@ -101,7 +101,7 @@ class PhpRedis extends LockBackendAbstract {
+    * {@inheritdoc}
+    */
+   public function lockMayBeAvailable($name) {
+-    $key    = $this->getKey($name);
++    $key   = $this->getKey($name);
+     $value = $this->client->get($key);
+ 
+     return $value === FALSE || $value === NULL;
+@@ -111,8 +111,8 @@ class PhpRedis extends LockBackendAbstract {
+    * {@inheritdoc}
+    */
+   public function release($name) {
+-    $key    = $this->getKey($name);
+-    $id     = $this->getLockId();
++    $key = $this->getKey($name);
++    $id  = $this->getLockId();
+ 
+     unset($this->locks[$name]);
+ 
+@@ -141,4 +141,5 @@ class PhpRedis extends LockBackendAbstract {
+       $this->release($name);
+     }
+   }
++
+ }
+diff --git a/src/Lock/Predis.php b/src/Lock/Predis.php
+index 2d1fa7b..62d535c 100644
+--- a/src/Lock/Predis.php
++++ b/src/Lock/Predis.php
+@@ -41,9 +41,12 @@ class Predis extends LockBackendAbstract {
+     return $this->getPrefix() . ':lock:' . $name;
+   }
+ 
++  /**
++   *
++   */
+   public function acquire($name, $timeout = 30.0) {
+-    $key    = $this->getKey($name);
+-    $id     = $this->getLockId();
++    $key = $this->getKey($name);
++    $id  = $this->getLockId();
+ 
+     // Insure that the timeout is at least 1 ms.
+     $timeout = max($timeout, 0.001);
+@@ -92,6 +95,9 @@ class Predis extends LockBackendAbstract {
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function lockMayBeAvailable($name) {
+     $key = $this->getKey($name);
+     $value = $this->client->get($key);
+@@ -99,9 +105,12 @@ class Predis extends LockBackendAbstract {
+     return $value === FALSE || $value === NULL;
+   }
+ 
++  /**
++   *
++   */
+   public function release($name) {
+-    $key    = $this->getKey($name);
+-    $id     = $this->getLockId();
++    $key = $this->getKey($name);
++    $id  = $this->getLockId();
+ 
+     unset($this->locks[$name]);
+ 
+@@ -120,6 +129,9 @@ class Predis extends LockBackendAbstract {
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function releaseAll($lock_id = NULL) {
+     // We can afford to deal with a slow algorithm here, this should not happen
+     // on normal run because we should have removed manually all our locks.
+@@ -127,5 +139,5 @@ class Predis extends LockBackendAbstract {
+       $this->release($name);
+     }
+   }
+-}
+ 
++}
+diff --git a/src/PersistentLock/PhpRedis.php b/src/PersistentLock/PhpRedis.php
+index 9805f72..0774b2a 100644
+--- a/src/PersistentLock/PhpRedis.php
++++ b/src/PersistentLock/PhpRedis.php
+@@ -2,12 +2,13 @@
+ 
+ namespace Drupal\redis\PersistentLock;
+ 
++use Drupal\redis\Lock\PhpRedis;
+ use Drupal\redis\ClientFactory;
+ 
+ /**
+- * PHpRedis persistent lock backend
++ * PHpRedis persistent lock backend.
+  */
+-class PhpRedis extends \Drupal\redis\Lock\PhpRedis {
++class PhpRedis extends PhpRedis {
+ 
+   /**
+    * Creates a PHpRedis persistent lock backend.
+diff --git a/src/PersistentLock/Predis.php b/src/PersistentLock/Predis.php
+index 79252e7..3f8eba7 100644
+--- a/src/PersistentLock/Predis.php
++++ b/src/PersistentLock/Predis.php
+@@ -2,12 +2,13 @@
+ 
+ namespace Drupal\redis\PersistentLock;
+ 
++use Drupal\redis\Lock\Predis;
+ use Drupal\redis\ClientFactory;
+ 
+ /**
+- * Predis persistent lock backend
++ * Predis persistent lock backend.
+  */
+-class Predis extends \Drupal\redis\Lock\Predis {
++class Predis extends Predis {
+ 
+   /**
+    * Creates a Predis persistent lock backend.
+diff --git a/src/Queue/PhpRedis.php b/src/Queue/PhpRedis.php
+index 94c6bfd..c77edf0 100644
+--- a/src/Queue/PhpRedis.php
++++ b/src/Queue/PhpRedis.php
+@@ -12,7 +12,7 @@ class PhpRedis extends QueueBase {
+   /**
+    * The Redis connection.
+    *
+-   * @var \Redis $client
++   * @var \Redis
+    */
+   protected $client;
+ 
+@@ -123,7 +123,7 @@ class PhpRedis extends QueueBase {
+       $this->claimedListKey,
+       $this->availableListKey,
+       $this->availableItems,
+-      $this->incrementCounterKey
++      $this->incrementCounterKey,
+     ];
+ 
+     foreach ($this->client->keys($this->leasedKeyPrefix . '*') as $key) {
+@@ -145,4 +145,5 @@ class PhpRedis extends QueueBase {
+       }
+     }
+   }
++
+ }
+diff --git a/src/Queue/Predis.php b/src/Queue/Predis.php
+index 4bc7c9d..181ce75 100644
+--- a/src/Queue/Predis.php
++++ b/src/Queue/Predis.php
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use Predis\Client;
++
+ namespace Drupal\redis\Queue;
+ 
+ /**
+@@ -12,7 +14,7 @@ class Predis extends QueueBase {
+   /**
+    * The Redis connection.
+    *
+-   * @var \Predis\Client $client
++   * @var \Predis\Client
+    */
+   protected $client;
+ 
+@@ -26,7 +28,7 @@ class Predis extends QueueBase {
+    * @param \Predis\Client $client
+    *   The Predis client.
+    */
+-  public function __construct($name, array $settings, \Predis\Client $client) {
++  public function __construct($name, array $settings, Client $client) {
+     parent::__construct($name, $settings);
+     $this->client = $client;
+   }
+@@ -35,7 +37,7 @@ class Predis extends QueueBase {
+    * {@inheritdoc}
+    */
+   public function createItem($data) {
+-    // TODO: Fixme
++    // TODO: Fixme.
+     $record = new \stdClass();
+     $record->data = $data;
+     $record->qid = $this->incrementId();
+@@ -119,12 +121,12 @@ class Predis extends QueueBase {
+    * {@inheritdoc}
+    */
+   public function deleteQueue() {
+-    // TODO: Fixme
++    // TODO: Fixme.
+     $keys_to_remove = [
+       $this->claimedListKey,
+       $this->availableListKey,
+       $this->availableItems,
+-      $this->incrementCounterKey
++      $this->incrementCounterKey,
+     ];
+ 
+     foreach ($this->client->keys($this->leasedKeyPrefix . '*') as $key) {
+@@ -146,4 +148,5 @@ class Predis extends QueueBase {
+       }
+     }
+   }
++
+ }
+diff --git a/src/Queue/ReliablePhpRedis.php b/src/Queue/ReliablePhpRedis.php
+index d810d2f..e55497c 100644
+--- a/src/Queue/ReliablePhpRedis.php
++++ b/src/Queue/ReliablePhpRedis.php
+@@ -12,7 +12,7 @@ class ReliablePhpRedis extends ReliableQueueBase {
+   /**
+    * The Redis connection.
+    *
+-   * @var \Redis $client
++   * @var \Redis
+    */
+   protected $client;
+ 
+@@ -126,7 +126,7 @@ class ReliablePhpRedis extends ReliableQueueBase {
+       $this->claimedListKey,
+       $this->availableListKey,
+       $this->availableItems,
+-      $this->incrementCounterKey
++      $this->incrementCounterKey,
+     ];
+ 
+     foreach ($this->client->keys($this->leasedKeyPrefix . '*') as $key) {
+@@ -150,4 +150,5 @@ class ReliablePhpRedis extends ReliableQueueBase {
+       }
+     }
+   }
++
+ }
+diff --git a/src/Queue/ReliablePredis.php b/src/Queue/ReliablePredis.php
+index 69fedcd..1f6319a 100644
+--- a/src/Queue/ReliablePredis.php
++++ b/src/Queue/ReliablePredis.php
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use Predis\Client;
++
+ namespace Drupal\redis\Queue;
+ 
+ /**
+@@ -12,7 +14,7 @@ class ReliablePredis extends ReliableQueueBase {
+   /**
+    * The Redis connection.
+    *
+-   * @var \Predis\Client $client
++   * @var \Predis\Client
+    */
+   protected $client;
+ 
+@@ -26,7 +28,7 @@ class ReliablePredis extends ReliableQueueBase {
+    * @param \Predis\Client $client
+    *   The Predis client.
+    */
+-  public function __construct($name, array $settings, \Predis\Client $client) {
++  public function __construct($name, array $settings, Client $client) {
+     parent::__construct($name, $settings);
+     $this->client = $client;
+   }
+@@ -123,12 +125,12 @@ class ReliablePredis extends ReliableQueueBase {
+    * {@inheritdoc}
+    */
+   public function deleteQueue() {
+-    // TODO: Fixme
++    // TODO: Fixme.
+     $keys_to_remove = [
+       $this->claimedListKey,
+       $this->availableListKey,
+       $this->availableItems,
+-      $this->incrementCounterKey
++      $this->incrementCounterKey,
+     ];
+ 
+     foreach ($this->client->keys($this->leasedKeyPrefix . '*') as $key) {
+@@ -150,4 +152,5 @@ class ReliablePredis extends ReliableQueueBase {
+       }
+     }
+   }
++
+ }
+diff --git a/src/RedisPrefixTrait.php b/src/RedisPrefixTrait.php
+index 658af04..c5b036f 100644
+--- a/src/RedisPrefixTrait.php
++++ b/src/RedisPrefixTrait.php
+@@ -4,6 +4,9 @@ namespace Drupal\redis;
+ 
+ use Drupal\Core\Site\Settings;
+ 
++/**
++ *
++ */
+ trait RedisPrefixTrait {
+ 
+   /**
+@@ -12,7 +15,7 @@ trait RedisPrefixTrait {
+   protected $prefix;
+ 
+   /**
+-   * Get global default prefix
++   * Get global default prefix.
+    *
+    * @param string $suffix
+    *
+@@ -32,7 +35,7 @@ trait RedisPrefixTrait {
+         // behavior.
+         $ret = $prefixes;
+       }
+-      else if (NULL !== $suffix && isset($prefixes[$suffix])) {
++      elseif (NULL !== $suffix && isset($prefixes[$suffix])) {
+         if (FALSE !== $prefixes[$suffix]) {
+           // If entry is set and not false an explicit prefix is set
+           // for the bin.
+@@ -66,7 +69,7 @@ trait RedisPrefixTrait {
+   }
+ 
+   /**
+-   * Set prefix
++   * Set prefix.
+    *
+    * @param string $prefix
+    */
+@@ -75,7 +78,7 @@ trait RedisPrefixTrait {
+   }
+ 
+   /**
+-   * Get prefix
++   * Get prefix.
+    *
+    * @return string
+    */
+diff --git a/tests/src/Kernel/RedisCacheTest.php b/tests/src/Kernel/RedisCacheTest.php
+index 8668be3..e7866fd 100644
+--- a/tests/src/Kernel/RedisCacheTest.php
++++ b/tests/src/Kernel/RedisCacheTest.php
+@@ -23,6 +23,9 @@ class RedisCacheTest extends GenericCacheBackendUnitTestBase {
+    */
+   public static $modules = ['system', 'redis'];
+ 
++  /**
++   *
++   */
+   public function register(ContainerBuilder $container) {
+     self::setUpSettings();
+     parent::register($container);
+diff --git a/tests/src/Kernel/RedisQueueTest.php b/tests/src/Kernel/RedisQueueTest.php
+index 3d728da..b60bef1 100644
+--- a/tests/src/Kernel/RedisQueueTest.php
++++ b/tests/src/Kernel/RedisQueueTest.php
+@@ -3,7 +3,7 @@
+ namespace Drupal\Tests\redis\Kernel;
+ 
+ use Drupal\redis\ClientFactory;
+-use \Drupal\KernelTests\Core\Queue\QueueTest as CoreQueueTest;
++use Drupal\KernelTests\Core\Queue\QueueTest as CoreQueueTest;
+ use Drupal\Tests\redis\Traits\RedisTestInterfaceTrait;
+ 
+ /**
+@@ -96,4 +96,3 @@ class RedisQueueTest extends CoreQueueTest {
+   }
+ 
+ }
+-
+diff --git a/tests/src/Traits/RedisTestInterfaceTrait.php b/tests/src/Traits/RedisTestInterfaceTrait.php
+index 092b8c7..bfd52da 100644
+--- a/tests/src/Traits/RedisTestInterfaceTrait.php
++++ b/tests/src/Traits/RedisTestInterfaceTrait.php
+@@ -4,11 +4,14 @@ namespace Drupal\Tests\redis\Traits;
+ 
+ use Drupal\Core\Site\Settings;
+ 
++/**
++ *
++ */
+ trait RedisTestInterfaceTrait {
+ 
+   /**
+- * Uses an env variable to set the redis client to use for this test.
+- */
++   * Uses an env variable to set the redis client to use for this test.
++   */
+   public function setUpSettings() {
+ 
+     // Write redis_interface settings manually.

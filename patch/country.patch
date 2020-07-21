@@ -1,0 +1,276 @@
+diff --git a/country.views.inc b/country.views.inc
+index 623fee7..9612959 100644
+--- a/country.views.inc
++++ b/country.views.inc
+@@ -1,5 +1,9 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
+ use Drupal\field\FieldStorageConfigInterface;
+ 
+ /**
+diff --git a/src/Controller/CountryAutocompleteController.php b/src/Controller/CountryAutocompleteController.php
+index 20e8aea..030cf47 100755
+--- a/src/Controller/CountryAutocompleteController.php
++++ b/src/Controller/CountryAutocompleteController.php
+@@ -5,7 +5,6 @@ namespace Drupal\country\Controller;
+ use Symfony\Component\HttpFoundation\JsonResponse;
+ use Symfony\Component\HttpFoundation\Request;
+ use Drupal\field\Entity\FieldConfig;
+-use Drupal;
+ 
+ /**
+  * Returns autocomplete responses for countries.
+@@ -31,12 +30,12 @@ class CountryAutocompleteController {
+     $matches = [];
+     $string = $request->query->get('q');
+     if ($string) {
+-      // Check if the bundle is global - in that case we need all of the countries
++      // Check if the bundle is global - in that case we need all of the countries.
+       if ($bundle == 'global') {
+         $countries = \Drupal::service('country_manager')->getList();
+       }
+       else {
+-        // Get field config
++        // Get field config.
+         $field_definition = FieldConfig::loadByName($entity_type, $bundle, $field_name);
+         $countries = \Drupal::service('country.field.manager')->getSelectableCountries($field_definition);
+       }
+@@ -48,4 +47,5 @@ class CountryAutocompleteController {
+     }
+     return new JsonResponse($matches);
+   }
++
+ }
+diff --git a/src/CountryManager.php b/src/CountryManager.php
+index 9b6e3fd..1ec74c2 100644
+--- a/src/CountryManager.php
++++ b/src/CountryManager.php
+@@ -17,7 +17,7 @@ class CountryManager {
+    * field instance. If none, allow all available countries.
+    *
+    * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
+-   *  The field definition object.
++   *   The field definition object.
+    *
+    * @return array
+    *   The array of country names keyed by their ISO2 values.
+@@ -29,6 +29,7 @@ class CountryManager {
+     $countries = \Drupal::service('country_manager')->getList();
+ 
+     $allowed = (!empty($field_definition_countries)) ? $field_definition_countries : $field_storage_countries;
+-    return  (!empty($allowed)) ? array_intersect_key($countries, $allowed) : $countries;
++    return (!empty($allowed)) ? array_intersect_key($countries, $allowed) : $countries;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/CountryCodeFormatter.php b/src/Plugin/Field/FieldFormatter/CountryCodeFormatter.php
+index 1cb1d33..7c78296 100755
+--- a/src/Plugin/Field/FieldFormatter/CountryCodeFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/CountryCodeFormatter.php
+@@ -29,4 +29,5 @@ class CountryCodeFormatter extends FormatterBase {
+     }
+     return $elements;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/CountryDefaultFormatter.php b/src/Plugin/Field/FieldFormatter/CountryDefaultFormatter.php
+index 2de3071..1ba13bc 100755
+--- a/src/Plugin/Field/FieldFormatter/CountryDefaultFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/CountryDefaultFormatter.php
+@@ -1,35 +1,36 @@
+-<?php
+-
+-namespace Drupal\country\Plugin\Field\FieldFormatter;
+-
+-use Drupal\Core\Field\FieldItemListInterface;
+-use Drupal\Core\Field\FormatterBase;
+-
+-/**
+- * Plugin implementation of the 'country' formatter.
+- *
+- * @FieldFormatter(
+- *   id = "country_default",
+- *   module = "country",
+- *   label = @Translation("Country"),
+- *   field_types = {
+- *     "country"
+- *   }
+- * )
+- */
+-class CountryDefaultFormatter extends FormatterBase {
+-
+-  /**
+-   * {@inheritdoc}
+-   */
+-  public function viewElements(FieldItemListInterface $items, $langcode) {
+-    $elements = [];
+-    $countries = \Drupal::service('country.field.manager')->getSelectableCountries($this->fieldDefinition);
+-    foreach ($items as $delta => $item) {
+-      if (isset($countries[$item->value])) {
+-        $elements[$delta] = ['#markup' => $countries[$item->value]];
+-      }
+-    }
+-    return $elements;
+-  }
+-}
++<?php
++
++namespace Drupal\country\Plugin\Field\FieldFormatter;
++
++use Drupal\Core\Field\FieldItemListInterface;
++use Drupal\Core\Field\FormatterBase;
++
++/**
++ * Plugin implementation of the 'country' formatter.
++ *
++ * @FieldFormatter(
++ *   id = "country_default",
++ *   module = "country",
++ *   label = @Translation("Country"),
++ *   field_types = {
++ *     "country"
++ *   }
++ * )
++ */
++class CountryDefaultFormatter extends FormatterBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  public function viewElements(FieldItemListInterface $items, $langcode) {
++    $elements = [];
++    $countries = \Drupal::service('country.field.manager')->getSelectableCountries($this->fieldDefinition);
++    foreach ($items as $delta => $item) {
++      if (isset($countries[$item->value])) {
++        $elements[$delta] = ['#markup' => $countries[$item->value]];
++      }
++    }
++    return $elements;
++  }
++
++}
+diff --git a/src/Plugin/Field/FieldType/CountryItem.php b/src/Plugin/Field/FieldType/CountryItem.php
+index 8324796..774fc70 100755
+--- a/src/Plugin/Field/FieldType/CountryItem.php
++++ b/src/Plugin/Field/FieldType/CountryItem.php
+@@ -90,8 +90,8 @@ class CountryItem extends FieldItemBase implements OptionsProviderInterface {
+    */
+   public static function defaultStorageSettings() {
+     return [
+-        'selectable_countries' => [],
+-      ] + parent::defaultStorageSettings();
++      'selectable_countries' => [],
++    ] + parent::defaultStorageSettings();
+   }
+ 
+   /**
+@@ -99,8 +99,8 @@ class CountryItem extends FieldItemBase implements OptionsProviderInterface {
+    */
+   public static function defaultFieldSettings() {
+     return [
+-        'selectable_countries' => [],
+-      ] + parent::defaultFieldSettings();
++      'selectable_countries' => [],
++    ] + parent::defaultFieldSettings();
+   }
+ 
+   /**
+diff --git a/src/Plugin/Field/FieldWidget/CountryAutocompleteWidget.php b/src/Plugin/Field/FieldWidget/CountryAutocompleteWidget.php
+index 8e1761d..1332a98 100755
+--- a/src/Plugin/Field/FieldWidget/CountryAutocompleteWidget.php
++++ b/src/Plugin/Field/FieldWidget/CountryAutocompleteWidget.php
+@@ -24,10 +24,10 @@ class CountryAutocompleteWidget extends WidgetBase {
+    */
+   public static function defaultSettings() {
+     return [
+-        'size' => '60',
+-        'autocomplete_route_name' => 'country.autocomplete',
+-        'placeholder' => t('Start typing a country name ...'),
+-      ] + parent::defaultSettings();
++      'size' => '60',
++      'autocomplete_route_name' => 'country.autocomplete',
++      'placeholder' => t('Start typing a country name ...'),
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+@@ -37,20 +37,20 @@ class CountryAutocompleteWidget extends WidgetBase {
+     $countries = \Drupal::service('country.field.manager')
+       ->getSelectableCountries($this->fieldDefinition);
+     $element['value'] = $element + [
+-        '#type' => 'textfield',
+-        '#default_value' => (isset($items[$delta]->value) && isset($countries[$items[$delta]->value])) ? $countries[$items[$delta]->value] : '',
+-        '#autocomplete_route_name' => $this->getSetting('autocomplete_route_name'),
+-        '#autocomplete_route_parameters' => [
+-          'entity_type' => $this->fieldDefinition->get('entity_type'),
+-          'bundle' => $this->fieldDefinition->get('bundle'),
+-          'field_name' => $this->fieldDefinition->get('field_name'),
+-        ],
+-        '#size' => $this->getSetting('size'),
+-        '#placeholder' => $this->getSetting('placeholder'),
+-        '#maxlength' => 255,
+-        '#selectable_countries' => $countries,
+-        '#element_validate' => [[$this, 'validateElement']],
+-      ];
++      '#type' => 'textfield',
++      '#default_value' => (isset($items[$delta]->value) && isset($countries[$items[$delta]->value])) ? $countries[$items[$delta]->value] : '',
++      '#autocomplete_route_name' => $this->getSetting('autocomplete_route_name'),
++      '#autocomplete_route_parameters' => [
++        'entity_type' => $this->fieldDefinition->get('entity_type'),
++        'bundle' => $this->fieldDefinition->get('bundle'),
++        'field_name' => $this->fieldDefinition->get('field_name'),
++      ],
++      '#size' => $this->getSetting('size'),
++      '#placeholder' => $this->getSetting('placeholder'),
++      '#maxlength' => 255,
++      '#selectable_countries' => $countries,
++      '#element_validate' => [[$this, 'validateElement']],
++    ];
+ 
+     return $element;
+   }
+@@ -100,4 +100,5 @@ class CountryAutocompleteWidget extends WidgetBase {
+       }
+     }
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldWidget/CountryDefaultWidget.php b/src/Plugin/Field/FieldWidget/CountryDefaultWidget.php
+index d6e06b6..3f3c049 100755
+--- a/src/Plugin/Field/FieldWidget/CountryDefaultWidget.php
++++ b/src/Plugin/Field/FieldWidget/CountryDefaultWidget.php
+@@ -25,13 +25,14 @@ class CountryDefaultWidget extends WidgetBase {
+   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+     $countries = \Drupal::service('country.field.manager')->getSelectableCountries($this->fieldDefinition);
+     $element['value'] = $element + [
+-        '#type' => 'select',
+-        '#options' => $countries,
+-        '#empty_value' => '',
+-        '#default_value' => (isset($items[$delta]->value) && isset($countries[$items[$delta]->value])) ? $items[$delta]->value : NULL,
+-        '#description' => t('Select a country'),
+-      ];
++      '#type' => 'select',
++      '#options' => $countries,
++      '#empty_value' => '',
++      '#default_value' => (isset($items[$delta]->value) && isset($countries[$items[$delta]->value])) ? $items[$delta]->value : NULL,
++      '#description' => t('Select a country'),
++    ];
+ 
+     return $element;
+   }
++
+ }
+diff --git a/src/Plugin/views/filter/CountryItem.php b/src/Plugin/views/filter/CountryItem.php
+index 4fd3611..2df2b47 100644
+--- a/src/Plugin/views/filter/CountryItem.php
++++ b/src/Plugin/views/filter/CountryItem.php
+@@ -258,4 +258,5 @@ class CountryItem extends ManyToOne {
+ 
+     return $options;
+   }
++
+ }

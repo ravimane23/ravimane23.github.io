@@ -1,0 +1,13 @@
+diff --git a/js/media_entity_browser.view.js b/js/media_entity_browser.view.js
+index 9365dc5..df9ade3 100644
+--- a/js/media_entity_browser.view.js
++++ b/js/media_entity_browser.view.js
+@@ -23,7 +23,7 @@
+   Drupal.behaviors.mediaEntityBrowserView = {
+     attach: function (context, settings) {
+       // Run through each row to add the default classes.
+-      $('.views-row', context).each(function() {
++      $('.views-row', context).each(function () {
+         var $row = $(this);
+         var $input = $row.find('.views-field-entity-browser-select input');
+         updateClasses($row, $input);

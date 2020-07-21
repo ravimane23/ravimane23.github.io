@@ -1,0 +1,47 @@
+diff --git a/src/Feeds/Parser/ParserBase.php b/src/Feeds/Parser/ParserBase.php
+index d8aa2d6..6b9a5c2 100644
+--- a/src/Feeds/Parser/ParserBase.php
++++ b/src/Feeds/Parser/ParserBase.php
+@@ -168,7 +168,7 @@ abstract class ParserBase extends ConfigurablePluginBase implements ParserInterf
+    * Subclasses can override this to load the necessary library. It will be
+    * called automatically.
+    *
+-   * @throws RuntimeException
++   * @throws \RuntimeException
+    *   Thrown if the library does not exist.
+    */
+   protected function loadLibrary() {
+@@ -236,7 +236,6 @@ abstract class ParserBase extends ConfigurablePluginBase implements ParserInterf
+     // @todo Set link?
+     // $fetcher_config = $feed->getConfigurationFor($feed->importer->fetcher);
+     // $result->link = is_string($fetcher_config['source']) ? $fetcher_config['source'] : '';
+-
+     try {
+       $this->setUp($feed, $fetcher_result, $state);
+       $this->parseItems($feed, $fetcher_result, $result, $state);
+diff --git a/src/Utility/JsonUtility.php b/src/Utility/JsonUtility.php
+index d857511..571df3a 100644
+--- a/src/Utility/JsonUtility.php
++++ b/src/Utility/JsonUtility.php
+@@ -69,7 +69,7 @@ class JsonUtility {
+    * @return array
+    *   A PHP array.
+    *
+-   * @throws RuntimeException
++   * @throws \RuntimeException
+    *   Thrown if the encoded JSON does not result in an array.
+    */
+   public function decodeJsonArray($json) {
+diff --git a/src/Utility/XmlUtility.php b/src/Utility/XmlUtility.php
+index f568d56..4df6816 100644
+--- a/src/Utility/XmlUtility.php
++++ b/src/Utility/XmlUtility.php
+@@ -60,7 +60,7 @@ class XmlUtility {
+    *   The converted string.
+    */
+   public function decodeNamedHtmlEntities($markup) {
+-    $map = array_flip(get_html_translation_table(HTML_ENTITIES, ENT_NOQUOTES|ENT_HTML5, 'UTF-8'));
++    $map = array_flip(get_html_translation_table(HTML_ENTITIES, ENT_NOQUOTES | ENT_HTML5, 'UTF-8'));
+     unset($map['&amp;'], $map['&lt;'], $map['&gt;']);
+ 
+     return strtr($markup, $map);

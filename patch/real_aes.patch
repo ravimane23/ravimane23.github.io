@@ -1,0 +1,39 @@
+diff --git a/src/Plugin/EncryptionMethod/RealAESEncryptionMethod.php b/src/Plugin/EncryptionMethod/RealAESEncryptionMethod.php
+index fcc7225..dda7ce1 100644
+--- a/src/Plugin/EncryptionMethod/RealAESEncryptionMethod.php
++++ b/src/Plugin/EncryptionMethod/RealAESEncryptionMethod.php
+@@ -2,12 +2,12 @@
+ 
+ namespace Drupal\real_aes\Plugin\EncryptionMethod;
+ 
++use Ex\CryptoException;
+ use Drupal\encrypt\EncryptionMethodInterface;
+ use Drupal\encrypt\Plugin\EncryptionMethod\EncryptionMethodBase;
+-use \Defuse\Crypto\Crypto;
+-use \Defuse\Crypto\Exception as Ex;
+-use \Defuse\Crypto\Key;
+-use \Defuse\Crypto\Encoding;
++use Defuse\Crypto\Crypto;
++use Defuse\Crypto\Key;
++use Defuse\Crypto\Encoding;
+ 
+ /**
+  * Class RealAESEncryptionMethod.
+@@ -50,7 +50,7 @@ class RealAESEncryptionMethod extends EncryptionMethodBase implements Encryption
+       $key = Key::loadFromAsciiSafeString($key);
+       return Crypto::encrypt((string) $text, $key);
+     }
+-    catch (Ex\CryptoException $ex) {
++    catch (CryptoException $ex) {
+       return FALSE;
+     }
+   }
+@@ -65,7 +65,7 @@ class RealAESEncryptionMethod extends EncryptionMethodBase implements Encryption
+       $key = Key::loadFromAsciiSafeString($key);
+       return Crypto::decrypt((string) $text, $key);
+     }
+-    catch (Ex\CryptoException $ex) {
++    catch (CryptoException $ex) {
+       return FALSE;
+     }
+   }

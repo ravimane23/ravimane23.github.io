@@ -1,0 +1,22 @@
+diff --git a/src/Plugin/Validation/Constraint/TaxonomyUniqueValidator.php b/src/Plugin/Validation/Constraint/TaxonomyUniqueValidator.php
+index 7b1d146..dcefa3a 100644
+--- a/src/Plugin/Validation/Constraint/TaxonomyUniqueValidator.php
++++ b/src/Plugin/Validation/Constraint/TaxonomyUniqueValidator.php
+@@ -15,7 +15,7 @@ class TaxonomyUniqueValidator extends ConstraintValidator {
+    * {@inheritdoc}
+    */
+   public function validate($value, Constraint $constraint) {
+-    /** @var TermInterface $term */
++    /** @var \Drupal\taxonomy\TermInterface $term */
+     $term = $value->getEntity();
+     if (\Drupal::config('taxonomy_unique.settings')->get($term->bundle()) && !$this->isUnique($term)) {
+       $message = \Drupal::config('taxonomy_unique.settings')->get($term->bundle() . '_message');
+@@ -29,7 +29,7 @@ class TaxonomyUniqueValidator extends ConstraintValidator {
+   /**
+    * Checks if given term is unique inside its vocabulary.
+    *
+-   * @param TermInterface $term
++   * @param \Drupal\taxonomy\TermInterface $term
+    *   The term to check.
+    *
+    * @return bool

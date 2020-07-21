@@ -1,0 +1,474 @@
+diff --git a/drush/example_layout/example_layout.inc b/drush/example_layout/example_layout.inc
+index efe6d042..98d7558a 100644
+--- a/drush/example_layout/example_layout.inc
++++ b/drush/example_layout/example_layout.inc
+@@ -18,6 +18,6 @@ function ds_example_layout() {
+     // Uncomment if you want to include a CSS file for this layout (example_layout.css).
+     // 'css' => TRUE,
+     // Uncomment if you want to include a preview for this layout (example_layout.png).
+-    // 'image' => TRUE,
++    // 'image' => TRUE,.
+   ];
+ }
+diff --git a/ds.api.php b/ds.api.php
+index 5e8b7b90..5e2998da 100644
+--- a/ds.api.php
++++ b/ds.api.php
+@@ -78,7 +78,7 @@ function hook_ds_layout_settings_alter(array $record, \Drupal\Core\Form\FormStat
+  *   - entity
+  *   - entity_type
+  *   - bundle
+- *   - view_mode
++ *   - view_mode.
+  * @param array $vars
+  *   All variables available for render. You can use this to add css classes.
+  */
+diff --git a/includes/field_ui.inc b/includes/field_ui.inc
+index dbcad9c6..39dea28c 100644
+--- a/includes/field_ui.inc
++++ b/includes/field_ui.inc
+@@ -238,7 +238,7 @@ function ds_field_ui_regions(array $form, FormStateInterface $form_state) {
+       }
+ 
+       // Add region.
+-      // Core added regions to Field UI, which default to 'content'
++      // Core added regions to Field UI, which default to 'content'.
+       if (!isset($row['region'])) {
+         $split = 7;
+         $default = (isset($field_regions[$name]) && isset($region_options[$field_regions[$name]])) ? $field_regions[$name] : 'hidden';
+@@ -301,7 +301,7 @@ function ds_field_ui_layouts_validate($form, FormStateInterface $form_state) {
+     if ($layout_plugin instanceof PluginFormInterface) {
+       $layout_form_state = (new FormState())->setValues($form_state->getValue('layout_configuration', []));
+       // TODO
+-      //$layout_plugin->validateConfigurationForm($layout_form, $layout_form_state);
++      // $layout_plugin->validateConfigurationForm($layout_form, $layout_form_state);.
+     }
+   }
+ 
+@@ -1005,11 +1005,11 @@ function _ds_field_ui_table_layouts_preview(array &$form, FormStateInterface $fo
+           $disable_css = $form_state->getValue('disable_css');
+         }
+ 
+-        $form['ds_layouts']['preview']['info']['settings']['disable_css'] = array(
++        $form['ds_layouts']['preview']['info']['settings']['disable_css'] = [
+           '#type' => 'checkbox',
+           '#title' => t('Disable layout CSS styles'),
+           '#default_value' => $disable_css,
+-        );
++        ];
+       }
+ 
+       $entity_classes = 'all_classes';
+diff --git a/modules/ds_extras/src/Plugin/DsField/SwitchField.php b/modules/ds_extras/src/Plugin/DsField/SwitchField.php
+index 98eff1d7..01addab5 100644
+--- a/modules/ds_extras/src/Plugin/DsField/SwitchField.php
++++ b/modules/ds_extras/src/Plugin/DsField/SwitchField.php
+@@ -10,6 +10,7 @@ use Drupal\Core\Url;
+ use Drupal\ds\Plugin\DsField\DsFieldBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\Core\Link;
++
+ /**
+  * Plugin that generates a link to switch view mode with via ajax.
+  *
+@@ -92,8 +93,8 @@ class SwitchField extends DsFieldBase {
+         // If the label is empty, do not create a link.
+         if (!empty($value)) {
+           $route_parameters['viewMode'] = $key == 'default' ? 'full' : $key;
+-          $url= Url::fromRoute('ds_extras.switch_view_mode', $route_parameters, $route_options);
+-          $items[] =  Link::fromTextAndUrl($value, $url)->toString();
++          $url = Url::fromRoute('ds_extras.switch_view_mode', $route_parameters, $route_options);
++          $items[] = Link::fromTextAndUrl($value, $url)->toString();
+         }
+       }
+     }
+diff --git a/src/Plugin/DsField/BlockBase.php b/src/Plugin/DsField/BlockBase.php
+index 06b14a34..8c818ca3 100644
+--- a/src/Plugin/DsField/BlockBase.php
++++ b/src/Plugin/DsField/BlockBase.php
+@@ -108,7 +108,6 @@ abstract class BlockBase extends DsFieldBase implements ContainerFactoryPluginIn
+         $render_element = $block_build;
+       }
+ 
+-
+       // Merge cache contexts, tags and max-age.
+       if ($contexts = $block->getCacheContexts()) {
+         $render_element['#cache']['contexts'] = [];
+diff --git a/src/Plugin/DsField/DynamicTwigField.php b/src/Plugin/DsField/DynamicTwigField.php
+index e6b78382..6fb6c9a0 100644
+--- a/src/Plugin/DsField/DynamicTwigField.php
++++ b/src/Plugin/DsField/DynamicTwigField.php
+@@ -27,7 +27,7 @@ class DynamicTwigField extends TokenBase {
+       '#context' => [
+         $this->getEntityTypeId() => $this->entity(),
+         'entity' => $this->entity(),
+-      ]
++      ],
+     ];
+ 
+     try {
+diff --git a/src/Plugin/DsField/Node/NodeSubmittedBy.php b/src/Plugin/DsField/Node/NodeSubmittedBy.php
+index c8d3a169..deb25633 100644
+--- a/src/Plugin/DsField/Node/NodeSubmittedBy.php
++++ b/src/Plugin/DsField/Node/NodeSubmittedBy.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\ds\Plugin\DsField\Node;
+ 
+ use Drupal\Core\Datetime\DateFormatterInterface;
+-use Drupal\Core\Url;
+ use Drupal\ds\Plugin\DsField\Date;
+ use Drupal\Core\Render\Renderer;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+diff --git a/src/Plugin/DsLayout.php b/src/Plugin/DsLayout.php
+index 6c3289b9..5415d78b 100644
+--- a/src/Plugin/DsLayout.php
++++ b/src/Plugin/DsLayout.php
+@@ -185,7 +185,7 @@ class DsLayout extends LayoutDefault implements PluginFormInterface {
+         $url = Url::fromRoute('ds.classes');
+         $destination = \Drupal::destination()->getAsArray();
+         $url->setOption('query', $destination);
+-        $form['ds_classes']['info'] = ['#markup' => '<p>' . $this->t('You have not defined any CSS classes which can be used on regions.') . '</p><p>' .  Link::fromTextAndUrl(t('Manage region and field CSS classes'), $url)->toString() . '</p>'];
++        $form['ds_classes']['info'] = ['#markup' => '<p>' . $this->t('You have not defined any CSS classes which can be used on regions.') . '</p><p>' . Link::fromTextAndUrl(t('Manage region and field CSS classes'), $url)->toString() . '</p>'];
+       }
+       else {
+         $form['ds_classes']['#access'] = FALSE;
+diff --git a/tests/src/Functional/BlockTest.php b/tests/src/Functional/BlockTest.php
+index 79b4d04f..c549e75a 100644
+--- a/tests/src/Functional/BlockTest.php
++++ b/tests/src/Functional/BlockTest.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\Tests\ds\Functional;
+ 
+ use Drupal\block_content\Entity\BlockContent;
+-use Drupal\user\Entity\User;
+ 
+ /**
+  * Tests for the manage display tab in Display Suite.
+@@ -32,7 +31,7 @@ class BlockTest extends TestBase {
+   /**
+    * The created user.
+    *
+-   * @var User
++   * @var \Drupal\user\Entity\User
+    */
+   protected $adminUser;
+ 
+@@ -63,7 +62,7 @@ class BlockTest extends TestBase {
+       'label' => 'Basic Block',
+       'id' => 'basic',
+     ];
+-    $this->drupalPostForm('admin/structure/block/block-content/types/add', $edit,'Save', []);
++    $this->drupalPostForm('admin/structure/block/block-content/types/add', $edit, 'Save', []);
+     $this->assertSession()->pageTextContains('Custom block type Basic Block has been added.');
+ 
+     // Create a basic block.
+diff --git a/tests/src/Functional/CommentTest.php b/tests/src/Functional/CommentTest.php
+index a56adb5d..8469a930 100644
+--- a/tests/src/Functional/CommentTest.php
++++ b/tests/src/Functional/CommentTest.php
+@@ -103,9 +103,8 @@ class CommentTest extends CommentTestBase {
+ 
+     // Verify there are no double ID's.
+     // For some reason, this test fails on the test bot, but is fine local.
+-    //$xpath = $this->xpath('//a[@id="comment-1"]');
+-    //$this->assertEquals(1, count($xpath),'1 ID found named comment-1');
+-
++    // $xpath = $this->xpath('//a[@id="comment-1"]');
++    // $this->assertEquals(1, count($xpath),'1 ID found named comment-1');
+     // Test that hidden fields aren't exposed in the config.
+     $this->dsSelectLayout();
+ 
+diff --git a/tests/src/Functional/DsTestTrait.php b/tests/src/Functional/DsTestTrait.php
+index c8532aa8..86180078 100644
+--- a/tests/src/Functional/DsTestTrait.php
++++ b/tests/src/Functional/DsTestTrait.php
+@@ -63,7 +63,7 @@ trait DsTestTrait {
+    * Configure Field UI.
+    */
+   public function dsConfigureUi($edit, $url = 'admin/structure/types/manage/article/display') {
+-    $this->drupalPostForm($url, $edit,'Save');
++    $this->drupalPostForm($url, $edit, 'Save');
+   }
+ 
+   /**
+@@ -156,7 +156,7 @@ trait DsTestTrait {
+ 
+     // Create field CSS classes.
+     $edit = ['fields' => "test_field_class\ntest_field_class_2|Field class 2\n[node:nid]"];
+-    $this->drupalPostForm('admin/structure/ds/classes', $edit,'Save configuration');
++    $this->drupalPostForm('admin/structure/ds/classes', $edit, 'Save configuration');
+ 
+     // Create a token field.
+     $token_field = [
+diff --git a/tests/src/Functional/DynamicFieldPluginTest.php b/tests/src/Functional/DynamicFieldPluginTest.php
+index 56c16870..9c2fd13d 100644
+--- a/tests/src/Functional/DynamicFieldPluginTest.php
++++ b/tests/src/Functional/DynamicFieldPluginTest.php
+@@ -41,7 +41,7 @@ class DynamicFieldPluginTest extends TestBase {
+     $edit = [
+       'name' => 'Test field 2',
+     ];
+-    $this->drupalPostForm('admin/structure/ds/fields/manage_token/test_field', $edit,'Save');
++    $this->drupalPostForm('admin/structure/ds/fields/manage_token/test_field', $edit, 'Save');
+     $this->assertSession()->pageTextContains('The field Test field 2 has been saved');
+ 
+     // Use the Field UI limit option.
+@@ -50,7 +50,7 @@ class DynamicFieldPluginTest extends TestBase {
+     $edit = [
+       'ui_limit' => 'article|default',
+     ];
+-    $this->drupalPostForm('admin/structure/ds/fields/manage_token/test_field', $edit,'Save');
++    $this->drupalPostForm('admin/structure/ds/fields/manage_token/test_field', $edit, 'Save');
+ 
+     $this->drupalGet('admin/structure/types/manage/article/display');
+     $this->assertSession()->responseContains('fields[dynamic_token_field:node-test_field][weight]');
+@@ -62,14 +62,14 @@ class DynamicFieldPluginTest extends TestBase {
+     $edit = [
+       'ui_limit' => 'article|*',
+     ];
+-    $this->drupalPostForm('admin/structure/ds/fields/manage_token/test_field', $edit,'Save');
++    $this->drupalPostForm('admin/structure/ds/fields/manage_token/test_field', $edit, 'Save');
+     $this->drupalGet('admin/structure/types/manage/article/display');
+     $this->assertSession()->responseContains('fields[dynamic_token_field:node-test_field][weight]');
+     $this->drupalGet('admin/structure/types/manage/article/display/teaser');
+     $this->assertSession()->responseContains('fields[dynamic_token_field:node-test_field][weight]');
+ 
+     // Remove the field.
+-    $this->drupalPostForm('admin/structure/ds/fields/delete/test_field', [],'Confirm');
++    $this->drupalPostForm('admin/structure/ds/fields/delete/test_field', [], 'Confirm');
+     $this->assertSession()->pageTextContains('The field Test field 2 has been deleted');
+ 
+     // Assert the field is gone at the manage display screen.
+@@ -87,7 +87,7 @@ class DynamicFieldPluginTest extends TestBase {
+     $this->dsCreateBlockField($edit);
+ 
+     // Create the same and assert it already exists.
+-    $this->drupalPostForm('admin/structure/ds/fields/manage_block', $edit,'Save');
++    $this->drupalPostForm('admin/structure/ds/fields/manage_block', $edit, 'Save');
+     $this->assertSession()->pageTextContains('The machine-readable name is already in use. It must be unique.');
+ 
+     $this->dsSelectLayout();
+@@ -104,11 +104,11 @@ class DynamicFieldPluginTest extends TestBase {
+     $edit = [
+       'name' => 'Test block field 2',
+     ];
+-    $this->drupalPostForm('admin/structure/ds/fields/manage_block/test_block_field', $edit,'Save');
++    $this->drupalPostForm('admin/structure/ds/fields/manage_block/test_block_field', $edit, 'Save');
+     $this->assertSession()->pageTextContains('The field Test block field 2 has been saved');
+ 
+     // Remove the block field.
+-    $this->drupalPostForm('admin/structure/ds/fields/delete/test_block_field', [],'Confirm');
++    $this->drupalPostForm('admin/structure/ds/fields/delete/test_block_field', [], 'Confirm');
+     $this->assertSession()->pageTextContains('The field Test block field 2 has been deleted');
+ 
+     // Assert the block field is gone at the manage display screen.
+@@ -129,7 +129,7 @@ class DynamicFieldPluginTest extends TestBase {
+     $edit = [
+       'depth' => '3',
+     ];
+-    $this->drupalPostForm('admin/structure/ds/fields/manage_block/test_block_configurable/block_config', $edit,'Save');
++    $this->drupalPostForm('admin/structure/ds/fields/manage_block/test_block_configurable/block_config', $edit, 'Save');
+ 
+     // Assert it's found on the Field UI for article.
+     $this->drupalGet('admin/structure/types/manage/article/display');
+@@ -153,14 +153,14 @@ class DynamicFieldPluginTest extends TestBase {
+     $this->drupalGet('node/' . $node->id());
+     $this->assertSession()->responseContains('Add content');
+ 
+-    // Ensure that there is no XSS attack possible
++    // Ensure that there is no XSS attack possible.
+     $this->assertSession()->responseNotContains('<script>alert("XSS")</script>');
+ 
+     // Try to set the depth to 3, to ensure we can save the block.
+     $edit = [
+       'level' => '2',
+     ];
+-    $this->drupalPostForm('admin/structure/ds/fields/manage_block/test_block_configurable/block_config', $edit,'Save');
++    $this->drupalPostForm('admin/structure/ds/fields/manage_block/test_block_configurable/block_config', $edit, 'Save');
+ 
+     // Look at node and verify the menu is not visible.
+     $this->drupalGet('node/' . $node->id());
+diff --git a/tests/src/Functional/EntitiesTest.php b/tests/src/Functional/EntitiesTest.php
+index 8b3a6f76..1239e1dc 100644
+--- a/tests/src/Functional/EntitiesTest.php
++++ b/tests/src/Functional/EntitiesTest.php
+@@ -99,7 +99,7 @@ class EntitiesTest extends TestBase {
+ 
+     // Switch view mode on full node page.
+     $edit = ['ds_switch' => 'teaser'];
+-    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit,'Save');
++    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, 'Save');
+     $this->assertSession()->responseContains('node--view-mode-teaser', 'Switched to teaser mode');
+     $this->assertSession()->responseContains('group-left');
+     $this->assertSession()->responseContains('group-right');
+@@ -107,7 +107,7 @@ class EntitiesTest extends TestBase {
+     $this->assertSession()->responseNotContains('group-footer');
+ 
+     $edit = ['ds_switch' => ''];
+-    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit,'Save');
++    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, 'Save');
+     $this->assertSession()->responseContains('node--view-mode-full');
+ 
+     // Test all options of a block field.
+@@ -129,14 +129,14 @@ class EntitiesTest extends TestBase {
+     $edit = [
+       'display_modes_custom[revision]' => '1',
+     ];
+-    $this->drupalPostForm('admin/structure/types/manage/article/display', $edit,'Save');
++    $this->drupalPostForm('admin/structure/types/manage/article/display', $edit, 'Save');
+ 
+     // Enable the override revision mode and configure it.
+     $edit = [
+       'fs3[override_node_revision]' => TRUE,
+       'fs3[override_node_revision_view_mode]' => 'revision',
+     ];
+-    $this->drupalPostForm('admin/structure/ds/settings', $edit,'Save configuration');
++    $this->drupalPostForm('admin/structure/ds/settings', $edit, 'Save configuration');
+ 
+     // Select layout and configure fields.
+     $edit = [
+@@ -161,7 +161,7 @@ class EntitiesTest extends TestBase {
+       'revision' => TRUE,
+       'revision_log[0][value]' => 'Test revision',
+     ];
+-    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit,'Save');
++    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, 'Save');
+ 
+     // Verify the revision is created.
+     $node = \Drupal::entityTypeManager()->getStorage('node')->load($node->id());
+@@ -182,7 +182,7 @@ class EntitiesTest extends TestBase {
+       'field_tags[0][target_id]' => 'Tag 1',
+       'field_tags[1][target_id]' => 'Tag 2',
+     ];
+-    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit,'Save');
++    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, 'Save');
+     $edit = [
+       'fields[field_tags][region]' => 'right',
+       'fields[field_tags][type]' => 'entity_reference_label',
+@@ -217,7 +217,7 @@ class EntitiesTest extends TestBase {
+     // Test previews while using a ds field.
+     $title_key = 'title[0][value]';
+     $edit = [$title_key => $this->randomMachineName()];
+-    $this->drupalPostForm('node/add/article', $edit,'Preview');
++    $this->drupalPostForm('node/add/article', $edit, 'Preview');
+     $this->assertSession()->pageTextContains($edit[$title_key], 'Title visible in preview');
+ 
+     // Convert layout from test theme.
+diff --git a/tests/src/Functional/FieldPermissionsTest.php b/tests/src/Functional/FieldPermissionsTest.php
+index 37e4d009..b481e7c5 100644
+--- a/tests/src/Functional/FieldPermissionsTest.php
++++ b/tests/src/Functional/FieldPermissionsTest.php
+@@ -54,7 +54,7 @@ class FieldPermissionsTest extends TestBase {
+       'authenticated[view node_author on node]' => 1,
+       'authenticated[view test_field on node]' => 1,
+     ];
+-    $this->drupalPostForm('admin/people/permissions', $edit,'Save permissions');
++    $this->drupalPostForm('admin/people/permissions', $edit, 'Save permissions');
+     $this->drupalGet('node/' . $node->id());
+     $this->assertSession()->responseContains('group-left');
+     $this->assertSession()->pageTextContains('Test field plugin on node ' . $node->id());
+diff --git a/tests/src/Functional/FieldPluginTest.php b/tests/src/Functional/FieldPluginTest.php
+index 78a8552f..50931922 100644
+--- a/tests/src/Functional/FieldPluginTest.php
++++ b/tests/src/Functional/FieldPluginTest.php
+@@ -89,14 +89,14 @@ class FieldPluginTest extends TestBase {
+     $this->assertSession()->pageTextContains('alternative article title');
+     $this->assertSession()->pageTextContains('Multiple entity test field plugin');
+ 
+-    // Check if the multiple entity test field appears on user entities
+-    $this->dsSelectLayout([], [],'admin/config/people/accounts/display');
++    // Check if the multiple entity test field appears on user entities.
++    $this->dsSelectLayout([], [], 'admin/config/people/accounts/display');
+     $fields = [
+       'fields[test_multiple_entity_test_field][region]' => 'right',
+       'fields[test_multiple_entity_test_field][label]' => 'inline',
+     ];
+ 
+-    $this->dsConfigureUi($fields,'admin/config/people/accounts/display');
++    $this->dsConfigureUi($fields, 'admin/config/people/accounts/display');
+     $this->drupalGet('user/' . $this->adminUser->id());
+ 
+     $this->assertSession()->pageTextContains('Multiple entity test field plugin');
+diff --git a/tests/src/Functional/LayoutFluidTest.php b/tests/src/Functional/LayoutFluidTest.php
+index 2cef1503..8aaf558c 100644
+--- a/tests/src/Functional/LayoutFluidTest.php
++++ b/tests/src/Functional/LayoutFluidTest.php
+@@ -78,7 +78,7 @@ class LayoutFluidTest extends TestBase {
+     $this->assertSession()->responseContains('group-right');
+     $this->assertSession()->responseContains('group-one-column');
+ 
+-    // Remove the css
++    // Remove the css.
+     $fields = [
+       'disable_css' => TRUE,
+     ];
+diff --git a/tests/src/Functional/TestBase.php b/tests/src/Functional/TestBase.php
+index 50f4bc34..793ec951 100644
+--- a/tests/src/Functional/TestBase.php
++++ b/tests/src/Functional/TestBase.php
+@@ -8,7 +8,7 @@ use Drupal\taxonomy\Entity\Vocabulary;
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
+ use Drupal\Tests\field_ui\Traits\FieldUiTestTrait;
+-use \Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait;
++use Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait;
+ 
+ /**
+  * Base test for Display Suite.
+@@ -167,8 +167,8 @@ abstract class TestBase extends BrowserTestBase {
+ 
+     /** @var \Drupal\Core\Entity\Display\EntityFormDisplayInterface $display */
+     $display = \Drupal::entityTypeManager()
+-        ->getStorage('entity_form_display')
+-         ->load('node.article.default');
++      ->getStorage('entity_form_display')
++      ->load('node.article.default');
+ 
+     $display->setComponent('field_' . $this->vocabulary->id())->save();
+   }
+@@ -181,7 +181,7 @@ abstract class TestBase extends BrowserTestBase {
+    * @param $second
+    *   Second element to compare
+    * @param string $message
+-   *   The message
++   *   The message.
+    */
+   protected function assertTrimEqual($first, $second, $message = '') {
+     $first = (string) $first;
+diff --git a/tests/src/Functional/UserTest.php b/tests/src/Functional/UserTest.php
+index 0177bb55..1e9d1084 100644
+--- a/tests/src/Functional/UserTest.php
++++ b/tests/src/Functional/UserTest.php
+@@ -3,14 +3,14 @@
+ namespace Drupal\Tests\ds\Functional;
+ 
+ /**
+- * Tests user functionality
++ * Tests user functionality.
+  *
+  * @group ds
+  */
+ class UserTest extends TestBase {
+ 
+   /**
+-   * Tests hook_ds_pre_render_alter() with user entities
++   * Tests hook_ds_pre_render_alter() with user entities.
+    */
+   public function testCompatibility() {
+ 
+@@ -20,13 +20,13 @@ class UserTest extends TestBase {
+       'access content',
+     ]);
+ 
+-    $this->dsSelectLayout([], [],'admin/config/people/accounts/display');
++    $this->dsSelectLayout([], [], 'admin/config/people/accounts/display');
+ 
+     $fields = [
+       'fields[username][region]' => 'right',
+     ];
+ 
+-    $this->dsConfigureUi($fields,'admin/config/people/accounts/display');
++    $this->dsConfigureUi($fields, 'admin/config/people/accounts/display');
+ 
+     $this->drupalGet('user/' . $new_user->id());
+ 

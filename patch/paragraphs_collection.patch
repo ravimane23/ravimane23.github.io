@@ -1,0 +1,870 @@
+diff --git a/css/gulpfile.js b/css/gulpfile.js
+index 92be0b0..73abb50 100644
+--- a/css/gulpfile.js
++++ b/css/gulpfile.js
+@@ -13,8 +13,8 @@
+ /**
+  * Helper function to add standard submodule tasks to gulp.
+  */
+-var addModuleTasks = function(name, path, gulp, plugins, options) {
+-  gulp.task(name + ':sass', function() {
++var addModuleTasks = function (name, path, gulp, plugins, options) {
++  gulp.task(name + ':sass', function () {
+     return gulp.src(path + '/*.scss')
+       .pipe(plugins.sass({
+         outputStyle: 'expanded',
+@@ -24,7 +24,7 @@ var addModuleTasks = function(name, path, gulp, plugins, options) {
+       .pipe(gulp.dest(path));
+   });
+ 
+-  gulp.task(name + ':sass:lint', function() {
++  gulp.task(name + ':sass:lint', function () {
+     return gulp.src(path + '/*.scss')
+       .pipe(plugins.postcss(options.processors, {syntax: plugins.syntax_scss}));
+   });
+diff --git a/css/plugin.admin.css b/css/plugin.admin.css
+index e5b1be8..6ff1a0e 100644
+--- a/css/plugin.admin.css
++++ b/css/plugin.admin.css
+@@ -9,8 +9,8 @@
+     display: -ms-flexbox;
+     display: flex;
+     -webkit-flex-wrap: wrap;
+-        -ms-flex-wrap: wrap;
+-            flex-wrap: wrap;
++    -ms-flex-wrap: wrap;
++    flex-wrap: wrap;
+   }
+   .paragraphs-plugin-inline-container > .form-item label {
+     margin-top: 5px;
+@@ -29,8 +29,8 @@
+   }
+   .paragraphs-plugin-inline-container.multiple-lines {
+     -webkit-flex-direction: column;
+-        -ms-flex-direction: column;
+-            flex-direction: column;
++    -ms-flex-direction: column;
++    flex-direction: column;
+   }
+ }
+ 
+diff --git a/js/overview.admin.js b/js/overview.admin.js
+index 81a8cf6..4babff0 100644
+--- a/js/overview.admin.js
++++ b/js/overview.admin.js
+@@ -37,7 +37,7 @@
+           var $row = $(row);
+           var $group_sources = $row.find('.table-filter-group-source');
+           var $text_sources = $row.find('.table-filter-text-source');
+-          var group_array = $group_sources.map(function() {
++          var group_array = $group_sources.map(function () {
+             return $(this).text().toLowerCase();
+           }).get();
+ 
+diff --git a/modules/paragraphs_collection_demo/css/grid-layout.css b/modules/paragraphs_collection_demo/css/grid-layout.css
+index 32924b5..291a9f7 100644
+--- a/modules/paragraphs_collection_demo/css/grid-layout.css
++++ b/modules/paragraphs_collection_demo/css/grid-layout.css
+@@ -3,8 +3,8 @@
+   display: -ms-flexbox;
+   display: flex;
+   -webkit-flex-wrap: wrap;
+-      -ms-flex-wrap: wrap;
+-          flex-wrap: wrap;
++  -ms-flex-wrap: wrap;
++  flex-wrap: wrap;
+   margin-right: -15px;
+   margin-left: -15px;
+ }
+@@ -22,23 +22,23 @@
+ @media (min-width: 576px) {
+   .paragraphs-collection-demo-behavior-grid-row.equal-cols {
+     -webkit-flex-wrap: nowrap;
+-        -ms-flex-wrap: nowrap;
+-            flex-wrap: nowrap;
++    -ms-flex-wrap: nowrap;
++    flex-wrap: nowrap;
+   }
+ }
+ 
+ .paragraphs-collection-demo-behavior-grid-row.equal-cols .paragraphs-behavior-flexible-grid-col {
+   -webkit-flex: 0 0 100%;
+-      -ms-flex: 0 0 100%;
+-          flex: 0 0 100%;
++  -ms-flex: 0 0 100%;
++  flex: 0 0 100%;
+   max-width: 100%;
+ }
+ 
+ @media (min-width: 576px) {
+   .paragraphs-collection-demo-behavior-grid-row.equal-cols .paragraphs-behavior-flexible-grid-col {
+     -webkit-flex: 1 1 auto;
+-        -ms-flex: 1 1 auto;
+-            flex: 1 1 auto;
++    -ms-flex: 1 1 auto;
++    flex: 1 1 auto;
+   }
+ }
+ 
+@@ -46,11 +46,11 @@
+   position: relative;
+   box-sizing: border-box;
+   -webkit-flex-basis: 0;
+-      -ms-flex-preferred-size: 0;
+-          flex-basis: 0;
++  -ms-flex-preferred-size: 0;
++  flex-basis: 0;
+   -webkit-flex-grow: 1;
+-      -ms-flex-positive: 1;
+-          flex-grow: 1;
++  -ms-flex-positive: 1;
++  flex-grow: 1;
+   width: 100%;
+   max-width: 100%;
+   min-height: 1px;
+@@ -60,75 +60,75 @@
+ 
+ .paragraphs-behavior-flexible-grid-col-1-2 {
+   -webkit-flex: 0 0 100%;
+-      -ms-flex: 0 0 100%;
+-          flex: 0 0 100%;
++  -ms-flex: 0 0 100%;
++  flex: 0 0 100%;
+ }
+ 
+ @media (min-width: 576px) {
+   .paragraphs-behavior-flexible-grid-col-1-2 {
+     -webkit-flex: 0 0 50%;
+-        -ms-flex: 0 0 50%;
+-            flex: 0 0 50%;
++    -ms-flex: 0 0 50%;
++    flex: 0 0 50%;
+     max-width: 50%;
+   }
+ }
+ 
+ .paragraphs-behavior-flexible-grid-col-1-4 {
+   -webkit-flex: 0 0 100%;
+-      -ms-flex: 0 0 100%;
+-          flex: 0 0 100%;
++  -ms-flex: 0 0 100%;
++  flex: 0 0 100%;
+ }
+ 
+ @media (min-width: 576px) {
+   .paragraphs-behavior-flexible-grid-col-1-4 {
+     -webkit-flex: 0 0 25%;
+-        -ms-flex: 0 0 25%;
+-            flex: 0 0 25%;
++    -ms-flex: 0 0 25%;
++    flex: 0 0 25%;
+     max-width: 25%;
+   }
+ }
+ 
+ .paragraphs-behavior-flexible-grid-col-3-4 {
+   -webkit-flex: 0 0 100%;
+-      -ms-flex: 0 0 100%;
+-          flex: 0 0 100%;
++  -ms-flex: 0 0 100%;
++  flex: 0 0 100%;
+ }
+ 
+ @media (min-width: 576px) {
+   .paragraphs-behavior-flexible-grid-col-3-4 {
+     -webkit-flex: 0 0 75%;
+-        -ms-flex: 0 0 75%;
+-            flex: 0 0 75%;
++    -ms-flex: 0 0 75%;
++    flex: 0 0 75%;
+     max-width: 75%;
+   }
+ }
+ 
+ .paragraphs-behavior-flexible-grid-col-1-3 {
+   -webkit-flex: 0 0 100%;
+-      -ms-flex: 0 0 100%;
+-          flex: 0 0 100%;
++  -ms-flex: 0 0 100%;
++  flex: 0 0 100%;
+ }
+ 
+ @media (min-width: 576px) {
+   .paragraphs-behavior-flexible-grid-col-1-3 {
+     -webkit-flex: 0 0 33.33333%;
+-        -ms-flex: 0 0 33.33333%;
+-            flex: 0 0 33.33333%;
++    -ms-flex: 0 0 33.33333%;
++    flex: 0 0 33.33333%;
+     max-width: 33.33333%;
+   }
+ }
+ 
+ .paragraphs-behavior-flexible-grid-col-2-3 {
+   -webkit-flex: 0 0 100%;
+-      -ms-flex: 0 0 100%;
+-          flex: 0 0 100%;
++  -ms-flex: 0 0 100%;
++  flex: 0 0 100%;
+ }
+ 
+ @media (min-width: 576px) {
+   .paragraphs-behavior-flexible-grid-col-2-3 {
+     -webkit-flex: 0 0 66.66667%;
+-        -ms-flex: 0 0 66.66667%;
+-            flex: 0 0 66.66667%;
++    -ms-flex: 0 0 66.66667%;
++    flex: 0 0 66.66667%;
+     max-width: 66.66667%;
+   }
+ }
+diff --git a/modules/paragraphs_collection_demo/src/Plugin/paragraphs/Behavior/ParagraphsAnchorPlugin.php b/modules/paragraphs_collection_demo/src/Plugin/paragraphs/Behavior/ParagraphsAnchorPlugin.php
+index 7eea579..a416aa1 100644
+--- a/modules/paragraphs_collection_demo/src/Plugin/paragraphs/Behavior/ParagraphsAnchorPlugin.php
++++ b/modules/paragraphs_collection_demo/src/Plugin/paragraphs/Behavior/ParagraphsAnchorPlugin.php
+@@ -98,8 +98,8 @@ class ParagraphsAnchorPlugin extends ParagraphsBehaviorBase {
+       $summary = [
+         [
+           'label' => $this->t('Anchor'),
+-          'value' => 'scrollto-' . $anchor
+-        ]
++          'value' => 'scrollto-' . $anchor,
++        ],
+       ];
+     }
+     return $summary;
+diff --git a/modules/paragraphs_collection_demo/src/Plugin/paragraphs/Behavior/ParagraphsSliderPlugin.php b/modules/paragraphs_collection_demo/src/Plugin/paragraphs/Behavior/ParagraphsSliderPlugin.php
+index 600ce87..746f180 100644
+--- a/modules/paragraphs_collection_demo/src/Plugin/paragraphs/Behavior/ParagraphsSliderPlugin.php
++++ b/modules/paragraphs_collection_demo/src/Plugin/paragraphs/Behavior/ParagraphsSliderPlugin.php
+@@ -16,7 +16,6 @@ use Drupal\paragraphs\Entity\Paragraph;
+ use Drupal\paragraphs\Entity\ParagraphsType;
+ use Drupal\paragraphs\ParagraphInterface;
+ use Drupal\paragraphs\ParagraphsBehaviorBase;
+-use Drupal\slick\Entity\Slick;
+ use Drupal\slick\SlickManagerInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+@@ -250,8 +249,8 @@ class ParagraphsSliderPlugin extends ParagraphsBehaviorBase implements Container
+       $summary = [
+         [
+           'label' => $this->t('Slider settings'),
+-          'value' => $all_optionset[$slider_optionset]
+-        ]
++          'value' => $all_optionset[$slider_optionset],
++        ],
+       ];
+     }
+ 
+diff --git a/modules/paragraphs_collection_demo/tests/src/Functional/ParagraphsCollectionDemoTest.php b/modules/paragraphs_collection_demo/tests/src/Functional/ParagraphsCollectionDemoTest.php
+index f662c63..a8e9dab 100644
+--- a/modules/paragraphs_collection_demo/tests/src/Functional/ParagraphsCollectionDemoTest.php
++++ b/modules/paragraphs_collection_demo/tests/src/Functional/ParagraphsCollectionDemoTest.php
+@@ -41,7 +41,6 @@ class ParagraphsCollectionDemoTest extends ParagraphsTestBase {
+     $options = $this->xpath('//input[contains(@id, :id)]', [':id' => 'edit-behavior-plugins-style-settings-groups']);
+     $this->assertCount(2, $options);
+     // @todo When other plugins are available, add assertion.
+-
+     $this->drupalGet('admin/structure/paragraphs_type/text');
+     $this->assertFieldChecked('edit-behavior-plugins-language-enabled');
+ 
+diff --git a/modules/paragraphs_collection_demo/tests/src/Functional/ParagraphsSliderPluginTest.php b/modules/paragraphs_collection_demo/tests/src/Functional/ParagraphsSliderPluginTest.php
+index 80fdf69..3327eaa 100644
+--- a/modules/paragraphs_collection_demo/tests/src/Functional/ParagraphsSliderPluginTest.php
++++ b/modules/paragraphs_collection_demo/tests/src/Functional/ParagraphsSliderPluginTest.php
+@@ -31,7 +31,7 @@ class ParagraphsSliderPluginTest extends ParagraphsTestBase {
+     parent::setUp();
+     $this->loginAsAdmin([
+       'administer modules',
+-      'edit behavior plugin settings'
++      'edit behavior plugin settings',
+     ]);
+     $this->addParagraphedContentType('paragraphed_test');
+     $this->addParagraphsType('slide_content');
+@@ -53,7 +53,7 @@ class ParagraphsSliderPluginTest extends ParagraphsTestBase {
+       'title[0][value]' => 'Slider',
+       'field_paragraphs[0][subform][field_slides][0][subform][paragraphs_text][0][value]' => 'First slide.',
+       'field_paragraphs[0][subform][field_slides][1][subform][paragraphs_text][0][value]' => 'Second slide.',
+-      'field_paragraphs[0][behavior_plugins][slider][slick_slider]' => 'default'
++      'field_paragraphs[0][behavior_plugins][slider][slick_slider]' => 'default',
+     ];
+     $this->drupalPostForm(NULL, $edit, 'Save');
+     $this->assertText('paragraphed_test Slider has been created.');
+@@ -82,12 +82,12 @@ class ParagraphsSliderPluginTest extends ParagraphsTestBase {
+    */
+   public function testConfigurationForm() {
+ 
+-    //Add a new field
++    // Add a new field.
+     $this->drupalGet('admin/structure/paragraphs_type/slider/fields/add-field');
+     $edit = [
+-        'new_storage_type' => 'text_long',
+-        'label' => 'Text',
+-        'field_name' => 'paragraphs_text',
++      'new_storage_type' => 'text_long',
++      'label' => 'Text',
++      'field_name' => 'paragraphs_text',
+     ];
+     $this->drupalPostForm(NULL, $edit, t('Save and continue'));
+     $edit = [
+@@ -98,7 +98,7 @@ class ParagraphsSliderPluginTest extends ParagraphsTestBase {
+     $this->drupalPostForm(NULL, NULL, t('Save settings'));
+     $this->assertText('Saved Text configuration');
+ 
+-    //Choose the field to be used as slider items
++    // Choose the field to be used as slider items.
+     $this->drupalGet('admin/structure/paragraphs_type/slider');
+     $this->assertText('Slick Optionsets');
+     $this->assertText('Enable the Slick UI from the module list to create more options.');
+@@ -113,10 +113,10 @@ class ParagraphsSliderPluginTest extends ParagraphsTestBase {
+     $this->drupalPostForm(NULL, NULL, 'field_paragraphs_slider_add_more');
+     $this->drupalPostForm(NULL, NULL, 'field_paragraphs_text_add_more');
+     $edit = [
+-    'title[0][value]' => 'SldierDemo',
+-    'field_paragraphs[0][subform][field_paragraphs_text][0][value]' => 'First slide.',
+-    'field_paragraphs[1][subform][paragraphs_text][0][value]' => 'Second slide',
+-    'field_paragraphs[0][behavior_plugins][slider][slick_slider]' => 'default',
++      'title[0][value]' => 'SldierDemo',
++      'field_paragraphs[0][subform][field_paragraphs_text][0][value]' => 'First slide.',
++      'field_paragraphs[1][subform][paragraphs_text][0][value]' => 'Second slide',
++      'field_paragraphs[0][behavior_plugins][slider][slick_slider]' => 'default',
+     ];
+     $this->drupalPostForm(NULL, $edit, 'Save');
+     $this->assertText('paragraphed_test SldierDemo has been created.');
+diff --git a/modules/paragraphs_collection_test/css/grid-layout.css b/modules/paragraphs_collection_test/css/grid-layout.css
+index 4899606..28f295a 100644
+--- a/modules/paragraphs_collection_test/css/grid-layout.css
++++ b/modules/paragraphs_collection_test/css/grid-layout.css
+@@ -4,21 +4,21 @@
+   display: -ms-flexbox;
+   display: flex;
+   -webkit-flex-wrap: wrap;
+-      -ms-flex-wrap: wrap;
+-          flex-wrap: wrap;
++  -ms-flex-wrap: wrap;
++  flex-wrap: wrap;
+   -webkit-justify-content: space-between;
+-      -ms-flex-pack: justify;
+-          justify-content: space-between;
++  -ms-flex-pack: justify;
++  justify-content: space-between;
+ }
+ 
+ .paragraphs-behavior-grid-layout-col-4 {
+   -webkit-flex: 0 1 33.33333%;
+-      -ms-flex: 0 1 33.33333%;
+-          flex: 0 1 33.33333%;
++  -ms-flex: 0 1 33.33333%;
++  flex: 0 1 33.33333%;
+ }
+ 
+ .paragraphs-behavior-grid-layout-col-8 {
+   -webkit-flex: 0 1 66.66667%;
+-      -ms-flex: 0 1 66.66667%;
+-          flex: 0 1 66.66667%;
++  -ms-flex: 0 1 66.66667%;
++  flex: 0 1 66.66667%;
+ }
+diff --git a/src/Controller/OverviewController.php b/src/Controller/OverviewController.php
+index 43a7c6d..106699a 100644
+--- a/src/Controller/OverviewController.php
++++ b/src/Controller/OverviewController.php
+@@ -2,9 +2,7 @@
+ 
+ namespace Drupal\paragraphs_collection\Controller;
+ 
+-use Drupal\Component\Utility\Html;
+ use Drupal\Core\Controller\ControllerBase;
+-use Drupal\Core\Form\FormStateInterface;
+ use Drupal\paragraphs\Entity\ParagraphsType;
+ use Drupal\paragraphs_collection\GridLayoutDiscoveryInterface;
+ use Drupal\paragraphs_collection\StyleDiscoveryInterface;
+@@ -135,7 +133,7 @@ class OverviewController extends ControllerBase {
+     // enabled for that Paragraphs type.
+     $grid_layouts_grouped_by_paragraphs_types = [];
+     foreach ($paragraphs_types as $paragraph_type_id => $paragraphs_type) {
+-      /** @var ParagraphsType $paragraphs_type */
++      /** @var \Drupal\paragraphs\Entity\ParagraphsType $paragraphs_type */
+       $configuration = $paragraphs_type->getBehaviorPlugin('grid_layout')->getConfiguration();
+       if (isset($configuration['enabled']) && $configuration['enabled']) {
+         $grid_layouts_grouped_by_paragraphs_types[$paragraph_type_id] = [];
+@@ -197,14 +195,14 @@ class OverviewController extends ControllerBase {
+     // Type uses all style groups.
+     $styles_grouped_by_paragraphs_types = [];
+     foreach ($paragraphs_types as $paragraph_type_id => $paragraphs_type) {
+-      /** @var ParagraphsType $paragraphs_type */
++      /** @var \Drupal\paragraphs\Entity\ParagraphsType $paragraphs_type */
+       $configuration = $paragraphs_type->getBehaviorPlugin('style')->getConfiguration();
+       if (isset($configuration['enabled']) && $configuration['enabled']) {
+         $styles_grouped_by_paragraphs_types[$paragraph_type_id] = array_keys($configuration['groups']);
+       }
+     }
+ 
+-    //Get all styles ordered by title.
++    // Get all styles ordered by title.
+     $styles = $this->styleDiscovery->getStyles();
+     uasort($styles, function ($style1, $style2) {
+       return strcasecmp($style1['title'], $style2['title']);
+@@ -268,9 +266,9 @@ class OverviewController extends ControllerBase {
+ 
+       $paragraphs_type_link_list = [];
+       foreach ($value as $paragraphs_type_id => $paragraphs_type) {
+-        /** @var ParagraphsType $paragraphs_type */
++        /** @var \Drupal\paragraphs\Entity\ParagraphsType $paragraphs_type */
+ 
+-        if($paragraphs_type_link_list != []) {
++        if ($paragraphs_type_link_list != []) {
+           $paragraphs_type_link_list[] = ['#plain_text' => ', '];
+         }
+ 
+diff --git a/src/Form/StylesOverviewForm.php b/src/Form/StylesOverviewForm.php
+index 23e3319..f4a7ea7 100755
+--- a/src/Form/StylesOverviewForm.php
++++ b/src/Form/StylesOverviewForm.php
+@@ -111,7 +111,7 @@ class StylesOverviewForm extends ConfigFormBase {
+       foreach ($value as $paragraphs_type_id => $paragraphs_type) {
+         /** @var \Drupal\paragraphs\Entity\ParagraphsType $paragraphs_type */
+ 
+-        if($paragraphs_type_link_list != []) {
++        if ($paragraphs_type_link_list != []) {
+           $paragraphs_type_link_list[] = ['#plain_text' => ', '];
+         }
+ 
+@@ -137,12 +137,12 @@ class StylesOverviewForm extends ConfigFormBase {
+         ];
+       }
+ 
+-      $rows[$style_id]['enabled'] = array(
++      $rows[$style_id]['enabled'] = [
+         '#type' => 'checkbox',
+         '#title' => $style['title'],
+         '#title_display' => 'after',
+         '#default_value' => in_array($style_id, $enabled_styles) ?: FALSE,
+-      );
++      ];
+       $rows[$style_id]['details'] = [
+         '#type' => 'details',
+         '#title' => !empty($style['description']) ? $style['description'] : $this->t('Description not available.'),
+diff --git a/src/GridLayoutDiscovery.php b/src/GridLayoutDiscovery.php
+index 01c2d43..a2ecc70 100644
+--- a/src/GridLayoutDiscovery.php
++++ b/src/GridLayoutDiscovery.php
+@@ -84,7 +84,7 @@ class GridLayoutDiscovery implements GridLayoutDiscoveryInterface {
+     if ($this->gridLayoutsCollection) {
+       return $this->gridLayoutsCollection;
+     }
+-    else if ($cached = $this->cache->get($cid)) {
++    elseif ($cached = $this->cache->get($cid)) {
+       $this->gridLayoutsCollection = $cached->data;
+     }
+     else {
+diff --git a/src/GridLayoutDiscoveryInterface.php b/src/GridLayoutDiscoveryInterface.php
+index 126d876..c9ea7b7 100644
+--- a/src/GridLayoutDiscoveryInterface.php
++++ b/src/GridLayoutDiscoveryInterface.php
+@@ -45,4 +45,5 @@ interface GridLayoutDiscoveryInterface {
+    *   The layout configuration.
+    */
+   public function getLayout($layout);
++
+ }
+diff --git a/src/Plugin/paragraphs/Behavior/ParagraphsGridLayoutPlugin.php b/src/Plugin/paragraphs/Behavior/ParagraphsGridLayoutPlugin.php
+index 1ab244a..7bebc18 100644
+--- a/src/Plugin/paragraphs/Behavior/ParagraphsGridLayoutPlugin.php
++++ b/src/Plugin/paragraphs/Behavior/ParagraphsGridLayoutPlugin.php
+@@ -3,11 +3,9 @@
+ namespace Drupal\paragraphs_collection\Plugin\paragraphs\Behavior;
+ 
+ use Drupal\Component\Utility\Html;
+-use Drupal\Component\Utility\NestedArray;
+ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+ use Drupal\Core\Entity\EntityFieldManager;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Render\Element;
+ use Drupal\Core\Url;
+ use Drupal\field\FieldConfigInterface;
+ use Drupal\paragraphs\Entity\Paragraph;
+@@ -109,13 +107,13 @@ class ParagraphsGridLayoutPlugin extends ParagraphsBehaviorBase {
+     }
+     else {
+       $url = Url::fromRoute('entity.paragraph.field_ui_fields', [
+-        $paragraphs_type->getEntityTypeId() => $paragraphs_type->id()
++        $paragraphs_type->getEntityTypeId() => $paragraphs_type->id(),
+       ]);
+ 
+       $form['message'] = [
+         '#type' => 'container',
+         '#markup' => $this->t('No paragraph reference field type available. Please add at least one in the <a href=":link">Manage fields</a> page.', [
+-          ':link' => $url->toString()
++          ':link' => $url->toString(),
+         ]),
+         '#attributes' => [
+           'class' => ['messages messages--error'],
+@@ -228,7 +226,7 @@ class ParagraphsGridLayoutPlugin extends ParagraphsBehaviorBase {
+     // Everything else is done in ParagraphsGridLayoutPlugin::preprocess method.
+     if ($grid_layout = $paragraph->getBehaviorSetting($this->getPluginId(), 'layout')) {
+       $layouts = $this->gridLayoutDiscovery->getLibraries($grid_layout);
+-      if(!isset($build['#attached']['library'])) {
++      if (!isset($build['#attached']['library'])) {
+         $build['#attached']['library'] = [];
+       }
+       $build['#attached']['library'] = array_merge($layouts, $build['#attached']['library']);
+@@ -245,8 +243,8 @@ class ParagraphsGridLayoutPlugin extends ParagraphsBehaviorBase {
+       $summary = [
+         [
+           'label' => $this->t('Layout'),
+-          'value' => $layouts[$layout]['title']
+-        ]
++          'value' => $layouts[$layout]['title'],
++        ],
+       ];
+     }
+     return $summary;
+diff --git a/src/Plugin/paragraphs/Behavior/ParagraphsLanguagePlugin.php b/src/Plugin/paragraphs/Behavior/ParagraphsLanguagePlugin.php
+index 64c19ea..6713422 100644
+--- a/src/Plugin/paragraphs/Behavior/ParagraphsLanguagePlugin.php
++++ b/src/Plugin/paragraphs/Behavior/ParagraphsLanguagePlugin.php
+@@ -103,7 +103,7 @@ class ParagraphsLanguagePlugin extends ParagraphsBehaviorBase {
+       '#multiple' => FALSE,
+       '#attributes' => [
+         'id' => ['paragraphs-behavior-language-behavior-form-visibility-' . $paragraph->id()],
+-        'class' => ['paragraphs-plugin-form-element']
++        'class' => ['paragraphs-plugin-form-element'],
+       ],
+     ];
+ 
+diff --git a/src/Plugin/paragraphs/Behavior/ParagraphsLockablePlugin.php b/src/Plugin/paragraphs/Behavior/ParagraphsLockablePlugin.php
+index de40f9c..7d49a2e 100644
+--- a/src/Plugin/paragraphs/Behavior/ParagraphsLockablePlugin.php
++++ b/src/Plugin/paragraphs/Behavior/ParagraphsLockablePlugin.php
+@@ -10,7 +10,6 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Session\AccountInterface;
+ use Drupal\Core\Session\AccountProxyInterface;
+ use Drupal\paragraphs\Entity\Paragraph;
+-use Drupal\paragraphs\Entity\ParagraphsType;
+ use Drupal\paragraphs\ParagraphInterface;
+ use Drupal\paragraphs\ParagraphsBehaviorBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+@@ -99,12 +98,12 @@ class ParagraphsLockablePlugin extends ParagraphsBehaviorBase {
+    *   The current logged in user.
+    *
+    * @return \Drupal\Core\Access\AccessResult
+-   *    The access result, will be false if the paragraph is locked
++   *   The access result, will be false if the paragraph is locked
+    *    and the user does not have the appropriate permission.
+    */
+   public static function determineParagraphAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+ 
+-    /** @var ParagraphsType $paragraphs_type */
++    /** @var \Drupal\paragraphs\Entity\ParagraphsType $paragraphs_type */
+     $paragraphs_type = $entity->getParagraphType();
+ 
+     if ($operation !== 'view' && $entity->getBehaviorSetting('lockable', 'locked') && $paragraphs_type->hasEnabledBehaviorPlugin('lockable')) {
+@@ -128,7 +127,7 @@ class ParagraphsLockablePlugin extends ParagraphsBehaviorBase {
+     $summary = [
+       [
+         'value' => $this->t('Locked'),
+-      ]
++      ],
+     ];
+     return $locked ? $summary : [];
+   }
+diff --git a/src/Plugin/paragraphs/Behavior/ParagraphsStylePlugin.php b/src/Plugin/paragraphs/Behavior/ParagraphsStylePlugin.php
+index 9dcd6b1..e654869 100644
+--- a/src/Plugin/paragraphs/Behavior/ParagraphsStylePlugin.php
++++ b/src/Plugin/paragraphs/Behavior/ParagraphsStylePlugin.php
+@@ -30,52 +30,52 @@ class ParagraphsStylePlugin extends ParagraphsBehaviorBase implements ContainerF
+ 
+   use DependencySerializationTrait;
+ 
+-   /**
+-    * The yaml style discovery.
+-    *
+-    * @var \Drupal\paragraphs_collection\StyleDiscovery
+-    */
+-   protected $yamlStyleDiscovery;
++  /**
++   * The yaml style discovery.
++   *
++   * @var \Drupal\paragraphs_collection\StyleDiscovery
++   */
++  protected $yamlStyleDiscovery;
+ 
+   /**
+    * The current user.
+    *
+    * @var \Drupal\Core\Session\AccountProxyInterface
+    */
+-   protected $currentUser;
+-
+-   /**
+-    * Constructs a new SelectionBase object.
+-    *
+-    * @param array $configuration
+-    *   A configuration array containing information about the plugin instance.
+-    * @param string $plugin_id
+-    *   The plugin_id for the plugin instance.
+-    * @param mixed $plugin_definition
+-    *   The plugin implementation definition.
+-    * @param \Drupal\Core\Entity\EntityFieldManager $entity_field_manager
+-    *   The entity field manager.
+-    * @param \Drupal\paragraphs_collection\StyleDiscoveryInterface $yaml
+-    *   The yaml style discovery.
+-    * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+-    *   The current user.
+-    */
+-   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityFieldManager $entity_field_manager, StyleDiscoveryInterface $yaml, AccountProxyInterface $current_user) {
+-     parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_field_manager);
+-     $this->yamlStyleDiscovery = $yaml;
+-     $this->currentUser = $current_user;
+-   }
+-
+-   /**
+-    * {@inheritdoc}
+-    */
+-   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+-     return new static($configuration, $plugin_id, $plugin_definition,
+-       $container->get('entity_field.manager'),
+-       $container->get('paragraphs_collection.style_discovery'),
+-       $container->get('current_user')
+-     );
+-   }
++  protected $currentUser;
++
++  /**
++   * Constructs a new SelectionBase object.
++   *
++   * @param array $configuration
++   *   A configuration array containing information about the plugin instance.
++   * @param string $plugin_id
++   *   The plugin_id for the plugin instance.
++   * @param mixed $plugin_definition
++   *   The plugin implementation definition.
++   * @param \Drupal\Core\Entity\EntityFieldManager $entity_field_manager
++   *   The entity field manager.
++   * @param \Drupal\paragraphs_collection\StyleDiscoveryInterface $yaml
++   *   The yaml style discovery.
++   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
++   *   The current user.
++   */
++  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityFieldManager $entity_field_manager, StyleDiscoveryInterface $yaml, AccountProxyInterface $current_user) {
++    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_field_manager);
++    $this->yamlStyleDiscovery = $yaml;
++    $this->currentUser = $current_user;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
++    return new static($configuration, $plugin_id, $plugin_definition,
++      $container->get('entity_field.manager'),
++      $container->get('paragraphs_collection.style_discovery'),
++      $container->get('current_user')
++    );
++  }
+ 
+   /**
+    * {@inheritdoc}
+@@ -297,7 +297,7 @@ class ParagraphsStylePlugin extends ParagraphsBehaviorBase implements ContainerF
+         if (isset($style_options[$style]) && (!isset($this->configuration['groups'][$group_id]) || $style != $this->configuration['groups'][$group_id]['default'])) {
+           $summary[] = [
+             'label' => $this->yamlStyleDiscovery->getGroupWidgetLabel($group_id),
+-            'value' => $style_options[$style]
++            'value' => $style_options[$style],
+           ];
+         }
+       }
+diff --git a/src/StyleDiscovery.php b/src/StyleDiscovery.php
+index e18a9e8..3c38d8b 100644
+--- a/src/StyleDiscovery.php
++++ b/src/StyleDiscovery.php
+@@ -14,6 +14,7 @@ use Drupal\Core\StringTranslation\TranslationInterface;
+ 
+ /**
+  * Provides common helper methods for style discovery.
++ *
+  * @todo Create documentation for style discovery https://www.drupal.org/node/2837995
+  */
+ class StyleDiscovery implements StyleDiscoveryInterface {
+@@ -136,7 +137,7 @@ class StyleDiscovery implements StyleDiscoveryInterface {
+     if ($this->stylesCollection !== NULL) {
+       return $this->stylesCollection;
+     }
+-    else if ($cached = $this->cache->get($cache_id)) {
++    elseif ($cached = $this->cache->get($cache_id)) {
+       $this->stylesCollection = $cached->data;
+     }
+     else {
+@@ -252,7 +253,7 @@ class StyleDiscovery implements StyleDiscoveryInterface {
+     if ($this->groupCollection !== NULL) {
+       return $this->groupCollection;
+     }
+-    else if ($cached = $this->cache->get($cache_id)) {
++    elseif ($cached = $this->cache->get($cache_id)) {
+       $this->groupCollection = $cached->data;
+     }
+     else {
+@@ -265,7 +266,7 @@ class StyleDiscovery implements StyleDiscoveryInterface {
+           }
+           $this->groupCollection[$group] = [
+             'label' => $this->t($definition['label']),
+-            'widget_label' => isset($definition['widget_label']) ? $this->t($definition['widget_label']) : NULL
++            'widget_label' => isset($definition['widget_label']) ? $this->t($definition['widget_label']) : NULL,
+           ];
+         }
+       }
+diff --git a/src/StyleDiscoveryInterface.php b/src/StyleDiscoveryInterface.php
+index 7d9ab50..0584422 100644
+--- a/src/StyleDiscoveryInterface.php
++++ b/src/StyleDiscoveryInterface.php
+@@ -16,6 +16,7 @@ interface StyleDiscoveryInterface {
+    *
+    * @param $style
+    *   The name of the style.
++   *
+    * @return array
+    *   The names of the libraries, or empty list if not found.
+    */
+@@ -40,7 +41,7 @@ interface StyleDiscoveryInterface {
+    * Gets style groups.
+    *
+    * @return array
+-   *    Collection of style groups.
++   *   Collection of style groups.
+    */
+   public function getStyleGroups();
+ 
+@@ -48,7 +49,7 @@ interface StyleDiscoveryInterface {
+    * Gets style groups label.
+    *
+    * @return array
+-   *    Collection of style groups labels.
++   *   Collection of style groups labels.
+    */
+   public function getStyleGroupsLabel();
+ 
+diff --git a/tests/src/Functional/ParagraphsCollectionCacheTest.php b/tests/src/Functional/ParagraphsCollectionCacheTest.php
+index a48b8cc..b7131b8 100644
+--- a/tests/src/Functional/ParagraphsCollectionCacheTest.php
++++ b/tests/src/Functional/ParagraphsCollectionCacheTest.php
+@@ -14,7 +14,7 @@ class ParagraphsCollectionCacheTest extends ParagraphsTestBase {
+   /**
+    * Tests if affected caches are invalidated upon installation of new modules.
+    */
+-  public function testCacheUpdatesForNewModules(){
++  public function testCacheUpdatesForNewModules() {
+     $this->loginAsAdmin([
+       'administer paragraphs types',
+     ]);
+diff --git a/tests/src/Functional/ParagraphsCollectionConfigurationTest.php b/tests/src/Functional/ParagraphsCollectionConfigurationTest.php
+index 6a97202..81bb9d0 100644
+--- a/tests/src/Functional/ParagraphsCollectionConfigurationTest.php
++++ b/tests/src/Functional/ParagraphsCollectionConfigurationTest.php
+@@ -15,7 +15,7 @@ class ParagraphsCollectionConfigurationTest extends ParagraphsTestBase {
+   /**
+    * Tests if reinstalling module delete configuration files.
+    */
+-  public function testReinstallingModule(){
++  public function testReinstallingModule() {
+     \Drupal::service('module_installer')->install(['paragraphs_collection']);
+     \Drupal::service('module_installer')->uninstall(['paragraphs_collection']);
+     \Drupal::service('module_installer')->install(['paragraphs_collection']);
+diff --git a/tests/src/Functional/ParagraphsCollectionStyleTest.php b/tests/src/Functional/ParagraphsCollectionStyleTest.php
+index 996d7ac..54adaaa 100644
+--- a/tests/src/Functional/ParagraphsCollectionStyleTest.php
++++ b/tests/src/Functional/ParagraphsCollectionStyleTest.php
+@@ -43,14 +43,14 @@ class ParagraphsCollectionStyleTest extends BrowserTestBase {
+   public function testStylePlugin() {
+     $this->loginAsAdmin([
+       'access content overview',
+-      'edit behavior plugin settings'
++      'edit behavior plugin settings',
+     ]);
+ 
+     $edit = [
+       'styles[bold][enabled]' => TRUE,
+       'styles[italic][enabled]' => FALSE,
+       'styles[regular][enabled]' => FALSE,
+-      'styles[underline][enabled]' => FALSE
++      'styles[underline][enabled]' => FALSE,
+     ];
+     $this->drupalPostForm('admin/reports/paragraphs_collection/styles', $edit, t('Save configuration'));
+ 
+@@ -93,7 +93,7 @@ class ParagraphsCollectionStyleTest extends BrowserTestBase {
+       'styles[bold][enabled]' => TRUE,
+       'styles[italic][enabled]' => TRUE,
+       'styles[regular][enabled]' => FALSE,
+-      'styles[underline][enabled]' => FALSE
++      'styles[underline][enabled]' => FALSE,
+     ];
+     $this->drupalPostForm('admin/reports/paragraphs_collection/styles', $edit, t('Save configuration'));
+     // Create a paragraph type and enable behavior plugins.
+diff --git a/tests/src/FunctionalJavascript/ParagraphsCollectionStyleTest.php b/tests/src/FunctionalJavascript/ParagraphsCollectionStyleTest.php
+index a76425d..0180458 100644
+--- a/tests/src/FunctionalJavascript/ParagraphsCollectionStyleTest.php
++++ b/tests/src/FunctionalJavascript/ParagraphsCollectionStyleTest.php
+@@ -43,7 +43,7 @@ class ParagraphsCollectionStyleTest extends WebDriverTestBase {
+   public function testStylePlugin() {
+     $this->loginAsAdmin([
+       'access content overview',
+-      'edit behavior plugin settings'
++      'edit behavior plugin settings',
+     ]);
+ 
+     $page = $this->getSession()->getPage();
+diff --git a/tests/src/FunctionalJavascript/ParagraphsStylePluginTest.php b/tests/src/FunctionalJavascript/ParagraphsStylePluginTest.php
+index 3b782be..2bc60ad 100644
+--- a/tests/src/FunctionalJavascript/ParagraphsStylePluginTest.php
++++ b/tests/src/FunctionalJavascript/ParagraphsStylePluginTest.php
+@@ -305,9 +305,9 @@ class ParagraphsStylePluginTest extends WebDriverTestBase {
+     // Default Bold style has been applied in the background.
+     $this->assertCount(1, $this->cssSelect('.paragraphs-behavior-style--bold'));
+     // Overline style has not been applied as it has no default option.
+-    $this->assertSession()->elementNotExists('css','.paragraphs-behavior-style--overline');
++    $this->assertSession()->elementNotExists('css', '.paragraphs-behavior-style--overline');
+     // Empty style has not been applied as it has no default option nor styles.
+-    $this->assertSession()->elementNotExists('css','.paragraphs-behavior-style--empty');
++    $this->assertSession()->elementNotExists('css', '.paragraphs-behavior-style--empty');
+ 
+     $edit = [
+       // Set default style for the overline group.
+@@ -330,9 +330,9 @@ class ParagraphsStylePluginTest extends WebDriverTestBase {
+     // The new default overline style applies to the previously saved paragraph.
+     $this->assertCount(1, $this->cssSelect('.paragraphs-behavior-style--overline'));
+     // The bold style has no default and no longer applies.
+-    $this->assertSession()->elementNotExists('css','.paragraphs-behavior-style--bold');
++    $this->assertSession()->elementNotExists('css', '.paragraphs-behavior-style--bold');
+     // The regular style is disabled and no longer applies.
+-    $this->assertSession()->elementNotExists('css','.paragraphs-behavior-style--regular');
++    $this->assertSession()->elementNotExists('css', '.paragraphs-behavior-style--regular');
+ 
+     // Default overline style is selected and all overline styles are disabled.
+     // The empty form element should not be displayed.
+@@ -505,7 +505,7 @@ class ParagraphsStylePluginTest extends WebDriverTestBase {
+     $this->assertCount(6, $options);
+     $page->fillField('title[0][value]', 'global_settings');
+     $edit = [
+-      'paragraphs[0][behavior_plugins][style][style_wrapper][styles][bold_test_group]' => 'bold'
++      'paragraphs[0][behavior_plugins][style][style_wrapper][styles][bold_test_group]' => 'bold',
+     ];
+     $this->drupalPostForm(NULL, $edit, 'Save');
+     $this->assertRaw('paragraphs-behavior-style--bold');
+@@ -616,7 +616,7 @@ class ParagraphsStylePluginTest extends WebDriverTestBase {
+     $page->clickLink('Content');
+     $edit = [
+       'title[0][value]' => 'title_to_remember',
+-      'paragraphs[0][subform][paragraphs_text][0][value]' => 'text to apply styles'
++      'paragraphs[0][subform][paragraphs_text][0][value]' => 'text to apply styles',
+     ];
+     $this->drupalPostForm(NULL, $edit, 'Save');
+     $this->assertRaw('paragraphs-behavior-style--italic');
+@@ -701,7 +701,7 @@ class ParagraphsStylePluginTest extends WebDriverTestBase {
+     $this->drupalGet('node/' . $node->id() . '/edit');
+     $page->clickLink('Behavior');
+     $edit = [
+-      'paragraphs[0][behavior_plugins][style][style_wrapper][styles][regular_test_group]' => 'bold'
++      'paragraphs[0][behavior_plugins][style][style_wrapper][styles][regular_test_group]' => 'bold',
+     ];
+     $this->drupalPostForm(NULL, $edit, 'Save');
+     $this->assertRaw('paragraphs-behavior-style--italic');

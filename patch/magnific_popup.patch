@@ -1,0 +1,35 @@
+diff --git a/js/magnific-popup.js b/js/magnific-popup.js
+index 6b1c2cc..7ccdf04 100644
+--- a/js/magnific-popup.js
++++ b/js/magnific-popup.js
+@@ -5,7 +5,7 @@
+   Drupal.behaviors.magnific_popup = {
+     attach: function (context, settings) {
+       // Gallery.
+-      $(context).find('.mfp-all-items, .mfp-first-item, .mfp-random-item').once('mfp-processed').each( function() {
++      $(context).find('.mfp-all-items, .mfp-first-item, .mfp-random-item').once('mfp-processed').each( function () {
+         $(this).magnificPopup({
+           delegate: 'a',
+           type: 'image',
+diff --git a/js/magnific-popup.video-embed.js b/js/magnific-popup.video-embed.js
+index 85dcb2e..71f6520 100644
+--- a/js/magnific-popup.video-embed.js
++++ b/js/magnific-popup.video-embed.js
+@@ -10,7 +10,7 @@
+         $(this).find(".mfp-video-embed-popup").each(function () {
+           gallery_items.push({
+             src:
+-            '<div class="mfp-embedded-video-popup">'+
++            '<div class="mfp-embedded-video-popup">' +
+             $(this).data("mfp-video-embed") +
+             '</div>'
+           });
+@@ -34,7 +34,7 @@
+           $.magnificPopup.open({
+             items: {
+               src:
+-              '<div class="mfp-embedded-video-popup">'+
++              '<div class="mfp-embedded-video-popup">' +
+               $(this).data("mfp-video-embed") +
+               '</div>'
+             },

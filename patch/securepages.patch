@@ -1,0 +1,657 @@
+diff --git a/securepages.admin.inc b/securepages.admin.inc
+index 8d065ff..c72c211 100644
+--- a/securepages.admin.inc
++++ b/securepages.admin.inc
+@@ -2,86 +2,86 @@
+ 
+ /**
+  * @file
+- * Provide all the administration pages
++ * Provide all the administration pages.
+  */
+ 
+ /**
+  * Builds the securepages settings form.
+  */
+ function securepages_settings($form, &$form_state) {
+-  $form = array();
++  $form = [];
+ 
+-  $form['securepages_enable'] = array(
++  $form['securepages_enable'] = [
+     '#type' => 'radios',
+     '#title' => t('Enable Secure Pages'),
+     '#default_value' => variable_get('securepages_enable', 0),
+-    '#options' => array(t('Disabled'), t('Enabled')),
++    '#options' => [t('Disabled'), t('Enabled')],
+     '#disabled' => !securepages_test(),
+-    '#description' => t('To start using secure pages this setting must be enabled. This setting will only be able to changed when the web server has been configured for SSL.<br />If this test has failed then go <a href="!url">here</a>', array('!url' => preg_replace(';^http://;i', 'https://', url($_GET['q'], array('absolute' => TRUE))))),
+-  );
+-  $form['securepages_switch'] = array(
++    '#description' => t('To start using secure pages this setting must be enabled. This setting will only be able to changed when the web server has been configured for SSL.<br />If this test has failed then go <a href="!url">here</a>', ['!url' => preg_replace(';^http://;i', 'https://', url($_GET['q'], ['absolute' => TRUE]))]),
++  ];
++  $form['securepages_switch'] = [
+     '#type' => 'checkbox',
+     '#title' => t('Switch back to http pages when there are no matches'),
+     '#return_value' => TRUE,
+     '#default_value' => variable_get('securepages_switch', FALSE),
+-  );
++  ];
+ 
+-  $form['securepages_basepath'] = array(
++  $form['securepages_basepath'] = [
+     '#type' => 'textfield',
+     '#title' => t('Non-secure Base URL'),
+     '#default_value' => variable_get('securepages_basepath', ''),
+-  );
++  ];
+ 
+-  $form['securepages_basepath_ssl'] = array(
++  $form['securepages_basepath_ssl'] = [
+     '#type' => 'textfield',
+     '#title' => t('Secure Base URL'),
+     '#default_value' => variable_get('securepages_basepath_ssl', ''),
+-  );
++  ];
+ 
+-  $form['securepages_secure'] = array(
++  $form['securepages_secure'] = [
+     '#type' => 'radios',
+     '#title' => t('Pages which will be be secure'),
+     '#default_value' => variable_get('securepages_secure', 1),
+-    '#options' => array(t('Make secure every page except the listed pages.'), t('Make secure only the listed pages.')),
+-  );
+-  $form['securepages_pages'] = array(
++    '#options' => [t('Make secure every page except the listed pages.'), t('Make secure only the listed pages.')],
++  ];
++  $form['securepages_pages'] = [
+     '#type' => 'textarea',
+     '#title' => t('Pages'),
+     '#default_value' => variable_get('securepages_pages', SECUREPAGES_PAGES),
+     '#cols' => 40,
+     '#rows' => 5,
+     '#description' => t("Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are '<em>blog</em>' for the main blog page and '<em>blog/*</em>' for every personal blog. '<em>&lt;front&gt;</em>' is the front page."),
+-  );
+-  $form['securepages_ignore'] = array(
++  ];
++  $form['securepages_ignore'] = [
+     '#type' => 'textarea',
+     '#title' => t('Ignore pages'),
+     '#default_value' => variable_get('securepages_ignore', SECUREPAGES_IGNORE),
+     '#cols' => 40,
+     '#rows' => 5,
+     '#description' => t("The pages listed here will be ignored and be either returned in http or https. Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are '<em>blog</em>' for the blog page and '<em>blog/*</em>' for every personal blog. '<em>&lt;front&gt;</em>' is the front page."),
+-  );
+-  $form['securepages_roles'] = array(
++  ];
++  $form['securepages_roles'] = [
+     '#type' => 'checkboxes',
+     '#title' => 'User roles',
+     '#description' => t('Users with the chosen role(s) are always redirected to https, regardless of path rules.'),
+     '#options' => array_map('check_plain', user_roles(TRUE)),
+-    '#default_value' => variable_get('securepages_roles', array()),
+-  );
+-  $form['securepages_forms'] = array(
++    '#default_value' => variable_get('securepages_roles', []),
++  ];
++  $form['securepages_forms'] = [
+     '#type' => 'textarea',
+     '#title' => t('Secure forms'),
+     '#default_value' => variable_get('securepages_forms', SECUREPAGES_FORMS),
+     '#cols' => 40,
+     '#rows' => 5,
+     '#description' => t('List of form ids which will have the https flag set to TRUE.'),
+-  );
+-  $form['securepages_debug'] = array(
++  ];
++  $form['securepages_debug'] = [
+     '#type' => 'checkbox',
+     '#title' => t('Enable Debugging'),
+     '#default_value' => variable_get('securepages_debug', 0),
+     '#description' => t('Turn on debugging to allow easier testing of settings'),
+-  );
+-  $form['#submit'] = array('securepages_settings_submit');
++  ];
++  $form['#submit'] = ['securepages_settings_submit'];
+   return system_settings_form($form);
+ }
+ 
+diff --git a/src/EventSubscriber/SecurepagesSubscriber.php b/src/EventSubscriber/SecurepagesSubscriber.php
+index a2cc2d9..c4533e2 100644
+--- a/src/EventSubscriber/SecurepagesSubscriber.php
++++ b/src/EventSubscriber/SecurepagesSubscriber.php
+@@ -1,8 +1,4 @@
+ <?php
+-/**
+- * @file
+- * Contains \Drupal\securepages\EventSubscriber\SecurepagesSubscriber.
+- */
+ 
+ namespace Drupal\securepages\EventSubscriber;
+ 
+@@ -16,6 +12,9 @@ use Drupal\securepages\Securepages;
+ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+ use Symfony\Component\HttpFoundation\RedirectResponse;
+ 
++/**
++ *
++ */
+ class SecurepagesSubscriber implements EventSubscriberInterface {
+ 
+   /**
+@@ -60,7 +59,7 @@ class SecurepagesSubscriber implements EventSubscriberInterface {
+    */
+   public function checkResponseRedirection(FilterResponseEvent $event) {
+     $response = $event->getResponse();
+-    if ($response instanceOf RedirectResponse) {
++    if ($response instanceof RedirectResponse) {
+       $config = $this->configFactory->get('securepages.settings');
+       if ($config->get('enable')) {
+         $role_match = Securepages::matchCurrentUser();
+@@ -98,9 +97,9 @@ class SecurepagesSubscriber implements EventSubscriberInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  static function getSubscribedEvents() {
+-    $events[KernelEvents::REQUEST][] = array('checkRequestRedirection');
+-    $events[KernelEvents::RESPONSE][] = array('checkResponseRedirection');
++  public static function getSubscribedEvents() {
++    $events[KernelEvents::REQUEST][] = ['checkRequestRedirection'];
++    $events[KernelEvents::RESPONSE][] = ['checkResponseRedirection'];
+     return $events;
+   }
+ 
+diff --git a/src/Form/SecurepagesSettingsForm.php b/src/Form/SecurepagesSettingsForm.php
+index 25dcf03..d421ff2 100644
+--- a/src/Form/SecurepagesSettingsForm.php
++++ b/src/Form/SecurepagesSettingsForm.php
+@@ -1,21 +1,16 @@
+ <?php
+-/**
+- * @file
+- * Contains \Drupal\securepages\Form\SecurepagesSettingsForm.
+- */
+ 
+ namespace Drupal\securepages\Form;
+ 
+ use Drupal\Core\Form\ConfigFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Url;
+ use Drupal\securepages\Securepages;
+ use Symfony\Component\HttpFoundation\Request;
+ 
+ /**
+  * Defines a form that configures forms module settings.
+  */
+-class SecurepagesSettingsForm  extends ConfigFormBase {
++class SecurepagesSettingsForm extends ConfigFormBase {
+ 
+   /**
+    * {@inheritdoc}
+@@ -37,88 +32,88 @@ class SecurepagesSettingsForm  extends ConfigFormBase {
+   public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
+     $config = $this->config('securepages.settings');
+     $secure = 0;
+-    if($config->get('secure')) {
++    if ($config->get('secure')) {
+       $secure = 1;
+     }
+-    $form['enable'] = array(
++    $form['enable'] = [
+       '#type' => 'checkbox',
+       '#title' => t('Enable Secure Pages'),
+       '#default_value' => $config->get('enable'),
+       '#disabled' => !Securepages::isHTTPSSupported(),
+-      '#description' => $this->t('To start using secure pages this setting must be enabled. This setting will only be possible to change when the web server has been configured for HTTPS. You may need to set the secure base URL below in case of a custom port. <a href=":url">You can manually visit the site in HTTPS too</a>.', array(':url' => Securepages::getUrl('<front>')->toString())),
+-    );
++      '#description' => $this->t('To start using secure pages this setting must be enabled. This setting will only be possible to change when the web server has been configured for HTTPS. You may need to set the secure base URL below in case of a custom port. <a href=":url">You can manually visit the site in HTTPS too</a>.', [':url' => Securepages::getUrl('<front>')->toString()]),
++    ];
+ 
+-    $form['switch'] = array(
++    $form['switch'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Switch back to HTTP pages when there are no matches'),
+       '#default_value' => $config->get('switch'),
+-    );
++    ];
+ 
+-    $form['basepath'] = array(
++    $form['basepath'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Non-secure base URL'),
+       '#default_value' => $config->get('basepath'),
+       '#size' => 100,
+-    );
+-    
+-    $form['basepath_ssl'] = array(
++    ];
++
++    $form['basepath_ssl'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Secure base URL'),
+       '#default_value' => $config->get('basepath_ssl'),
+       '#size' => 100,
+-    );
++    ];
+ 
+     $active_options = [
+       0 => $this->t('Pages not matching the patterns should be secure'),
+-      1 => $this->t('Pages matching the patterns should be secure')
++      1 => $this->t('Pages matching the patterns should be secure'),
+     ];
+-    $form['secure'] = array(
++    $form['secure'] = [
+       '#type' => 'radios',
+       '#title' => $this->t('Which pages will be secure'),
+       '#default_value' => $secure,
+       '#options' => $active_options,
+-    );
+-    $form['pages'] = array(
++    ];
++    $form['pages'] = [
+       '#title' => $this->t('Pages'),
+       '#type' => 'textarea',
+       '#default_value' => implode("\n", $config->get('pages')),
+       '#cols' => 40,
+       '#rows' => 5,
+       '#description' => $this->t("Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are '<em>blog</em>' for the main blog page and '<em>blog/*</em>' for every personal blog. '<em>&lt;front&gt;</em>' is the front page."),
+-    );
++    ];
+ 
+-    $form['ignore'] = array(
++    $form['ignore'] = [
+       '#type' => 'textarea',
+       '#title' => $this->t('Ignore pages'),
+       '#default_value' => implode("\n", $config->get('ignore')),
+       '#cols' => 40,
+       '#rows' => 5,
+       '#description' => $this->t("The pages listed here will be ignored and be either returned in HTTP or HTTPS. Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are '<em>blog</em>' for the blog page and '<em>blog/*</em>' for every personal blog. '<em>&lt;front&gt;</em>' is the front page."),
+-    );
++    ];
+ 
+-    $form['roles'] = array(
++    $form['roles'] = [
+       '#type' => 'checkboxes',
+       '#title' => $this->t('User roles'),
+       '#description' => $this->t('Users with the chosen role(s) are always redirected to HTTPS, regardless of path rules.'),
+       '#options' => user_role_names(),
+       '#default_value' => $config->get('roles'),
+-    );
++    ];
+ 
+-    $form['forms'] = array(
++    $form['forms'] = [
+       '#type' => 'textarea',
+       '#title' => $this->t('Secure forms'),
+       '#default_value' => implode("\n", $config->get('forms')),
+       '#cols' => 40,
+       '#rows' => 5,
+       '#description' => $this->t('List of form ids which will have the HTTPS flag set to TRUE.'),
+-    );
++    ];
+ 
+-    $form['debug'] = array(
++    $form['debug'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Enable debugging'),
+       '#default_value' => $config->get('debug'),
+       '#description' => $this->t('Turn on debugging to allow easier testing of settings.'),
+-    );
++    ];
+     return parent::buildForm($form, $form_state);
+   }
+ 
+diff --git a/src/FormBuilder.php b/src/FormBuilder.php
+index 85aa274..fdb53ac 100644
+--- a/src/FormBuilder.php
++++ b/src/FormBuilder.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\securepages\FormBuilder.
+- */
+-
+ namespace Drupal\securepages;
+ 
+ use Drupal\Core\Cache\CacheableMetadata;
+@@ -25,7 +20,6 @@ class FormBuilder extends CoreFormBuilder {
+     // Secure Pages allows specific forms to opt in, we need to not only
+     // override the #lazy_builder callback but also the arguments: the form ID
+     // also needs to be known.
+-
+     // Only update the action if it is not already set.
+     $config = \Drupal::config('securepages.settings');
+     if ($config->get('enabled') && !isset($form['#action'])) {
+@@ -36,9 +30,9 @@ class FormBuilder extends CoreFormBuilder {
+       // https://www.drupal.org/node/2562341.
+       $placeholder = 'form_action_' . hash('crc32b', __METHOD__);
+ 
+-//      $form['#attached']['placeholders'][$placeholder] = [
+-//        '#lazy_builder' => ['securepages.form_builder:renderPlaceholderFormAction', [$form_id]],
+-//      ];
++      // $form['#attached']['placeholders'][$placeholder] = [
++      //        '#lazy_builder' => ['securepages.form_builder:renderPlaceholderFormAction', [$form_id]],
++      //      ];
+       $form['#action'] = $placeholder;
+     }
+ 
+diff --git a/src/Securepages.php b/src/Securepages.php
+index 8beecfe..ebdd07c 100644
+--- a/src/Securepages.php
++++ b/src/Securepages.php
+@@ -1,8 +1,4 @@
+ <?php
+-/**
+- * @file
+- * Contains \Drupal\securepages\Securepages.
+- */
+ 
+ namespace Drupal\securepages;
+ 
+@@ -69,7 +65,7 @@ class Securepages {
+   /**
+    * Match the current path against the configured settings.
+    *
+-   * @return bool|NULL
++   * @return bool|null
+    *   - FALSE: Path should be non-secure.
+    *   - TRUE: Path should be secure.
+    *   - NULL: No explicit information.
+@@ -87,7 +83,7 @@ class Securepages {
+    * @param string $path
+    *   Path to match against settings.
+    *
+-   * @return bool|NULL
++   * @return bool|null
+    *   - FALSE: Path should be non-secure.
+    *   - TRUE: Path should be secure.
+    *   - NULL: No explicit information.
+@@ -112,14 +108,14 @@ class Securepages {
+     // Checks to see if the page matches the current settings.
+     if ($ignore) {
+       if ($path_matcher->matchPath($path_alias, $ignore) || (($path != $path_alias) && $path_matcher->matchPath($path, $ignore))) {
+-        //Securepages::log('Ignored path (Path: "@path", Line: @line, Pattern: "@pattern")', $path, $ignore);
++        // Securepages::log('Ignored path (Path: "@path", Line: @line, Pattern: "@pattern")', $path, $ignore);.
+         return $request->isSecure();
+       }
+     }
+     if ($pages) {
+       $result = $path_matcher->matchPath($path_alias, $pages) || (($path != $path_alias) && $path_matcher->matchPath($path, $pages));
+       if (!($config->get('secure') xor $result)) {
+-        //Securepages::log('Secure path (Path: "@path", Line: @line, Pattern: "@pattern")', $path, $pages);
++        // Securepages::log('Secure path (Path: "@path", Line: @line, Pattern: "@pattern")', $path, $pages);.
+       }
+       return !($config->get('secure') xor $result);
+     }
+@@ -145,7 +141,7 @@ class Securepages {
+     $path_matcher = \Drupal::service('path.matcher');
+ 
+     if ($path_matcher->matchPath($form_id, $forms)) {
+-      //Securepages::log('Secure Form (Form: "@path", Line: @line, Pattern: "@pattern")', $form_id, $forms);
++      // Securepages::log('Secure Form (Form: "@path", Line: @line, Pattern: "@pattern")', $form_id, $forms);.
+       return TRUE;
+     }
+ 
+diff --git a/src/SecurepagesPathProcessor.php b/src/SecurepagesPathProcessor.php
+index 3c88701..153184e 100644
+--- a/src/SecurepagesPathProcessor.php
++++ b/src/SecurepagesPathProcessor.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains Drupal\securepages\SecurepagesPathProcessor.
+- */
+-
+ namespace Drupal\securepages;
+ 
+ use Drupal\Core\Config\ConfigFactoryInterface;
+@@ -44,4 +39,4 @@ class SecurepagesPathProcessor implements OutboundPathProcessorInterface {
+     return $path;
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/Tests/SecurepagesTest.php b/src/Tests/SecurepagesTest.php
+index 2fb1b14..7a71fba 100644
+--- a/src/Tests/SecurepagesTest.php
++++ b/src/Tests/SecurepagesTest.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\securepages\Tests\SecurepagesTest.
+- */
+-
+ namespace Drupal\securepages\Tests;
+ 
+ use Drupal\comment\Tests\CommentTestTrait;
+@@ -39,6 +34,9 @@ class SecurepagesTest extends WebTestBase {
+    */
+   protected $pages_default = ['/node/add*', '/node/*/edit', '/node/*/delete', '/user', '/user/*', '/admin', '/admin/*'];
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+     $this->drupalCreateContentType(['type' => 'article']);
+@@ -48,7 +46,7 @@ class SecurepagesTest extends WebTestBase {
+   /**
+    * Runs all the tests in a sequence to avoid multiple re-installs.
+    */
+-  function testSecurePages() {
++  public function testSecurePages() {
+     $this->_testSettingsForm();
+     $this->_testMatch();
+     $this->_testLocale();
+@@ -61,7 +59,6 @@ class SecurepagesTest extends WebTestBase {
+     // being a valid URL, not sure how would securepages be used for open
+     // redirection.
+     // $this->_testOpenRedirect();
+-
+     $this->_testXHR();
+     $this->_testRoles();
+     $this->_testPathNorms();
+@@ -70,7 +67,7 @@ class SecurepagesTest extends WebTestBase {
+   /**
+    * Test submitting the settings form.
+    */
+-  function _testSettingsForm() {
++  public function _testSettingsForm() {
+     $this->drupalLoginHttps($this->drupalCreateUser(['administer site configuration']));
+     $this->drupalPostForm(
+       Securepages::getUrl('securepages.admin_settings'),
+@@ -86,7 +83,7 @@ class SecurepagesTest extends WebTestBase {
+   /**
+    * Tests the securepages_match() function.
+    */
+-  function _testMatch() {
++  public function _testMatch() {
+     \Drupal::configFactory()->getEditable('securepages.settings')->set('ignore', ['*/autocomplete/*'])->save();
+ 
+     $request = \Drupal::requestStack()->getCurrentRequest();
+@@ -106,7 +103,7 @@ class SecurepagesTest extends WebTestBase {
+   /**
+    * Tests correct operation with locale module.
+    */
+-  function _testLocale() {
++  public function _testLocale() {
+     $french = ConfigurableLanguage::createFromLangcode('fr');
+     $french->save();
+     $this->drupalGet('fr/user');
+@@ -118,7 +115,7 @@ class SecurepagesTest extends WebTestBase {
+   /**
+    * Tests for anonymous browsing with securepages.
+    */
+-  function _testAnonymous() {
++  public function _testAnonymous() {
+     // Visit the home page (same as user page) with plain HTTP.
+     $this->drupalGet('', ['https' => FALSE]);
+     $this->assertResponse(302);
+@@ -157,7 +154,7 @@ class SecurepagesTest extends WebTestBase {
+    *
+    * Uses the comment form, since it has an #action set.
+    */
+-  function _testFormAlter() {
++  public function _testFormAlter() {
+     $config = \Drupal::configFactory()->getEditable('securepages.settings');
+     $config->set('switch', TRUE)->save();
+ 
+@@ -171,7 +168,7 @@ class SecurepagesTest extends WebTestBase {
+     $account = $this->drupalCreateUser(['access content', 'access comments', 'post comments', 'skip comment approval']);
+     $node = $this->drupalCreateNode(['type' => 'article', 'promote' => 1]);
+ 
+-    foreach (array('anonymous', 'authenticated') as $mode) {
++    foreach (['anonymous', 'authenticated'] as $mode) {
+       if ($mode == 'authenticated') {
+         $this->drupalLogin($account);
+       }
+@@ -211,7 +208,10 @@ class SecurepagesTest extends WebTestBase {
+       ->save();
+   }
+ 
+-  function _testCachedResponse() {
++  /**
++   *
++   */
++  public function _testCachedResponse() {
+     // Enable the page cache and fetch the login page.
+     $this->installModule('page_cache');
+     $url = Url::fromRoute('user.login', [], ['absolute' => TRUE, 'https' => FALSE]);
+@@ -233,7 +233,7 @@ class SecurepagesTest extends WebTestBase {
+   /**
+    * Test redirection on aliased paths.
+    */
+-  function _testPathAlias() {
++  public function _testPathAlias() {
+     $config = \Drupal::configFactory()->getEditable('securepages.settings');
+     $config->set('pages', ['/node/*', '/user*'])->save();
+ 
+@@ -265,22 +265,22 @@ class SecurepagesTest extends WebTestBase {
+   /**
+    * Verifies that securepages is not an open redirect.
+    */
+-  function _testOpenRedirect() {
++  public function _testOpenRedirect() {
+     // Short-circuit redirects within the simpletest browser.
+     variable_set('simpletest_maximum_redirects', 0);
+     variable_set('securepages_switch', TRUE);
+ 
+     global $base_url, $base_path;
+     $secure_base_url = str_replace('http', 'https', $base_url);
+-    $this->drupalGet($secure_base_url . $base_path . '?q=http://example.com/', array('external' => TRUE));
++    $this->drupalGet($secure_base_url . $base_path . '?q=http://example.com/', ['external' => TRUE]);
+     $this->assertResponse(302);
+     $this->assertTrue(strstr($this->drupalGetHeader('Location'), $base_url), t('Open redirect test passed.'));
+ 
+-    $this->drupalGet($secure_base_url . $base_path . '?q=' . urlencode('http://example.com/'), array('external' => TRUE));
++    $this->drupalGet($secure_base_url . $base_path . '?q=' . urlencode('http://example.com/'), ['external' => TRUE]);
+     $this->assertResponse(302);
+     $this->assertTrue(strstr($this->drupalGetHeader('Location'), $base_url), t('Open redirect test passed.'));
+ 
+-    // Clean up
++    // Clean up.
+     variable_del('simpletest_maximum_redirects');
+     variable_del('securepages_switch');
+   }
+@@ -288,7 +288,7 @@ class SecurepagesTest extends WebTestBase {
+   /**
+    * Test detection of XHR requests.
+    */
+-  function _testXHR() {
++  public function _testXHR() {
+     // Without XHR header.
+     $this->drupalGet('user', ['https' => FALSE]);
+     $this->assertResponse(200);
+@@ -303,7 +303,7 @@ class SecurepagesTest extends WebTestBase {
+   /**
+    * Test role-based switching.
+    */
+-  function _testRoles() {
++  public function _testRoles() {
+     $account = $this->drupalCreateUser(['access content']);
+     $role = current($account->getRoles(TRUE));
+ 
+@@ -332,7 +332,7 @@ class SecurepagesTest extends WebTestBase {
+   /**
+    * Test path normalization checks.
+    */
+-  function _testPathNorms() {
++  public function _testPathNorms() {
+     $config = \Drupal::configFactory()->getEditable('securepages.settings');
+     $config->set('switch', TRUE)->set('pages', ['/user'])->save();
+ 
+@@ -350,33 +350,33 @@ class SecurepagesTest extends WebTestBase {
+     $this->assertFieldByXPath('//form[@id="user-login" and starts-with(@action, "/")]', NULL, 'The user login form action is https.');
+ 
+     // Clean up.
+-    $config->set('switch', FALSe)->set('pages', $this->pages_default)->save();
++    $config->set('switch', FALSE)->set('pages', $this->pages_default)->save();
+   }
+ 
+   /**
+    * Log in a user with the internal browser using HTTPS.
+    *
+-   * @see \Drupal\simpletest\WebTestBase::drupalLogin().
++   * @see \Drupal\simpletest\WebTestBase::drupalLogin()
+    *
+    * @param \Drupal\Core\Session\AccountInterface $account
+    *   User object representing the user to log in.
+    */
+-  function drupalLoginHttps($account) {
++  public function drupalLoginHttps($account) {
+     if ($this->loggedInUser) {
+       $this->drupalLogout();
+     }
+ 
+-    $edit = array(
++    $edit = [
+       'name' => $account->getAccountName(),
+-      'pass' => $account->pass_raw
+-    );
++      'pass' => $account->pass_raw,
++    ];
+     $this->drupalPostForm(Securepages::getUrl('user.login'), $edit, t('Log in'));
+ 
+     // @see WebTestBase::drupalUserIsLoggedIn()
+     if (isset($this->sessionId)) {
+       $account->session_id = $this->sessionId;
+     }
+-    $pass = $this->assertRaw('>' . $account->getAccountName() . '<', t('User %name successfully logged in.', array('%name' => $account->getAccountName())), 'User login');
++    $pass = $this->assertRaw('>' . $account->getAccountName() . '<', t('User %name successfully logged in.', ['%name' => $account->getAccountName()]), 'User login');
+     if ($pass) {
+       $this->loggedInUser = $account;
+       $this->container->get('current_user')->setAccount($account);
+@@ -392,7 +392,7 @@ class SecurepagesTest extends WebTestBase {
+     // Make a request to the logout page, and redirect to the user page, the
+     // idea being if you were properly logged out you should be seeing a login
+     // screen.
+-    $this->drupalGet(Securepages::getUrl('user.logout', array('query' => array('destination' => 'user/login'))));
++    $this->drupalGet(Securepages::getUrl('user.logout', ['query' => ['destination' => 'user/login']]));
+     $this->assertResponse(200, 'User was logged out.');
+     $pass = $this->assertField('name', 'Username field found.', 'Logout');
+     $pass = $pass && $this->assertField('pass', 'Password field found.', 'Logout');
+@@ -412,7 +412,7 @@ class SecurepagesTest extends WebTestBase {
+    *   The module name.
+    */
+   protected function installModule($module) {
+-    $this->container->get('module_installer')->install(array($module));
++    $this->container->get('module_installer')->install([$module]);
+     $this->container = \Drupal::getContainer();
+   }
+ 
+@@ -423,7 +423,7 @@ class SecurepagesTest extends WebTestBase {
+    *   The module name.
+    */
+   protected function uninstallModule($module) {
+-    $this->container->get('module_installer')->uninstall(array($module));
++    $this->container->get('module_installer')->uninstall([$module]);
+     $this->container = \Drupal::getContainer();
+   }
+ 

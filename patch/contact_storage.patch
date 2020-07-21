@@ -1,0 +1,51 @@
+diff --git a/src/Routing/RouteSubscriber.php b/src/Routing/RouteSubscriber.php
+index 470a936..6d6fb46 100644
+--- a/src/Routing/RouteSubscriber.php
++++ b/src/Routing/RouteSubscriber.php
+@@ -4,7 +4,7 @@ namespace Drupal\contact_storage\Routing;
+ 
+ use Drupal\Core\Routing\RouteSubscriberBase;
+ use Symfony\Component\Routing\RouteCollection;
+-use \Drupal\contact_storage\Controller\ContactStorageController;
++use Drupal\contact_storage\Controller\ContactStorageController;
+ 
+ /**
+  * Listens to the dynamic route events.
+diff --git a/tests/src/Functional/ContactStoragePersonalTest.php b/tests/src/Functional/ContactStoragePersonalTest.php
+index 8d2408e..7456928 100644
+--- a/tests/src/Functional/ContactStoragePersonalTest.php
++++ b/tests/src/Functional/ContactStoragePersonalTest.php
+@@ -51,6 +51,9 @@ class ContactStoragePersonalTest extends BrowserTestBase {
+    */
+   protected $defaultTheme = 'stark';
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+diff --git a/tests/src/Functional/ContactStorageTest.php b/tests/src/Functional/ContactStorageTest.php
+index af9c0de..a41efe9 100644
+--- a/tests/src/Functional/ContactStorageTest.php
++++ b/tests/src/Functional/ContactStorageTest.php
+@@ -51,6 +51,9 @@ class ContactStorageTest extends ContactStorageTestBase {
+     'filter',
+   ];
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+@@ -389,6 +392,9 @@ class ContactStorageTest extends ContactStorageTestBase {
+     $this->assertNull($alias);
+   }
+ 
++  /**
++   *
++   */
+   public function testMaximumSubmissionLimit() {
+     // Create a new contact form with a maximum submission limit of 2.
+     $this->addContactForm('test_id_3', 'test_label', 'simpletest@example.com', FALSE, ['contact_storage_maximum_submissions_user' => 2]);

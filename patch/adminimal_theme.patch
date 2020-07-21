@@ -1,0 +1,66 @@
+diff --git a/css/adminimal.css b/css/adminimal.css
+index 89e34dc..2a4fad9 100644
+--- a/css/adminimal.css
++++ b/css/adminimal.css
+@@ -171,7 +171,7 @@
+ 
+ .adminimal .button:hover,
+ .adminimal .button:focus {
+-  background-color: #FFFFFF;
++  background-color: #ffffff;
+   border-color: #008ee6;
+ }
+ 
+@@ -263,7 +263,7 @@
+   .adminimal select:focus {
+     border-color: #68a3cf;
+     color: #000;
+-    outline: 2px solid #C1E0FF;
++    outline: 2px solid #c1e0ff;
+     outline-offset: 0;
+   }
+ }
+@@ -354,8 +354,8 @@
+ .adminimal .form-textarea:focus,
+ .adminimal .form-date:focus,
+ .adminimal .form-time:focus {
+-  border-color: #68A3CF;
+-  outline: 2px solid #C1E0FF;
++  border-color: #68a3cf;
++  outline: 2px solid #c1e0ff;
+   outline-offset: 0px;
+   color: #000;
+ }
+@@ -368,7 +368,7 @@
+ .js .adminimal .dropbutton-wrapper .dropbutton-widget .dropbutton-action input:focus,
+ .js .adminimal .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button:hover,
+ .js .adminimal .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button:focus {
+-  background-image:none;
++  background-image: none;
+   background-color: #ffffff;
+ }
+ 
+@@ -607,12 +607,12 @@ input[type=radio].error:focus:checked {
+ }
+ 
+ .form-item input[type='checkbox'].error {
+-  border-color: #B5B5B5;
++  border-color: #b5b5b5;
+ }
+ 
+ input[type=checkbox]#edit-delete:checked,
+ input[type=checkbox]#edit-delete:disabled:checked {
+-  background: #D01616;
++  background: #d01616;
+   box-shadow: inset 0 0 0 3px #fff;
+ }
+ 
+@@ -652,7 +652,7 @@ input[type=radio]:disabled:hover {
+   input[type="checkbox"],
+   input[type="radio"],
+   input[type="checkbox"]#edit-delete {
+-    -moz-appearance:none;
++    -moz-appearance: none;
+   }
+ }
+ 

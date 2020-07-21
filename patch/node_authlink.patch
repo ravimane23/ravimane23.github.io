@@ -1,0 +1,90 @@
+diff --git a/src/Access/NodeRevisionAccessCheck.php b/src/Access/NodeRevisionAccessCheck.php
+index 4404291..3459cea 100644
+--- a/src/Access/NodeRevisionAccessCheck.php
++++ b/src/Access/NodeRevisionAccessCheck.php
+@@ -9,7 +9,7 @@ use Drupal\node\Access\NodeRevisionAccessCheck as NodeRevisionAccessCheckOrigina
+ use Drupal\node\NodeInterface;
+ 
+ /**
+- * Class NodeRevisionAccessCheck
++ * Class NodeRevisionAccessCheck.
+  *
+  * @package Drupal\node_authlink\Access
+  */
+diff --git a/src/Form/NodeAuthlinkNodeForm.php b/src/Form/NodeAuthlinkNodeForm.php
+index 587e046..e8719be 100644
+--- a/src/Form/NodeAuthlinkNodeForm.php
++++ b/src/Form/NodeAuthlinkNodeForm.php
+@@ -22,6 +22,7 @@ class NodeAuthlinkNodeForm extends FormBase {
+    * @var \Drupal\Core\Config\ConfigFactoryInterface
+    */
+   protected $configFactory;
++
+   /**
+    * Constructs a new NodeAuthlinkNodeForm object.
+    */
+@@ -31,13 +32,15 @@ class NodeAuthlinkNodeForm extends FormBase {
+     $this->configFactory = $config_factory;
+   }
+ 
++  /**
++   *
++   */
+   public static function create(ContainerInterface $container) {
+     return new static(
+       $container->get('config.factory')
+     );
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -98,13 +101,13 @@ class NodeAuthlinkNodeForm extends FormBase {
+ 
+                 if ($revision->isDefaultRevision()) {
+                   $revision_options[$vid] = [
+-                    'text' =>  $this->t('Current revision'),
++                    'text' => $this->t('Current revision'),
+                     'url' => node_authlink_get_url($node, $op),
+                   ];
+                 }
+                 else {
+                   $revision_options[$vid] = [
+-                    'text' =>  $date,
++                    'text' => $date,
+                     'url' => node_authlink_get_url($node, $op, $vid),
+                   ];
+                 }
+@@ -138,7 +141,7 @@ class NodeAuthlinkNodeForm extends FormBase {
+           $url = node_authlink_get_url($node, $op);
+           if ($url) {
+             // @todo: use a table instead.
+-            $form['link_'.$op] = [
++            $form['link_' . $op] = [
+               '#type' => 'item',
+               '#markup' => "<p><strong>$op</strong>: $url</p>",
+             ];
+@@ -160,7 +163,7 @@ class NodeAuthlinkNodeForm extends FormBase {
+           '#type' => 'submit',
+           '#value' => $this->t('Create authlink'),
+           '#weight' => 10,
+-          '#submit' => ['::createAuthlink']
++          '#submit' => ['::createAuthlink'],
+         ];
+       }
+ 
+@@ -181,6 +184,7 @@ class NodeAuthlinkNodeForm extends FormBase {
+ 
+   /**
+    * Delete authlink submit callback.
++   *
+    * @param array $form
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+    */
+@@ -224,4 +228,5 @@ class NodeAuthlinkNodeForm extends FormBase {
+     }
+     return AccessResult::forbidden();
+   }
++
+ }

@@ -1,0 +1,13 @@
+diff --git a/js/lang_dropdown.js b/js/lang_dropdown.js
+index 21cc71c..6e7a195 100644
+--- a/js/lang_dropdown.js
++++ b/js/lang_dropdown.js
+@@ -6,7 +6,7 @@
+       settings = settings || drupalSettings;
+ 
+       if (settings.lang_dropdown) {
+-        $('.lang-dropdown-select-element').each(function() {
++        $('.lang-dropdown-select-element').each(function () {
+           var $dropdown = $(this);
+           var key = $dropdown.data('lang-dropdown-id');
+ 

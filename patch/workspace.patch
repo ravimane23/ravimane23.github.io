@@ -1,0 +1,1571 @@
+diff --git a/css/workspace.admin.css b/css/workspace.admin.css
+index 31b757d..ac8b7ab 100644
+--- a/css/workspace.admin.css
++++ b/css/workspace.admin.css
+@@ -1,91 +1,93 @@
+ .item-list ul.workspace,
+ .item-list ul.workspace ul {
+-    padding-top: 20px;
+-    position: relative;
+-    margin: 0;
++  padding-top: 20px;
++  position: relative;
++  margin: 0;
+ }
+ 
+ .item-list .workspace li {
+-    float: left;
+-    text-align: center;
+-    list-style-type: none;
+-    position: relative;
+-    padding: 20px 5px 0;
+-    margin: 0;
++  float: left;
++  text-align: center;
++  list-style-type: none;
++  position: relative;
++  padding: 20px 5px 0;
++  margin: 0;
+ }
+ 
+ /* We will use ::before and ::after to draw the connectors */
+ .item-list .workspace li::before,
+ .item-list .workspace li::after {
+-    content: '';
+-    position: absolute;
+-    top: 0;
+-    right: 50%;
+-    border-top: 1px solid #ccc;
+-    width: 50%;
+-    height: 20px;
++  content: '';
++  position: absolute;
++  top: 0;
++  right: 50%;
++  border-top: 1px solid #ccc;
++  width: 50%;
++  height: 20px;
+ }
+ .item-list .workspace li::after {
+-    right: auto;
+-    left: 50%;
+-    border-left: 1px solid #ccc;
++  right: auto;
++  left: 50%;
++  border-left: 1px solid #ccc;
+ }
+ 
+ /* We need to remove left-right connectors from elements without any siblings */
+ .item-list .workspace li:only-child::after,
+ .item-list .workspace li:only-child::before {
+-    display: none;
++  display: none;
+ }
+ 
+ /* Remove space from the top of single children */
+-.item-list .workspace li:only-child{
+-    padding-top: 0;
++.item-list .workspace li:only-child {
++  padding-top: 0;
+ }
+ 
+ /* Remove left connector from first child and right connector from last child*/
+ .item-list .workspace li:first-child::before,
+ .item-list .workspace li:last-child::after {
+-    border: 0 none;
++  border: 0 none;
+ }
+ 
+ /* Adding back the vertical connector to the last nodes */
+ .item-list .workspace li:last-child::before {
+-    border-right: 1px solid #ccc;
++  border-right: 1px solid #ccc;
+ }
+ 
+ /* Downward connector from parents */
+ .item-list ul.workspace ul::before,
+ .item-list ul.workspace ul ul::before {
+-    content: '';
+-    position: absolute; top: 0; left: 50%;
+-    border-left: 1px solid #ccc;
+-    width: 0;
+-    height: 20px;
++  content: '';
++  position: absolute;
++  top: 0;
++  left: 50%;
++  border-left: 1px solid #ccc;
++  width: 0;
++  height: 20px;
+ }
+ 
+ .item-list .workspace .rev,
+ .item-list .workspace .rev__title {
+-    display: inline-block;
+-    margin: 0;
++  display: inline-block;
++  margin: 0;
+ }
+ 
+ .item-list .workspace .panel__title {
+-    padding: 0;
++  padding: 0;
+ }
+ 
+ .item-list .workspace hr {
+-    margin: 5px 0;
++  margin: 5px 0;
+ }
+ 
+ .rev {
+-    margin: 0px 0px 20px;
+-    padding: 9px;
+-    background: #F8F8F8;
+-    border: 1px solid #CCC
++  margin: 0px 0px 20px;
++  padding: 9px;
++  background: #f8f8f8;
++  border: 1px solid #ccc
+ }
+ 
+ .rev__title {
+-    font-size: 1em;
+-    text-transform: uppercase;
+-    margin: 0px;
+-}
+\ No newline at end of file
++  font-size: 1em;
++  text-transform: uppercase;
++  margin: 0px;
++}
+diff --git a/css/workspace.switcher.css b/css/workspace.switcher.css
+index dbce79a..a595a53 100644
+--- a/css/workspace.switcher.css
++++ b/css/workspace.switcher.css
+@@ -7,7 +7,7 @@
+   background: transparent;
+   border: 0;
+   border-radius: 0;
+-  padding: 0.2em 0 0 0 ;
++  padding: 0.2em 0 0 0;
+   margin: 0;
+   color: #0071b3;
+   border-bottom: 1px dotted;
+diff --git a/css/workspace.toolbar.css b/css/workspace.toolbar.css
+index cc0e03c..fed26f0 100644
+--- a/css/workspace.toolbar.css
++++ b/css/workspace.toolbar.css
+@@ -28,7 +28,7 @@
+ }
+ 
+ .toolbar .toolbar-bar .workspace-toolbar-tab.toolbar-tab,
+-.toolbar .toolbar-bar .workspace-update-toolbar-tab.toolbar-tab{
++.toolbar .toolbar-bar .workspace-update-toolbar-tab.toolbar-tab {
+   float: right;
+ }
+ 
+diff --git a/src/Access/WorkspaceViewCheck.php b/src/Access/WorkspaceViewCheck.php
+index c59c0d5..3071960 100644
+--- a/src/Access/WorkspaceViewCheck.php
++++ b/src/Access/WorkspaceViewCheck.php
+@@ -3,11 +3,13 @@
+ namespace Drupal\workspace\Access;
+ 
+ use Drupal\Core\Access\AccessResult;
+-use Drupal\Core\Access\AccessResultInterface;
+ use Drupal\Core\Routing\Access\AccessInterface;
+ use Drupal\Core\Session\AccountInterface;
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ class WorkspaceViewCheck implements AccessInterface {
+ 
+   /**
+@@ -15,15 +17,16 @@ class WorkspaceViewCheck implements AccessInterface {
+    *
+    * "View" in practice implies "is allowed to make active".
+    *
+-   * @param WorkspaceInterface $workspace
++   * @param \Drupal\multiversion\Entity\WorkspaceInterface $workspace
+    *   The workspace to view.
+-   * @param AccountInterface $account
++   * @param \Drupal\Core\Session\AccountInterface $account
+    *   The user account to check.
+    *
+-   * @return AccessResultInterface
++   * @return \Drupal\Core\Access\AccessResultInterface
+    *   The access result.
+    */
+   public function access(WorkspaceInterface $workspace, AccountInterface $account) {
+     return AccessResult::allowedIf($workspace->access('view', $account))->addCacheableDependency($workspace);
+   }
++
+ }
+diff --git a/src/Controller/ArchivedWorkspacesListController.php b/src/Controller/ArchivedWorkspacesListController.php
+index 727bd57..fe3bf63 100644
+--- a/src/Controller/ArchivedWorkspacesListController.php
++++ b/src/Controller/ArchivedWorkspacesListController.php
+@@ -4,8 +4,14 @@ namespace Drupal\workspace\Controller;
+ 
+ use Drupal\Core\Controller\ControllerBase;
+ 
++/**
++ *
++ */
+ class ArchivedWorkspacesListController extends ControllerBase {
+ 
++  /**
++   *
++   */
+   public function viewArchivedWorkspaces() {
+     $archived_workspaces = $this->entityTypeManager()
+       ->getStorage('workspace')
+diff --git a/src/Controller/ChangesListController.php b/src/Controller/ChangesListController.php
+index bc48fd5..902396a 100644
+--- a/src/Controller/ChangesListController.php
++++ b/src/Controller/ChangesListController.php
+@@ -18,6 +18,9 @@ use LogicException;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+ 
++/**
++ *
++ */
+ class ChangesListController extends ControllerBase {
+ 
+   /**
+@@ -33,17 +36,17 @@ class ChangesListController extends ControllerBase {
+   protected $workspaceManager;
+ 
+   /**
+-   * @var ChangesFactoryInterface
++   * @var \Drupal\replication\ChangesFactoryInterface
+    */
+   protected $changesFactory;
+ 
+   /**
+-   * @var RevisionDiffFactoryInterface
++   * @var \Drupal\replication\RevisionDiffFactoryInterface
+    */
+   protected $revisionDiffFactory;
+ 
+   /**
+-   * @var RevisionIndexInterface
++   * @var \Drupal\multiversion\Entity\Index\RevisionIndexInterface
+    */
+   protected $revIndex;
+ 
+@@ -98,7 +101,8 @@ class ChangesListController extends ControllerBase {
+    * @param int $workspace
+    *
+    * @return array The render array to display for the page.
+-   *  The render array to display for the page.
++   *   The render array to display for the page.
++   *
+    * @throws \Doctrine\CouchDB\HTTP\HTTPException
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    * @throws \Drupal\Core\Entity\EntityMalformedException
+@@ -134,6 +138,7 @@ class ChangesListController extends ControllerBase {
+    * @param $target_workspace
+    *
+    * @return array
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    */
+   protected function getChangesBetweenLocalWorkspaces($source_workspace, $target_workspace) {
+@@ -158,10 +163,11 @@ class ChangesListController extends ControllerBase {
+   /**
+    * Return the array with changed entities when target is a remote workspace.
+    *
+-   * @param $source_workspace_pointer \Drupal\workspace\WorkspacePointerInterface
+-   * @param $target_workspace_pointer \Drupal\workspace\WorkspacePointerInterface
++   * @param \Drupal\workspace\WorkspacePointerInterface $source_workspace_pointer
++   * @param \Drupal\workspace\WorkspacePointerInterface $target_workspace_pointer
+    *
+    * @return array
++   *
+    * @throws \Doctrine\CouchDB\HTTP\HTTPException
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    */
+@@ -178,7 +184,7 @@ class ChangesListController extends ControllerBase {
+     $task = $this->getTask($source_workspace, 'push_replication_settings');
+     while (1) {
+       $changes = $source->getChanges(
+-        array(
++        [
+           'feed' => 'normal',
+           'style' => 'all_docs',
+           'since' => $since,
+@@ -186,7 +192,7 @@ class ChangesListController extends ControllerBase {
+           'parameters' => $task->getParameters(),
+           'doc_ids' => NULL,
+           'limit' => 50,
+-        )
++        ]
+       );
+       if (empty($changes['results']) || empty($changes['last_seq'])) {
+         break;
+@@ -209,8 +215,8 @@ class ChangesListController extends ControllerBase {
+   }
+ 
+   /**
+-   * @param $source_workspace \Drupal\multiversion\Entity\WorkspaceInterface
+-   * @param $revs_diff array
++   * @param \Drupal\multiversion\Entity\WorkspaceInterface $source_workspace
++   * @param array $revs_diff
+    *
+    * @return array
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+@@ -241,6 +247,7 @@ class ChangesListController extends ControllerBase {
+    *
+    * @return array A render array representing the administrative page content.
+    *   A render array representing the administrative page content.
++   *
+    * @throws \Drupal\Core\Entity\EntityMalformedException
+    */
+   protected function adminOverview(array $entities = []) {
+@@ -257,7 +264,7 @@ class ChangesListController extends ControllerBase {
+       $this->t('Status'),
+       $this->t('Author'),
+       $this->t('Changed time'),
+-      $this->t('Operations')
++      $this->t('Operations'),
+     ];
+     $rows = [];
+     /** @var \Drupal\Core\Entity\ContentEntityInterface[] $current_page_changes */
+@@ -266,7 +273,7 @@ class ChangesListController extends ControllerBase {
+         $entity->label() ?: '* ' . $this->t('No label') . ' *',
+         $entity->getEntityTypeId(),
+       ];
+-      //Set status.
++      // Set status.
+       if ($entity->_deleted->value) {
+         $row[] = $this->t('Deleted');
+       }
+@@ -332,10 +339,10 @@ class ChangesListController extends ControllerBase {
+    * @param int $workspace
+    *
+    * @return string The page title.
+-   * The page title.
++   *   The page title.
+    */
+   public function getViewChangesTitle($workspace) {
+-    /** @var WorkspaceInterface $active_workspace */
++    /** @var \Drupal\multiversion\Entity\WorkspaceInterface $active_workspace */
+     $active_workspace = $this->workspaceManager->load($workspace);
+     $active_workspace_label = $active_workspace->label();
+     $target_workspace_pointer = $active_workspace->get('upstream')->entity;
+@@ -349,7 +356,7 @@ class ChangesListController extends ControllerBase {
+       'Changes between @source workspace and @target workspace',
+       [
+         '@source' => $active_workspace_label,
+-        '@target' => $target_workspace_label
++        '@target' => $target_workspace_label,
+       ]
+     );
+   }
+@@ -366,6 +373,7 @@ class ChangesListController extends ControllerBase {
+    *
+    * @return \Drupal\workspace\WorkspacePointerInterface
+    *   The pointer to the provided workspace.
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    */
+   protected function getPointerToWorkspace(WorkspaceInterface $workspace) {
+diff --git a/src/Controller/Component/ConflictListBuilder.php b/src/Controller/Component/ConflictListBuilder.php
+index c2e72da..6f4e20e 100644
+--- a/src/Controller/Component/ConflictListBuilder.php
++++ b/src/Controller/Component/ConflictListBuilder.php
+@@ -181,7 +181,7 @@ class ConflictListBuilder {
+    *   The workspace ID to build the conflict list for.
+    *
+    * @return \Drupal\Core\Entity\EntityInterface[] An array of entities.
+-   * An array of entities.
++   *   An array of entities.
+    */
+   public function load($workspace_id) {
+     /** \Drupal\multiversion\Entity\Workspace $workspace */
+diff --git a/src/Controller/RevisionController.php b/src/Controller/RevisionController.php
+index d5e75c4..3ecb5ce 100644
+--- a/src/Controller/RevisionController.php
++++ b/src/Controller/RevisionController.php
+@@ -4,19 +4,21 @@ namespace Drupal\workspace\Controller;
+ 
+ use Drupal\Core\Controller\ControllerBase;
+ use Drupal\Core\Entity\ContentEntityInterface;
+-use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ 
++/**
++ *
++ */
+ class RevisionController extends ControllerBase {
+ 
+   /**
+    * Title callback for view routes.
+    *
+    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+-   *    A RouteMatch object.
++   *   A RouteMatch object.
+    *
+    * @return array
+-   *    Array of page elements to render.
++   *   Array of page elements to render.
+    */
+   public function viewTitle(RouteMatchInterface $route_match) {
+     $parameter_name = $route_match->getRouteObject()->getOption('_entity_type_id');
+@@ -29,9 +31,11 @@ class RevisionController extends ControllerBase {
+    * Renders an entity revision.
+    *
+    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+-   *    A RouteMatch object.
++   *   A RouteMatch object.
++   *
+    * @return array
+-   *    Array of page elements to render.
++   *   Array of page elements to render.
++   *
+    * @throws \Exception
+    */
+   public function view(RouteMatchInterface $route_match) {
+@@ -39,7 +43,7 @@ class RevisionController extends ControllerBase {
+     /** @var \Drupal\Core\Entity\ContentEntityInterface $entity **/
+     $entity = $route_match->getParameter($parameter_name);
+     if ($entity && $entity instanceof ContentEntityInterface) {
+-      /** @var EntityTypeInterface $entity_type */
++      /** @var \Drupal\Core\Entity\EntityTypeInterface $entity_type */
+       $entity_type = $entity->getEntityType();
+       return \Drupal::service('entity_type.manager')->getViewBuilder($entity_type->id())->view($entity);
+     }
+diff --git a/src/Controller/RevisionsController.php b/src/Controller/RevisionsController.php
+index 2b86da5..33ad59c 100644
+--- a/src/Controller/RevisionsController.php
++++ b/src/Controller/RevisionsController.php
+@@ -6,16 +6,19 @@ use Drupal\Core\Controller\ControllerBase;
+ use Drupal\Core\Entity\ContentEntityInterface;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ 
++/**
++ *
++ */
+ class RevisionsController extends ControllerBase {
+ 
+   /**
+    * Prints the revision tree of the current entity.
+    *
+    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+-   *    A RouteMatch object.
++   *   A RouteMatch object.
+    *
+    * @return array
+-   *    Array of page elements to render.
++   *   Array of page elements to render.
+    */
+   public function revisions(RouteMatchInterface $route_match) {
+     $output = [];
+diff --git a/src/Entity/Form/WorkspaceDeleteForm.php b/src/Entity/Form/WorkspaceDeleteForm.php
+index 5e9f086..000c274 100644
+--- a/src/Entity/Form/WorkspaceDeleteForm.php
++++ b/src/Entity/Form/WorkspaceDeleteForm.php
+@@ -83,7 +83,7 @@ class WorkspaceDeleteForm extends ContentEntityConfirmFormBase {
+       $this->messenger()->addMessage(
+         $this->t('Workspace @label and all the content from that workspace have been queued for deletion. They will be deleted on next cron run.',
+           [
+-            '@label' => $this->entity->label()
++            '@label' => $this->entity->label(),
+           ]
+         )
+       );
+@@ -91,4 +91,5 @@ class WorkspaceDeleteForm extends ContentEntityConfirmFormBase {
+ 
+     $form_state->setRedirectUrl($this->getCancelUrl());
+   }
++
+ }
+diff --git a/src/Entity/Form/WorkspaceForm.php b/src/Entity/Form/WorkspaceForm.php
+index c2ea741..02b68ad 100644
+--- a/src/Entity/Form/WorkspaceForm.php
++++ b/src/Entity/Form/WorkspaceForm.php
+@@ -20,7 +20,7 @@ class WorkspaceForm extends ContentEntityForm {
+   /**
+    * The injected service to track conflicts during replication.
+    *
+-   * @var ConflictTrackerInterface
++   * @var \Drupal\multiversion\Workspace\ConflictTrackerInterface
+    */
+   protected $conflictTracker;
+ 
+@@ -35,7 +35,7 @@ class WorkspaceForm extends ContentEntityForm {
+    * Constructs a ContentEntityForm object.
+    *
+    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+-   * @param ConflictTrackerInterface $conflict_tracker
++   * @param \Drupal\multiversion\Workspace\ConflictTrackerInterface $conflict_tracker
+    *   The conflict tracking service.
+    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
+    *
+@@ -261,6 +261,7 @@ class WorkspaceForm extends ContentEntityForm {
+    *
+    * @return bool
+    *   TRUE if the machine_name exists, FALSE otherwise.
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    */
+diff --git a/src/Entity/Form/WorkspaceTypeDeleteForm.php b/src/Entity/Form/WorkspaceTypeDeleteForm.php
+index c1354b2..46508c7 100644
+--- a/src/Entity/Form/WorkspaceTypeDeleteForm.php
++++ b/src/Entity/Form/WorkspaceTypeDeleteForm.php
+@@ -53,4 +53,4 @@ class WorkspaceTypeDeleteForm extends EntityDeleteForm {
+     }
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/Entity/Form/WorkspaceTypeForm.php b/src/Entity/Form/WorkspaceTypeForm.php
+index 8074860..4b2d8da 100644
+--- a/src/Entity/Form/WorkspaceTypeForm.php
++++ b/src/Entity/Form/WorkspaceTypeForm.php
+@@ -11,6 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
+  * @package Drupal\workspace\Entity\Form
+  */
+ class WorkspaceTypeForm extends BundleEntityFormBase {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -61,4 +62,4 @@ class WorkspaceTypeForm extends BundleEntityFormBase {
+     $form_state->setRedirectUrl($workspace_type->toUrl('collection'));
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/Entity/WorkspacePointer.php b/src/Entity/WorkspacePointer.php
+index 799a19e..d126555 100644
+--- a/src/Entity/WorkspacePointer.php
++++ b/src/Entity/WorkspacePointer.php
+@@ -135,7 +135,7 @@ class WorkspacePointer extends ContentEntityBase implements WorkspacePointerInte
+    */
+   public function generateReplicationId(WorkspacePointerInterface $target, ReplicationTaskInterface $task = NULL) {
+     $request = \Drupal::request();
+-    $uuid = MD5($request->getHost() . $request->getPort());
++    $uuid = md5($request->getHost() . $request->getPort());
+     $source_name = $this->label();
+     if ($this->getWorkspace() instanceof WorkspaceInterface) {
+       $source_name = $this->getWorkspace()->getMachineName();
+diff --git a/src/Entity/WorkspacePointerViewsData.php b/src/Entity/WorkspacePointerViewsData.php
+index d5a9a70..4f8b907 100644
+--- a/src/Entity/WorkspacePointerViewsData.php
++++ b/src/Entity/WorkspacePointerViewsData.php
+@@ -9,6 +9,7 @@ use Drupal\views\EntityViewsDataInterface;
+  * Provides Views data for Workspace pointer entities.
+  */
+ class WorkspacePointerViewsData extends EntityViewsData implements EntityViewsDataInterface {
++
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/EntityOperations.php b/src/EntityOperations.php
+index 425ea51..7634bf7 100644
+--- a/src/EntityOperations.php
++++ b/src/EntityOperations.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\workspace;
+ 
+-use Drupal\Core\Entity\ContentEntityTypeInterface;
+-use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Queue\QueueFactory;
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+diff --git a/src/EntityTypeInfo.php b/src/EntityTypeInfo.php
+index 3f80990..1b79158 100644
+--- a/src/EntityTypeInfo.php
++++ b/src/EntityTypeInfo.php
+@@ -5,7 +5,6 @@ namespace Drupal\workspace;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;
+ use Drupal\Core\Field\BaseFieldDefinition;
+-use Drupal\Core\Url;
+ use Drupal\multiversion\MultiversionManagerInterface;
+ use Drupal\workspace\Entity\Form\WorkspaceForm;
+ use Drupal\workspace\Entity\Form\WorkspaceDeleteForm;
+@@ -61,7 +60,8 @@ class EntityTypeInfo {
+    *
+    * @param \Drupal\Core\Entity\EntityTypeInterface[] $entity_types
+    *   The entity types to check.
+-   * @return EntityTypeInterface[]
++   *
++   * @return \Drupal\Core\Entity\EntityTypeInterface[]
+    *   Just the entities that we care about.
+    */
+   protected function selectMultiversionedUiEntityTypes(array $entity_types) {
+@@ -168,7 +168,7 @@ class EntityTypeInfo {
+       ->setDefaultValueCallback('workspace_active_id')
+       ->setDisplayOptions('form', [
+         'type' => 'options_target_workspace_select',
+-        'weight' => 5
++        'weight' => 5,
+       ]);
+ 
+     $fields['pull_replication_settings'] = BaseFieldDefinition::create('entity_reference')
+@@ -178,7 +178,7 @@ class EntityTypeInfo {
+       ->setSetting('target_type', 'replication_settings')
+       ->setDisplayOptions('form', [
+         'type' => 'options_filters_select',
+-        'weight' => 6
++        'weight' => 6,
+       ]);
+ 
+     $fields['push_replication_settings'] = BaseFieldDefinition::create('entity_reference')
+@@ -188,7 +188,7 @@ class EntityTypeInfo {
+       ->setSetting('target_type', 'replication_settings')
+       ->setDisplayOptions('form', [
+         'type' => 'options_filters_select',
+-        'weight' => 7
++        'weight' => 7,
+       ]);
+ 
+     return $fields;
+diff --git a/src/EventSubscriber/WorkbenchModerationSubscriber.php b/src/EventSubscriber/WorkbenchModerationSubscriber.php
+index 9475220..9473852 100644
+--- a/src/EventSubscriber/WorkbenchModerationSubscriber.php
++++ b/src/EventSubscriber/WorkbenchModerationSubscriber.php
+@@ -31,9 +31,9 @@ class WorkbenchModerationSubscriber implements EventSubscriberInterface {
+   /**
+    * Inject dependencies.
+    *
+-   * @param EntityTypeManagerInterface $entity_type_manager
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+    *   The entity type manager to use for checking moderation information.
+-   * @param ReplicatorManager $replicator_manager
++   * @param \Drupal\workspace\ReplicatorManager $replicator_manager
+    *   The replicator manager to trigger replication on.
+    */
+   public function __construct(EntityTypeManagerInterface $entity_type_manager, ReplicatorManager $replicator_manager) {
+@@ -60,7 +60,6 @@ class WorkbenchModerationSubscriber implements EventSubscriberInterface {
+         ]), 'error');
+ 
+         // @todo Should we revert the workspace to its previous state?
+-
+         return;
+       }
+ 
+diff --git a/src/Form/ClearReplicationQueueForm.php b/src/Form/ClearReplicationQueueForm.php
+index 3bc95fa..9b74ef6 100644
+--- a/src/Form/ClearReplicationQueueForm.php
++++ b/src/Form/ClearReplicationQueueForm.php
+@@ -23,10 +23,10 @@ class ClearReplicationQueueForm extends FormBase {
+    * {@inheritdoc}
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+-    $form['clear_queue'] = array(
++    $form['clear_queue'] = [
+       '#type' => 'fieldset',
+       '#title' => $this->t('Clear replication queue'),
+-    );
++    ];
+     $form['clear_queue']['submit'] = [
+       '#type' => 'submit',
+       '#value' => $this->t('Clear queue'),
+diff --git a/src/Form/ConfirmClearReplicationQueueForm.php b/src/Form/ConfirmClearReplicationQueueForm.php
+index d945331..cd31644 100644
+--- a/src/Form/ConfirmClearReplicationQueueForm.php
++++ b/src/Form/ConfirmClearReplicationQueueForm.php
+@@ -24,6 +24,9 @@ class ConfirmClearReplicationQueueForm extends ConfirmFormBase {
+    */
+   protected $entityTypeManager;
+ 
++  /**
++   *
++   */
+   public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+     $this->entityTypeManager = $entity_type_manager;
+   }
+@@ -61,7 +64,7 @@ class ConfirmClearReplicationQueueForm extends ConfirmFormBase {
+   /**
+    * Clears the replication queue.
+    *
+-   * @see \Drupal\workspace\Plugin\QueueWorker\WorkspaceReplication::processItem().
++   * @see \Drupal\workspace\Plugin\QueueWorker\WorkspaceReplication::processItem()
+    */
+   public function clearReplicationQueue() {
+     // We actually don't clear the replication queue, we just mark as failed all
+@@ -70,7 +73,7 @@ class ConfirmClearReplicationQueueForm extends ConfirmFormBase {
+     // failed replication, it will just go out the queue without doing anything
+     // with it.
+     $queued_items_deleted = FALSE;
+-    /** @var Replication[] $queued_replications */
++    /** @var \Drupal\workspace\Entity\Replication[] $queued_replications */
+     $queued_replications = $this->entityTypeManager
+       ->getStorage('replication')
+       ->loadByProperties(['replication_status' => Replication::QUEUED]);
+diff --git a/src/Form/UnblockReplicationForm.php b/src/Form/UnblockReplicationForm.php
+index c93fc05..c6ae11b 100644
+--- a/src/Form/UnblockReplicationForm.php
++++ b/src/Form/UnblockReplicationForm.php
+@@ -50,10 +50,10 @@ class UnblockReplicationForm extends FormBase {
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     $last_replication_failed = $this->state->get('workspace.last_replication_failed', FALSE);
+-    $form['unblock'] = array(
++    $form['unblock'] = [
+       '#type' => 'fieldset',
+       '#title' => $this->t('Unblock replication'),
+-    );
++    ];
+     $form['unblock']['submit'] = [
+       '#type' => 'submit',
+       '#value' => $this->t('Unblock replication'),
+diff --git a/src/Form/WorkspaceActivateFormBase.php b/src/Form/WorkspaceActivateFormBase.php
+index caa5cec..5eb5c42 100644
+--- a/src/Form/WorkspaceActivateFormBase.php
++++ b/src/Form/WorkspaceActivateFormBase.php
+@@ -5,7 +5,6 @@ namespace Drupal\workspace\Form;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\FormBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Drupal\multiversion\Workspace\WorkspaceManagerInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+@@ -37,6 +36,9 @@ abstract class WorkspaceActivateFormBase extends FormBase {
+     );
+   }
+ 
++  /**
++   *
++   */
+   public function __construct(WorkspaceManagerInterface $workspace_manager, EntityTypeManagerInterface $entity_type_manager) {
+     $this->workspaceManager = $workspace_manager;
+     $this->entityTypeManager = $entity_type_manager;
+@@ -54,7 +56,7 @@ abstract class WorkspaceActivateFormBase extends FormBase {
+     }
+ 
+     // Ensure the workspace by that id exists.
+-    /** @var WorkspaceInterface $workspace */
++    /** @var \Drupal\multiversion\Entity\WorkspaceInterface $workspace */
+     $workspace = $this->entityTypeManager->getStorage('workspace')->load($id);
+     if (!$workspace) {
+       $form_state->setErrorByName('workspace_id', 'This workspace no longer exists.');
+@@ -66,14 +68,14 @@ abstract class WorkspaceActivateFormBase extends FormBase {
+    */
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+     $id = $form_state->getValue('workspace_id');
+-    /** @var WorkspaceInterface $workspace */
++    /** @var \Drupal\multiversion\Entity\WorkspaceInterface $workspace */
+     $workspace = $this->entityTypeManager->getStorage('workspace')->load($id);
+ 
+     try {
+       $this->workspaceManager->setActiveWorkspace($workspace);
+       $form_state->setRedirect('<front>');
+     }
+-    catch(\Exception $e) {
++    catch (\Exception $e) {
+       watchdog_exception('Workspace', $e);
+       drupal_set_message($e->getMessage(), 'error');
+     }
+diff --git a/src/Form/WorkspaceUnarchiveForm.php b/src/Form/WorkspaceUnarchiveForm.php
+index f7379a4..3a80d20 100644
+--- a/src/Form/WorkspaceUnarchiveForm.php
++++ b/src/Form/WorkspaceUnarchiveForm.php
+@@ -42,6 +42,9 @@ class WorkspaceUnarchiveForm extends ConfirmFormBase {
+     );
+   }
+ 
++  /**
++   *
++   */
+   public function __construct(WorkspaceManagerInterface $workspace_manager, EntityTypeManagerInterface $entity_type_manager) {
+     $this->workspaceManager = $workspace_manager;
+     $this->entityTypeManager = $entity_type_manager;
+@@ -107,10 +110,11 @@ class WorkspaceUnarchiveForm extends ConfirmFormBase {
+       $this->workspace->setPublished()->save();
+       $form_state->setRedirect('entity.workspace.collection');
+     }
+-    catch(\Exception $e) {
++    catch (\Exception $e) {
+       watchdog_exception('Workspace', $e);
+       $this->messenger()->addError($e->getMessage());
+     }
+     $this->messenger()->addStatus($this->t('The %workspace workspace has been successfully unarchived.', ['%workspace' => $this->workspace->label()]));
+   }
++
+ }
+diff --git a/src/InternalReplicator.php b/src/InternalReplicator.php
+index 1c85991..4d69df0 100644
+--- a/src/InternalReplicator.php
++++ b/src/InternalReplicator.php
+@@ -33,43 +33,43 @@ class InternalReplicator implements ReplicatorInterface {
+   protected $workspaceManager;
+ 
+   /**
+-   * @var  EntityTypeManagerInterface
++   * @var  \Drupal\Core\Entity\EntityTypeManagerInterface
+    */
+   protected $entityTypeManager;
+ 
+   /**
+-   * @var  ChangesFactoryInterface
++   * @var  \Drupal\replication\ChangesFactoryInterface
+    */
+   protected $changesFactory;
+ 
+   /**
+-   * @var  RevisionDiffFactoryInterface
++   * @var  \Drupal\replication\RevisionDiffFactoryInterface
+    */
+   protected $revisionDiffFactory;
+ 
+   /**
+-   * @var RevisionIndexInterface
++   * @var \Drupal\multiversion\Entity\Index\RevisionIndexInterface
+    */
+   protected $revIndex;
+ 
+   /**
+-   * @var SerializerInterface
++   * @var \Symfony\Component\Serializer\SerializerInterface
+    */
+   protected $serializer;
+ 
+   /**
+-   * @var \Drupal\Core\Logger\LoggerChannelInterface;
++   * @var \Drupal\Core\Logger\LoggerChannelInterface
+    */
+   protected $logger;
+ 
+   /**
+-   * @param WorkspaceManagerInterface $workspace_manager
+-   * @param EntityTypeManagerInterface $entity_type_manager
+-   * @param ChangesFactoryInterface $changes_factory
+-   * @param RevisionDiffFactoryInterface $revisiondiff_factory
+-   * @param RevisionIndexInterface $rev_index
+-   * @param SerializerInterface $serializer
+-   * @param LoggerChannelFactoryInterface $logger;
++   * @param \Drupal\multiversion\Workspace\WorkspaceManagerInterface $workspace_manager
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
++   * @param \Drupal\replication\ChangesFactoryInterface $changes_factory
++   * @param \Drupal\replication\RevisionDiffFactoryInterface $revisiondiff_factory
++   * @param \Drupal\multiversion\Entity\Index\RevisionIndexInterface $rev_index
++   * @param \Symfony\Component\Serializer\SerializerInterface $serializer
++   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger;
+    */
+   public function __construct(WorkspaceManagerInterface $workspace_manager, EntityTypeManagerInterface $entity_type_manager, ChangesFactoryInterface $changes_factory, RevisionDiffFactoryInterface $revisiondiff_factory, RevisionIndexInterface $rev_index, SerializerInterface $serializer, LoggerChannelFactoryInterface $logger) {
+     $this->workspaceManager = $workspace_manager;
+@@ -98,7 +98,7 @@ class InternalReplicator implements ReplicatorInterface {
+     if ($task !== NULL && !$task instanceof ReplicationTaskInterface) {
+       throw new UnexpectedTypeException($task, 'ReplicationTaskInterface');
+     }
+-    
++
+     $missing_found = 0;
+     $docs_read = 0;
+     $docs_written = 0;
+@@ -145,10 +145,10 @@ class InternalReplicator implements ReplicatorInterface {
+       $parameters['doc_ids'] = $doc_ids;
+     }
+     $source_changes = $this->changesFactory->get($source_workspace)
+-        ->filter($task->getFilter())
+-        ->parameters($parameters)
+-        ->setSince($since)
+-        ->getNormal();
++      ->filter($task->getFilter())
++      ->parameters($parameters)
++      ->setSince($since)
++      ->getNormal();
+     $data = [];
+     foreach ($source_changes as $source_change) {
+       $data[$source_change['id']] = [];
+diff --git a/src/ParamConverter/EntityRevisionConverter.php b/src/ParamConverter/EntityRevisionConverter.php
+index 7445f0f..28c629b 100644
+--- a/src/ParamConverter/EntityRevisionConverter.php
++++ b/src/ParamConverter/EntityRevisionConverter.php
+@@ -103,4 +103,4 @@ class EntityRevisionConverter implements ParamConverterInterface {
+     return $entity_type_id;
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/Plugin/EntityReferenceSelection/WorkspacePointerSelection.php b/src/Plugin/EntityReferenceSelection/WorkspacePointerSelection.php
+index 6aedb85..d2fb0b3 100644
+--- a/src/Plugin/EntityReferenceSelection/WorkspacePointerSelection.php
++++ b/src/Plugin/EntityReferenceSelection/WorkspacePointerSelection.php
+@@ -53,7 +53,7 @@ class WorkspacePointerSelection extends DefaultSelection {
+     $options = [];
+     $entities = $this->entityManager->getStorage($target_type)->loadMultiple($result);
+     foreach ($entities as $entity_id => $entity) {
+-      /** @var WorkspaceInterface $workspace */
++      /** @var \Drupal\multiversion\Entity\WorkspaceInterface $workspace */
+       if ($workspace = $entity->getWorkspace()) {
+         if (!$workspace->isPublished() || $workspace->getQueuedForDelete()) {
+           continue;
+diff --git a/src/Plugin/RulesAction/ReplicateContent.php b/src/Plugin/RulesAction/ReplicateContent.php
+index a15a650..de97a46 100644
+--- a/src/Plugin/RulesAction/ReplicateContent.php
++++ b/src/Plugin/RulesAction/ReplicateContent.php
+@@ -26,20 +26,23 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  *     )
+  *   }
+  * )
+- *
+  */
+ class ReplicateContent extends RulesActionBase implements ContainerFactoryPluginInterface {
+ 
+-  /** @var  WorkspaceManagerInterface */
++  /**
++   * @var  \Drupal\multiversion\Workspace\WorkspaceManagerInterface*/
+   protected $workspaceManager;
+ 
+-  /** @var  EntityTypeManagerInterface */
++  /**
++   * @var  \Drupal\Core\Entity\EntityTypeManagerInterface*/
+   protected $entityTypeManager;
+ 
+-  /** @var  ReplicatorManager */
++  /**
++   * @var  \Drupal\workspace\ReplicatorManager*/
+   protected $replicatorManager;
+ 
+-  /** @var  MultiversionManagerInterface */
++  /**
++   * @var  \Drupal\multiversion\MultiversionManagerInterface*/
+   protected $multiversionManager;
+ 
+   /**
+diff --git a/src/ReplicatorManager.php b/src/ReplicatorManager.php
+index aefc83c..fefb4d2 100644
+--- a/src/ReplicatorManager.php
++++ b/src/ReplicatorManager.php
+@@ -97,7 +97,6 @@ class ReplicatorManager implements ReplicatorInterface {
+ 
+     // @todo Use here $replication->setDocIds() to set selected UUIDs when we'll
+     // have implemented the way users can select changes for next deployment.
+-
+     // It is assumed a caller of replicate will set this static variable to
+     // FALSE if they wish to proceed with replicating content upstream even in
+     // the presence of conflicts. If the caller wants to make sure no conflicts
+diff --git a/src/Routing/RouteSubscriber.php b/src/Routing/RouteSubscriber.php
+index 93be641..bd6dce9 100644
+--- a/src/Routing/RouteSubscriber.php
++++ b/src/Routing/RouteSubscriber.php
+@@ -39,7 +39,7 @@ class RouteSubscriber extends RouteSubscriberBase {
+           'parameters' => [
+             $entity_type_id => [
+               'type' => 'entity:' . $entity_type_id,
+-            ]
++            ],
+           ],
+         ];
+ 
+@@ -56,14 +56,14 @@ class RouteSubscriber extends RouteSubscriberBase {
+             $options
+           );
+ 
+-          // This will create new routes
++          // This will create new routes.
+           $collection->add("entity.$entity_type_id.version_tree", $route);
+         }
+ 
+         if (($link_template = $entity_type->getLinkTemplate('revision')) && empty($collection->get("entity.$entity_type_id.revision"))) {
+           unset($options['_admin_route']);
+           $options['parameters']['entity_revision'] = [
+-            'type' => 'entity_revision:' . $entity_type_id
++            'type' => 'entity_revision:' . $entity_type_id,
+           ];
+           $route = new Route(
+             $link_template,
+diff --git a/src/Toolbar.php b/src/Toolbar.php
+index 5facf4c..d9e5053 100644
+--- a/src/Toolbar.php
++++ b/src/Toolbar.php
+@@ -1,11 +1,9 @@
+ <?php
+ 
+-
+ namespace Drupal\workspace;
+ 
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\FormBuilderInterface;
+-use Drupal\Core\Link;
+ use Drupal\Core\Messenger\MessengerTrait;
+ use Drupal\Core\Session\AccountInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+@@ -52,7 +50,7 @@ class Toolbar {
+    *   The workspace manager service.
+    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+    *   The form builder service.
+-   * @param AccountInterface $current_user
++   * @param \Drupal\Core\Session\AccountInterface $current_user
+    *   The current user service.
+    */
+   public function __construct(EntityTypeManagerInterface $entity_type_manager, WorkspaceManagerInterface $workspace_manager, FormBuilderInterface $form_builder, AccountInterface $current_user) {
+@@ -65,7 +63,7 @@ class Toolbar {
+   /**
+    * Hook bridge;  Responds to hook_toolbar().
+    *
+-   * @see hook_toolbar().
++   * @see hook_toolbar()
+    */
+   public function toolbar() {
+     $items = [];
+@@ -175,12 +173,12 @@ class Toolbar {
+             'class' => [
+               'toolbar-icon',
+               'toolbar-icon-workspace-update',
+-              'use-ajax'
++              'use-ajax',
+             ],
+             'data-dialog-type' => 'modal',
+             'data-dialog-options' => json_encode([
+               'width' => '50%',
+-            ])
++            ]),
+           ],
+         ],
+         '#wrapper_attributes' => [
+@@ -219,11 +217,12 @@ class Toolbar {
+    * Note: This assumes that the total number of workspaces on the site is
+    * very small.  If it's actually large this method will have memory issues.
+    *
+-   * @return WorkspaceInterface[]
++   * @return \Drupal\multiversion\Entity\WorkspaceInterface[]
+    */
+   protected function allWorkspaces() {
+-    return array_filter($this->entityTypeManager->getStorage('workspace')->loadMultiple(), function(WorkspaceInterface $workspace) {
++    return array_filter($this->entityTypeManager->getStorage('workspace')->loadMultiple(), function (WorkspaceInterface $workspace) {
+       return $workspace->isPublished() && !$workspace->getQueuedForDelete() && $workspace->access('view', $this->currentUser);
+     });
+   }
++
+ }
+diff --git a/src/WorkspacePointerInterface.php b/src/WorkspacePointerInterface.php
+index 9727c23..134c331 100644
+--- a/src/WorkspacePointerInterface.php
++++ b/src/WorkspacePointerInterface.php
+@@ -1,6 +1,5 @@
+ <?php
+ 
+-
+ namespace Drupal\workspace;
+ 
+ use Drupal\Core\Entity\ContentEntityInterface;
+diff --git a/src/WorkspaceTypeListBuilder.php b/src/WorkspaceTypeListBuilder.php
+index 5da8dd9..3b49a0c 100644
+--- a/src/WorkspaceTypeListBuilder.php
++++ b/src/WorkspaceTypeListBuilder.php
+@@ -4,10 +4,12 @@ namespace Drupal\workspace;
+ 
+ use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
+ use Drupal\Core\Entity\EntityInterface;
++
+ /**
+  * Provides a listing of Workspace type entities.
+  */
+ class WorkspaceTypeListBuilder extends ConfigEntityListBuilder {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -16,6 +18,7 @@ class WorkspaceTypeListBuilder extends ConfigEntityListBuilder {
+     $header['id'] = $this->t('Machine name');
+     return $header + parent::buildHeader();
+   }
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -25,4 +28,5 @@ class WorkspaceTypeListBuilder extends ConfigEntityListBuilder {
+ 
+     return $row + parent::buildRow($entity);
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/tests/src/Functional/EntityTypeAlterTest.php b/tests/src/Functional/EntityTypeAlterTest.php
+index 64e76c8..57317ba 100644
+--- a/tests/src/Functional/EntityTypeAlterTest.php
++++ b/tests/src/Functional/EntityTypeAlterTest.php
+@@ -5,7 +5,6 @@ namespace Drupal\Tests\workspace\Functional;
+ use Drupal\block_content\Entity\BlockContent;
+ use Drupal\block_content\Entity\BlockContentType;
+ use Drupal\Component\Utility\Unicode;
+-use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+@@ -25,50 +24,56 @@ class EntityTypeAlterTest extends BrowserTestBase {
+     'multiversion',
+   ];
+ 
++  /**
++   *
++   */
+   public function testEntityTypeAlter() {
+     $entity_types = \Drupal::service('entity_type.manager')->getDefinitions();
+ 
+-    /** @var EntityTypeInterface $workspace_type */
++    /** @var \Drupal\Core\Entity\EntityTypeInterface $workspace_type */
+     $workspace_type = $entity_types['workspace_type'];
+-    $this->assertTrue($workspace_type->getHandlerClass('list_builder') !== null);
+-    $this->assertTrue($workspace_type->getHandlerClass('route_provider', 'html') !== null);
+-    $this->assertTrue($workspace_type->getHandlerClass('form', 'default') !== null);
+-    $this->assertTrue($workspace_type->getHandlerClass('form', 'add') !== null);
+-    $this->assertTrue($workspace_type->getHandlerClass('form', 'edit') !== null);
+-    $this->assertTrue($workspace_type->getHandlerClass('form', 'delete') !== null);
+-    $this->assertTrue($workspace_type->getLinkTemplate('collection') !== null);
+-    $this->assertTrue($workspace_type->getLinkTemplate('edit-form') !== null);
+-    $this->assertTrue($workspace_type->getLinkTemplate('delete-form') !== null);
+-
+-    /** @var EntityTypeInterface $workspace */
++    $this->assertTrue($workspace_type->getHandlerClass('list_builder') !== NULL);
++    $this->assertTrue($workspace_type->getHandlerClass('route_provider', 'html') !== NULL);
++    $this->assertTrue($workspace_type->getHandlerClass('form', 'default') !== NULL);
++    $this->assertTrue($workspace_type->getHandlerClass('form', 'add') !== NULL);
++    $this->assertTrue($workspace_type->getHandlerClass('form', 'edit') !== NULL);
++    $this->assertTrue($workspace_type->getHandlerClass('form', 'delete') !== NULL);
++    $this->assertTrue($workspace_type->getLinkTemplate('collection') !== NULL);
++    $this->assertTrue($workspace_type->getLinkTemplate('edit-form') !== NULL);
++    $this->assertTrue($workspace_type->getLinkTemplate('delete-form') !== NULL);
++
++    /** @var \Drupal\Core\Entity\EntityTypeInterface $workspace */
+     $workspace = $entity_types['workspace'];
+-    $this->assertTrue($workspace->getHandlerClass('list_builder') !== null);
+-    $this->assertTrue($workspace->getHandlerClass('route_provider', 'html') !== null);
+-    $this->assertTrue($workspace->getHandlerClass('form', 'default') !== null);
+-    $this->assertTrue($workspace->getHandlerClass('form', 'add') !== null);
+-    $this->assertTrue($workspace->getHandlerClass('form', 'edit') !== null);
+-    $this->assertTrue($workspace->getLinkTemplate('collection') !== null);
+-    $this->assertTrue($workspace->getLinkTemplate('edit-form') !== null);
+-    $this->assertTrue($workspace->getLinkTemplate('activate-form') !== null);
+-    $this->assertTrue($workspace->get('field_ui_base_route') !== null);
++    $this->assertTrue($workspace->getHandlerClass('list_builder') !== NULL);
++    $this->assertTrue($workspace->getHandlerClass('route_provider', 'html') !== NULL);
++    $this->assertTrue($workspace->getHandlerClass('form', 'default') !== NULL);
++    $this->assertTrue($workspace->getHandlerClass('form', 'add') !== NULL);
++    $this->assertTrue($workspace->getHandlerClass('form', 'edit') !== NULL);
++    $this->assertTrue($workspace->getLinkTemplate('collection') !== NULL);
++    $this->assertTrue($workspace->getLinkTemplate('edit-form') !== NULL);
++    $this->assertTrue($workspace->getLinkTemplate('activate-form') !== NULL);
++    $this->assertTrue($workspace->get('field_ui_base_route') !== NULL);
+ 
+     foreach ($entity_types as $entity_type) {
+       if (\Drupal::service('multiversion.manager')->isSupportedEntityType($entity_type)) {
+         if ($entity_type->hasViewBuilderClass() && $entity_type->hasLinkTemplate('canonical')) {
+-          $this->assertTrue($entity_type->getLinkTemplate('version-tree') !== null);
+-          $this->assertTrue($entity_type->getLinkTemplate('revision') !== null);
++          $this->assertTrue($entity_type->getLinkTemplate('version-tree') !== NULL);
++          $this->assertTrue($entity_type->getLinkTemplate('revision') !== NULL);
+         }
+       }
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function testTree() {
+     $permissions = [
+       'create_workspace',
+       'edit_own_workspace',
+       'view_own_workspace',
+       'create test content',
+-      'view_revision_trees'
++      'view_revision_trees',
+     ];
+     $this->createNodeType('Test', 'test');
+     $clapton = $this->drupalCreateUser($permissions);
+@@ -88,7 +93,7 @@ class EntityTypeAlterTest extends BrowserTestBase {
+   public function testBlockTree() {
+     $permissions = [
+       'administer blocks',
+-      'view_revision_trees'
++      'view_revision_trees',
+     ];
+     $user = $this->drupalCreateUser($permissions);
+     $this->drupalLogin($user);
+@@ -104,9 +109,9 @@ class EntityTypeAlterTest extends BrowserTestBase {
+     $block_content = BlockContent::create([
+       'info' => $this->randomString(),
+       'type' => 'basic',
+-      'langcode' => 'en'
++      'langcode' => 'en',
+     ]);
+-   $block_content->save();
++    $block_content->save();
+ 
+     // Check for tree elements.
+     $this->drupalGet('/block/' . $block_content->id() . '/tree');
+@@ -120,6 +125,9 @@ class EntityTypeAlterTest extends BrowserTestBase {
+     $this->assertSession()->pageTextContains('Status: available');
+   }
+ 
++  /**
++   *
++   */
+   protected function truncateRev($rev) {
+     list($i) = explode('-', $rev);
+     $length = strlen($i) + 9;
+diff --git a/tests/src/Functional/ReplicationSettingsPageTest.php b/tests/src/Functional/ReplicationSettingsPageTest.php
+index 852f360..17f0075 100644
+--- a/tests/src/Functional/ReplicationSettingsPageTest.php
++++ b/tests/src/Functional/ReplicationSettingsPageTest.php
+@@ -112,7 +112,7 @@ class ReplicationSettingsPageTest extends BrowserTestBase {
+     // Unblock replication button should be enabled now.
+     $submit_is_disabled = $this->cssSelect('form.unblock-replication-form input[type="submit"]:disabled');
+     $this->assertTrue(count($submit_is_disabled) === 0, 'The Unblock replication button is disabled.');
+-    //Test unblocking.
++    // Test unblocking.
+     $this->drupalPostForm(NULL, [], 'Unblock replication');
+     $this->assertText('Replications have been unblocked.');
+     // Unblock replication button should be disabled.
+@@ -158,7 +158,7 @@ class ReplicationSettingsPageTest extends BrowserTestBase {
+       ->loadMultiple();
+     $this->assertTrue(count($missions) === 2);
+     // Loop through them and check if the status is correct.
+-    /** @var Replication $mission */
++    /** @var \Drupal\workspace\Entity\Replication $mission */
+     foreach ($missions as $mission) {
+       // The status should be failed for this mission.
+       $this->assertEquals(Replication::QUEUED, $mission->getReplicationStatus());
+@@ -182,7 +182,7 @@ class ReplicationSettingsPageTest extends BrowserTestBase {
+     $this->assertTrue(count($missions) === 2);
+ 
+     // Loop through them and check if the status is correct.
+-    /** @var Replication $mission */
++    /** @var \Drupal\workspace\Entity\Replication $mission */
+     foreach ($missions as $mission) {
+       // The status should be failed for this mission.
+       $this->assertEquals(Replication::FAILED, $mission->getReplicationStatus());
+diff --git a/tests/src/Functional/ReplicatorTest.php b/tests/src/Functional/ReplicatorTest.php
+index f6232b5..a09577d 100644
+--- a/tests/src/Functional/ReplicatorTest.php
++++ b/tests/src/Functional/ReplicatorTest.php
+@@ -2,13 +2,11 @@
+ 
+ namespace Drupal\Tests\workspace\Functional;
+ 
+-use Drupal\Component\Utility\Crypt;
+ use Drupal\multiversion\Entity\MenuLinkContent;
+ use Drupal\Tests\block\Traits\BlockCreationTrait;
+ use Drupal\replication\ReplicationTask\ReplicationTask;
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\taxonomy\Entity\Vocabulary;
+-use Drupal\workspace\Entity\Replication;
+ use Drupal\workspace\Entity\WorkspacePointer;
+ use Drupal\workspace\Event\ReplicationEvent;
+ use Drupal\workspace\Event\ReplicationEvents;
+@@ -185,7 +183,6 @@ class ReplicatorTest extends BrowserTestBase {
+     $live = $this->getOneEntityByLabel('workspace', 'Live');
+ 
+     // Create 4 nodes and 4 menu links on Live workspace.
+-
+     $node1 = $this->drupalCreateNode(['type' => 'test', 'title' => 'Node 1']);
+     $node2 = $this->drupalCreateNode(['type' => 'test', 'title' => 'Node 2']);
+     $node3 = $this->drupalCreateNode(['type' => 'test', 'title' => 'Node 3']);
+@@ -210,19 +207,19 @@ class ReplicatorTest extends BrowserTestBase {
+     $menu_link_content2 = MenuLinkContent::create([
+       'link' => ['uri' => 'entity:node/' . $node2->id()],
+       'menu_name' => 'main',
+-      'title' => 'Test link 2'
++      'title' => 'Test link 2',
+     ]);
+     $menu_link_content2->save();
+     $menu_link_content3 = MenuLinkContent::create([
+       'link' => ['uri' => 'entity:node/' . $node3->id()],
+       'menu_name' => 'main',
+-      'title' => 'Test link 3'
++      'title' => 'Test link 3',
+     ]);
+     $menu_link_content3->save();
+     $menu_link_content4 = MenuLinkContent::create([
+       'link' => ['uri' => 'entity:node/' . $node4->id()],
+       'menu_name' => 'main',
+-      'title' => 'Test link 4'
++      'title' => 'Test link 4',
+     ]);
+     $menu_link_content4->save();
+ 
+@@ -416,8 +413,10 @@ class ReplicatorTest extends BrowserTestBase {
+     $this->assertTrue($page->hasContent($menu_link_content4->label()));
+   }
+ 
+-
+-  function testReplicationBlocker() {
++  /**
++   *
++   */
++  public function testReplicationBlocker() {
+     $test_user = $this->drupalCreateUser(['access administration pages']);
+     $this->drupalLogin($test_user);
+ 
+diff --git a/tests/src/Functional/WorkspaceIndividualPermissionsTest.php b/tests/src/Functional/WorkspaceIndividualPermissionsTest.php
+index 07c024f..9e1ddec 100644
+--- a/tests/src/Functional/WorkspaceIndividualPermissionsTest.php
++++ b/tests/src/Functional/WorkspaceIndividualPermissionsTest.php
+@@ -42,7 +42,6 @@ class WorkspaceIndividualPermissionsTest extends BrowserTestBase {
+ 
+     // Now login as a different user with permission to edit that workspace,
+     // specifically.
+-
+     $editor2 = $this->drupalCreateUser(array_merge($permissions, ['update_workspace_' . $bears->id()]));
+ 
+     $this->drupalLogin($editor2);
+@@ -72,7 +71,6 @@ class WorkspaceIndividualPermissionsTest extends BrowserTestBase {
+     $bears = $this->getOneWorkspaceByLabel('Bears');
+ 
+     // Now login as a different user and create a workspace.
+-
+     $editor2 = $this->drupalCreateUser(array_merge($permissions, ['view_workspace_' . $bears->id()]));
+ 
+     $this->drupalLogin($editor2);
+@@ -88,7 +86,6 @@ class WorkspaceIndividualPermissionsTest extends BrowserTestBase {
+     $this->assertEquals(200, $session->getStatusCode());
+ 
+     // But editor 1 cannot view the Packers workspace.
+-
+     $this->drupalLogin($editor1);
+     $this->drupalGet("admin/structure/workspace/{$packers->id()}/activate");
+     $this->assertEquals(403, $session->getStatusCode());
+diff --git a/tests/src/Functional/WorkspacePermissionsTest.php b/tests/src/Functional/WorkspacePermissionsTest.php
+index acd4a81..08758c3 100644
+--- a/tests/src/Functional/WorkspacePermissionsTest.php
++++ b/tests/src/Functional/WorkspacePermissionsTest.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\Tests\workspace\Functional;
+ 
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+-use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+@@ -48,9 +46,9 @@ class WorkspacePermissionsTest extends BrowserTestBase {
+     // Now edit that same workspace; We shouldn't be able to do so, since
+     // we don't have edit permissions.
+ 
+-    /** @var EntityTypeManagerInterface $etm */
++    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $etm */
+     $etm = \Drupal::service('entity_type.manager');
+-    /** @var WorkspaceInterface $bears */
++    /** @var \Drupal\multiversion\Entity\WorkspaceInterface $bears */
+     $entity_list = $etm->getStorage('workspace')->loadByProperties(['label' => 'Bears']);
+     $bears = current($entity_list);
+ 
+@@ -79,7 +77,6 @@ class WorkspacePermissionsTest extends BrowserTestBase {
+     $this->createWorkspaceThroughUI('Bears', 'bears');
+ 
+     // Now edit that same workspace; We should be able to do so.
+-
+     $bears = $this->getOneWorkspaceByLabel('Bears');
+ 
+     $session = $this->getSession();
+@@ -95,7 +92,6 @@ class WorkspacePermissionsTest extends BrowserTestBase {
+ 
+     // Now login as a different user and ensure they don't have edit access,
+     // and vice versa.
+-
+     $editor2 = $this->drupalCreateUser($permissions);
+ 
+     $this->drupalLogin($editor2);
+@@ -131,7 +127,6 @@ class WorkspacePermissionsTest extends BrowserTestBase {
+     $this->createWorkspaceThroughUI('Bears', 'bears');
+ 
+     // Now edit that same workspace; We should be able to do so.
+-
+     $bears = $this->getOneWorkspaceByLabel('Bears');
+ 
+     $session = $this->getSession();
+@@ -147,7 +142,6 @@ class WorkspacePermissionsTest extends BrowserTestBase {
+ 
+     // Now login as a different user and ensure they don't have edit access,
+     // and vice versa.
+-
+     $admin = $this->drupalCreateUser(array_merge($permissions, ['edit_any_workspace']));
+ 
+     $this->drupalLogin($admin);
+diff --git a/tests/src/Functional/WorkspaceSwitcherTest.php b/tests/src/Functional/WorkspaceSwitcherTest.php
+index 42e13d2..834af36 100644
+--- a/tests/src/Functional/WorkspaceSwitcherTest.php
++++ b/tests/src/Functional/WorkspaceSwitcherTest.php
+@@ -60,5 +60,5 @@ class WorkspaceSwitcherTest extends BrowserTestBase {
+     $assert_session->buttonNotExists($vultures->label());
+     $assert_session->buttonExists($gravity->label());
+   }
+-  
++
+ }
+diff --git a/tests/src/Functional/WorkspaceTest.php b/tests/src/Functional/WorkspaceTest.php
+index 83475e6..216fdb7 100644
+--- a/tests/src/Functional/WorkspaceTest.php
++++ b/tests/src/Functional/WorkspaceTest.php
+@@ -36,10 +36,10 @@ class WorkspaceTest extends BrowserTestBase {
+    * Tests machine names allow the same characters as CouchDB does.
+    */
+   public function testSpecialCharacters() {
+-    // Test a valid workspace name
++    // Test a valid workspace name.
+     $this->createWorkspaceThroughUI('Workspace 1', 'a0_b1_');
+ 
+-    // Test and invaid workspace name
++    // Test and invaid workspace name.
+     $this->drupalGet('/admin/structure/workspace/add');
+     $session = $this->getSession();
+     $this->assertEquals(200, $session->getStatusCode());
+@@ -89,5 +89,5 @@ class WorkspaceTest extends BrowserTestBase {
+     $web_assert->fieldNotExists($workspace_2->label());
+ 
+   }
+-  
++
+ }
+diff --git a/tests/src/Functional/WorkspaceViewTest.php b/tests/src/Functional/WorkspaceViewTest.php
+index 1af3e60..103865c 100644
+--- a/tests/src/Functional/WorkspaceViewTest.php
++++ b/tests/src/Functional/WorkspaceViewTest.php
+@@ -10,7 +10,6 @@ use Drupal\Tests\BrowserTestBase;
+  * @group workspace
+  * @runTestsInSeparateProcesses
+  * @preserveGlobalState disabled
+- *
+  */
+ class WorkspaceViewTest extends BrowserTestBase {
+   use WorkspaceTestUtilities;
+@@ -39,7 +38,6 @@ class WorkspaceViewTest extends BrowserTestBase {
+     $bears = $this->getOneWorkspaceByLabel('Bears');
+ 
+     // Now login as a different user and create a workspace.
+-
+     $editor2 = $this->drupalCreateUser($permissions);
+ 
+     $this->drupalLogin($editor2);
+@@ -81,7 +79,6 @@ class WorkspaceViewTest extends BrowserTestBase {
+     $bears = $this->getOneWorkspaceByLabel('Bears');
+ 
+     // Now login as a different user and create a workspace.
+-
+     $editor2 = $this->drupalCreateUser($permissions);
+ 
+     $this->drupalLogin($editor2);
+@@ -100,5 +97,5 @@ class WorkspaceViewTest extends BrowserTestBase {
+     $this->drupalGet("admin/structure/workspace/{$packers->id()}/activate");
+     $this->assertEquals(200, $session->getStatusCode());
+   }
+-  
++
+ }
+diff --git a/tests/src/Kernel/WorkspaceDeletionTest.php b/tests/src/Kernel/WorkspaceDeletionTest.php
+index bac0c26..516521e 100644
+--- a/tests/src/Kernel/WorkspaceDeletionTest.php
++++ b/tests/src/Kernel/WorkspaceDeletionTest.php
+@@ -30,7 +30,7 @@ class WorkspaceDeletionTest extends KernelTestBase {
+     'key_value',
+     'serialization',
+     'user',
+-    'system'
++    'system',
+   ];
+ 
+   /**
+@@ -63,6 +63,9 @@ class WorkspaceDeletionTest extends KernelTestBase {
+     \Drupal::service('multiversion.manager')->enableEntityTypes();
+   }
+ 
++  /**
++   *
++   */
+   public function testDeletingWorkspace() {
+     $workspace_type = WorkspaceType::create([
+       'id' => 'test',
+diff --git a/tests/src/Kernel/WorkspacePointerTest.php b/tests/src/Kernel/WorkspacePointerTest.php
+index b5b5511..7db763d 100644
+--- a/tests/src/Kernel/WorkspacePointerTest.php
++++ b/tests/src/Kernel/WorkspacePointerTest.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\Tests\workspace\Kernel;
+ 
+ use Drupal\multiversion\Entity\Workspace;
+-use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Drupal\multiversion\Entity\WorkspaceType;
+ use Drupal\workspace\Entity\WorkspacePointer;
+ use Drupal\KernelTests\KernelTestBase;
+@@ -36,7 +35,7 @@ class WorkspacePointerTest extends KernelTestBase {
+   /**
+    * Creates a workspace type for testing purposes.
+    *
+-   * @return WorkspaceType
++   * @return \Drupal\multiversion\Entity\WorkspaceType
+    */
+   protected function createWorkspaceType() {
+     $workspace_type = WorkspaceType::create([
+@@ -51,7 +50,7 @@ class WorkspacePointerTest extends KernelTestBase {
+   /**
+    * Creates a workspace for testing purposes.
+    *
+-   * @return WorkspaceInterface
++   * @return \Drupal\multiversion\Entity\WorkspaceInterface
+    */
+   protected function createWorkspace() {
+     $workspace = Workspace::create([
+@@ -72,7 +71,7 @@ class WorkspacePointerTest extends KernelTestBase {
+ 
+     $workspace = $this->createWorkspace();
+ 
+-    /** @var WorkspacePointer $pointer */
++    /** @var \Drupal\multiversion\Entity\WorkspacePointer $pointer */
+     $pointer = WorkspacePointer::create();
+     $pointer->setWorkspace($workspace);
+     $pointer->save();
+@@ -93,7 +92,7 @@ class WorkspacePointerTest extends KernelTestBase {
+ 
+     $workspace = $this->createWorkspace();
+ 
+-    /** @var WorkspacePointer $pointer */
++    /** @var \Drupal\multiversion\Entity\WorkspacePointer $pointer */
+     $pointer = WorkspacePointer::create();
+     $pointer->setWorkspaceId($workspace->id());
+     $pointer->save();
+@@ -105,4 +104,5 @@ class WorkspacePointerTest extends KernelTestBase {
+     $this->assertEquals($workspace->id(), $pointer->getWorkspaceId());
+     $this->assertEquals($workspace->id(), $pointer->getWorkspace()->id());
+   }
++
+ }
+diff --git a/workspace.drush.inc b/workspace.drush.inc
+index 7604e94..9f90278 100644
+--- a/workspace.drush.inc
++++ b/workspace.drush.inc
+@@ -1,5 +1,9 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
+ use Drupal\Core\Database\Database;
+ use Drupal\multiversion\Entity\Workspace;
+ use Psr\Log\LogLevel;
+@@ -29,7 +33,7 @@ function drush_workspace_uninstall() {
+   $required = drush_drupal_required_modules($extension_info);
+   if (in_array($extension, $required)) {
+     $info = $extension_info[$extension]->info;
+-    $explanation = !empty($info['explanation']) ? ' ' . dt('Reason: !explanation.', ['!explanation' => strip_tags($info['explanation'])])  : '';
++    $explanation = !empty($info['explanation']) ? ' ' . dt('Reason: !explanation.', ['!explanation' => strip_tags($info['explanation'])]) : '';
+     drush_log(dt('!extension is a required extension and can\'t be uninstalled.', ['!extension' => $extension]) . $explanation, LogLevel::INFO);
+     $uninstall = FALSE;
+   }
+@@ -52,7 +56,7 @@ function drush_workspace_uninstall() {
+ 
+   if ($uninstall) {
+     drush_print(dt('Workspace will be uninstalled.'));
+-    if(!drush_confirm(dt('Do you really want to continue?'))) {
++    if (!drush_confirm(dt('Do you really want to continue?'))) {
+       return drush_user_abort();
+     }
+ 

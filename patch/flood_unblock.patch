@@ -1,0 +1,143 @@
+diff --git a/src/Commands/FloodUnblockCommands.php b/src/Commands/FloodUnblockCommands.php
+index 2de4234..8c19db3 100644
+--- a/src/Commands/FloodUnblockCommands.php
++++ b/src/Commands/FloodUnblockCommands.php
+@@ -8,11 +8,10 @@ use Drupal\flood_unblock\FloodUnblockManager;
+ /**
+  * Flood unblock. module's Drush 9 commands.
+  */
+-class FloodUnblockCommands extends DrushCommands
+-{
++class FloodUnblockCommands extends DrushCommands {
+ 
+   /**
+-   * @var FloodUnblockManager
++   * @var \Drupal\flood_unblock\FloodUnblockManager
+    */
+   private $manager;
+ 
+diff --git a/src/FloodUnblockManager.php b/src/FloodUnblockManager.php
+index e223d07..02f13a9 100755
+--- a/src/FloodUnblockManager.php
++++ b/src/FloodUnblockManager.php
+@@ -9,12 +9,15 @@ use Drupal\Core\Flood\FloodInterface;
+ use Drupal\Core\Messenger\MessengerInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ 
++/**
++ *
++ */
+ class FloodUnblockManager {
+ 
+   use StringTranslationTrait;
+ 
+   /**
+-   * The Database Connection
++   * The Database Connection.
+    *
+    * @var \Drupal\Core\Database\Connection
+    */
+@@ -135,7 +138,8 @@ class FloodUnblockManager {
+ 
+         if (isset($user)) {
+           $user_link = $user->toLink($user->getAccountName());
+-        } else {
++        }
++        else {
+           $user_link = $this->t('Deleted user: @user', ['@user' => $result->uid]);
+         }
+ 
+@@ -169,7 +173,8 @@ class FloodUnblockManager {
+       if ($success) {
+         \Drupal::messenger()->addMessage($this->t('Flood entries cleared.'), 'status', FALSE);
+       }
+-    } catch (\Exception $e) {
++    }
++    catch (\Exception $e) {
+       // Something went wrong somewhere, so roll back now.
+       $txn->rollback();
+       // Log the exception to watchdog.
+@@ -177,4 +182,5 @@ class FloodUnblockManager {
+       \Drupal::messenger()->addMessage($this->t('Error: @error', ['@error' => (string) $e]), 'error');
+     }
+   }
++
+ }
+diff --git a/src/Form/FloodUnblockAdminForm.php b/src/Form/FloodUnblockAdminForm.php
+index 5679c45..ec50507 100755
+--- a/src/Form/FloodUnblockAdminForm.php
++++ b/src/Form/FloodUnblockAdminForm.php
+@@ -7,7 +7,6 @@ use Drupal\Core\Form\FormStateInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\flood_unblock\FloodUnblockManager;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+-use Drupal\Core\Url;
+ 
+ /**
+  * Admin form of Flood unblock.
+@@ -24,6 +23,9 @@ class FloodUnblockAdminForm extends FormBase {
+    */
+   protected $moduleHandler;
+ 
++  /**
++   *
++   */
+   public function __construct(FloodUnblockManager $floodUnblockManager, ModuleHandlerInterface $moduleHandler) {
+ 
+     $this->floodUnblockManager = $floodUnblockManager;
+@@ -118,7 +120,6 @@ class FloodUnblockAdminForm extends FormBase {
+     return $form;
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -157,4 +158,5 @@ class FloodUnblockAdminForm extends FormBase {
+       }
+     }
+   }
++
+ }
+diff --git a/tests/src/Functional/FloodUnblockUiPageTest.php b/tests/src/Functional/FloodUnblockUiPageTest.php
+index d472276..49258be 100644
+--- a/tests/src/Functional/FloodUnblockUiPageTest.php
++++ b/tests/src/Functional/FloodUnblockUiPageTest.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\Tests\flood_unblock\Functional;
+ 
+-
+ use Drupal\Tests\BrowserTestBase;
+ use Symfony\Component\HttpFoundation\Request;
+ 
+@@ -30,6 +29,9 @@ class FloodUnblockUiPageTest extends BrowserTestBase {
+    */
+   private $simple_user;
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+ 
+@@ -42,6 +44,9 @@ class FloodUnblockUiPageTest extends BrowserTestBase {
+     $this->container->get('request_stack')->push($request);
+   }
+ 
++  /**
++   *
++   */
+   public function testFloodUnblockUiPageAdminUser() {
+     $this->drupalLogin($this->admin_user);
+ 
+@@ -53,6 +58,9 @@ class FloodUnblockUiPageTest extends BrowserTestBase {
+       ->pageTextContains('There are no failed logins at this time.');
+   }
+ 
++  /**
++   *
++   */
+   public function testFloodUnblockUiPageSimpleUser() {
+     $this->drupalLogin($this->simple_user);
+ 

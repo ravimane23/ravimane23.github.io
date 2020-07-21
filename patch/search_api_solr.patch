@@ -1,0 +1,207 @@
+diff --git a/modules/search_api_solr_devel/src/Logging/SolariumRequestLogger.php b/modules/search_api_solr_devel/src/Logging/SolariumRequestLogger.php
+index 57a7479e..97cf5582 100644
+--- a/modules/search_api_solr_devel/src/Logging/SolariumRequestLogger.php
++++ b/modules/search_api_solr_devel/src/Logging/SolariumRequestLogger.php
+@@ -5,7 +5,6 @@ namespace Drupal\search_api_solr_devel\Logging;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\devel\DevelDumperManagerInterface;
+ use Drupal\search_api\LoggerTrait;
+-use Drupal\search_api_solr\Utility\Utility;
+ use Solarium\Core\Event\Events;
+ use Solarium\QueryType\Select\Query\Query;
+ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+@@ -89,4 +88,5 @@ class SolariumRequestLogger implements EventSubscriberInterface {
+ 
+     $this->develDumperManager->debug($response, 'Solr response');
+   }
++
+ }
+diff --git a/src/Plugin/search_api/backend/SearchApiSolrBackend.php b/src/Plugin/search_api/backend/SearchApiSolrBackend.php
+index e8518c4a..c50b8ee1 100644
+--- a/src/Plugin/search_api/backend/SearchApiSolrBackend.php
++++ b/src/Plugin/search_api/backend/SearchApiSolrBackend.php
+@@ -1768,7 +1768,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
+         // Ensure that required fields are returned.
+         $returned_fields = array_unique(array_merge($highlight_fields, $required_fields));
+         // Just highlight string and text fields to avoid Solr exceptions.
+-        $highlight_fields = array_filter($highlight_fields, function($v) {
++        $highlight_fields = array_filter($highlight_fields, function ($v) {
+           return preg_match('/^t.?[sm]_/', $v) || preg_match('/^s[sm]_/', $v);
+         });
+       }
+@@ -4375,7 +4375,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
+     // This state is resetted once a day via cron.
+     $schema_parts = $state->get('search_api_solr.endpoint.schema_parts');
+ 
+-
+     if (
+       !is_array($schema_parts) ||
+       empty($schema_parts[$endpoint_key]) ||
+diff --git a/src/Solarium/EventDispatcher/EventProxy.php b/src/Solarium/EventDispatcher/EventProxy.php
+index 451c31b6..634e2447 100644
+--- a/src/Solarium/EventDispatcher/EventProxy.php
++++ b/src/Solarium/EventDispatcher/EventProxy.php
+@@ -6,34 +6,40 @@ use Symfony\Component\EventDispatcher\Event as LegacyEvent;
+ use Symfony\Contracts\EventDispatcher\Event;
+ 
+ /**
+- * A proxy for events defined by symfony contracts
++ * A proxy for events defined by symfony contracts.
+  */
+-class EventProxy extends LegacyEvent
+-{
++class EventProxy extends LegacyEvent {
+   /**
+    * @var \Symfony\Contracts\EventDispatcher\Event
+    */
+   protected $event;
+ 
++  /**
++   *
++   */
+   public function __construct(Event $event) {
+     $this->event = $event;
+   }
+ 
+-  public function isPropagationStopped()
+-  {
++  /**
++   *
++   */
++  public function isPropagationStopped() {
+     return $this->event->isPropagationStopped();
+   }
+ 
+-  public function stopPropagation()
+-  {
++  /**
++   *
++   */
++  public function stopPropagation() {
+     $this->event->stopPropagation();
+   }
+ 
+   /**
+    * Proxies all method calls to the original event.
+    */
+-  public function __call($method, $arguments)
+-  {
++  public function __call($method, $arguments) {
+     return $this->event->{$method}(...$arguments);
+   }
++
+ }
+diff --git a/src/Solarium/EventDispatcher/Psr14Bridge.php b/src/Solarium/EventDispatcher/Psr14Bridge.php
+index b8c65319..554fdcc9 100644
+--- a/src/Solarium/EventDispatcher/Psr14Bridge.php
++++ b/src/Solarium/EventDispatcher/Psr14Bridge.php
+@@ -16,10 +16,16 @@ final class Psr14Bridge extends ContainerAwareEventDispatcher implements EventDi
+    */
+   protected $dispatcher;
+ 
++  /**
++   *
++   */
+   public function __construct() {
+     $this->dispatcher = \Drupal::service('event_dispatcher');
+   }
+ 
++  /**
++   *
++   */
+   public function dispatch($event, Event $null = NULL) {
+     if (\is_object($event)) {
+       return $this->dispatcher->dispatch(\get_class($event), new EventProxy($event));
+@@ -27,7 +33,11 @@ final class Psr14Bridge extends ContainerAwareEventDispatcher implements EventDi
+     return $this->dispatcher->dispatch($event, $null);
+   }
+ 
++  /**
++   *
++   */
+   public function addListener($event_name, $listener, $priority = 0) {
+     $this->dispatcher->addListener($event_name, $listener, $priority);
+   }
++
+ }
+diff --git a/src/SolrConnector/BasicAuthTrait.php b/src/SolrConnector/BasicAuthTrait.php
+index e5b9017e..6908bf64 100644
+--- a/src/SolrConnector/BasicAuthTrait.php
++++ b/src/SolrConnector/BasicAuthTrait.php
+@@ -3,9 +3,6 @@
+ namespace Drupal\search_api_solr\SolrConnector;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+-use Solarium\Core\Client\Endpoint;
+-use Solarium\Core\Client\Request;
+-use Solarium\QueryType\Select\Query\Query;
+ 
+ /**
+  * Basic auth functionality for a Solr connector.
+diff --git a/src/SolrConnector/SolrConnectorPluginBase.php b/src/SolrConnector/SolrConnectorPluginBase.php
+index a1ccef5d..b93abcbf 100644
+--- a/src/SolrConnector/SolrConnectorPluginBase.php
++++ b/src/SolrConnector/SolrConnectorPluginBase.php
+@@ -870,7 +870,6 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
+     return $this->execute($query, $endpoint);
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/Utility/Utility.php b/src/Utility/Utility.php
+index ae2ff875..3db69f0c 100644
+--- a/src/Utility/Utility.php
++++ b/src/Utility/Utility.php
+@@ -843,7 +843,7 @@ class Utility {
+    * @param array|string $keys
+    *   The keys array to flatten, formatted as specified by
+    *   \Drupal\search_api\Query\QueryInterface::getKeys() or a phrase string.
+-   * @param ParseModeInterface $parse_mode
++   * @param \Drupal\search_api\ParseMode\ParseModeInterface $parse_mode
+    *   (optional) The parse mode. Defaults to "terms" if null.
+    *
+    * @return string
+diff --git a/tests/src/Kernel/Processor/SolrBackendTrait.php b/tests/src/Kernel/Processor/SolrBackendTrait.php
+index 241b25a1..5a014449 100644
+--- a/tests/src/Kernel/Processor/SolrBackendTrait.php
++++ b/tests/src/Kernel/Processor/SolrBackendTrait.php
+@@ -2,11 +2,8 @@
+ 
+ namespace Drupal\Tests\search_api_solr\Kernel\Processor;
+ 
+-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+ use Drupal\search_api\Entity\Server;
+ use Drupal\search_api_solr\Utility\SolrCommitTrait;
+-use Monolog\Handler\StreamHandler;
+-use Monolog\Logger;
+ use Symfony\Component\Yaml\Yaml;
+ 
+ defined('SOLR_CLOUD') || define('SOLR_CLOUD', getenv('SOLR_CLOUD') ?: 'false');
+diff --git a/tests/src/Kernel/SearchApiSolrTest.php b/tests/src/Kernel/SearchApiSolrTest.php
+index 3acfba34..abef6a5c 100644
+--- a/tests/src/Kernel/SearchApiSolrTest.php
++++ b/tests/src/Kernel/SearchApiSolrTest.php
+@@ -1408,7 +1408,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
+       }
+     }
+ 
+-    $config_name = 'name="drupal-' . SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION . '-solr-' . $solr_major_version . '.x-'. SEARCH_API_SOLR_JUMP_START_CONFIG_SET .'"';
++    $config_name = 'name="drupal-' . SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION . '-solr-' . $solr_major_version . '.x-' . SEARCH_API_SOLR_JUMP_START_CONFIG_SET . '"';
+     $this->assertStringContainsString($config_name, $config_files['solrconfig.xml']);
+     $this->assertStringContainsString($config_name, $config_files['schema.xml']);
+     $this->assertStringContainsString('solr.luceneMatchVersion=' . $solr_major_version, $config_files['solrcore.properties']);
+diff --git a/tests/src/Kernel/SolrBackendTestBase.php b/tests/src/Kernel/SolrBackendTestBase.php
+index 8544527e..f240df34 100644
+--- a/tests/src/Kernel/SolrBackendTestBase.php
++++ b/tests/src/Kernel/SolrBackendTestBase.php
+@@ -7,8 +7,6 @@ use Drupal\search_api\Entity\Server;
+ use Drupal\search_api_solr_test\Logger\InMemoryLogger;
+ use Drupal\Tests\search_api\Kernel\BackendTestBase;
+ use Drupal\search_api_solr\Utility\SolrCommitTrait;
+-use Monolog\Handler\StreamHandler;
+-use Monolog\Logger;
+ 
+ defined('SOLR_CLOUD') || define('SOLR_CLOUD', getenv('SOLR_CLOUD') ?: 'false');
+ 

@@ -1,0 +1,12 @@
+diff --git a/src/BigMenuForm.php b/src/BigMenuForm.php
+index d428bc7..3f9c19b 100755
+--- a/src/BigMenuForm.php
++++ b/src/BigMenuForm.php
+@@ -104,7 +104,6 @@ class BigMenuForm extends MenuForm {
+       ];
+     }
+ 
+-
+     $form['links'] = [
+       '#type' => 'table',
+       '#theme' => 'table__menu_overview',

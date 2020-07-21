@@ -1,0 +1,189 @@
+diff --git a/src/Controller/MediaBulkUploadController.php b/src/Controller/MediaBulkUploadController.php
+index 1451b77..183a705 100644
+--- a/src/Controller/MediaBulkUploadController.php
++++ b/src/Controller/MediaBulkUploadController.php
+@@ -116,6 +116,7 @@ class MediaBulkUploadController extends ControllerBase {
+    *   User to validate access on.
+    *
+    * @return \Drupal\Core\Access\AccessResultAllowed|\Drupal\Core\Access\AccessResultForbidden
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    */
+   public function accessList(AccountInterface $account) {
+@@ -146,9 +147,9 @@ class MediaBulkUploadController extends ControllerBase {
+    * @return \Drupal\Core\Access\AccessResultAllowed|\Drupal\Core\Access\AccessResultForbidden
+    */
+   public function accessForm(AccountInterface $account, MediaBulkConfigInterface $media_bulk_config) {
+-        $mediaBulkConfigId = $media_bulk_config->id();
++    $mediaBulkConfigId = $media_bulk_config->id();
+ 
+-    if(!$account->hasPermission("use $mediaBulkConfigId bulk upload form")) {
++    if (!$account->hasPermission("use $mediaBulkConfigId bulk upload form")) {
+       return AccessResult::forbidden('Media Bulk Upload form is not accessible for the user.');
+     }
+ 
+diff --git a/src/Form/MediaBulkUploadForm.php b/src/Form/MediaBulkUploadForm.php
+index d7a45c8..af40152 100644
+--- a/src/Form/MediaBulkUploadForm.php
++++ b/src/Form/MediaBulkUploadForm.php
+@@ -219,7 +219,6 @@ class MediaBulkUploadForm extends FormBase {
+       '#extensions' => implode(' ', $this->allowed_extensions),
+     ];
+ 
+-
+     if ($this->mediaSubFormManager->validateMediaFormDisplayUse($mediaBulkConfig)) {
+       $form['fields'] = [
+         '#type' => 'fieldset',
+@@ -266,7 +265,7 @@ class MediaBulkUploadForm extends FormBase {
+    *   File Size.
+    *
+    * @return bool
+-   *  TRUE if the given size is larger than the one that is set.
++   *   TRUE if the given size is larger than the one that is set.
+    */
+   protected function isMaxFileSizeLarger($MaxFileSize) {
+     $size = Bytes::toInt($MaxFileSize);
+@@ -304,7 +303,7 @@ class MediaBulkUploadForm extends FormBase {
+     $values = $form_state->getValues();
+     $mediaBundleConfigId = $values['media_bundle_config'];
+ 
+-    /** @var MediaBulkConfigInterface $mediaBulkConfig */
++    /** @var \Drupal\media_bulk_upload\Entity\MediaBulkConfigInterface $mediaBulkConfig */
+     $mediaBulkConfig = $this->mediaBulkConfigStorage->load($mediaBundleConfigId);
+     $files = $values['dropzonejs']['uploaded_files'];
+ 
+@@ -327,7 +326,8 @@ class MediaBulkUploadForm extends FormBase {
+         }
+         $media->save();
+         $savedMediaItems[] = $media;
+-      } catch (\Exception $e) {
++      }
++      catch (\Exception $e) {
+         watchdog_exception('media_bulk_upload', $e);
+       }
+     }
+@@ -385,7 +385,6 @@ class MediaBulkUploadForm extends FormBase {
+       throw new \Exception("File $filename exceeds the maximum file size of $fileSizeSetting for media type $mediaTypeLabel exceeded.");
+     }
+ 
+-
+     $uri_scheme = $this->mediaSubFormManager->getTargetFieldDirectory($mediaType);
+     $destination = $uri_scheme . '/' . $file['filename'];
+     $file_default_scheme = \Drupal::config('system.file')->get('default_scheme') . '://';
+@@ -446,7 +445,7 @@ class MediaBulkUploadForm extends FormBase {
+       : Environment::getUploadMaxSize();
+ 
+     if ($maxFileSize == 0) {
+-      return true;
++      return TRUE;
+     }
+ 
+     return $fileSize <= $maxFileSize;
+@@ -516,4 +515,5 @@ class MediaBulkUploadForm extends FormBase {
+     }
+     return $this;
+   }
++
+ }
+diff --git a/src/MediaBulkConfigListBuilder.php b/src/MediaBulkConfigListBuilder.php
+index 09b81eb..07ad2be 100644
+--- a/src/MediaBulkConfigListBuilder.php
++++ b/src/MediaBulkConfigListBuilder.php
+@@ -40,4 +40,5 @@ class MediaBulkConfigListBuilder extends ConfigEntityListBuilder {
+     ]);
+     return $build;
+   }
++
+ }
+diff --git a/src/MediaSubFormManager.php b/src/MediaSubFormManager.php
+index 113d436..3824c15 100644
+--- a/src/MediaSubFormManager.php
++++ b/src/MediaSubFormManager.php
+@@ -99,7 +99,7 @@ class MediaSubFormManager implements ContainerInjectionInterface, MediaSubFormMa
+    * Format the amount of bites into a common string format.
+    *
+    * @param int $size
+-   *  Size in bytes.
++   *   Size in bytes.
+    *
+    * @return string
+    *   Formatted file size.
+@@ -272,4 +272,5 @@ class MediaSubFormManager implements ContainerInjectionInterface, MediaSubFormMa
+   public function getDefaultMaxFileSize() {
+     return $this->defaultMaxFileSize;
+   }
++
+ }
+diff --git a/src/MediaSubFormManagerInterface.php b/src/MediaSubFormManagerInterface.php
+index f41d584..812e5e9 100644
+--- a/src/MediaSubFormManagerInterface.php
++++ b/src/MediaSubFormManagerInterface.php
+@@ -1,14 +1,7 @@
+ <?php
+-/**
+- * Created by PhpStorm.
+- * User: jeffreybertoen
+- * Date: 05-02-19
+- * Time: 07:33
+- */
+ 
+ namespace Drupal\media_bulk_upload;
+ 
+-
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\media\MediaTypeInterface;
+ use Drupal\media_bulk_upload\Entity\MediaBulkConfigInterface;
+@@ -141,4 +134,5 @@ interface MediaSubFormManagerInterface {
+    *   The default max file size.
+    */
+   public function getDefaultMaxFileSize();
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/MediaTypeManager.php b/src/MediaTypeManager.php
+index 0eb0cc4..d083c09 100644
+--- a/src/MediaTypeManager.php
++++ b/src/MediaTypeManager.php
+@@ -8,7 +8,7 @@ use Drupal\media\MediaTypeInterface;
+ use Drupal\media_bulk_upload\Entity\MediaBulkConfigInterface;
+ 
+ /**
+- * Class MediaTypeManager
++ * Class MediaTypeManager.
+  *
+  * @package Drupal\media_bulk_upload
+  */
+@@ -154,4 +154,4 @@ class MediaTypeManager implements MediaTypeManagerInterface {
+       ->loadMultiple($mediaTypeIds);
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/MediaTypeManagerInterface.php b/src/MediaTypeManagerInterface.php
+index f96928b..fe68888 100644
+--- a/src/MediaTypeManagerInterface.php
++++ b/src/MediaTypeManagerInterface.php
+@@ -2,12 +2,11 @@
+ 
+ namespace Drupal\media_bulk_upload;
+ 
+-
+ use Drupal\media\MediaTypeInterface;
+ use Drupal\media_bulk_upload\Entity\MediaBulkConfigInterface;
+ 
+ /**
+- * Interface MediaTypeManagerInterface
++ * Interface MediaTypeManagerInterface.
+  *
+  * @package Drupal\media_bulk_upload
+  */
+@@ -97,4 +96,5 @@ interface MediaTypeManagerInterface {
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    */
+   public function getBulkMediaTypes(MediaBulkConfigInterface $mediaBulkConfig);
+-}
+\ No newline at end of file
++
++}

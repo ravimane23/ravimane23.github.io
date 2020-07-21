@@ -1,0 +1,137 @@
+diff --git a/src/Entity/Message.php b/src/Entity/Message.php
+index 13c271e..a291b13 100644
+--- a/src/Entity/Message.php
++++ b/src/Entity/Message.php
+@@ -3,8 +3,6 @@
+ namespace Drupal\message\Entity;
+ 
+ use Drupal\Component\Render\FormattableMarkup;
+-use Drupal\Core\Annotation\PluralTranslation;
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\Core\Entity\ContentEntityBase;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Field\BaseFieldDefinition;
+diff --git a/src/Entity/MessageTemplate.php b/src/Entity/MessageTemplate.php
+index ff0ce8a..b5887f2 100644
+--- a/src/Entity/MessageTemplate.php
++++ b/src/Entity/MessageTemplate.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\message\Entity;
+ 
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
+ use Drupal\Core\Entity\EntityStorageInterface;
+ use Drupal\Core\Language\Language;
+@@ -253,7 +252,7 @@ class MessageTemplate extends ConfigEntityBundleBase implements MessageTemplateI
+   public function getRawText() {
+     return $this->text;
+   }
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/Plugin/MessagePurge/Days.php b/src/Plugin/MessagePurge/Days.php
+index ea7d0df..74841ec 100644
+--- a/src/Plugin/MessagePurge/Days.php
++++ b/src/Plugin/MessagePurge/Days.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\message\Plugin\MessagePurge;
+ 
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Entity\Query\QueryInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Queue\QueueInterface;
+diff --git a/src/Plugin/migrate/destination/MessageTemplateDestination.php b/src/Plugin/migrate/destination/MessageTemplateDestination.php
+index dffeffe..7e54c8f 100644
+--- a/src/Plugin/migrate/destination/MessageTemplateDestination.php
++++ b/src/Plugin/migrate/destination/MessageTemplateDestination.php
+@@ -12,7 +12,7 @@ use Drupal\migrate\Row;
+  * )
+  */
+ class MessageTemplateDestination extends EntityConfigBase {
+- 
++
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/Plugin/migrate/process/MessageProcessArguments.php b/src/Plugin/migrate/process/MessageProcessArguments.php
+index 888cfa1..859f1f8 100644
+--- a/src/Plugin/migrate/process/MessageProcessArguments.php
++++ b/src/Plugin/migrate/process/MessageProcessArguments.php
+@@ -20,7 +20,7 @@ class MessageProcessArguments extends ProcessPluginBase {
+    */
+   public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
+     $value = unserialize($value[0]);
+-    
++
+     $arguments = [];
+     foreach ($value as $key => $value) {
+       $key = $key[0] == '!' ? substr_replace($key, '@', 0, 1) : $key;
+diff --git a/src/Plugin/migrate/source/MessageSource.php b/src/Plugin/migrate/source/MessageSource.php
+index 50ec168..1b1c560 100644
+--- a/src/Plugin/migrate/source/MessageSource.php
++++ b/src/Plugin/migrate/source/MessageSource.php
+@@ -1,15 +1,9 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\message\Plugin\migrate\source.
+- */
+-
+ namespace Drupal\message\Plugin\migrate\source;
+ 
+ use Drupal\migrate_drupal\Plugin\migrate\source\DrupalSqlBase;
+-use Drupal\migrate\Row;
+-use Drupal\message\Entity\Message;
++
+ /**
+  * Drupal 7 message source from database.
+  *
+diff --git a/src/Plugin/migrate/source/MessageTemplateSource.php b/src/Plugin/migrate/source/MessageTemplateSource.php
+index 8fb5ed5..4bfe1f6 100644
+--- a/src/Plugin/migrate/source/MessageTemplateSource.php
++++ b/src/Plugin/migrate/source/MessageTemplateSource.php
+@@ -1,14 +1,9 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\message\Plugin\migrate\source.
+- */
+-
+ namespace Drupal\message\Plugin\migrate\source;
+ 
+ use Drupal\migrate_drupal\Plugin\migrate\source\DrupalSqlBase;
+-use Drupal\migrate\Row;
++
+ /**
+  * Drupal 7 message types source from database.
+  *
+diff --git a/tests/src/Functional/MessageCreateTest.php b/tests/src/Functional/MessageCreateTest.php
+index a49c453..da3bf39 100644
+--- a/tests/src/Functional/MessageCreateTest.php
++++ b/tests/src/Functional/MessageCreateTest.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\Tests\message\Functional;
+ 
+ use Drupal\message\Entity\Message;
+-use Drupal\user\Entity\User;
+ 
+ /**
+  * Tests message creation and default values.
+diff --git a/tests/src/Functional/MessageTemplateUiTest.php b/tests/src/Functional/MessageTemplateUiTest.php
+index 9b06c28..f235c93 100644
+--- a/tests/src/Functional/MessageTemplateUiTest.php
++++ b/tests/src/Functional/MessageTemplateUiTest.php
+@@ -114,7 +114,6 @@ class MessageTemplateUiTest extends MessageTestBase {
+     $this->assertEquals(['<p>This is a dummy message with some edited dummy text</p>'], $template->getText(), 'The text in english pulled correctly.');
+     $this->assertEquals([], $template->getText('fi'), 'Nonexistent translation pulled empty.');
+ 
+-
+     // Create a message using that same template and test that multilingual text
+     // still works.
+     /* @var $template Message */

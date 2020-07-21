@@ -1,0 +1,1308 @@
+diff --git a/css/permissions.css b/css/permissions.css
+index f8441ca..2745645 100644
+--- a/css/permissions.css
++++ b/css/permissions.css
+@@ -4,20 +4,20 @@
+ 
+ /* Permissions page */
+ .permissions .module {
+-    font-weight: bold;
++  font-weight: bold;
+ }
+ .permissions .section {
+-    font-style: italic;
+-    padding-left: 1.5em; /* LTR */
++  font-style: italic;
++  padding-left: 1.5em; /* LTR */
+ }
+ [dir="rtl"] .permissions .section {
+-    padding-left: 0;
+-    padding-right: 1.5em;
++  padding-left: 0;
++  padding-right: 1.5em;
+ }
+ .permissions .permission {
+-    padding-left: 2.5em; /* LTR */
++  padding-left: 2.5em; /* LTR */
+ }
+ [dir="rtl"] .permissions .permission {
+-    padding-left: 0;
+-    padding-right: 2.5em;
++  padding-left: 0;
++  padding-right: 2.5em;
+ }
+diff --git a/css/toolbar.icons.theme.css b/css/toolbar.icons.theme.css
+index ebc7bd1..7f57ff6 100644
+--- a/css/toolbar.icons.theme.css
++++ b/css/toolbar.icons.theme.css
+@@ -2,9 +2,9 @@
+  * Main menu icons.
+  */
+ .toolbar-icon-system-admin-group:before {
+-    background-image: url(../images/icons/787878/toolbar.svg);
++  background-image: url(../images/icons/787878/toolbar.svg);
+ }
+ .toolbar-icon-system-admin-group:active:before,
+ .toolbar-icon-system-admin-group.is-active:before {
+-    background-image: url(../images/icons/000000/toolbar.svg);
++  background-image: url(../images/icons/000000/toolbar.svg);
+ }
+diff --git a/group.api.php b/group.api.php
+index 6b9ba46..a76dd0d 100644
+--- a/group.api.php
++++ b/group.api.php
+@@ -5,7 +5,6 @@
+  * Hooks specific to the Group module.
+  */
+ 
+-use Drupal\Core\Session\AccountInterface;
+ use Drupal\group\Entity\GroupInterface;
+ 
+ /**
+@@ -18,7 +17,7 @@ use Drupal\group\Entity\GroupInterface;
+  *
+  * @param array $operations
+  *   A list of links to be set in an 'operations' element.
+- * @param GroupInterface $group
++ * @param \Drupal\group\Entity\GroupInterface $group
+  *   The group to alter the operations for.
+  *
+  * @see \Drupal\group\Plugin\Block\GroupOperationsBlock
+diff --git a/modules/gnode/src/Plugin/GroupContentEnabler/GroupNodeDeriver.php b/modules/gnode/src/Plugin/GroupContentEnabler/GroupNodeDeriver.php
+index f02de69..aa3c201 100644
+--- a/modules/gnode/src/Plugin/GroupContentEnabler/GroupNodeDeriver.php
++++ b/modules/gnode/src/Plugin/GroupContentEnabler/GroupNodeDeriver.php
+@@ -5,6 +5,9 @@ namespace Drupal\gnode\Plugin\GroupContentEnabler;
+ use Drupal\node\Entity\NodeType;
+ use Drupal\Component\Plugin\Derivative\DeriverBase;
+ 
++/**
++ *
++ */
+ class GroupNodeDeriver extends DeriverBase {
+ 
+   /**
+diff --git a/src/Access/GroupPermissions.php b/src/Access/GroupPermissions.php
+index 811c7f6..b16d3ac 100644
+--- a/src/Access/GroupPermissions.php
++++ b/src/Access/GroupPermissions.php
+@@ -21,7 +21,7 @@ class GroupPermissions {
+    */
+   public function groupTypePermissions() {
+     $perms = [];
+-    
++
+     // Generate group permissions for all group types.
+     foreach (GroupType::loadMultiple() as $type) {
+       $perms += $this->buildPermissions($type);
+diff --git a/src/Annotation/GroupContentEnabler.php b/src/Annotation/GroupContentEnabler.php
+index eb71365..df190c8 100644
+--- a/src/Annotation/GroupContentEnabler.php
++++ b/src/Annotation/GroupContentEnabler.php
+@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
+ /**
+  * Defines a GroupContentEnabler annotation object.
+  *
+- * Plugin Namespace: Plugin\GroupContentEnabler
++ * Plugin Namespace: Plugin\GroupContentEnabler.
+  *
+  * For a working example, see
+  * \Drupal\group\Plugin\GroupContentEnabler\GroupMembership
+diff --git a/src/ConfigTranslation/GroupRoleMapper.php b/src/ConfigTranslation/GroupRoleMapper.php
+index b7550fc..ca1d445 100644
+--- a/src/ConfigTranslation/GroupRoleMapper.php
++++ b/src/ConfigTranslation/GroupRoleMapper.php
+@@ -15,7 +15,7 @@ class GroupRoleMapper extends ConfigEntityMapper {
+   public function getBaseRouteParameters() {
+     return [
+       $this->entityType => $this->entity->id(),
+-      'group_type' => $this->getEntity()->get('group_type')
++      'group_type' => $this->getEntity()->get('group_type'),
+     ];
+   }
+ 
+diff --git a/src/Controller/GroupMembershipController.php b/src/Controller/GroupMembershipController.php
+index 75ad79f..da367c1 100644
+--- a/src/Controller/GroupMembershipController.php
++++ b/src/Controller/GroupMembershipController.php
+@@ -23,14 +23,14 @@ class GroupMembershipController extends ControllerBase {
+    * @var \Drupal\Core\Session\AccountInterface
+    */
+   protected $currentUser;
+-  
++
+   /**
+    * The entity form builder.
+    *
+    * @var \Drupal\Core\Entity\EntityFormBuilderInterface
+    */
+   protected $entityFormBuilder;
+-  
++
+   /**
+    * Constructs a new GroupMembershipController.
+    *
+diff --git a/src/Entity/Access/GroupContentQueryAccessHandler.php b/src/Entity/Access/GroupContentQueryAccessHandler.php
+index 3ce1eea..3578681 100644
+--- a/src/Entity/Access/GroupContentQueryAccessHandler.php
++++ b/src/Entity/Access/GroupContentQueryAccessHandler.php
+@@ -91,7 +91,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
+         elseif ($any_permission !== FALSE && $item->hasPermission($any_permission)) {
+           $allowed_any_ids[$item->getScope()][] = $identifier;
+         }
+-        elseif($own_permission !== FALSE && $item->hasPermission($own_permission)) {
++        elseif ($own_permission !== FALSE && $item->hasPermission($own_permission)) {
+           $allowed_own_ids[$item->getScope()][] = $identifier;
+         }
+       }
+diff --git a/src/Entity/Access/GroupRoleAccessControlHandler.php b/src/Entity/Access/GroupRoleAccessControlHandler.php
+index a3a3ab6..dbfd0dc 100644
+--- a/src/Entity/Access/GroupRoleAccessControlHandler.php
++++ b/src/Entity/Access/GroupRoleAccessControlHandler.php
+@@ -22,14 +22,14 @@ class GroupRoleAccessControlHandler extends EntityAccessControlHandler {
+     if ($operation == 'delete') {
+       return parent::checkAccess($entity, $operation, $account)->addCacheableDependency($entity);
+     }
+-    
++
+     // Group roles have no 'view' route but may be used in views to show what
+     // roles a member has. We therefore allow 'view' access so field formatters
+     // such as entity_reference_label will work.
+     if ($operation == 'view') {
+       return AccessResult::allowed()->addCacheableDependency($entity);
+     }
+-    
++
+     return parent::checkAccess($entity, $operation, $account);
+   }
+ 
+diff --git a/src/Entity/Controller/GroupListBuilder.php b/src/Entity/Controller/GroupListBuilder.php
+index dd278d9..1df509b 100644
+--- a/src/Entity/Controller/GroupListBuilder.php
++++ b/src/Entity/Controller/GroupListBuilder.php
+@@ -103,7 +103,7 @@ class GroupListBuilder extends EntityListBuilder {
+       ],
+       'type' => [
+         'data' => $this->t('Type'),
+-        'specifier' =>'type',
++        'specifier' => 'type',
+         'field' => 'type',
+       ],
+       'uid' => [
+diff --git a/src/Entity/Controller/GroupRoleController.php b/src/Entity/Controller/GroupRoleController.php
+index 2874890..08189a4 100644
+--- a/src/Entity/Controller/GroupRoleController.php
++++ b/src/Entity/Controller/GroupRoleController.php
+@@ -9,7 +9,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
+ /**
+  * Returns responses for GroupRole routes.
+  */
+-class GroupRoleController extends EntityController  {
++class GroupRoleController extends EntityController {
+ 
+   /**
+    * {@inheritdoc}
+diff --git a/src/Entity/Controller/GroupRoleListBuilder.php b/src/Entity/Controller/GroupRoleListBuilder.php
+index d4b0ca5..2d215a2 100644
+--- a/src/Entity/Controller/GroupRoleListBuilder.php
++++ b/src/Entity/Controller/GroupRoleListBuilder.php
+@@ -21,7 +21,7 @@ class GroupRoleListBuilder extends DraggableListBuilder {
+   /**
+    * The group type to check for roles.
+    *
+-   * @var GroupTypeInterface $groupType
++   * @var \Drupal\group\Entity\GroupTypeInterface
+    */
+   protected $groupType;
+ 
+@@ -118,7 +118,7 @@ class GroupRoleListBuilder extends DraggableListBuilder {
+   public function render() {
+     $build = parent::render();
+     $build['table']['#empty'] = $this->t('No group roles available. <a href="@link">Add group role</a>.', [
+-      '@link' => Url::fromRoute('entity.group_role.add_form', ['group_type' => $this->groupType->id()])->toString()
++      '@link' => Url::fromRoute('entity.group_role.add_form', ['group_type' => $this->groupType->id()])->toString(),
+     ]);
+     return $build;
+   }
+diff --git a/src/Entity/Controller/GroupTypeController.php b/src/Entity/Controller/GroupTypeController.php
+index 77cbe42..409d921 100644
+--- a/src/Entity/Controller/GroupTypeController.php
++++ b/src/Entity/Controller/GroupTypeController.php
+@@ -171,10 +171,10 @@ class GroupTypeController extends ControllerBase {
+         ],
+       ],
+       'provider' => [
+-        '#markup' => $this->moduleHandler->getName($plugin->getProvider())
++        '#markup' => $this->moduleHandler->getName($plugin->getProvider()),
+       ],
+       'entity_type_id' => [
+-        '#markup' => $this->entityTypeManager->getDefinition($plugin->getEntityTypeId())->getLabel()
++        '#markup' => $this->entityTypeManager->getDefinition($plugin->getEntityTypeId())->getLabel(),
+       ],
+       'status' => ['#markup' => $status],
+       'install_type' => ['#markup' => $install_type],
+diff --git a/src/Entity/Controller/GroupTypeListBuilder.php b/src/Entity/Controller/GroupTypeListBuilder.php
+index b496836..abbc35d 100644
+--- a/src/Entity/Controller/GroupTypeListBuilder.php
++++ b/src/Entity/Controller/GroupTypeListBuilder.php
+@@ -82,7 +82,7 @@ class GroupTypeListBuilder extends ConfigEntityListBuilder {
+   public function render() {
+     $build = parent::render();
+     $build['table']['#empty'] = $this->t('No group types available. <a href="@link">Add group type</a>.', [
+-      '@link' => Url::fromRoute('entity.group_type.add_form')->toString()
++      '@link' => Url::fromRoute('entity.group_type.add_form')->toString(),
+     ]);
+     return $build;
+   }
+diff --git a/src/Entity/Form/GroupContentTypeDeleteForm.php b/src/Entity/Form/GroupContentTypeDeleteForm.php
+index 84261e0..a3efa09 100644
+--- a/src/Entity/Form/GroupContentTypeDeleteForm.php
++++ b/src/Entity/Form/GroupContentTypeDeleteForm.php
+@@ -5,7 +5,6 @@ namespace Drupal\group\Entity\Form;
+ use Drupal\Core\Entity\EntityDeleteForm;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Url;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a form for group content type deletion.
+@@ -69,7 +68,7 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
+     if (!empty($entity_count)) {
+       $form['#title'] = $this->getQuestion();
+       $form['description'] = [
+-        '#markup' => '<p>' . $this->t('You can not uninstall this content plugin until you have removed all of the content that uses it.') . '</p>'
++        '#markup' => '<p>' . $this->t('You can not uninstall this content plugin until you have removed all of the content that uses it.') . '</p>',
+       ];
+ 
+       return $form;
+diff --git a/src/Entity/Form/GroupDeleteForm.php b/src/Entity/Form/GroupDeleteForm.php
+index 8e332ca..3cf832e 100644
+--- a/src/Entity/Form/GroupDeleteForm.php
++++ b/src/Entity/Form/GroupDeleteForm.php
+@@ -4,7 +4,6 @@ namespace Drupal\group\Entity\Form;
+ 
+ use Drupal\Core\Entity\ContentEntityConfirmFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Url;
+ 
+ /**
+  * Provides a form for deleting a group.
+diff --git a/src/Entity/Form/GroupForm.php b/src/Entity/Form/GroupForm.php
+index 06dd25b..a001298 100644
+--- a/src/Entity/Form/GroupForm.php
++++ b/src/Entity/Form/GroupForm.php
+@@ -53,7 +53,7 @@ class GroupForm extends ContentEntityForm {
+         $actions['submit']['#value'] = $this->t('Create @group_type and complete your membership', $replace);
+ 
+         // Add a cancel button to clear the private temp store. This exits the
+-        // wizard without saving,
++        // wizard without saving,.
+         $actions['cancel'] = [
+           '#type' => 'submit',
+           '#value' => $this->t('Cancel'),
+diff --git a/src/Entity/Form/GroupRoleForm.php b/src/Entity/Form/GroupRoleForm.php
+index 984278d..5ceb7ec 100644
+--- a/src/Entity/Form/GroupRoleForm.php
++++ b/src/Entity/Form/GroupRoleForm.php
+@@ -142,7 +142,7 @@ class GroupRoleForm extends EntityForm {
+   public function exists($id) {
+     /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
+     $group_role = $this->entity;
+-    return (boolean) GroupRole::load($group_role->getGroupTypeId() . '-' .$id);
++    return (boolean) GroupRole::load($group_role->getGroupTypeId() . '-' . $id);
+   }
+ 
+   /**
+diff --git a/src/Entity/Form/GroupTypeDeleteForm.php b/src/Entity/Form/GroupTypeDeleteForm.php
+index 66a2cc0..1b6fc29 100644
+--- a/src/Entity/Form/GroupTypeDeleteForm.php
++++ b/src/Entity/Form/GroupTypeDeleteForm.php
+@@ -4,7 +4,6 @@ namespace Drupal\group\Entity\Form;
+ 
+ use Drupal\Core\Entity\EntityDeleteForm;
+ use Drupal\Core\Form\FormStateInterface;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Provides a form for group type deletion.
+@@ -30,7 +29,7 @@ class GroupTypeDeleteForm extends EntityDeleteForm {
+ 
+       $form['#title'] = $this->getQuestion();
+       $form['description'] = [
+-        '#markup' => '<p>' . $this->formatPlural($num_groups, $single, $multiple, $replace) . '</p>'
++        '#markup' => '<p>' . $this->formatPlural($num_groups, $single, $multiple, $replace) . '</p>',
+       ];
+ 
+       return $form;
+diff --git a/src/Entity/GroupContent.php b/src/Entity/GroupContent.php
+index 2ae43a0..b7bbc36 100644
+--- a/src/Entity/GroupContent.php
++++ b/src/Entity/GroupContent.php
+@@ -10,7 +10,6 @@ use Drupal\Core\Entity\EntityStorageInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Field\BaseFieldDefinition;
+ use Drupal\user\EntityOwnerTrait;
+-use Drupal\user\UserInterface;
+ 
+ /**
+  * Defines the Group content entity.
+diff --git a/src/Entity/GroupContentTypeInterface.php b/src/Entity/GroupContentTypeInterface.php
+index 69de987..2ca3bc8 100644
+--- a/src/Entity/GroupContentTypeInterface.php
++++ b/src/Entity/GroupContentTypeInterface.php
+@@ -44,7 +44,7 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
+ 
+   /**
+    * Updates the configuration of the content enabler plugin.
+-   * 
++   *
+    * Any keys that were left out will be reset to the default.
+    *
+    * @param array $configuration
+@@ -75,5 +75,5 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
+    *   An array of group content type entities which serve the given entity.
+    */
+   public static function loadByEntityTypeId($entity_type_id);
+-  
++
+ }
+diff --git a/src/Entity/GroupRole.php b/src/Entity/GroupRole.php
+index d71622a..5110247 100644
+--- a/src/Entity/GroupRole.php
++++ b/src/Entity/GroupRole.php
+@@ -323,7 +323,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
+ 
+     if (!isset($this->weight) && ($group_roles = $storage->loadMultiple())) {
+       // Set a role weight to make this new role last.
+-      $max = array_reduce($group_roles, function($max, $group_role) {
++      $max = array_reduce($group_roles, function ($max, $group_role) {
+         return $max > $group_role->weight ? $max : $group_role->weight;
+       });
+ 
+diff --git a/src/Entity/Routing/GroupContentRouteProvider.php b/src/Entity/Routing/GroupContentRouteProvider.php
+index a3e8ace..62ce8b6 100644
+--- a/src/Entity/Routing/GroupContentRouteProvider.php
++++ b/src/Entity/Routing/GroupContentRouteProvider.php
+@@ -2,11 +2,8 @@
+ 
+ namespace Drupal\group\Entity\Routing;
+ 
+-use Drupal\Core\Entity\EntityFieldManagerInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\Routing\Route;
+ 
+ /**
+diff --git a/src/Entity/Storage/GroupContentTypeStorageInterface.php b/src/Entity/Storage/GroupContentTypeStorageInterface.php
+index 4ec3598..0390c5d 100644
+--- a/src/Entity/Storage/GroupContentTypeStorageInterface.php
++++ b/src/Entity/Storage/GroupContentTypeStorageInterface.php
+@@ -54,7 +54,7 @@ interface GroupContentTypeStorageInterface extends ConfigEntityStorageInterface
+    *   The ID of the content enabler plugin to use.
+    * @param array $configuration
+    *   (optional) An array of content enabler plugin configuration.
+-   * 
++   *
+    * @return \Drupal\group\Entity\GroupContentTypeInterface
+    *   A new, unsaved GroupContentType entity.
+    */
+diff --git a/src/Entity/Storage/GroupRoleStorageInterface.php b/src/Entity/Storage/GroupRoleStorageInterface.php
+index 469f4f2..f4640e7 100644
+--- a/src/Entity/Storage/GroupRoleStorageInterface.php
++++ b/src/Entity/Storage/GroupRoleStorageInterface.php
+@@ -19,7 +19,7 @@ interface GroupRoleStorageInterface extends ConfigEntityStorageInterface {
+    *   The account to load the group role entities for.
+    * @param \Drupal\group\Entity\GroupInterface $group
+    *   The group entity to find the user's role entities in.
+-   * @param boolean $include_implied
++   * @param bool $include_implied
+    *   (optional) Whether to include the implied roles 'anonymous', 'outsider'
+    *   and 'member'. Defaults to TRUE.
+    *
+diff --git a/src/Form/GroupPermissionsForm.php b/src/Form/GroupPermissionsForm.php
+index 6dd481f..d32a47d 100644
+--- a/src/Form/GroupPermissionsForm.php
++++ b/src/Form/GroupPermissionsForm.php
+@@ -67,7 +67,7 @@ abstract class GroupPermissionsForm extends FormBase {
+   protected function getInfo() {
+     // Format a message explaining the cells with a red x inside them.
+     $replace = ['@red_dash' => new FormattableMarkup('<span style="color: #ff0000;">-</span>', [])];
+-    $message =  $this->t('Cells with a @red_dash indicate that the permission is not available for that role.', $replace);
++    $message = $this->t('Cells with a @red_dash indicate that the permission is not available for that role.', $replace);
+ 
+     // We use FormattableMarkup so the 'style' attribute doesn't get escaped.
+     return ['red_dash_info' => ['#markup' => new FormattableMarkup("<p>$message</p>", [])]];
+@@ -179,7 +179,7 @@ abstract class GroupPermissionsForm extends FormBase {
+             'id' => 'module-' . $provider,
+           ],
+           '#markup' => $this->moduleHandler->getName($provider),
+-        ]
++        ],
+       ];
+ 
+       foreach ($sections as $section => $permissions) {
+@@ -195,7 +195,7 @@ abstract class GroupPermissionsForm extends FormBase {
+               'id' => 'section-' . $section_id,
+             ],
+             '#markup' => $section,
+-          ]
++          ],
+         ];
+ 
+         // Then list all of the permissions for that provider and section.
+@@ -250,8 +250,8 @@ abstract class GroupPermissionsForm extends FormBase {
+                 '#attributes' => [
+                   'class' => [
+                     'rid-' . $role_name,
+-                    'js-rid-' . $role_name
+-                  ]
++                    'js-rid-' . $role_name,
++                  ],
+                 ],
+                 '#parents' => [$role_name, $perm],
+               ];
+@@ -278,7 +278,7 @@ abstract class GroupPermissionsForm extends FormBase {
+   /**
+    * {@inheritdoc}
+    */
+-  function submitForm(array &$form, FormStateInterface $form_state) {
++  public function submitForm(array &$form, FormStateInterface $form_state) {
+     foreach ($this->getGroupRoles() as $role_name => $group_role) {
+       /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
+       $permissions = $form_state->getValue($role_name);
+diff --git a/src/GroupMembership.php b/src/GroupMembership.php
+index cbb6493..438459c 100644
+--- a/src/GroupMembership.php
++++ b/src/GroupMembership.php
+@@ -7,7 +7,7 @@ use Drupal\group\Entity\GroupContentInterface;
+ 
+ /**
+  * Wrapper class for a GroupContent entity representing a membership.
+- * 
++ *
+  * Should be loaded through the 'group.membership_loader' service.
+  */
+ class GroupMembership implements CacheableDependencyInterface {
+diff --git a/src/GroupRoleSynchronizer.php b/src/GroupRoleSynchronizer.php
+index 427b04b..95a60e3 100644
+--- a/src/GroupRoleSynchronizer.php
++++ b/src/GroupRoleSynchronizer.php
+@@ -5,7 +5,6 @@ namespace Drupal\group;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\group\Entity\GroupTypeInterface;
+-use Drupal\User\RoleInterface;
+ 
+ /**
+  * Synchronizes user roles to group roles.
+diff --git a/src/GroupRoleSynchronizerInterface.php b/src/GroupRoleSynchronizerInterface.php
+index 34e742c..8e11d37 100644
+--- a/src/GroupRoleSynchronizerInterface.php
++++ b/src/GroupRoleSynchronizerInterface.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\group;
+ 
+-use Drupal\User\RoleInterface;
+-
+ /**
+  * Provides information about how site roles are synchronized to group roles.
+  */
+diff --git a/src/Plugin/Condition/GroupType.php b/src/Plugin/Condition/GroupType.php
+index 426eba3..5394372 100644
+--- a/src/Plugin/Condition/GroupType.php
++++ b/src/Plugin/Condition/GroupType.php
+@@ -18,7 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  *     "group" = @ContextDefinition("entity:group", label = @Translation("Group"))
+  *   }
+  * )
+- *
+  */
+ class GroupType extends ConditionPluginBase implements ContainerFactoryPluginInterface {
+ 
+diff --git a/src/Plugin/GroupContentEnabler/GroupMembership.php b/src/Plugin/GroupContentEnabler/GroupMembership.php
+index 5e346f6..26f37c6 100644
+--- a/src/Plugin/GroupContentEnabler/GroupMembership.php
++++ b/src/Plugin/GroupContentEnabler/GroupMembership.php
+@@ -3,9 +3,7 @@
+ namespace Drupal\group\Plugin\GroupContentEnabler;
+ 
+ use Drupal\Core\Cache\CacheableMetadata;
+-use Drupal\group\Access\GroupAccessResult;
+ use Drupal\group\Entity\GroupInterface;
+-use Drupal\group\Entity\GroupContentInterface;
+ use Drupal\group\Plugin\GroupContentEnablerBase;
+ use Drupal\field\Entity\FieldConfig;
+ use Drupal\field\Entity\FieldStorageConfig;
+@@ -13,7 +11,6 @@ use Drupal\Core\Url;
+ use Drupal\Core\Entity\Entity\EntityFormDisplay;
+ use Drupal\Core\Entity\Entity\EntityViewDisplay;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Session\AccountInterface;
+ 
+ /**
+  * Provides a content enabler for users.
+diff --git a/src/Plugin/GroupContentEnablerManagerInterface.php b/src/Plugin/GroupContentEnablerManagerInterface.php
+index 6f32e85..c372baa 100644
+--- a/src/Plugin/GroupContentEnablerManagerInterface.php
++++ b/src/Plugin/GroupContentEnablerManagerInterface.php
+@@ -4,7 +4,6 @@ namespace Drupal\group\Plugin;
+ 
+ use Drupal\Component\Plugin\Discovery\CachedDiscoveryInterface;
+ use Drupal\Component\Plugin\PluginManagerInterface;
+-use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\group\Entity\GroupTypeInterface;
+ 
+ /**
+diff --git a/src/Plugin/GroupContentPermissionProvider.php b/src/Plugin/GroupContentPermissionProvider.php
+index 014f374..314d648 100644
+--- a/src/Plugin/GroupContentPermissionProvider.php
++++ b/src/Plugin/GroupContentPermissionProvider.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\group\Plugin;
+ 
+ use Drupal\Core\Entity\EntityPublishedInterface;
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\user\EntityOwnerInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+@@ -44,7 +43,7 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements
+    * {@inheritdoc}
+    */
+   public static function createInstance(ContainerInterface $container, $plugin_id, array $definition) {
+-    /** @var EntityTypeManagerInterface $entity_type_manager */
++    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
+     $entity_type_manager = $container->get('entity_type.manager');
+     $entity_type = $entity_type_manager->getDefinition($definition['entity_type_id']);
+ 
+@@ -172,10 +171,13 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements
+       switch ($operation) {
+         case 'view':
+           return $this->getRelationViewPermission($scope);
++
+         case 'update':
+           return $this->getRelationUpdatePermission($scope);
++
+         case 'delete':
+           return $this->getRelationDeletePermission($scope);
++
+         case 'create':
+           return $this->getRelationCreatePermission();
+       }
+@@ -184,12 +186,16 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements
+       switch ($operation) {
+         case 'view':
+           return $this->getEntityViewPermission($scope);
++
+         case 'view unpublished':
+           return $this->getEntityViewUnpublishedPermission($scope);
++
+         case 'update':
+           return $this->getEntityUpdatePermission($scope);
++
+         case 'delete':
+           return $this->getEntityDeletePermission($scope);
++
+         case 'create':
+           return $this->getEntityCreatePermission();
+       }
+diff --git a/src/Plugin/GroupMembershipPermissionProvider.php b/src/Plugin/GroupMembershipPermissionProvider.php
+index 8451fcb..d72b061 100644
+--- a/src/Plugin/GroupMembershipPermissionProvider.php
++++ b/src/Plugin/GroupMembershipPermissionProvider.php
+@@ -37,6 +37,9 @@ class GroupMembershipPermissionProvider extends GroupContentPermissionProvider {
+     return FALSE;
+   }
+ 
++  /**
++   *
++   */
+   public function buildPermissions() {
+     $permissions = parent::buildPermissions();
+ 
+diff --git a/src/Plugin/Menu/LocalAction/WithDestination.php b/src/Plugin/Menu/LocalAction/WithDestination.php
+index e2e7b39..571e057 100644
+--- a/src/Plugin/Menu/LocalAction/WithDestination.php
++++ b/src/Plugin/Menu/LocalAction/WithDestination.php
+@@ -10,10 +10,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Modifies the local action to add a destination.
+- * 
++ *
+  * Will either append the already present destination parameter or use the
+  * current route's path as the destination parameter.
+- * 
++ *
+  * @todo Follow up on https://www.drupal.org/node/2762131.
+  */
+ class WithDestination extends LocalActionDefault {
+diff --git a/src/Plugin/views/argument/GroupId.php b/src/Plugin/views/argument/GroupId.php
+index b79895f..929856c 100644
+--- a/src/Plugin/views/argument/GroupId.php
++++ b/src/Plugin/views/argument/GroupId.php
+@@ -29,7 +29,7 @@ class GroupId extends NumericArgument {
+    *   The plugin_id for the plugin instance.
+    * @param mixed $plugin_definition
+    *   The plugin implementation definition.
+-   * @param ContentEntityStorageInterface $group_storage
++   * @param \Drupal\Core\Entity\ContentEntityStorageInterface $group_storage
+    *   The group entity storage handler.
+    */
+   public function __construct(array $configuration, $plugin_id, $plugin_definition, ContentEntityStorageInterface $group_storage) {
+diff --git a/src/Plugin/views/relationship/GroupContentToEntity.php b/src/Plugin/views/relationship/GroupContentToEntity.php
+index 1cfeec9..8ddeea6 100644
+--- a/src/Plugin/views/relationship/GroupContentToEntity.php
++++ b/src/Plugin/views/relationship/GroupContentToEntity.php
+@@ -2,13 +2,6 @@
+ 
+ namespace Drupal\group\Plugin\views\relationship;
+ 
+-use Drupal\Core\Form\FormStateInterface;
+-use Drupal\group\Entity\GroupContentType;
+-use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
+-use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
+-use Drupal\views\Plugin\ViewsHandlerManager;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+-
+ /**
+  * A relationship handler for group content entity references.
+  *
+diff --git a/src/Plugin/views/relationship/GroupContentToEntityBase.php b/src/Plugin/views/relationship/GroupContentToEntityBase.php
+index 63dea76..fde1b99 100644
+--- a/src/Plugin/views/relationship/GroupContentToEntityBase.php
++++ b/src/Plugin/views/relationship/GroupContentToEntityBase.php
+@@ -64,7 +64,7 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
+    * @return string
+    *   The target entity type ID.
+    */
+-  protected abstract function getTargetEntityType();
++  abstract protected function getTargetEntityType();
+ 
+   /**
+    * Retrieves type of join field to use.
+@@ -74,7 +74,7 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
+    * @return string
+    *   The type of join field to use.
+    */
+-  protected abstract function getJoinFieldType();
++  abstract protected function getJoinFieldType();
+ 
+   /**
+    * {@inheritdoc}
+diff --git a/src/Plugin/views/relationship/GroupContentToEntityReverse.php b/src/Plugin/views/relationship/GroupContentToEntityReverse.php
+index dfad5b9..b4c90cf 100644
+--- a/src/Plugin/views/relationship/GroupContentToEntityReverse.php
++++ b/src/Plugin/views/relationship/GroupContentToEntityReverse.php
+@@ -2,13 +2,6 @@
+ 
+ namespace Drupal\group\Plugin\views\relationship;
+ 
+-use Drupal\Core\Form\FormStateInterface;
+-use Drupal\group\Entity\GroupContentType;
+-use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
+-use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
+-use Drupal\views\Plugin\ViewsHandlerManager;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+-
+ /**
+  * A relationship handler which reverses group content entity references.
+  *
+diff --git a/src/ProxyClass/UninstallValidator/GroupContentUninstallValidator.php b/src/ProxyClass/UninstallValidator/GroupContentUninstallValidator.php
+index fa6cc16..e03a2f1 100644
+--- a/src/ProxyClass/UninstallValidator/GroupContentUninstallValidator.php
++++ b/src/ProxyClass/UninstallValidator/GroupContentUninstallValidator.php
+@@ -1,87 +1,82 @@
+ <?php
+ 
+-/**
+- * This file was generated via php core/scripts/generate-proxy-class.php 'Drupal\group\UninstallValidator\GroupContentUninstallValidator' "modules/group/src".
+- */
++use Drupal\Core\StringTranslation\TranslationInterface;
++use Symfony\Component\DependencyInjection\ContainerInterface;
++use Drupal\Core\Extension\ModuleUninstallValidatorInterface;
+ 
+ namespace Drupal\group\ProxyClass\UninstallValidator {
+ 
++  /**
++   * Provides a proxy class for \Drupal\group\UninstallValidator\GroupContentUninstallValidator.
++   *
++   * @see \Drupal\Component\ProxyBuilder
++   */
++  class GroupContentUninstallValidator implements ModuleUninstallValidatorInterface {
++
++    use \Drupal\Core\DependencyInjection\DependencySerializationTrait;
++
+     /**
+-     * Provides a proxy class for \Drupal\group\UninstallValidator\GroupContentUninstallValidator.
++     * The id of the original proxied service.
+      *
+-     * @see \Drupal\Component\ProxyBuilder
++     * @var string
+      */
+-    class GroupContentUninstallValidator implements \Drupal\Core\Extension\ModuleUninstallValidatorInterface
+-    {
+-
+-        use \Drupal\Core\DependencyInjection\DependencySerializationTrait;
+-
+-        /**
+-         * The id of the original proxied service.
+-         *
+-         * @var string
+-         */
+-        protected $drupalProxyOriginalServiceId;
++    protected $drupalProxyOriginalServiceId;
+ 
+-        /**
+-         * The real proxied service, after it was lazy loaded.
+-         *
+-         * @var \Drupal\group\UninstallValidator\GroupContentUninstallValidator
+-         */
+-        protected $service;
+-
+-        /**
+-         * The service container.
+-         *
+-         * @var \Symfony\Component\DependencyInjection\ContainerInterface
+-         */
+-        protected $container;
++    /**
++     * The real proxied service, after it was lazy loaded.
++     *
++     * @var \Drupal\group\UninstallValidator\GroupContentUninstallValidator
++     */
++    protected $service;
+ 
+-        /**
+-         * Constructs a ProxyClass Drupal proxy object.
+-         *
+-         * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+-         *   The container.
+-         * @param string $drupal_proxy_original_service_id
+-         *   The service ID of the original service.
+-         */
+-        public function __construct(\Symfony\Component\DependencyInjection\ContainerInterface $container, $drupal_proxy_original_service_id)
+-        {
+-            $this->container = $container;
+-            $this->drupalProxyOriginalServiceId = $drupal_proxy_original_service_id;
+-        }
++    /**
++     * The service container.
++     *
++     * @var \Symfony\Component\DependencyInjection\ContainerInterface
++     */
++    protected $container;
+ 
+-        /**
+-         * Lazy loads the real service from the container.
+-         *
+-         * @return object
+-         *   Returns the constructed real service.
+-         */
+-        protected function lazyLoadItself()
+-        {
+-            if (!isset($this->service)) {
+-                $this->service = $this->container->get($this->drupalProxyOriginalServiceId);
+-            }
++    /**
++     * Constructs a ProxyClass Drupal proxy object.
++     *
++     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
++     *   The container.
++     * @param string $drupal_proxy_original_service_id
++     *   The service ID of the original service.
++     */
++    public function __construct(ContainerInterface $container, $drupal_proxy_original_service_id) {
++      $this->container = $container;
++      $this->drupalProxyOriginalServiceId = $drupal_proxy_original_service_id;
++    }
+ 
+-            return $this->service;
+-        }
++    /**
++     * Lazy loads the real service from the container.
++     *
++     * @return object
++     *   Returns the constructed real service.
++     */
++    protected function lazyLoadItself() {
++      if (!isset($this->service)) {
++        $this->service = $this->container->get($this->drupalProxyOriginalServiceId);
++      }
+ 
+-        /**
+-         * {@inheritdoc}
+-         */
+-        public function validate($module)
+-        {
+-            return $this->lazyLoadItself()->validate($module);
+-        }
++      return $this->service;
++    }
+ 
+-        /**
+-         * {@inheritdoc}
+-         */
+-        public function setStringTranslation(\Drupal\Core\StringTranslation\TranslationInterface $translation)
+-        {
+-            return $this->lazyLoadItself()->setStringTranslation($translation);
+-        }
++    /**
++     * {@inheritdoc}
++     */
++    public function validate($module) {
++      return $this->lazyLoadItself()->validate($module);
++    }
+ 
++    /**
++     * {@inheritdoc}
++     */
++    public function setStringTranslation(TranslationInterface $translation) {
++      return $this->lazyLoadItself()->setStringTranslation($translation);
+     }
+ 
++  }
++
+ }
+diff --git a/src/QueryAccess/EntityQueryAlter.php b/src/QueryAccess/EntityQueryAlter.php
+index 78712e3..2cd0057 100644
+--- a/src/QueryAccess/EntityQueryAlter.php
++++ b/src/QueryAccess/EntityQueryAlter.php
+@@ -291,11 +291,11 @@ class EntityQueryAlter implements ContainerInjectionInterface {
+           if ($admin_permission !== FALSE && $item->hasPermission($admin_permission)) {
+             $allowed_any_ids[$item->getScope()][] = $identifier;
+           }
+-          elseif(!$check_published) {
++          elseif (!$check_published) {
+             if ($any_permission !== FALSE && $item->hasPermission($any_permission)) {
+               $allowed_any_ids[$item->getScope()][] = $identifier;
+             }
+-            elseif($own_permission !== FALSE && $item->hasPermission($own_permission)) {
++            elseif ($own_permission !== FALSE && $item->hasPermission($own_permission)) {
+               $allowed_own_ids[$item->getScope()][] = $identifier;
+             }
+           }
+@@ -303,13 +303,13 @@ class EntityQueryAlter implements ContainerInjectionInterface {
+             if ($any_permission !== FALSE && $item->hasPermission($any_permission)) {
+               $allowed_any_by_status_ids[$item->getScope()][1][] = $identifier;
+             }
+-            elseif($own_permission !== FALSE && $item->hasPermission($own_permission)) {
++            elseif ($own_permission !== FALSE && $item->hasPermission($own_permission)) {
+               $allowed_own_by_status_ids[$item->getScope()][1][] = $identifier;
+             }
+             if ($any_unpublished_permission !== FALSE && $item->hasPermission($any_unpublished_permission)) {
+               $allowed_any_by_status_ids[$item->getScope()][0][] = $identifier;
+             }
+-            elseif($own_unpublished_permission !== FALSE && $item->hasPermission($own_unpublished_permission)) {
++            elseif ($own_unpublished_permission !== FALSE && $item->hasPermission($own_unpublished_permission)) {
+               $allowed_own_by_status_ids[$item->getScope()][0][] = $identifier;
+             }
+           }
+@@ -481,7 +481,7 @@ class EntityQueryAlter implements ContainerInjectionInterface {
+ 
+         // Add the owner memberships with access to the query (if any).
+         if (!empty($allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status])) {
+-          $status_owner_group_conditions->condition('gcfd.gid', array_unique($allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status]) , 'IN');
++          $status_owner_group_conditions->condition('gcfd.gid', array_unique($allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status]), 'IN');
+         }
+       }
+     }
+diff --git a/src/UninstallValidator/GroupContentUninstallValidator.php b/src/UninstallValidator/GroupContentUninstallValidator.php
+index 54b114b..465e4d2 100644
+--- a/src/UninstallValidator/GroupContentUninstallValidator.php
++++ b/src/UninstallValidator/GroupContentUninstallValidator.php
+@@ -9,6 +9,9 @@ use Drupal\Core\StringTranslation\TranslationInterface;
+ use Drupal\group\Entity\GroupContentType;
+ use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
+ 
++/**
++ *
++ */
+ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterface {
+ 
+   use StringTranslationTrait;
+diff --git a/tests/modules/group_test_plugin/src/Plugin/GroupContentEnabler/NodeAsContentDeriver.php b/tests/modules/group_test_plugin/src/Plugin/GroupContentEnabler/NodeAsContentDeriver.php
+index 15b589e..aff34ee 100644
+--- a/tests/modules/group_test_plugin/src/Plugin/GroupContentEnabler/NodeAsContentDeriver.php
++++ b/tests/modules/group_test_plugin/src/Plugin/GroupContentEnabler/NodeAsContentDeriver.php
+@@ -2,9 +2,11 @@
+ 
+ namespace Drupal\group_test_plugin\Plugin\GroupContentEnabler;
+ 
+-use Drupal\node\Entity\NodeType;
+ use Drupal\Component\Plugin\Derivative\DeriverBase;
+ 
++/**
++ *
++ */
+ class NodeAsContentDeriver extends DeriverBase {
+ 
+   /**
+diff --git a/tests/src/Functional/GroupBrowserTestBase.php b/tests/src/Functional/GroupBrowserTestBase.php
+index 2c7d242..763c029 100644
+--- a/tests/src/Functional/GroupBrowserTestBase.php
++++ b/tests/src/Functional/GroupBrowserTestBase.php
+@@ -70,9 +70,9 @@ abstract class GroupBrowserTestBase extends BrowserTestBase {
+    */
+   protected function createGroup($values = []) {
+     $group = $this->entityTypeManager->getStorage('group')->create($values + [
+-        'type' => 'default',
+-        'label' => $this->randomMachineName(),
+-      ]);
++      'type' => 'default',
++      'label' => $this->randomMachineName(),
++    ]);
+     $group->enforceIsNew();
+     $group->save();
+     return $group;
+diff --git a/tests/src/Kernel/ChainGroupPermissionCalculatorTest.php b/tests/src/Kernel/ChainGroupPermissionCalculatorTest.php
+index 87fd2aa..3b5f319 100644
+--- a/tests/src/Kernel/ChainGroupPermissionCalculatorTest.php
++++ b/tests/src/Kernel/ChainGroupPermissionCalculatorTest.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\Tests\group\Kernel;
+ 
+-use Drupal\Core\Cache\Cache;
+ use Drupal\Core\Session\AnonymousUserSession;
+ use Drupal\group\Access\CalculatedGroupPermissions;
+ use Drupal\group\Access\CalculatedGroupPermissionsInterface;
+@@ -13,7 +12,7 @@ use Drupal\group\Access\RefinableCalculatedGroupPermissions;
+  *
+  * This also inherently tests the following calculators:
+  * - \Drupal\group\Access\DefaultGroupPermissionCalculator
+- * - \Drupal\group\Access\SynchronizedGroupPermissionCalculator
++ * - \Drupal\group\Access\SynchronizedGroupPermissionCalculator.
+  *
+  * @todo Individually test the above calculators?
+  *
+diff --git a/tests/src/Kernel/GroupContentTokenReplaceTest.php b/tests/src/Kernel/GroupContentTokenReplaceTest.php
+index 45156cc..14b829d 100644
+--- a/tests/src/Kernel/GroupContentTokenReplaceTest.php
++++ b/tests/src/Kernel/GroupContentTokenReplaceTest.php
+@@ -17,7 +17,7 @@ class GroupContentTokenReplaceTest extends GroupTokenReplaceKernelTestBase {
+   /**
+    * Tests the tokens replacement for group content.
+    */
+-  function testGroupContentTokenReplacement() {
++  public function testGroupContentTokenReplacement() {
+     $url_options = [
+       'absolute' => TRUE,
+       'language' => $this->interfaceLanguage,
+diff --git a/tests/src/Kernel/GroupKernelTestBase.php b/tests/src/Kernel/GroupKernelTestBase.php
+index e226b0b..4db7bd8 100644
+--- a/tests/src/Kernel/GroupKernelTestBase.php
++++ b/tests/src/Kernel/GroupKernelTestBase.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\Tests\group\Kernel;
+ 
+-use Drupal\Core\Session\AccountInterface;
+ use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
+ 
+ /**
+diff --git a/tests/src/Kernel/GroupRoleStorageTest.php b/tests/src/Kernel/GroupRoleStorageTest.php
+index 786c921..b1237ba 100644
+--- a/tests/src/Kernel/GroupRoleStorageTest.php
++++ b/tests/src/Kernel/GroupRoleStorageTest.php
+@@ -2,9 +2,6 @@
+ 
+ namespace Drupal\Tests\group\Kernel;
+ 
+-use Drupal\Core\Session\AccountInterface;
+-use Drupal\group\Entity\GroupInterface;
+-
+ /**
+  * Tests the behavior of group role storage handler.
+  *
+@@ -110,7 +107,7 @@ class GroupRoleStorageTest extends GroupKernelTestBase {
+     $actual = array_keys($this->storage->loadSynchronizedByUserRoles(['test']));
+     $expected = [
+       $this->groupRoleSynchronizer->getGroupRoleId('default', 'test'),
+-      $this->groupRoleSynchronizer->getGroupRoleId('other', 'test')
++      $this->groupRoleSynchronizer->getGroupRoleId('other', 'test'),
+     ];
+     $this->assertEqualsCanonicalizing($expected, $actual, 'Can load synchronized group roles by user roles.');
+   }
+diff --git a/tests/src/Kernel/GroupTokenReplaceKernelTestBase.php b/tests/src/Kernel/GroupTokenReplaceKernelTestBase.php
+index d88c753..649a3f5 100644
+--- a/tests/src/Kernel/GroupTokenReplaceKernelTestBase.php
++++ b/tests/src/Kernel/GroupTokenReplaceKernelTestBase.php
+@@ -21,6 +21,9 @@ abstract class GroupTokenReplaceKernelTestBase extends GroupKernelTestBase {
+    */
+   protected $tokenService;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->interfaceLanguage = \Drupal::languageManager()->getCurrentLanguage();
+diff --git a/tests/src/Kernel/GroupTokenReplaceTest.php b/tests/src/Kernel/GroupTokenReplaceTest.php
+index 6b85f95..085882e 100644
+--- a/tests/src/Kernel/GroupTokenReplaceTest.php
++++ b/tests/src/Kernel/GroupTokenReplaceTest.php
+@@ -17,7 +17,7 @@ class GroupTokenReplaceTest extends GroupTokenReplaceKernelTestBase {
+   /**
+    * Tests the tokens replacement for group.
+    */
+-  function testGroupTokenReplacement() {
++  public function testGroupTokenReplacement() {
+     $url_options = [
+       'absolute' => TRUE,
+       'language' => $this->interfaceLanguage,
+diff --git a/tests/src/Kernel/Views/GroupContentToEntityReverseRelationshipTest.php b/tests/src/Kernel/Views/GroupContentToEntityReverseRelationshipTest.php
+index 02ed5de..2ddd97e 100644
+--- a/tests/src/Kernel/Views/GroupContentToEntityReverseRelationshipTest.php
++++ b/tests/src/Kernel/Views/GroupContentToEntityReverseRelationshipTest.php
+@@ -2,10 +2,6 @@
+ 
+ namespace Drupal\Tests\group\Kernel\Views;
+ 
+-use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
+-use Drupal\views\Tests\ViewTestData;
+-use Drupal\views\Views;
+-
+ /**
+  * Tests the group_content_to_entity_reverse relationship handler.
+  *
+diff --git a/tests/src/Unit/GroupContentAccessControlHandlerTest.php b/tests/src/Unit/GroupContentAccessControlHandlerTest.php
+index 631fcfd..d906544 100644
+--- a/tests/src/Unit/GroupContentAccessControlHandlerTest.php
++++ b/tests/src/Unit/GroupContentAccessControlHandlerTest.php
+@@ -149,7 +149,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
+               $case = $scenario;
+ 
+               // Default is neutral result if no permissions are defined.
+-              $case['expected'] = function() {
++              $case['expected'] = function () {
+                 return AccessResult::neutral();
+               };
+ 
+@@ -160,7 +160,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
+                 $has_own = $is_owner && $own_permission && $has_own_permission;
+ 
+                 $permissions_were_checked = $admin_permission || $any_permission || ($is_owner && $own_permission);
+-                $case['expected'] = function() use ($has_admin, $has_any, $has_own, $permissions_were_checked, $own_permission) {
++                $case['expected'] = function () use ($has_admin, $has_any, $has_own, $permissions_were_checked, $own_permission) {
+                   $result = AccessResult::allowedIf($has_admin || $has_any || $has_own);
+ 
+                   // Only add the permissions context if they were checked.
+@@ -260,7 +260,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
+ 
+         // Default is neutral result if no permissions are defined or entity
+         // access control is turned off for the plugin.
+-        $case['expected'] = function() {
++        $case['expected'] = function () {
+           return AccessResult::neutral();
+         };
+ 
+@@ -268,7 +268,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
+         if ($permission_exists) {
+           $has_admin = $case['definition']['admin_permission'] && $case['has_admin_permission'];
+           $has_regular = $permission && $case['has_permission'];
+-          $case['expected'] = function() use ($has_admin, $has_regular) {
++          $case['expected'] = function () use ($has_admin, $has_regular) {
+             return AccessResult::allowedIf($has_admin || $has_regular)->addCacheContexts(['user.group_permissions']);
+           };
+         }
+@@ -347,7 +347,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
+ 
+           // Default is neutral result if no permissions are defined or entity
+           // access control is turned off for the plugin.
+-          $case['expected'] = function() {
++          $case['expected'] = function () {
+             return AccessResult::neutral();
+           };
+ 
+@@ -355,7 +355,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
+           if ($permission_exists && $entity_access) {
+             $has_admin = $case['definition']['admin_permission'] && $case['has_admin_permission'];
+             $has_regular = $permission && $case['has_permission'];
+-            $case['expected'] = function() use ($has_admin, $has_regular) {
++            $case['expected'] = function () use ($has_admin, $has_regular) {
+               return AccessResult::allowedIf($has_admin || $has_regular)->addCacheContexts(['user.group_permissions']);
+             };
+           }
+diff --git a/tests/src/Unit/GroupContentEnablerManagerTest.php b/tests/src/Unit/GroupContentEnablerManagerTest.php
+index 84e168e..34355cb 100644
+--- a/tests/src/Unit/GroupContentEnablerManagerTest.php
++++ b/tests/src/Unit/GroupContentEnablerManagerTest.php
+@@ -239,7 +239,9 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
+   }
+ 
+ }
+-
++/**
++ *
++ */
+ class TestGroupContentEnablerManager extends GroupContentEnablerManager {
+ 
+   /**
+@@ -253,7 +255,9 @@ class TestGroupContentEnablerManager extends GroupContentEnablerManager {
+   }
+ 
+ }
+-
++/**
++ *
++ */
+ class TestGroupContentHandler extends GroupContentHandlerBase {
+ 
+   /**
+@@ -264,7 +268,9 @@ class TestGroupContentHandler extends GroupContentHandlerBase {
+   }
+ 
+ }
+-
++/**
++ *
++ */
+ class TestGroupContentHandlerWithoutInterface {
+ 
+ }
+diff --git a/tests/src/Unit/GroupContentPermissionProviderTest.php b/tests/src/Unit/GroupContentPermissionProviderTest.php
+index 53a089a..fdce159 100644
+--- a/tests/src/Unit/GroupContentPermissionProviderTest.php
++++ b/tests/src/Unit/GroupContentPermissionProviderTest.php
+@@ -49,9 +49,9 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
+   public function adminPermissionProvider() {
+     $cases = [];
+     foreach ($this->getPermissionProviderScenarios() as $scenario) {
+-        $case = $scenario;
+-        $case['expected'] = $case['definition']['admin_permission'];
+-        $cases[] = $case;
++      $case = $scenario;
++      $case['expected'] = $case['definition']['admin_permission'];
++      $cases[] = $case;
+     }
+     return $cases;
+   }
+@@ -530,7 +530,7 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
+           break;
+       }
+     }
+-    
++
+     $this->assertEquals($expected, $permission_provider->getPermission($operation, $target, $scope));
+   }
+ 
+diff --git a/tests/src/Unit/GroupPermissionCheckerTest.php b/tests/src/Unit/GroupPermissionCheckerTest.php
+index 28dc8a2..491748f 100644
+--- a/tests/src/Unit/GroupPermissionCheckerTest.php
++++ b/tests/src/Unit/GroupPermissionCheckerTest.php
+@@ -103,7 +103,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
+       [],
+       'view group',
+       TRUE,
+-      'An anonymous user with the bypass permission can view the group.'
++      'An anonymous user with the bypass permission can view the group.',
+     ];
+ 
+     $scenarios['authenticatedWithBypass'] = [
+@@ -113,7 +113,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
+       [],
+       'view group',
+       TRUE,
+-      'An authenticated user with the bypass permission can view the group.'
++      'An authenticated user with the bypass permission can view the group.',
+     ];
+ 
+     $scenarios['anonymousWithAdmin'] = [
+@@ -123,7 +123,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
+       [],
+       'view group',
+       TRUE,
+-      'An anonymous user with the group admin permission can view the group.'
++      'An anonymous user with the group admin permission can view the group.',
+     ];
+ 
+     $scenarios['outsiderWithAdmin'] = [
+@@ -133,7 +133,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
+       [],
+       'view group',
+       TRUE,
+-      'An outsider with the group admin permission can view the group.'
++      'An outsider with the group admin permission can view the group.',
+     ];
+ 
+     $scenarios['memberWithAdmin'] = [
+@@ -143,7 +143,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
+       [1 => ['administer group']],
+       'view group',
+       TRUE,
+-      'A member with the group admin permission can view the group.'
++      'A member with the group admin permission can view the group.',
+     ];
+ 
+     $scenarios['anonymousWithPermission'] = [
+@@ -153,7 +153,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
+       [],
+       'view group',
+       TRUE,
+-      'An anonymous user with the right permission can view the group.'
++      'An anonymous user with the right permission can view the group.',
+     ];
+ 
+     $scenarios['outsiderWithPermission'] = [
+@@ -163,7 +163,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
+       [],
+       'view group',
+       TRUE,
+-      'An outsider with the right permission can view the group.'
++      'An outsider with the right permission can view the group.',
+     ];
+ 
+     $scenarios['memberWithPermission'] = [
+@@ -173,7 +173,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
+       [1 => ['view group']],
+       'view group',
+       TRUE,
+-      'A member with the right permission can view the group.'
++      'A member with the right permission can view the group.',
+     ];
+ 
+     $scenarios['anonymousWithoutPermission'] = [
+@@ -183,7 +183,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
+       [],
+       'view group',
+       FALSE,
+-      'An anonymous user without the right permission can not view the group.'
++      'An anonymous user without the right permission can not view the group.',
+     ];
+ 
+     $scenarios['outsiderWithoutPermission'] = [
+@@ -193,7 +193,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
+       [],
+       'view group',
+       FALSE,
+-      'An outsider without the right permission can not view the group.'
++      'An outsider without the right permission can not view the group.',
+     ];
+ 
+     $scenarios['memberWithoutPermission'] = [
+@@ -203,7 +203,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
+       [1 => []],
+       'view group',
+       FALSE,
+-      'A member without the right permission can not view the group.'
++      'A member without the right permission can not view the group.',
+     ];
+ 
+     return $scenarios;
+diff --git a/tests/src/Unit/GroupRoleSynchronizerTest.php b/tests/src/Unit/GroupRoleSynchronizerTest.php
+index 79e4989..b1ad1fa 100644
+--- a/tests/src/Unit/GroupRoleSynchronizerTest.php
++++ b/tests/src/Unit/GroupRoleSynchronizerTest.php
+@@ -6,9 +6,7 @@ use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Entity\Query\QueryInterface;
+ use Drupal\group\GroupRoleSynchronizer;
+-use Drupal\group\Entity\GroupRoleInterface;
+ use Drupal\Tests\UnitTestCase;
+-use Drupal\user\RoleInterface;
+ 
+ /**
+  * Tests the outsider group role synchronizer service.

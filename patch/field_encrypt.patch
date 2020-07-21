@@ -1,0 +1,520 @@
+diff --git a/field_encrypt.api.php b/field_encrypt.api.php
+index e52695b..0366a50 100644
+--- a/field_encrypt.api.php
++++ b/field_encrypt.api.php
+@@ -1,11 +1,10 @@
+ <?php
++
+ /**
+  * @file
+  * Hooks for Field Encrypt module.
+  */
+ 
+-use Drupal\Core\Entity\ContentEntityInterface;
+-
+ /**
+  * Hook to alter values that will be stored in the unencrypted field storage.
+  *
+diff --git a/src/Controller/FieldOverviewController.php b/src/Controller/FieldOverviewController.php
+index 585e53c..52f904c 100644
+--- a/src/Controller/FieldOverviewController.php
++++ b/src/Controller/FieldOverviewController.php
+@@ -43,7 +43,7 @@ class FieldOverviewController extends ControllerBase {
+    */
+   public function overview() {
+     $encrypted_fields = $this->getEncryptedFields();
+-    $build['table'] = array(
++    $build['table'] = [
+       '#type' => 'table',
+       '#header' => [
+         'field_name' => $this->t('Field'),
+@@ -54,9 +54,9 @@ class FieldOverviewController extends ControllerBase {
+         'operations' => $this->t('Operations'),
+       ],
+       '#title' => 'Overview of encrypted fields',
+-      '#rows' => array(),
++      '#rows' => [],
+       '#empty' => $this->t('There are no encrypted fields.'),
+-    );
++    ];
+ 
+     foreach ($encrypted_fields as $encrypted_field) {
+       $properties = $encrypted_field->getThirdPartySetting('field_encrypt', 'properties', []);
+diff --git a/src/EncryptedFieldValueManagerInterface.php b/src/EncryptedFieldValueManagerInterface.php
+index 298a83f..9e13969 100644
+--- a/src/EncryptedFieldValueManagerInterface.php
++++ b/src/EncryptedFieldValueManagerInterface.php
+@@ -101,4 +101,5 @@ interface EncryptedFieldValueManagerInterface {
+    *   The field name to delete EncryptedFieldValue entities for.
+    */
+   public function deleteEncryptedFieldValuesForField($entity_type, $field_name);
++
+ }
+diff --git a/src/EventSubscriber/ConfigSubscriber.php b/src/EventSubscriber/ConfigSubscriber.php
+index 3e805bc..08b2c4a 100644
+--- a/src/EventSubscriber/ConfigSubscriber.php
++++ b/src/EventSubscriber/ConfigSubscriber.php
+@@ -99,15 +99,15 @@ class ConfigSubscriber implements EventSubscriberInterface {
+    * {@inheritdoc}
+    */
+   public static function getSubscribedEvents() {
+-    $events[ConfigEvents::SAVE][] = array('onConfigSave', 0);
+-    $events[ConfigEvents::DELETE][] = array('onConfigDelete', 0);
++    $events[ConfigEvents::SAVE][] = ['onConfigSave', 0];
++    $events[ConfigEvents::DELETE][] = ['onConfigDelete', 0];
+     return $events;
+   }
+ 
+   /**
+    * React on the configuration save event.
+    *
+-   * @param ConfigCrudEvent $event
++   * @param \Drupal\Core\Config\ConfigCrudEvent $event
+    *   The configuration event.
+    *
+    * @todo why is this not just using hook_field_storage_update?
+@@ -160,10 +160,10 @@ class ConfigSubscriber implements EventSubscriberInterface {
+               }
+             }
+ 
+-            $this->messenger->addMessage($this->t('Updates to entities with existing data for this field have been queued to be processed. You should immediately <a href=":url">run this process manually</a>. Alternatively, the updates will be performed automatically by cron.', array(
++            $this->messenger->addMessage($this->t('Updates to entities with existing data for this field have been queued to be processed. You should immediately <a href=":url">run this process manually</a>. Alternatively, the updates will be performed automatically by cron.', [
+               ':url' => Url::fromRoute('field_encrypt.field_update')
+-                ->toString()
+-            )));
++                ->toString(),
++            ]));
+           }
+         }
+       }
+@@ -173,7 +173,7 @@ class ConfigSubscriber implements EventSubscriberInterface {
+   /**
+    * React on the configuration delete event.
+    *
+-   * @param ConfigCrudEvent $event
++   * @param \Drupal\Core\Config\ConfigCrudEvent $event
+    *   The configuration event.
+    */
+   public function onConfigDelete(ConfigCrudEvent $event) {
+diff --git a/src/FieldEncryptProcessEntitiesInterface.php b/src/FieldEncryptProcessEntitiesInterface.php
+index 700f10c..7a2c03e 100644
+--- a/src/FieldEncryptProcessEntitiesInterface.php
++++ b/src/FieldEncryptProcessEntitiesInterface.php
+@@ -4,7 +4,6 @@ namespace Drupal\field_encrypt;
+ 
+ use Drupal\Core\Entity\ContentEntityInterface;
+ 
+-
+ /**
+  * Interface for service class to process entities and fields for encryption.
+  */
+diff --git a/src/Form/FieldEncryptDecryptForm.php b/src/Form/FieldEncryptDecryptForm.php
+index 2eaa47a..1bb4a19 100644
+--- a/src/Form/FieldEncryptDecryptForm.php
++++ b/src/Form/FieldEncryptDecryptForm.php
+@@ -64,7 +64,7 @@ class FieldEncryptDecryptForm extends ConfirmFormBase {
+    * {@inheritdoc}
+    */
+   public function getQuestion() {
+-    return t('Are you sure you want to remove encryption for field %field on %entity_type?', array('%field' => $this->fieldName, '%entity_type' => $this->entityType));
++    return t('Are you sure you want to remove encryption for field %field on %entity_type?', ['%field' => $this->fieldName, '%entity_type' => $this->entityType]);
+   }
+ 
+   /**
+diff --git a/src/Form/FieldEncryptSettingsForm.php b/src/Form/FieldEncryptSettingsForm.php
+index cedc981..b91ac98 100644
+--- a/src/Form/FieldEncryptSettingsForm.php
++++ b/src/Form/FieldEncryptSettingsForm.php
+@@ -62,22 +62,22 @@ class FieldEncryptSettingsForm extends ConfigFormBase {
+     $config = $this->config('field_encrypt.settings');
+     $default_properties = $config->get('default_properties');
+ 
+-    $form['default_properties'] = array(
++    $form['default_properties'] = [
+       '#type' => 'details',
+       '#title' => $this->t('Default properties'),
+       '#description' => $this->t('Select which field properties will be checked by default on the field encryption settings form, per field type. Note that this does not change existing field settings, but merely sets sensible defaults.'),
+       '#tree' => TRUE,
+       '#open' => TRUE,
+-    );
++    ];
+ 
+     // Gather valid field types.
+     foreach ($this->fieldTypePluginManager->getGroupedDefinitions($this->fieldTypePluginManager->getUiDefinitions()) as $category => $field_types) {
+ 
+-      $form['default_properties'][$category] = array(
++      $form['default_properties'][$category] = [
+         '#type' => 'details',
+         '#title' => $category,
+         '#open' => TRUE,
+-      );
++      ];
+ 
+       foreach ($field_types as $name => $field_type) {
+         // Special handling for preconfigured definitions.
+@@ -92,26 +92,26 @@ class FieldEncryptSettingsForm extends ConfigFormBase {
+ 
+         $form['default_properties'][$category][$name] = [
+           '#type' => 'checkboxes',
+-          '#title' => $this->t('@field_type properties', array('@field_type' => $field_type['label'])),
++          '#title' => $this->t('@field_type properties', ['@field_type' => $field_type['label']]),
+           '#description' => t('Specify the default properties to encrypt for this field type.'),
+           '#options' => $properties,
+           '#default_value' => isset($default_properties[$name]) ? $default_properties[$name] : [],
+         ];
+       }
+ 
+-      $form['batch_update'] = array(
++      $form['batch_update'] = [
+         '#type' => 'details',
+         '#title' => $this->t('Batch update settings'),
+         '#description' => $this->t('Configure behaviour of the batch field update feature. When changing field encryption settings for fields that already contain data, a batch process will be started that updates the existing field values according to the new settings.'),
+         '#open' => TRUE,
+-      );
++      ];
+ 
+-      $form['batch_update']['batch_size'] = array(
++      $form['batch_update']['batch_size'] = [
+         '#type' => 'number',
+         '#title' => $this->t('Batch size'),
+         '#default_value' => $config->get('batch_size'),
+         '#description' => $this->t('Specify the number of entities to process on each field update batch execution. It is recommended to keep this number low, to avoid timeouts.'),
+-      );
++      ];
+     }
+ 
+     return $form;
+diff --git a/src/Form/FieldEncryptUpdateForm.php b/src/Form/FieldEncryptUpdateForm.php
+index 57cc4f9..71cf9f0 100644
+--- a/src/Form/FieldEncryptUpdateForm.php
++++ b/src/Form/FieldEncryptUpdateForm.php
+@@ -66,15 +66,15 @@ class FieldEncryptUpdateForm extends FormBase {
+     $num_items = $queue->numberOfItems();
+ 
+     $status_message = $message = $this->formatPlural($num_items, 'There is one field queued for encryption updates.', 'There are @count fields queued for encryption updates.');
+-    $form['status'] = array(
++    $form['status'] = [
+       '#markup' => '<p>' . $status_message . '</p>',
+-    );
++    ];
+ 
+     if ($num_items > 0) {
+-      $form['actions']['submit'] = array(
++      $form['actions']['submit'] = [
+         '#type' => 'submit',
+         '#value' => t('Update encryption on existing fields'),
+-      );
++      ];
+     }
+ 
+     return $form;
+@@ -86,10 +86,10 @@ class FieldEncryptUpdateForm extends FormBase {
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+     $batch = [
+       'title' => t('Updating field encryption'),
+-      'operations' => array(
+-        array(array(get_class($this), 'processBatch'), array()),
+-      ),
+-      'finished' => array(get_class($this), 'finishBatch'),
++      'operations' => [
++        [[get_class($this), 'processBatch'], []],
++      ],
++      'finished' => [get_class($this), 'finishBatch'],
+     ];
+     batch_set($batch);
+   }
+@@ -125,11 +125,11 @@ class FieldEncryptUpdateForm extends FormBase {
+           $queue->deleteItem($item);
+ 
+           $context['results']['items'][] = $item->data['entity_id'];
+-          $message = t('Updating @field_name on @entity_type with ID @entity_id', array(
++          $message = t('Updating @field_name on @entity_type with ID @entity_id', [
+             '@field_name' => $item->data['field_name'],
+             '@entity_type' => $item->data['entity_type'],
+             '@entity_id' => $item->data['entity_id'],
+-          ));
++          ]);
+           $context['message'] = $message;
+           $context['sandbox']['progress']++;
+         }
+@@ -139,7 +139,7 @@ class FieldEncryptUpdateForm extends FormBase {
+         catch (\Exception $e) {
+           watchdog_exception('field_encrypt', $e);
+           if (!isset($context['results']['errors'])) {
+-            $context['results']['errors'] = array();
++            $context['results']['errors'] = [];
+           }
+           $context['results']['errors'][] = $e->getMessage();
+         }
+diff --git a/src/Plugin/QueueWorker/CronEncryptedFieldUpdate.php b/src/Plugin/QueueWorker/CronEncryptedFieldUpdate.php
+index f082051..a7a6e68 100644
+--- a/src/Plugin/QueueWorker/CronEncryptedFieldUpdate.php
++++ b/src/Plugin/QueueWorker/CronEncryptedFieldUpdate.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\field_encrypt\Plugin\QueueWorker;
+ 
+-use Drupal\field_encrypt\Plugin\QueueWorker\EncryptedFieldUpdateBase;
+-
+ /**
+  * A Queue Worker that updates field encryption on cron run.
+  *
+diff --git a/src/Plugin/QueueWorker/EncryptedFieldUpdateBase.php b/src/Plugin/QueueWorker/EncryptedFieldUpdateBase.php
+index 3ace427..a332100 100644
+--- a/src/Plugin/QueueWorker/EncryptedFieldUpdateBase.php
++++ b/src/Plugin/QueueWorker/EncryptedFieldUpdateBase.php
+@@ -16,7 +16,7 @@ abstract class EncryptedFieldUpdateBase extends QueueWorkerBase implements Conta
+   /**
+    * The service the process entities.
+    *
+-   * @var \Drupal\field_encrypt\FieldEncryptProcessEntitiesInterface.
++   * @var \Drupal\field_encrypt\FieldEncryptProcessEntitiesInterface
+    */
+   protected $processEntitiesService;
+ 
+@@ -32,7 +32,7 @@ abstract class EncryptedFieldUpdateBase extends QueueWorkerBase implements Conta
+    *
+    * @param \Drupal\field_encrypt\FieldEncryptProcessEntitiesInterface $process_entities_service
+    *   The service the process entities.
+-   * @param ConfigFactoryInterface $config_factory
++   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+    *   The configuration factory.
+    */
+   public function __construct(FieldEncryptProcessEntitiesInterface $process_entities_service, ConfigFactoryInterface $config_factory) {
+diff --git a/tests/src/Functional/FieldEncryptCommerceTest.php b/tests/src/Functional/FieldEncryptCommerceTest.php
+index ff122af..edaf80d 100644
+--- a/tests/src/Functional/FieldEncryptCommerceTest.php
++++ b/tests/src/Functional/FieldEncryptCommerceTest.php
+@@ -13,7 +13,7 @@ class FieldEncryptCommerceTest extends FieldEncryptTestBase {
+    * {@inheritdoc}
+    */
+   public static $modules = [
+-    'commerce'
++    'commerce',
+   ];
+ 
+   /**
+diff --git a/tests/src/Unit/EncryptedFieldValueManagerTest.php b/tests/src/Unit/EncryptedFieldValueManagerTest.php
+index b46ce43..d5adbc4 100644
+--- a/tests/src/Unit/EncryptedFieldValueManagerTest.php
++++ b/tests/src/Unit/EncryptedFieldValueManagerTest.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\Tests\field_encrypt\Unit\EncryptedFieldValueManagerTest.
+- */
+-
+ namespace Drupal\Tests\field_encrypt\Unit;
+ 
+ use Drupal\field_encrypt\EncryptedFieldValueManager;
+@@ -132,9 +127,9 @@ class EncryptedFieldValueManagerTest extends UnitTestCase {
+     /** @var \Drupal\field_encrypt\EncryptedFieldValueManager $service */
+     $service = $this->getMockBuilder('\Drupal\field_encrypt\EncryptedFieldValueManager')
+       ->setMethods(['getExistingEntity', 'getEntityRevisionId'])
+-      ->setConstructorArgs(array(
+-        $this->entityManager
+-      ))
++      ->setConstructorArgs([
++        $this->entityManager,
++      ])
+       ->getMock();
+ 
+     // Set up expectations depending on whether an existing entity exists.
+@@ -188,9 +183,9 @@ class EncryptedFieldValueManagerTest extends UnitTestCase {
+     // methods.
+     $service = $this->getMockBuilder('\Drupal\field_encrypt\EncryptedFieldValueManager')
+       ->setMethods(['getExistingEntity', 'getEncryptedValue'])
+-      ->setConstructorArgs(array(
+-        $this->entityManager
+-      ))
++      ->setConstructorArgs([
++        $this->entityManager,
++      ])
+       ->getMock();
+ 
+     // Set up expectations depending on whether an existing entity exists.
+diff --git a/tests/src/Unit/FieldEncryptProcessEntitiesTest.php b/tests/src/Unit/FieldEncryptProcessEntitiesTest.php
+index 1df3638..63f1448 100644
+--- a/tests/src/Unit/FieldEncryptProcessEntitiesTest.php
++++ b/tests/src/Unit/FieldEncryptProcessEntitiesTest.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\Tests\field_encrypt\Unit\FieldEncryptProcessEntitiesTest.
+- */
+-
+ namespace Drupal\Tests\field_encrypt\Unit;
+ 
+ use Drupal\Core\DependencyInjection\ContainerBuilder;
+@@ -296,12 +291,12 @@ class FieldEncryptProcessEntitiesTest extends UnitTestCase {
+     // Set up a mock for the EncryptionProfile class to mock some methods.
+     $service = $this->getMockBuilder('\Drupal\field_encrypt\FieldEncryptProcessEntities')
+       ->setMethods(['checkField', 'allowEncryption'])
+-      ->setConstructorArgs(array(
++      ->setConstructorArgs([
+         $this->entityManager,
+         $this->encryptService,
+         $this->encryptionProfileManager,
+         $this->encryptedFieldValueManager,
+-      ))
++      ])
+       ->getMock();
+ 
+     // Mock some methods on FieldEncryptProcessEntities, since they are out of
+@@ -416,7 +411,7 @@ class FieldEncryptProcessEntitiesTest extends UnitTestCase {
+           'value' => new DataDefinition([
+             'type' => 'string',
+             'required' => TRUE,
+-            'constraints' => ['Length' => ['max' => 255]]
++            'constraints' => ['Length' => ['max' => 255]],
+           ]),
+         ],
+         ['value' => 'value'],
+@@ -438,14 +433,15 @@ class FieldEncryptProcessEntitiesTest extends UnitTestCase {
+         'datetime',
+         [
+           'value' => new DataDefinition([
+-            'type' => 'datetime_iso8601', 'required' => TRUE
++            'type' => 'datetime_iso8601',
++            'required' => TRUE,
+           ]),
+           'date' => new DataDefinition([
+             'type' => 'any',
+             'computed' => TRUE,
+             'class' => '\Drupal\datetime\DateTimeComputed',
+             'settings' => ['date source' => 'value'],
+-          ])
++          ]),
+         ],
+         ['value' => 'value'],
+         [['value' => '1984-10-04T00:00:00']],
+@@ -465,21 +461,26 @@ class FieldEncryptProcessEntitiesTest extends UnitTestCase {
+           'attributes' => [],
+           'options' => [],
+           'uri' => 'https://drupal.org',
+-        ]],
++        ],
++        ],
+         [[
+           'title' => '[ENCRYPTED]',
+           'uri' => '[ENCRYPTED]',
+           'options' => [],
+-          'attributes' => []
+-        ]],
++          'attributes' => [],
++        ],
++        ],
+         TRUE,
+       ],
+       'encrypted_int' => [
+         'integer',
+-        ['value' => new DataDefinition([
+-          'type' => 'integer',
+-          'required' => TRUE]
+-        )],
++        [
++          'value' => new DataDefinition([
++            'type' => 'integer',
++            'required' => TRUE,
++          ]
++          ),
++        ],
+         ['value' => 'value'],
+         [['value' => '42']],
+         [['value' => 0]],
+@@ -487,10 +488,13 @@ class FieldEncryptProcessEntitiesTest extends UnitTestCase {
+       ],
+       'encrypted_float' => [
+         'float',
+-        ['value' => new DataDefinition([
++        [
++          'value' => new DataDefinition([
+             'type' => 'float',
+-            'required' => TRUE]
+-        )],
++            'required' => TRUE,
++          ]
++          ),
++        ],
+         ['value' => 'value'],
+         [['value' => '3.14']],
+         [['value' => 0]],
+@@ -498,10 +502,13 @@ class FieldEncryptProcessEntitiesTest extends UnitTestCase {
+       ],
+       'encrypted_decimal' => [
+         'decimal',
+-        ['value' => new DataDefinition([
++        [
++          'value' => new DataDefinition([
+             'type' => 'string',
+-            'required' => TRUE]
+-        )],
++            'required' => TRUE,
++          ]
++          ),
++        ],
+         ['value' => 'value'],
+         [['value' => '3.14']],
+         [['value' => 0]],
+@@ -509,10 +516,13 @@ class FieldEncryptProcessEntitiesTest extends UnitTestCase {
+       ],
+       'encrypted_boolean' => [
+         'boolean',
+-        ['value' => new DataDefinition([
++        [
++          'value' => new DataDefinition([
+             'type' => 'boolean',
+-            'required' => TRUE]
+-        )],
++            'required' => TRUE,
++          ]
++          ),
++        ],
+         ['value' => 'value'],
+         [['value' => 1]],
+         [['value' => 0]],
+@@ -520,10 +530,13 @@ class FieldEncryptProcessEntitiesTest extends UnitTestCase {
+       ],
+       'encrypted_telephone' => [
+         'telephone',
+-        ['value' => new DataDefinition([
++        [
++          'value' => new DataDefinition([
+             'type' => 'string',
+-            'required' => TRUE]
+-        )],
++            'required' => TRUE,
++          ]
++          ),
++        ],
+         ['value' => 'value'],
+         [['value' => '+1-202-555-0161']],
+         [['value' => '[ENCRYPTED]']],
+@@ -535,7 +548,7 @@ class FieldEncryptProcessEntitiesTest extends UnitTestCase {
+           'target_id' => new DataDefinition([
+             'type' => 'integer',
+             'settings' => ['unsigned' => TRUE],
+-            'required' => TRUE
++            'required' => TRUE,
+           ]),
+           'entity' => new DataDefinition([
+             'type' => 'entity_reference',
+@@ -603,12 +616,12 @@ class FieldEncryptProcessEntitiesTest extends UnitTestCase {
+     // Set up a mock for the EncryptionProfile class to mock some methods.
+     $service = $this->getMockBuilder('\Drupal\field_encrypt\FieldEncryptProcessEntities')
+       ->setMethods(['checkField', 'processField', 'allowEncryption'])
+-      ->setConstructorArgs(array(
++      ->setConstructorArgs([
+         $this->entityManager,
+         $this->encryptService,
+         $this->encryptionProfileManager,
+         $this->encryptedFieldValueManager,
+-      ))
++      ])
+       ->getMock();
+ 
+     if (!empty($original_encryption_settings)) {

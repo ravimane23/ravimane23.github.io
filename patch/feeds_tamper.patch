@@ -1,0 +1,13 @@
+diff --git a/legacy/feeds_tamper.inc b/legacy/feeds_tamper.inc
+index 479e60e..e7a3266 100644
+--- a/legacy/feeds_tamper.inc
++++ b/legacy/feeds_tamper.inc
+@@ -28,7 +28,7 @@ function feeds_tamper_make_machine($string) {
+  *
+  * @param string|FeedsImporter $importer
+  *   The importer or importer id being tampered with.
+- * @param string|stdClass $instance
++ * @param string|object $instance
+  *   (optional) If set, the importer attached to $instance will be tried first.
+  *   Defaults to NULL.
+  *

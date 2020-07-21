@@ -1,0 +1,120 @@
+diff --git a/src/SocialNetwork/EntityPrintPdf.php b/src/SocialNetwork/EntityPrintPdf.php
+index 93642ad..35663de 100644
+--- a/src/SocialNetwork/EntityPrintPdf.php
++++ b/src/SocialNetwork/EntityPrintPdf.php
+@@ -34,7 +34,7 @@ class EntityPrintPdf implements SocialNetworkInterface {
+   protected $configFactory;
+ 
+   /**
+-   * Drupal\Core\Extension\ModuleHandlerInterface
++   * Drupal\Core\Extension\ModuleHandlerInterface.
+    *
+    * @var \Drupal\Core\Extension\ModuleHandlerInterface
+    */
+diff --git a/src/SocialNetwork/Mail.php b/src/SocialNetwork/Mail.php
+index b1907bf..5368717 100644
+--- a/src/SocialNetwork/Mail.php
++++ b/src/SocialNetwork/Mail.php
+@@ -27,6 +27,9 @@ class Mail implements SocialNetworkInterface {
+    */
+   protected $moduleHandler;
+ 
++  /**
++   *
++   */
+   public function __construct(ModuleHandlerInterface $moduleHandler) {
+     $this->moduleHandler = $moduleHandler;
+   }
+@@ -97,7 +100,7 @@ class Mail implements SocialNetworkInterface {
+    * @param \Drupal\Core\Entity\EntityInterface $entity
+    *   The entity which will be shared.
+    *
+-   * @return boolean
++   * @return bool
+    *   True if the Mail button should use the Forward module.
+    */
+   protected function checkForwardIntegration(EntityInterface $entity) {
+diff --git a/src/SocialNetwork/PrintPage.php b/src/SocialNetwork/PrintPage.php
+index 0649f60..9abfb6d 100644
+--- a/src/SocialNetwork/PrintPage.php
++++ b/src/SocialNetwork/PrintPage.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\social_simple\SocialNetwork;
+ 
+-use Drupal\Core\Config\Entity\ConfigEntityInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+@@ -27,6 +26,9 @@ class PrintPage implements SocialNetworkInterface {
+    */
+   protected $moduleHandler;
+ 
++  /**
++   *
++   */
+   public function __construct(ModuleHandlerInterface $moduleHandler) {
+     $this->moduleHandler = $moduleHandler;
+   }
+diff --git a/src/SocialNetwork/SocialNetworkInterface.php b/src/SocialNetwork/SocialNetworkInterface.php
+index d7d1f37..1154076 100644
+--- a/src/SocialNetwork/SocialNetworkInterface.php
++++ b/src/SocialNetwork/SocialNetworkInterface.php
+@@ -51,7 +51,7 @@ interface SocialNetworkInterface {
+    * @param string $network_name
+    *   The social network name.
+    *
+-   * @return array $attributes
++   * @return array
+    *   an array of link attributes.
+    */
+   public function getLinkAttributes($network_name);
+diff --git a/src/SocialSimpleGeneratorInterface.php b/src/SocialSimpleGeneratorInterface.php
+index 789d9e1..3838880 100644
+--- a/src/SocialSimpleGeneratorInterface.php
++++ b/src/SocialSimpleGeneratorInterface.php
+@@ -14,7 +14,7 @@ interface SocialSimpleGeneratorInterface {
+   /**
+    * Return an array of social networks supported.
+    *
+-   * @return array $networks
++   * @return array
+    *   An array of Label social networks supported kyed by their id.
+    */
+   public function getNetworks();
+@@ -38,7 +38,7 @@ interface SocialSimpleGeneratorInterface {
+    *     ],
+    *   ];.
+    *
+-   * @return array $links
++   * @return array
+    *   An array of social share links.
+    */
+   public function buildSocialLinks(array $networks, $title, EntityInterface $entity = NULL, array $options = []);
+@@ -60,7 +60,7 @@ interface SocialSimpleGeneratorInterface {
+    *     ],
+    *   ];.
+    *
+-   * @return array $links
++   * @return array
+    *   An array of social share links.
+    */
+   public function generateSocialLinks(array $networks, EntityInterface $entity = NULL, array $options = []);
+@@ -71,7 +71,7 @@ interface SocialSimpleGeneratorInterface {
+    * @param \Drupal\Core\Entity\EntityInterface $entity
+    *   The entity if provided.
+    *
+-   * @return string $title
++   * @return string
+    *   The entity title or page title to share.
+    */
+   public function getTitle(EntityInterface $entity = NULL);
+@@ -82,7 +82,7 @@ interface SocialSimpleGeneratorInterface {
+    * @param \Drupal\Core\Entity\EntityInterface $entity
+    *   The entity if provided.
+    *
+-   * @return string $url
++   * @return string
+    *   The url to share.
+    */
+   public function getShareUrl(EntityInterface $entity = NULL);

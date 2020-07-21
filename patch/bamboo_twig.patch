@@ -1,0 +1,286 @@
+diff --git a/bamboo_twig_extensions/src/TwigExtension/TwigArray.php b/bamboo_twig_extensions/src/TwigExtension/TwigArray.php
+index 7afc2ff..b0492e6 100644
+--- a/bamboo_twig_extensions/src/TwigExtension/TwigArray.php
++++ b/bamboo_twig_extensions/src/TwigExtension/TwigArray.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\bamboo_twig_extensions\TwigExtension;
+ 
++use Twig\TwigFilter;
+ use Traversable;
+ 
+ /**
+@@ -16,7 +17,7 @@ class TwigArray extends \Twig_Extension {
+    */
+   public function getFilters() {
+     return [
+-      new \Twig\TwigFilter('bamboo_extensions_shuffle', [$this, 'shuffle']),
++      new TwigFilter('bamboo_extensions_shuffle', [$this, 'shuffle']),
+     ];
+   }
+ 
+@@ -42,7 +43,7 @@ class TwigArray extends \Twig_Extension {
+    */
+   public function shuffle($array) {
+     if ($array instanceof Traversable) {
+-      $array = iterator_to_array($array, false);
++      $array = iterator_to_array($array, FALSE);
+     }
+ 
+     shuffle($array);
+diff --git a/bamboo_twig_extensions/src/TwigExtension/TwigDate.php b/bamboo_twig_extensions/src/TwigExtension/TwigDate.php
+index 74dcb6e..c99a920 100644
+--- a/bamboo_twig_extensions/src/TwigExtension/TwigDate.php
++++ b/bamboo_twig_extensions/src/TwigExtension/TwigDate.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\bamboo_twig_extensions\TwigExtension;
+ 
++use Twig\TwigFilter;
+ use Drupal\Core\Template\TwigEnvironment;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ 
+@@ -27,7 +28,7 @@ class TwigDate extends \Twig_Extension {
+    */
+   public function getFilters() {
+     return [
+-      new \Twig\TwigFilter('bamboo_extensions_time_diff', [$this, 'diff'], ['needs_environment' => TRUE]),
++      new TwigFilter('bamboo_extensions_time_diff', [$this, 'diff'], ['needs_environment' => TRUE]),
+     ];
+   }
+ 
+@@ -90,7 +91,6 @@ class TwigDate extends \Twig_Extension {
+     return $diff->invert ? $count : $count * -1;
+   }
+ 
+-
+   /**
+    * Humanize a period of time according the given unit.
+    *
+@@ -110,10 +110,10 @@ class TwigDate extends \Twig_Extension {
+     $t_unit = $this->t($unit, [], ['context' => 'Time difference unit']);
+ 
+     // Get plural translatable unit of time.
+-    $t_units = $this->t($unit.'s', [], ['context' => 'Time difference unit']);
++    $t_units = $this->t($unit . 's', [], ['context' => 'Time difference unit']);
+ 
+     // Don't generate pluralized strings when count less than 0.
+-    if ((int)$count <= 0) {
++    if ((int) $count <= 0) {
+       if ($invert) {
+         return $this->t('in @duration @unit', [
+           '@duration' => $count,
+@@ -129,7 +129,7 @@ class TwigDate extends \Twig_Extension {
+     // From here, we need to humanize a potential plural Time difference.
+     if ($invert) {
+       return $this->formatPlural(
+-        (int)$count,
++        (int) $count,
+         'in @duration @unit',
+         'in @duration @units',
+         ['@duration' => $count, '@unit' => $t_unit, '@units' => $t_units],
+@@ -137,7 +137,7 @@ class TwigDate extends \Twig_Extension {
+       );
+     }
+     return $this->formatPlural(
+-      (int)$count,
++      (int) $count,
+       '@duration @unit ago',
+       '@duration @units ago',
+       ['@duration' => $count, '@unit' => $t_unit, '@units' => $t_units],
+diff --git a/bamboo_twig_extensions/src/TwigExtension/TwigText.php b/bamboo_twig_extensions/src/TwigExtension/TwigText.php
+index 1d17e05..df212dd 100644
+--- a/bamboo_twig_extensions/src/TwigExtension/TwigText.php
++++ b/bamboo_twig_extensions/src/TwigExtension/TwigText.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\bamboo_twig_extensions\TwigExtension;
+ 
++use Twig\TwigFilter;
+ use Drupal\Core\Template\TwigEnvironment;
+ 
+ /**
+@@ -16,7 +17,7 @@ class TwigText extends \Twig_Extension {
+    */
+   public function getFilters() {
+     return [
+-      new \Twig\TwigFilter('bamboo_extensions_truncate', [$this, 'truncate'], ['needs_environment' => TRUE]),
++      new TwigFilter('bamboo_extensions_truncate', [$this, 'truncate'], ['needs_environment' => TRUE]),
+     ];
+   }
+ 
+@@ -53,14 +54,14 @@ class TwigText extends \Twig_Extension {
+     if (mb_strlen($string, $env->getCharset()) > $length) {
+       if ($preserve) {
+         // If breakpoint is on the last word, return the value without separator.
+-        if (false === ($breakpoint = mb_strpos($string, ' ', $length, $env->getCharset()))) {
++        if (FALSE === ($breakpoint = mb_strpos($string, ' ', $length, $env->getCharset()))) {
+           return $string;
+         }
+ 
+         $length = $breakpoint;
+       }
+ 
+-      return rtrim(mb_substr($string, 0, $length, $env->getCharset())).$separator;
++      return rtrim(mb_substr($string, 0, $length, $env->getCharset())) . $separator;
+     }
+ 
+     return $string;
+diff --git a/bamboo_twig_file/src/TwigExtension/File.php b/bamboo_twig_file/src/TwigExtension/File.php
+index 5f5bfbb..ba62aa8 100644
+--- a/bamboo_twig_file/src/TwigExtension/File.php
++++ b/bamboo_twig_file/src/TwigExtension/File.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\bamboo_twig_file\TwigExtension;
+ 
++use Twig\TwigFunction;
++use Twig\TwigFilter;
+ use Drupal\bamboo_twig\TwigExtension\TwigExtensionBase;
+ 
+ /**
+@@ -14,7 +16,7 @@ class File extends TwigExtensionBase {
+    */
+   public function getFilters() {
+     return [
+-      new \Twig\TwigFilter('bamboo_file_extension_guesser', [$this, 'extensionGuesser']),
++      new TwigFilter('bamboo_file_extension_guesser', [$this, 'extensionGuesser']),
+     ];
+   }
+ 
+@@ -23,7 +25,7 @@ class File extends TwigExtensionBase {
+    */
+   public function getFunctions() {
+     return [
+-      new \Twig\TwigFunction('bamboo_file_url_absolute', [$this, 'urlAbsolute']),
++      new TwigFunction('bamboo_file_url_absolute', [$this, 'urlAbsolute']),
+     ];
+   }
+ 
+diff --git a/bamboo_twig_i18n/src/TwigExtension/I18n.php b/bamboo_twig_i18n/src/TwigExtension/I18n.php
+index 8223cbc..2670854 100644
+--- a/bamboo_twig_i18n/src/TwigExtension/I18n.php
++++ b/bamboo_twig_i18n/src/TwigExtension/I18n.php
+@@ -110,4 +110,5 @@ class I18n extends TwigExtensionBase {
+ 
+     return $entityRepository->getTranslationFromContext($entity, $langcode);
+   }
++
+ }
+diff --git a/bamboo_twig_loader/src/TwigExtension/Render.php b/bamboo_twig_loader/src/TwigExtension/Render.php
+index 6269439..6a5ec8b 100644
+--- a/bamboo_twig_loader/src/TwigExtension/Render.php
++++ b/bamboo_twig_loader/src/TwigExtension/Render.php
+@@ -332,4 +332,5 @@ class Render extends TwigExtensionBase {
+ 
+     return $menuLinkTree->build($tree);
+   }
++
+ }
+diff --git a/bamboo_twig_path/src/TwigExtension/Path.php b/bamboo_twig_path/src/TwigExtension/Path.php
+index a6dbca3..e04343f 100644
+--- a/bamboo_twig_path/src/TwigExtension/Path.php
++++ b/bamboo_twig_path/src/TwigExtension/Path.php
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use Twig\TwigFunction;
++
+ namespace Drupal\bamboo_twig_path\TwigExtension;
+ 
+ /**
+@@ -12,7 +14,7 @@ class Path extends \Twig_Extension {
+    */
+   public function getFunctions() {
+     return [
+-      new \Twig\TwigFunction('bamboo_path_system', [$this, 'getSystemPath']),
++      new TwigFunction('bamboo_path_system', [$this, 'getSystemPath']),
+     ];
+   }
+ 
+diff --git a/bamboo_twig_security/src/TwigExtension/Security.php b/bamboo_twig_security/src/TwigExtension/Security.php
+index 83e4c49..52fa085 100644
+--- a/bamboo_twig_security/src/TwigExtension/Security.php
++++ b/bamboo_twig_security/src/TwigExtension/Security.php
+@@ -87,12 +87,12 @@ class Security extends TwigExtensionBase {
+ 
+     foreach ($permissions as $permission) {
+       // When OR is requested, return TRUE on any match.
+-      if ($conjunction == 'OR' AND $account->hasPermission($permission) ) {
++      if ($conjunction == 'OR' and $account->hasPermission($permission)) {
+         return TRUE;
+       }
+ 
+       // When AND is requested, return FALSE on any unmatch.
+-      if ($conjunction == 'AND' AND !$account->hasPermission($permission) ) {
++      if ($conjunction == 'AND' and !$account->hasPermission($permission)) {
+         return FALSE;
+       }
+     }
+@@ -161,12 +161,12 @@ class Security extends TwigExtensionBase {
+ 
+     foreach ($roles as $role) {
+       // When OR is requested, return TRUE on any match.
+-      if ($conjunction == 'OR' AND $account->hasRole($role) ) {
++      if ($conjunction == 'OR' and $account->hasRole($role)) {
+         return TRUE;
+       }
+ 
+       // When AND is requested, return FALSE on any unmatch.
+-      if ($conjunction == 'AND' AND !$account->hasRole($role) ) {
++      if ($conjunction == 'AND' and !$account->hasRole($role)) {
+         return FALSE;
+       }
+     }
+diff --git a/bamboo_twig_token/src/TwigExtension/Token.php b/bamboo_twig_token/src/TwigExtension/Token.php
+index 3076bec..83db5a4 100644
+--- a/bamboo_twig_token/src/TwigExtension/Token.php
++++ b/bamboo_twig_token/src/TwigExtension/Token.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\bamboo_twig_token\TwigExtension;
+ 
++use Twig\TwigFunction;
+ use Drupal\bamboo_twig\TwigExtension\TwigExtensionBase;
+ 
+ /**
+@@ -14,7 +15,7 @@ class Token extends TwigExtensionBase {
+    */
+   public function getFunctions() {
+     return [
+-      new \Twig\TwigFunction('bamboo_token', [$this, 'substituteToken']),
++      new TwigFunction('bamboo_token', [$this, 'substituteToken']),
+     ];
+   }
+ 
+diff --git a/tests/src/Functional/BambooTwigTestBase.php b/tests/src/Functional/BambooTwigTestBase.php
+index 6c4ac09..833dda7 100644
+--- a/tests/src/Functional/BambooTwigTestBase.php
++++ b/tests/src/Functional/BambooTwigTestBase.php
+@@ -5,7 +5,7 @@ namespace Drupal\Tests\bamboo_twig\Functional;
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\language\Entity\ConfigurableLanguage;
+ use Drupal\Core\Field\FieldStorageDefinitionInterface;
+-Use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
++use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
+ 
+ /**
+  * Has some additional helper methods to make test code more readable.
+diff --git a/tests/src/Kernel/BambooTwigSecurityTest.php b/tests/src/Kernel/BambooTwigSecurityTest.php
+index 8ee89ac..be9c2b5 100644
+--- a/tests/src/Kernel/BambooTwigSecurityTest.php
++++ b/tests/src/Kernel/BambooTwigSecurityTest.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\Tests\bamboo_twig\Kernel;
+ 
+ use Drupal\KernelTests\KernelTestBase;
+-use Drupal\bamboo_twig\Entity\TemplateWhispererSuggestionEntityInterface;
+ 
+ /**
+  * Tests Security twig filters and functions.
+@@ -116,4 +115,5 @@ class BambooTwigSecurityTest extends KernelTestBase {
+     $this->expectExceptionMessage('Invalid conjunction type "XOR".');
+     $this->securityExtension->hasRoles(['administrator'], 'XOR', 1);
+   }
++
+ }

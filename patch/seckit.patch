@@ -1,0 +1,48 @@
+diff --git a/js/seckit.listener.js b/js/seckit.listener.js
+index 72e76fd..550a26c 100644
+--- a/js/seckit.listener.js
++++ b/js/seckit.listener.js
+@@ -3,7 +3,7 @@
+ // https://api.drupal.org/api/drupal/includes!common.inc/function/drupal_process_states/8.2.x
+ 
+ Drupal.behaviors.seckit = {
+-  attach: function(context) {
++  attach: function (context) {
+     seckit_listener_hsts(context);
+     seckit_listener_csp(context);
+     seckit_listener_origin(context);
+diff --git a/src/EventSubscriber/SecKitEventSubscriber.php b/src/EventSubscriber/SecKitEventSubscriber.php
+index 42b1f87..047419d 100644
+--- a/src/EventSubscriber/SecKitEventSubscriber.php
++++ b/src/EventSubscriber/SecKitEventSubscriber.php
+@@ -260,7 +260,7 @@ class SecKitEventSubscriber implements EventSubscriberInterface {
+       if (!UrlHelper::isExternal($csp_report_uri)) {
+         // Strip leading slashes from internal paths to prevent them becoming
+         // external URLs without protocol. /report-csp-violation should not be
+-        // turned into //report-csp-violation
++        // turned into //report-csp-violation.
+         $csp_report_uri = ltrim($csp_report_uri, '/');
+         $base_path = base_path();
+       }
+diff --git a/src/Form/SecKitSettingsForm.php b/src/Form/SecKitSettingsForm.php
+index f908077..6a8d67c 100644
+--- a/src/Form/SecKitSettingsForm.php
++++ b/src/Form/SecKitSettingsForm.php
+@@ -103,7 +103,7 @@ class SecKitSettingsForm extends ConfigFormBase {
+       ':wiki' => 'https://wiki.mozilla.org/Security/CSP',
+       '@wiki' => 'Mozilla Wiki',
+       ':caniuse' => 'https://caniuse.com/#feat=contentsecuritypolicy',
+-      '@caniuse' => 'Can I use'
++      '@caniuse' => 'Can I use',
+     ];
+ 
+     $form['seckit_xss']['csp'] = [
+@@ -144,7 +144,7 @@ class SecKitSettingsForm extends ConfigFormBase {
+       '#return_value' => 1,
+       '#description' => $this->t('Send vendor-prefixed X-WebKit-CSP HTTP response headers with the list of Content Security Policy directives.'),
+     ];
+-    // CSP Upgrade Insecure Requests
++    // CSP Upgrade Insecure Requests.
+     $form['seckit_xss']['csp']['upgrade-req'] = [
+       '#type' => 'checkbox',
+       '#default_value' => $config->get('seckit_xss.csp.upgrade-req'),

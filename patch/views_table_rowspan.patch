@@ -1,0 +1,13 @@
+diff --git a/src/Plugin/views/style/TableRowSpan.php b/src/Plugin/views/style/TableRowSpan.php
+index c04048e..7504e6f 100644
+--- a/src/Plugin/views/style/TableRowSpan.php
++++ b/src/Plugin/views/style/TableRowSpan.php
+@@ -46,7 +46,7 @@ class TableRowSpan extends Table {
+   /**
+    * @inheritdoc
+    */
+-  function renderGroupingSets($sets) {
++  public function renderGroupingSets($sets) {
+     if (!empty($this->options['grouping']) && !empty($this->options['rowspan'])) {
+       $rows = $this->getColSpanRows($sets);
+       $sets = [

@@ -1,0 +1,21 @@
+diff --git a/src/Plugin/views/area/ViewsBlockArea.php b/src/Plugin/views/area/ViewsBlockArea.php
+index e617cf3..8c8f32a 100644
+--- a/src/Plugin/views/area/ViewsBlockArea.php
++++ b/src/Plugin/views/area/ViewsBlockArea.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\block\Plugin\views\area\Block.
+- */
+-
+ namespace Drupal\views_block_area\Plugin\views\area;
+ 
+ use Drupal\Core\Entity\EntityRepositoryInterface;
+@@ -185,4 +180,5 @@ class ViewsBlockArea extends AreaPluginBase {
+ 
+     return $block_instance;
+   }
++
+ }

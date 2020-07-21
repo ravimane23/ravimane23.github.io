@@ -1,0 +1,206 @@
+diff --git a/css/webform_dropzonejs.integration.css b/css/webform_dropzonejs.integration.css
+index 55f59ea..06363cc 100644
+--- a/css/webform_dropzonejs.integration.css
++++ b/css/webform_dropzonejs.integration.css
+@@ -4,10 +4,10 @@
+ 
+ /* Make the image + preview area look like a link. */
+ .dz-image,
+-.dz-details, 
++.dz-details,
+ .dz-size,
+ .dz-size > span,
+-.dz-filename, 
++.dz-filename,
+ .dz-filename > span {
+   cursor: pointer !important;
+ }
+@@ -15,6 +15,6 @@
+ /* Prevent preview images from getting cut off in the admin. */
+ .dropzone .dz-preview .dz-image img {
+   height: 120px;
+-  width:120px;
++  width: 120px;
+   object-fit: cover;
+ }
+diff --git a/includes/webform_dropzonejs.theme.inc b/includes/webform_dropzonejs.theme.inc
+index 39437f7..584b5b8 100644
+--- a/includes/webform_dropzonejs.theme.inc
++++ b/includes/webform_dropzonejs.theme.inc
+@@ -5,7 +5,6 @@
+  * Theme hooks, preprocessor, and suggesttions.
+  */
+ 
+-
+ /******************************************************************************/
+ // Theme hooks.
+ /******************************************************************************/
+diff --git a/includes/webform_dropzonejs.theme.template.inc b/includes/webform_dropzonejs.theme.template.inc
+index 5197360..7aa9640 100644
+--- a/includes/webform_dropzonejs.theme.template.inc
++++ b/includes/webform_dropzonejs.theme.template.inc
+@@ -6,7 +6,7 @@
+  */
+ 
+ /**
+- * Preprocesses "webform_element_dropzonejs"
++ * Preprocesses "webform_element_dropzonejs".
+  */
+ function template_preprocess_webform_element_dropzonejs(array &$variables) {
+   module_load_include('inc', 'webform', 'includes/webform.theme.template');
+diff --git a/js/webform_dropzonejs.integration.js b/js/webform_dropzonejs.integration.js
+index 5293689..a90bb63 100644
+--- a/js/webform_dropzonejs.integration.js
++++ b/js/webform_dropzonejs.integration.js
+@@ -21,8 +21,8 @@
+         var dropzoneId = $object.attr('id');
+ 
+         if (
+-          typeof drupalSettings.webformDropzoneJs == "undefined" || 
+-          drupalSettings.webformDropzoneJs[dropzoneId].length < 1 || 
++          typeof drupalSettings.webformDropzoneJs == "undefined" ||
++          drupalSettings.webformDropzoneJs[dropzoneId].length < 1 ||
+           drupalSettings.dropzonejs.instances[dropzoneId].instance.length < 1) {
+           return;
+         }
+@@ -46,7 +46,7 @@
+             file.is_default = true;
+             thisDropzone.emit('addedfile', file);
+             thisDropzone.files.push(file);
+-            
++
+             // Display a thumb of the file if it is an image.
+             if (file.is_image) {
+               thisDropzone.emit('thumbnail', file, file.path);
+diff --git a/src/Element/WebformDropzonejs.php b/src/Element/WebformDropzonejs.php
+index bf0ff41..a0f5cbb 100644
+--- a/src/Element/WebformDropzonejs.php
++++ b/src/Element/WebformDropzonejs.php
+@@ -2,17 +2,11 @@
+ 
+ namespace Drupal\webform_dropzonejs\Element;
+ 
+-use Drupal\webform\Element\WebformManagedFileBase;
+ use Drupal\dropzonejs\Element\DropzoneJs;
+ use Drupal\file\Entity\File;
+ 
+-use Drupal\Component\Utility\Bytes;
+-use Drupal\Component\Utility\Html;
+ use Drupal\Component\Utility\NestedArray;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Render\Element\FormElement;
+-use Drupal\Core\StringTranslation\TranslatableMarkup;
+-use Drupal\Core\Url;
+ use Drupal\webform\Utility\WebformElementHelper;
+ 
+ /**
+@@ -21,6 +15,7 @@ use Drupal\webform\Utility\WebformElementHelper;
+  * @FormElement("webform_dropzonejs")
+  */
+ class WebformDropzonejs extends DropzoneJs {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -43,7 +38,7 @@ class WebformDropzonejs extends DropzoneJs {
+    * {@inheritdoc}
+    */
+   public static function preRenderDropzoneJs(array $element) {
+-    // Grab the maximum number of files allowed. This is based on the 
++    // Grab the maximum number of files allowed. This is based on the
+     // $element['#multiple'] value:
+     // - When this value is not set, only allow one.
+     // - When this value equals TRUE, allow unlimited.
+@@ -84,12 +79,12 @@ class WebformDropzonejs extends DropzoneJs {
+         if ($file = File::load($fid)) {
+           // Is this file an image?
+           $is_image = FALSE;
+-          switch($file->getMimeType()) {
++          switch ($file->getMimeType()) {
+             case 'image/jpeg':
+             case 'image/gif':
+             case 'image/png':
+               $is_image = TRUE;
+-              break;            
++              break;
+           }
+ 
+           $files[] = [
+@@ -110,8 +105,8 @@ class WebformDropzonejs extends DropzoneJs {
+     // Define a variable where the files will be uploaded to make it easier
+     // to link to them in the JS.
+     $element['#attached']['drupalSettings']['webformDropzoneJs'][$element_id]['file_directory'] = str_replace(
+-      array('private://', '_sid_'), 
+-      array('/system/files/', $element['#webform_submission']), 
++      ['private://', '_sid_'],
++      ['/system/files/', $element['#webform_submission']],
+       $element['#upload_location']
+     );
+ 
+@@ -147,11 +142,11 @@ class WebformDropzonejs extends DropzoneJs {
+         $file_names = array_filter(explode(';', $user_input['uploaded_files']));
+         $tmp_upload_scheme = \Drupal::configFactory()->get('dropzonejs.settings')->get('tmp_upload_scheme');
+ 
+-        foreach ($file_names as $name) { 
++        foreach ($file_names as $name) {
+           // The upload handler appended the txt extension to the file for
+           // security reasons. We will remove it in this callback.
+           $old_filepath = $tmp_upload_scheme . '://' . $name;
+-          
++
+           // The upload handler appended the txt extension to the file for
+           // security reasons. Because here we know the acceptable extensions
+           // we can remove that extension and sanitize the filename.
+@@ -172,13 +167,14 @@ class WebformDropzonejs extends DropzoneJs {
+               'path' => $new_filepath,
+               'filename' => $name,
+             ];
+-          }          
++          }
+         }
+ 
+         $form_state->setValueForElement($element, $return);
+       }
+-      
++
+     }
+     return $return;
+   }
++
+ }
+diff --git a/src/Plugin/WebformElement/WebformDropzonejs.php b/src/Plugin/WebformElement/WebformDropzonejs.php
+index d5335be..22e6b8d 100644
+--- a/src/Plugin/WebformElement/WebformDropzonejs.php
++++ b/src/Plugin/WebformElement/WebformDropzonejs.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\webform_dropzonejs\Plugin\WebformElement;
+ 
+ use Drupal\webform\Plugin\WebformElement\WebformManagedFileBase;
+-use Drupal\webform\WebformSubmissionInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\file\Entity\File;
+ 
+@@ -22,7 +21,7 @@ class WebformDropzonejs extends WebformManagedFileBase {
+ 
+   /**
+    * {@inheritdoc}
+-   * 
++   *
+    * This is the admin form.
+    */
+   public function form(array $form, FormStateInterface $form_state) {
+@@ -45,12 +44,12 @@ class WebformDropzonejs extends WebformManagedFileBase {
+     // those files are attached to the field if they were not deleted.
+     $fids = isset($element['#default_value']) ? $element['#default_value'] : [];
+     $files = [];
+-    
++
+     if (!empty($fids)) {
+       $check_if_deleted = isset($_POST['deleted_dropzone_files']) ? TRUE : FALSE;
+       foreach ($fids as $file_key => $fid) {
+         if ($check_if_deleted && in_array($fid, $_POST['deleted_dropzone_files'])) {
+-          // This file was attached to this submission, but now it should be 
++          // This file was attached to this submission, but now it should be
+           // deleted.
+           file_delete($fid);
+           unset($fids[$file_key]);

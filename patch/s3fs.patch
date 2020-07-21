@@ -1,0 +1,285 @@
+diff --git a/src/Batch/S3fsFileMigrationBatch.php b/src/Batch/S3fsFileMigrationBatch.php
+index c7912be..08ddb18 100644
+--- a/src/Batch/S3fsFileMigrationBatch.php
++++ b/src/Batch/S3fsFileMigrationBatch.php
+@@ -58,7 +58,7 @@ class S3fsFileMigrationBatch implements S3fsFileMigrationBatchInterface {
+ 
+       $batch =& batch_get();
+ 
+-      // Drush integration
++      // Drush integration.
+       if (PHP_SAPI === 'cli') {
+         $batch['progressive'] = FALSE;
+         drush_backend_batch_process();
+@@ -107,7 +107,7 @@ class S3fsFileMigrationBatch implements S3fsFileMigrationBatchInterface {
+       'title' => $this->t('Copy files to S3'),
+       'init_message' => $this->t('The copying process is about to start..'),
+       'progress_message' => $this->t('Processed batch @current out of @total.'),
+-      'error_message' => $this->t('Something wrong happened, please check the logs.')
++      'error_message' => $this->t('Something wrong happened, please check the logs.'),
+     ];
+   }
+ 
+@@ -132,7 +132,7 @@ class S3fsFileMigrationBatch implements S3fsFileMigrationBatchInterface {
+       // Update our progress information.
+       $context['results']['progress']++;
+ 
+-      // Show status message each 5 files
++      // Show status message each 5 files.
+       if ($context['results']['progress'] % 5 == 0) {
+         $current_percent_progress = floor(($context['results']['progress'] / $context['results']['total']) * 100);
+ 
+@@ -160,7 +160,7 @@ class S3fsFileMigrationBatch implements S3fsFileMigrationBatchInterface {
+   }
+ 
+   /**
+-   * @param integer $time_start
++   * @param int $time_start
+    *
+    * @return string
+    */
+diff --git a/src/Batch/S3fsFileMigrationBatchInterface.php b/src/Batch/S3fsFileMigrationBatchInterface.php
+index 17d4203..f615937 100644
+--- a/src/Batch/S3fsFileMigrationBatchInterface.php
++++ b/src/Batch/S3fsFileMigrationBatchInterface.php
+@@ -41,17 +41,17 @@ interface S3fsFileMigrationBatchInterface {
+   /**
+    * Batch operation callback that copy files to S3 File System.
+    *
+-   * @param array   $file_paths
++   * @param array $file_paths
+    *   Array with file paths to process.
+-   * @param integer $total
++   * @param int $total
+    *   Total number of files to process in batch.
+-   * @param string  $source_folder
++   * @param string $source_folder
+    *   Folder from copy the file.
+-   * @param string  $target_folder
++   * @param string $target_folder
+    *   Folder to copy the file.
+-   * @param string  $scheme
++   * @param string $scheme
+    *   Scheme from copy files. E.g.: public.
+-   * @param array   $context
++   * @param array $context
+    *   Batch context.
+    */
+   public static function copyOperation(array $file_paths, $total, $source_folder, $target_folder, $scheme, &$context);
+diff --git a/src/Commands/S3fsCommands.php b/src/Commands/S3fsCommands.php
+index 36af611..6edad83 100644
+--- a/src/Commands/S3fsCommands.php
++++ b/src/Commands/S3fsCommands.php
+@@ -36,9 +36,9 @@ class S3fsCommands extends DrushCommands {
+   /**
+    * S3fsCommands constructor.
+    *
+-   * @param \Drupal\s3fs\S3fsServiceInterface                  $s3fs
++   * @param \Drupal\s3fs\S3fsServiceInterface $s3fs
+    * @param \Drupal\s3fs\Batch\S3fsFileMigrationBatchInterface $s3fs_file_migration_batch
+-   * @param \Drupal\Core\Config\ConfigFactoryInterface         $config_factory
++   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+    */
+   public function __construct(
+     S3fsServiceInterface $s3fs,
+diff --git a/src/Controller/S3fsImageStyleDownloadController.php b/src/Controller/S3fsImageStyleDownloadController.php
+index a560b53..e244c03 100644
+--- a/src/Controller/S3fsImageStyleDownloadController.php
++++ b/src/Controller/S3fsImageStyleDownloadController.php
+@@ -130,7 +130,7 @@ class S3fsImageStyleDownloadController extends ImageStyleDownloadController {
+           'url.query_args:itok',
+         ]
+       );
+-      $cacheableMetadata->setCacheMaxAge((int)$this->config('s3fs.settings')->get('redirect_styles_ttl'));
++      $cacheableMetadata->setCacheMaxAge((int) $this->config('s3fs.settings')->get('redirect_styles_ttl'));
+       $response->addCacheableDependency($cacheableMetadata);
+       return $response;
+     }
+diff --git a/src/EventSubscriber/S3fsAdvAggSubscriber.php b/src/EventSubscriber/S3fsAdvAggSubscriber.php
+index 82b7512..c1f12f5 100644
+--- a/src/EventSubscriber/S3fsAdvAggSubscriber.php
++++ b/src/EventSubscriber/S3fsAdvAggSubscriber.php
+@@ -64,7 +64,7 @@ class S3fsAdvAggSubscriber implements EventSubscriberInterface {
+     $css_base_path = substr($css_asset['data'], 0, strrpos($css_asset['data'], '/'));
+     // Store base path.
+     $this->rewriteFileURIBasePath = $css_base_path . '/';
+-    // Restore asset urls
++    // Restore asset urls.
+     $content = str_replace('/' . $this->rewriteFileURIBasePath, "", $content);
+ 
+     return preg_replace_callback('/url\(\s*[\'"]?(?![a-z]+:|\/+)([^\'")]+)[\'"]?\s*\)/i', [$this, 'rewriteFileURI'], $content);
+diff --git a/src/Form/SettingsForm.php b/src/Form/SettingsForm.php
+index 210b131..488e1d9 100644
+--- a/src/Form/SettingsForm.php
++++ b/src/Form/SettingsForm.php
+@@ -258,10 +258,10 @@ class SettingsForm extends ConfigFormBase {
+       ),
+     ];
+     $advanced['redirect_styles_ttl'] = [
+-        '#type' => 'textfield',
+-        '#title' => $this->t('The TTL of the redirect cache to the s3 styles'),
+-        '#default_value' => $config->get('redirect_styles_ttl'),
+-        '#description' => $this->t('Styles will be redirected to S3 and Dynamic Page Cache module will cache the response for the specified TTL.'),
++      '#type' => 'textfield',
++      '#title' => $this->t('The TTL of the redirect cache to the s3 styles'),
++      '#default_value' => $config->get('redirect_styles_ttl'),
++      '#description' => $this->t('Styles will be redirected to S3 and Dynamic Page Cache module will cache the response for the specified TTL.'),
+     ];
+     $advanced['use_s3_for_public'] = [
+       '#type' => 'checkbox',
+diff --git a/src/PathProcessor/S3fsPathProcessorImageStyles.php b/src/PathProcessor/S3fsPathProcessorImageStyles.php
+index 1b2a1b0..bf49db8 100644
+--- a/src/PathProcessor/S3fsPathProcessorImageStyles.php
++++ b/src/PathProcessor/S3fsPathProcessorImageStyles.php
+@@ -54,6 +54,7 @@ class S3fsPathProcessorImageStyles implements InboundPathProcessorInterface {
+    * Check if the path is a s3 image style path.
+    *
+    * @param $path
++   *
+    * @return bool
+    */
+   private function isImageStylePath($path) {
+@@ -64,6 +65,7 @@ class S3fsPathProcessorImageStyles implements InboundPathProcessorInterface {
+    * Check if scheme is Amazon S3 image style supported.
+    *
+    * @param $scheme
++   *
+    * @return bool
+    */
+   private function isValidScheme($scheme) {
+diff --git a/src/S3fsServiceInterface.php b/src/S3fsServiceInterface.php
+index 099d8cd..c5841f7 100644
+--- a/src/S3fsServiceInterface.php
++++ b/src/S3fsServiceInterface.php
+@@ -16,7 +16,7 @@ interface S3fsServiceInterface {
+    * @return array
+    *   Empty array if configuration is valid, errors array otherwise.
+    */
+-  function validate(array $config);
++  public function validate(array $config);
+ 
+   /**
+    * Sets up the S3Client object.
+@@ -29,7 +29,7 @@ interface S3fsServiceInterface {
+    *
+    * @throws \Drupal\s3fs\S3fsException
+    */
+-  function getAmazonS3Client(array $config);
++  public function getAmazonS3Client(array $config);
+ 
+   /**
+    * Refreshes the metadata cache.
+@@ -44,7 +44,7 @@ interface S3fsServiceInterface {
+    * @param array $config
+    *   An s3fs configuration array.
+    */
+-  function refreshCache(array $config);
++  public function refreshCache(array $config);
+ 
+   /**
+    * Convert file metadata returned from S3 into a metadata cache array.
+@@ -59,6 +59,6 @@ interface S3fsServiceInterface {
+    * @return array
+    *   A file metadata cache array.
+    */
+-  function convertMetadata($uri, array $s3_metadata);
++  public function convertMetadata($uri, array $s3_metadata);
+ 
+ }
+diff --git a/src/S3fsServiceProvider.php b/src/S3fsServiceProvider.php
+index 98ceb44..f3af195 100644
+--- a/src/S3fsServiceProvider.php
++++ b/src/S3fsServiceProvider.php
+@@ -18,7 +18,7 @@ class S3fsServiceProvider extends ServiceProviderBase {
+   /**
+    * Modifies existing service definitions.
+    *
+-   * @param ContainerBuilder $container
++   * @param \Drupal\Core\DependencyInjection\ContainerBuilder $container
+    *   The ContainerBuilder whose service definitions can be altered.
+    */
+   public function alter(ContainerBuilder $container) {
+@@ -27,7 +27,7 @@ class S3fsServiceProvider extends ServiceProviderBase {
+       $container->getDefinition('stream_wrapper.public')
+         ->setClass('Drupal\s3fs\StreamWrapper\PublicS3fsStream');
+ 
+-      // Fix CSS static urls
++      // Fix CSS static urls.
+       $container->getDefinition('asset.css.optimizer')
+         ->setClass('Drupal\s3fs\Asset\S3fsCssOptimizer');
+     }
+@@ -42,7 +42,7 @@ class S3fsServiceProvider extends ServiceProviderBase {
+   /**
+    * Register dynamic service definitions.
+    *
+-   * @param ContainerBuilder $container
++   * @param \Drupal\Core\DependencyInjection\ContainerBuilder $container
+    *   The ContainerBuilder whose service definitions can be checked.
+    */
+   public function register(ContainerBuilder $container) {
+diff --git a/src/StreamWrapper/S3fsStream.php b/src/StreamWrapper/S3fsStream.php
+index 3708cbf..d6fab8b 100644
+--- a/src/StreamWrapper/S3fsStream.php
++++ b/src/StreamWrapper/S3fsStream.php
+@@ -931,7 +931,7 @@ class S3fsStream extends StreamWrapper implements StreamWrapperInterface {
+   }
+ 
+   /***************************************************************************
+-   * Public Functions for External Use of the Wrapper
++   * Public Functions for External Use of the Wrapper.
+    ***************************************************************************/
+ 
+   /**
+@@ -976,7 +976,7 @@ class S3fsStream extends StreamWrapper implements StreamWrapperInterface {
+   }
+ 
+   /***************************************************************************
+-   * Internal Functions
++   * Internal Functions.
+    ***************************************************************************/
+ 
+   /**
+@@ -1062,12 +1062,12 @@ class S3fsStream extends StreamWrapper implements StreamWrapperInterface {
+     $cache_enabled = empty($this->config['ignore_cache']);
+ 
+     $metadata = [];
+-    // Do a cache lookup if cache is not ignored
++    // Do a cache lookup if cache is not ignored.
+     if ($cache_enabled) {
+       $metadata = $this->readCache($uri);
+     }
+ 
+-    // If cache did not return anything or is disabled, do a direct lookup
++    // If cache did not return anything or is disabled, do a direct lookup.
+     if (!$metadata) {
+       $metadata = $this->getS3Metadata($uri);
+       if (!empty($metadata) && $cache_enabled) {
+@@ -1204,7 +1204,6 @@ class S3fsStream extends StreamWrapper implements StreamWrapperInterface {
+    *
+    * @return array
+    *   An array of DB-compatible file metadata or empty array if lookup fails.
+-   *
+    */
+   protected function getS3Metadata($uri) {
+     $params = $this->getCommandParams($uri);
+diff --git a/tests/src/Functional/S3fsConfigFormTest.php b/tests/src/Functional/S3fsConfigFormTest.php
+index dbb61b3..662e882 100644
+--- a/tests/src/Functional/S3fsConfigFormTest.php
++++ b/tests/src/Functional/S3fsConfigFormTest.php
+@@ -5,7 +5,6 @@ namespace Drupal\Tests\s3fs\Functional;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\Tests\BrowserTestBase;
+ 
+-
+ /**
+  * Tests s3fs configuration form.
+  *
+@@ -15,7 +14,7 @@ class S3fsConfigFormTest extends BrowserTestBase {
+ 
+   use StringTranslationTrait;
+ 
+-/**
++  /**
+    * A user with administration access.
+    *
+    * @var \Drupal\user\UserInterface

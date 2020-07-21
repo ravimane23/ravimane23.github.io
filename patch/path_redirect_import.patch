@@ -1,0 +1,12 @@
+diff --git a/src/Form/RedirectImportForm.php b/src/Form/RedirectImportForm.php
+index be7bb67..3fe7197 100644
+--- a/src/Form/RedirectImportForm.php
++++ b/src/Form/RedirectImportForm.php
+@@ -7,7 +7,6 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\path_redirect_import\ImporterService;
+ use Drupal\Core\Language\Language;
+ use Drupal\Component\Utility\Environment;
+-use Drupal\Core\Entity\EntityStorageInterface;
+ 
+ /**
+  * Class RedirectImportForm.

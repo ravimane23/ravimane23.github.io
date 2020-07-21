@@ -1,0 +1,15 @@
+diff --git a/src/JsonApiDefaultsJsonApiDocumentTopLevelNormalizer.php b/src/JsonApiDefaultsJsonApiDocumentTopLevelNormalizer.php
+index b0c52a1..f1b1d90 100644
+--- a/src/JsonApiDefaultsJsonApiDocumentTopLevelNormalizer.php
++++ b/src/JsonApiDefaultsJsonApiDocumentTopLevelNormalizer.php
+@@ -19,8 +19,8 @@ class JsonApiDefaultsJsonApiDocumentTopLevelNormalizer extends JsonApiDocumentTo
+   protected function expandContext(Request $request, ResourceType $resource_type) {
+     // Do not return unrequested resources in include.
+     // @see http://jsonapi.org/format/#fetching-includes
+-    if($request->query->get('include')) {
+-        return parent::expandContext($request, $resource_type);
++    if ($request->query->get('include')) {
++      return parent::expandContext($request, $resource_type);
+     }
+ 
+     /** @var \Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType $resource_type */

@@ -1,0 +1,12 @@
+diff --git a/cancel_button.api.php b/cancel_button.api.php
+index 70eba02..46b4248 100644
+--- a/cancel_button.api.php
++++ b/cancel_button.api.php
+@@ -12,6 +12,7 @@ use Drupal\Core\Url;
+  * @addtogroup hooks
+  * @{
+  */
++
+ /**
+  * Allow other modules to alter the cancel button destination.
+  *

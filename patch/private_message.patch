@@ -1,0 +1,348 @@
+diff --git a/css/private_message_inbox_block.css b/css/private_message_inbox_block.css
+index a62a0fa..56018f8 100644
+--- a/css/private_message_inbox_block.css
++++ b/css/private_message_inbox_block.css
+@@ -2,22 +2,28 @@
+   position: relative;
+   margin-bottom: 10px;
+   border: dotted black 1px;
+-  padding: 5px; }
+-  .block-private-message-inbox-block .private-message-thread:hover {
+-    background-color: grey; }
+-  .block-private-message-inbox-block .private-message-thread .private-message-inbox-thread-link {
+-    position: absolute;
+-    top: 0;
+-    left: 0;
+-    width: 100%;
+-    height: 100%;
+-    border-bottom: none; }
++  padding: 5px;
++}
++.block-private-message-inbox-block .private-message-thread:hover {
++  background-color: grey;
++}
++.block-private-message-inbox-block .private-message-thread .private-message-inbox-thread-link {
++  position: absolute;
++  top: 0;
++  left: 0;
++  width: 100%;
++  height: 100%;
++  border-bottom: none;
++}
+ .block-private-message-inbox-block .unread-thread {
+-  border: solid black 2px; }
++  border: solid black 2px;
++}
+ .block-private-message-inbox-block .active-thread {
+-  border-color: #0096ff; }
++  border-color: #0096ff;
++}
+ .block-private-message-inbox-block #load-previous-threads-button-wrapper a {
+   display: block;
+   text-align: center;
+   font-size: 0.8em;
+-  border-bottom: none; }
++  border-bottom: none;
++}
+diff --git a/css/private_message_members_widget.css b/css/private_message_members_widget.css
+index 7ac568e..d0e16b6 100644
+--- a/css/private_message_members_widget.css
++++ b/css/private_message_members_widget.css
+@@ -1,27 +1,36 @@
+ #thread-members-display-container {
+-  position: relative; }
+-  #thread-members-display-container + * {
+-    clear: both; }
+-  #thread-members-display-container #pm-members-autocomplete-results-wrapper {
+-    position: absolute; }
+-  #thread-members-display-container .private-message-member-display-item {
+-    background-color: #E4E4E4;
+-    margin: 2px 4px 1em;
+-    float: left; }
+-    #thread-members-display-container .private-message-member-display-item .pm-username {
+-      float: left;
+-      padding: 4px 7px 4px 3px; }
+-    #thread-members-display-container .private-message-member-display-item .pm-username-remove-link {
+-      border-left: dotted black 1px;
+-      padding: 4px 4px 5px;
+-      display: block;
+-      float: left;
+-      cursor: pointer; }
+-  #thread-members-display-container #thread-members-input {
+-    margin-bottom: 0; }
+-  #thread-members-display-container .pm-autocomplete-search-result {
+-    display: block;
+-    height: 100%; }
+-  #thread-members-display-container .invalid-username {
+-    color: #FF0000;
+-    font-weight: bold; }
++  position: relative;
++}
++#thread-members-display-container + * {
++  clear: both;
++}
++#thread-members-display-container #pm-members-autocomplete-results-wrapper {
++  position: absolute;
++}
++#thread-members-display-container .private-message-member-display-item {
++  background-color: #e4e4e4;
++  margin: 2px 4px 1em;
++  float: left;
++}
++#thread-members-display-container .private-message-member-display-item .pm-username {
++  float: left;
++  padding: 4px 7px 4px 3px;
++}
++#thread-members-display-container .private-message-member-display-item .pm-username-remove-link {
++  border-left: dotted black 1px;
++  padding: 4px 4px 5px;
++  display: block;
++  float: left;
++  cursor: pointer;
++}
++#thread-members-display-container #thread-members-input {
++  margin-bottom: 0;
++}
++#thread-members-display-container .pm-autocomplete-search-result {
++  display: block;
++  height: 100%;
++}
++#thread-members-display-container .invalid-username {
++  color: #ff0000;
++  font-weight: bold;
++}
+diff --git a/css/private_message_notification_block.css b/css/private_message_notification_block.css
+index 6bc6dcf..01857da 100644
+--- a/css/private_message_notification_block.css
++++ b/css/private_message_notification_block.css
+@@ -2,25 +2,30 @@
+   height: 30px;
+   width: 32.75px;
+   position: relative;
+-  overflow: hidden; }
+-  .block-private-message-notification-block .private-message-notification-image {
+-    height: 30px;
+-    width: 65.5px;
+-    position: absolute;
+-    top: 0;
+-    left: 0;
+-    max-width: none; }
+-  .block-private-message-notification-block .private-message-page-link {
+-    height: 100%;
+-    width: 100%;
+-    position: absolute;
+-    top: 0;
+-    left: 0;
+-    text-align: center;
+-    line-height: 26px;
+-    color: #000; }
+-  .block-private-message-notification-block .unread-threads .private-message-notification-image {
+-    left: auto;
+-    right: 0; }
+-  .block-private-message-notification-block .unread-threads .private-message-page-link {
+-    color: #FF0000; }
++  overflow: hidden;
++}
++.block-private-message-notification-block .private-message-notification-image {
++  height: 30px;
++  width: 65.5px;
++  position: absolute;
++  top: 0;
++  left: 0;
++  max-width: none;
++}
++.block-private-message-notification-block .private-message-page-link {
++  height: 100%;
++  width: 100%;
++  position: absolute;
++  top: 0;
++  left: 0;
++  text-align: center;
++  line-height: 26px;
++  color: #000;
++}
++.block-private-message-notification-block .unread-threads .private-message-notification-image {
++  left: auto;
++  right: 0;
++}
++.block-private-message-notification-block .unread-threads .private-message-page-link {
++  color: #ff0000;
++}
+diff --git a/css/private_message_thread.css b/css/private_message_thread.css
+index 36b2525..11ac512 100644
+--- a/css/private_message_thread.css
++++ b/css/private_message_thread.css
+@@ -1,46 +1,56 @@
+ #private-message-page {
+-  position: relative; }
+-  #private-message-page .private-message-thread-full .private-message-recipients {
+-    display: -webkit-box;
+-    display: -moz-box;
+-    display: -ms-flexbox;
+-    display: -webkit-flex;
+-    display: flex;
+-    -webkit-flex-wrap: wrap;
+-    -moz-flex-wrap: wrap;
+-    -ms-flex-wrap: wrap;
+-    flex-wrap: wrap;
+-    -webkit-justify-content: flex-start;
+-    -moz-justify-content: flex-start;
+-    -ms-justify-content: flex-start;
+-    justify-content: flex-start;
+-    -ms-flex-pack: flex-start;
+-    margin: 0 -5px; }
+-    #private-message-page .private-message-thread-full .private-message-recipients span,
+-    #private-message-page .private-message-thread-full .private-message-recipients article {
+-      padding: 0 5px; }
+-  #private-message-page .private-message-thread-full .field--name-private-messages .private-message {
+-    border: solid #ccc 1px;
+-    margin-top: -1px;
+-    padding: 5px; }
+-    #private-message-page .private-message-thread-full .field--name-private-messages .private-message .field--name-created {
+-      float: right; }
+-  #private-message-page .private-message-thread-full .field--name-private-messages #load-previous-messages-button-wrapper {
+-    border: solid #ccc 1px; }
+-    #private-message-page .private-message-thread-full .field--name-private-messages #load-previous-messages-button-wrapper.load-previous-position-before {
+-      border-bottom: none; }
+-    #private-message-page .private-message-thread-full .field--name-private-messages #load-previous-messages-button-wrapper.load-previous-position-after {
+-      border-top: none; }
+-    #private-message-page .private-message-thread-full .field--name-private-messages #load-previous-messages-button-wrapper a {
+-      display: block;
+-      text-align: center;
+-      font-size: 0.8em;
+-      border-bottom: none; }
+-  #private-message-page #private-message-thread-dimmer {
+-    position: absolute;
+-    top: 0;
+-    left: 0;
+-    height: 100%;
+-    width: 100%;
+-    background-color: #000;
+-    display: none; }
++  position: relative;
++}
++#private-message-page .private-message-thread-full .private-message-recipients {
++  display: -webkit-box;
++  display: -moz-box;
++  display: -ms-flexbox;
++  display: -webkit-flex;
++  display: flex;
++  -webkit-flex-wrap: wrap;
++  -moz-flex-wrap: wrap;
++  -ms-flex-wrap: wrap;
++  flex-wrap: wrap;
++  -webkit-justify-content: flex-start;
++  -moz-justify-content: flex-start;
++  -ms-justify-content: flex-start;
++  justify-content: flex-start;
++  -ms-flex-pack: flex-start;
++  margin: 0 -5px;
++}
++#private-message-page .private-message-thread-full .private-message-recipients span,
++#private-message-page .private-message-thread-full .private-message-recipients article {
++  padding: 0 5px;
++}
++#private-message-page .private-message-thread-full .field--name-private-messages .private-message {
++  border: solid #ccc 1px;
++  margin-top: -1px;
++  padding: 5px;
++}
++#private-message-page .private-message-thread-full .field--name-private-messages .private-message .field--name-created {
++  float: right;
++}
++#private-message-page .private-message-thread-full .field--name-private-messages #load-previous-messages-button-wrapper {
++  border: solid #ccc 1px;
++}
++#private-message-page .private-message-thread-full .field--name-private-messages #load-previous-messages-button-wrapper.load-previous-position-before {
++  border-bottom: none;
++}
++#private-message-page .private-message-thread-full .field--name-private-messages #load-previous-messages-button-wrapper.load-previous-position-after {
++  border-top: none;
++}
++#private-message-page .private-message-thread-full .field--name-private-messages #load-previous-messages-button-wrapper a {
++  display: block;
++  text-align: center;
++  font-size: 0.8em;
++  border-bottom: none;
++}
++#private-message-page #private-message-thread-dimmer {
++  position: absolute;
++  top: 0;
++  left: 0;
++  height: 100%;
++  width: 100%;
++  background-color: #000;
++  display: none;
++}
+diff --git a/src/Entity/Builder/PrivateMessageThreadViewBuilder.php b/src/Entity/Builder/PrivateMessageThreadViewBuilder.php
+index e606424..d843338 100644
+--- a/src/Entity/Builder/PrivateMessageThreadViewBuilder.php
++++ b/src/Entity/Builder/PrivateMessageThreadViewBuilder.php
+@@ -6,7 +6,6 @@ use Drupal\Core\Cache\Cache;
+ use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityRepositoryInterface;
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Entity\EntityViewBuilder;
+ use Drupal\Core\Language\LanguageManagerInterface;
+diff --git a/src/Entity/Builder/PrivateMessageViewBuilder.php b/src/Entity/Builder/PrivateMessageViewBuilder.php
+index 108ba8a..4cd7023 100644
+--- a/src/Entity/Builder/PrivateMessageViewBuilder.php
++++ b/src/Entity/Builder/PrivateMessageViewBuilder.php
+@@ -5,7 +5,6 @@ namespace Drupal\private_message\Entity\Builder;
+ use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityRepositoryInterface;
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Entity\EntityViewBuilder;
+ use Drupal\Core\Language\LanguageManagerInterface;
+diff --git a/src/Form/PrivateMessageForm.php b/src/Form/PrivateMessageForm.php
+index 82e628d..8961293 100644
+--- a/src/Form/PrivateMessageForm.php
++++ b/src/Form/PrivateMessageForm.php
+@@ -178,7 +178,6 @@ class PrivateMessageForm extends ContentEntityForm {
+   public function buildForm(array $form, FormStateInterface $form_state, PrivateMessageThreadInterface $privateMessageThread = NULL) {
+     $form = parent::buildForm($form, $form_state);
+ 
+-
+     if ($privateMessageThread) {
+       $form_state->set('thread', $privateMessageThread);
+       $form['actions']['submit']['#ajax'] = [
+diff --git a/tests/src/Functional/PrivateMessageNotificationTest.php b/tests/src/Functional/PrivateMessageNotificationTest.php
+index 5e985db..deccbca 100644
+--- a/tests/src/Functional/PrivateMessageNotificationTest.php
++++ b/tests/src/Functional/PrivateMessageNotificationTest.php
+@@ -5,7 +5,7 @@ namespace Drupal\Tests\private_message\Functional;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+- * Tests for the Private Message Notification
++ * Tests for the Private Message Notification.
+  *
+  * @group private_message
+  */
+@@ -39,11 +39,11 @@ class PrivateMessageNotificationTest extends BrowserTestBase {
+     parent::setUp();
+     $this->userA = $this->drupalCreateUser([
+       'use private messaging system',
+-      'access user profiles'
++      'access user profiles',
+     ]);
+     $this->userB = $this->drupalCreateUser([
+       'use private messaging system',
+-      'access user profiles'
++      'access user profiles',
+     ]);
+ 
+     $this->drupalPlaceBlock('private_message_notification_block');
+@@ -59,7 +59,7 @@ class PrivateMessageNotificationTest extends BrowserTestBase {
+     $this->assertResponse(200);
+     $this->drupalPostForm(NULL, [
+       'members[0][target_id]' => $this->userB->getDisplayName(),
+-      'message[0][value]' => $this->getRandomGenerator()->sentences(5)
++      'message[0][value]' => $this->getRandomGenerator()->sentences(5),
+     ], 'Send');
+     $this->assertResponse(200);
+ 

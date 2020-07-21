@@ -1,0 +1,276 @@
+diff --git a/js/smart_date.js b/js/smart_date.js
+index e85f8e2..15d7de1 100644
+--- a/js/smart_date.js
++++ b/js/smart_date.js
+@@ -2,13 +2,13 @@
+   'use strict';
+ 
+   Drupal.behaviors.smartDate = {
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+       // Manipulate the labels for BYDAY checkboxes.
+-      $('.field--type-smartdate .byday-checkboxes label').each(function(){
++      $('.field--type-smartdate .byday-checkboxes label').each(function () {
+         $(this).prop('title', $(this).text());
+         $(this).prop('tabindex', '0');
+         // Check the input on spacebar or return.
+-        $(this).keydown(function( event ) {
++        $(this).keydown(function ( event ) {
+           if ( event.which == 13 || event.which == 32 ) {
+             $(this).siblings('input').click();
+             event.preventDefault();
+@@ -16,14 +16,14 @@
+         });
+       });
+ 
+-      $('.field--type-smartdate select.field-duration').each(function(){
++      $('.field--type-smartdate select.field-duration').each(function () {
+         setInitialDuration(this);
+         augmentInputs(this);
+       });
+ 
+-      $('.allday').once('add-allday').each(function(){
++      $('.allday').once('add-allday').each(function () {
+         setAllDay(this);
+-      }).on('change', function(){
++      }).on('change', function () {
+         checkAllDay(this);
+       });
+ 
+@@ -31,24 +31,24 @@
+       $('.field--type-smartdate input[type="time"]').prop('step', '60');
+ 
+       // update the end values when the start is changed
+-      $('.field--type-smartdate .time-start input').on('change', function(){
++      $('.field--type-smartdate .time-start input').on('change', function () {
+         setEndDate(this);
+       });
+ 
+       // special handler for duration updates
+-      $('.field--type-smartdate select.field-duration').on('change', function(){
++      $('.field--type-smartdate select.field-duration').on('change', function () {
+         durationChanged(this);
+       });
+ 
+       // update the time
+-      $('.field--type-smartdate .time-end').on('change', function(){
++      $('.field--type-smartdate .time-end').on('change', function () {
+         setDuration(this);
+       });
+ 
+       // When the repeat frequency changes, update the advanced label.
+-      $('.field--type-smartdate .recur-repeat').on('change', function(){
++      $('.field--type-smartdate .recur-repeat').on('change', function () {
+         updateRepeatLabel(this);
+-      }).each(function(){
++      }).each(function () {
+         updateRepeatLabel(this);
+       });
+ 
+@@ -317,15 +317,19 @@
+           case '':
+             new_label = 'times';
+             break;
++
+           case 'DAILY':
+             new_label = 'days';
+             break;
++
+           case 'WEEKLY':
+             new_label = 'weeks';
+             break;
++
+           case 'MONTHLY':
+             new_label = 'months';
+             break;
++
+           case 'YEARLY':
+             new_label = 'years';
+             break;
+diff --git a/modules/smart_date_recur/src/Entity/SmartDateRule.php b/modules/smart_date_recur/src/Entity/SmartDateRule.php
+index 3308b05..42a9cc0 100644
+--- a/modules/smart_date_recur/src/Entity/SmartDateRule.php
++++ b/modules/smart_date_recur/src/Entity/SmartDateRule.php
+@@ -426,7 +426,7 @@ class SmartDateRule extends ContentEntityBase {
+     }
+     elseif ($freq == 'WEEKLY') {
+       if (!empty($params['byday']) && is_array($params['byday'])) {
+-        switch(count($params['byday'])) {
++        switch (count($params['byday'])) {
+           case 1:
+             $day_output = $day_labels[array_pop($params['byday'])];
+             break;
+@@ -437,7 +437,7 @@ class SmartDateRule extends ContentEntityBase {
+ 
+           default:
+             $day_output = '';
+-            foreach($params['byday'] as $key => $day) {
++            foreach ($params['byday'] as $key => $day) {
+               if ($key === array_key_last($params['byday'])) {
+                 $day_output .= $this->t('and') . ' ' . $day_labels[$day];
+ 
+@@ -447,7 +447,7 @@ class SmartDateRule extends ContentEntityBase {
+               }
+             }
+             break;
+-          }
++        }
+       }
+       else {
+         // Default to getting the day from the start date.
+@@ -478,7 +478,8 @@ class SmartDateRule extends ContentEntityBase {
+     $end_ts = $this->end->getValue()[0]['value'];
+     if (SmartDateTrait::isAllDay($start_ts, $end_ts, $tz_string)) {
+       $time = SmartDateTrait::formatSmartDate($start_ts, $end_ts, $format->getOptions(), $tz_string, 'string');
+-    } else {
++    }
++    else {
+       $time_string = SmartDateTrait::formatSmartDate($start_ts, $start_ts, $format->getOptions(), $tz_string, 'string');
+       $time = $this->t('at :time', [':time' => ''], ['context' => 'Rule text']) . $time_string;
+     }
+diff --git a/src/Controller/FullCalendarController.php b/src/Controller/FullCalendarController.php
+index 8c74ee8..36387aa 100644
+--- a/src/Controller/FullCalendarController.php
++++ b/src/Controller/FullCalendarController.php
+@@ -17,10 +17,15 @@ class FullCalendarController extends CalendarEventController {
+   // for event objects without a specified end value:
+   // see https://fullcalendar.io/docs/v4/defaultTimedEventDuration -
+   // so taking the value of 1 hour in seconds here,
+-  // not sure how to get this from the JS here
+-  // TODO: Get this from the configuration of Fullcalendar somehow.
+-  protected $defaultTimedEventDuration = 60*60;
++  // not sure how to get this from the JS here.
++  /**
++   * TODO: Get this from the configuration of Fullcalendar somehow.
++   */
++  protected $defaultTimedEventDuration = 60 * 60;
+ 
++  /**
++   *
++   */
+   public function updateEvent(Request $request) {
+ 
+     $user = $this->currentUser();
+@@ -90,19 +95,19 @@ class FullCalendarController extends CalendarEventController {
+       // Check if allday event (one day or multiple days long)
+       if ($starttime == '00:00:00') {
+         if (empty($endDate)) {
+-          // this is a regular event becoming all day
+-          $endDate = strtotime($start_date) + 1439*60;
++          // This is a regular event becoming all day.
++          $endDate = strtotime($start_date) + 1439 * 60;
+           $duration = 0;
+         }
+         elseif ((strtotime($end_date) - strtotime($start_date)) % 86400 == 0) {
+-          $endDate = strtotime($end_date) + 1439*60;
++          $endDate = strtotime($end_date) + 1439 * 60;
+           $duration = 0;
+         }
+       }
+       elseif (empty($endDate)) {
+-        // this is allday event becoming regular event
++        // This is allday event becoming regular event.
+         $endDate = strtotime($start_date) + $this->defaultTimedEventDuration;
+-        $duration = $this->defaultTimedEventDuration/60;
++        $duration = $this->defaultTimedEventDuration / 60;
+       }
+       if (isset($instance['oid'])) {
+         $override = SmartDateOverride::load($instance['oid']);
+@@ -160,7 +165,7 @@ class FullCalendarController extends CalendarEventController {
+       // This means an allday event is to become a regular event.
+       if (empty($endDate)) {
+         $endDate = strtotime($startDate) + $this->defaultTimedEventDuration;
+-        $duration = $this->defaultTimedEventDuration/60;
++        $duration = $this->defaultTimedEventDuration / 60;
+       }
+       else {
+         $endDate = strtotime($endDate) + 1439 * 60;
+diff --git a/src/Feeds/Target/SmartDate.php b/src/Feeds/Target/SmartDate.php
+index 6dd7482..f12a0af 100644
+--- a/src/Feeds/Target/SmartDate.php
++++ b/src/Feeds/Target/SmartDate.php
+@@ -33,7 +33,7 @@ class SmartDate extends FieldTargetBase {
+   protected function prepareValue($delta, array &$values) {
+     if (isset($values)) {
+       if (isset($values['value']) && !isset($values['end_value'])) {
+-          $values['end_value'] = $values['value'];
++        $values['end_value'] = $values['value'];
+       }
+       return $values;
+     }
+diff --git a/src/Plugin/Field/FieldFormatter/SmartDateDefaultFormatter.php b/src/Plugin/Field/FieldFormatter/SmartDateDefaultFormatter.php
+index f7f80fb..6e23178 100644
+--- a/src/Plugin/Field/FieldFormatter/SmartDateDefaultFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/SmartDateDefaultFormatter.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\smart_date\Plugin\Field\FieldFormatter;
+ 
+-use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\datetime\Plugin\Field\FieldFormatter\DateTimeDefaultFormatter;
+ use Drupal\smart_date\Entity\SmartDateFormat;
+diff --git a/src/Plugin/FullcalendarViewProcessor/SmartDateProcessor.php b/src/Plugin/FullcalendarViewProcessor/SmartDateProcessor.php
+index 2365849..2e4a6ad 100644
+--- a/src/Plugin/FullcalendarViewProcessor/SmartDateProcessor.php
++++ b/src/Plugin/FullcalendarViewProcessor/SmartDateProcessor.php
+@@ -36,7 +36,7 @@ class SmartDateProcessor extends FullcalendarViewProcessorBase {
+     $view_index = key($variables['#attached']['drupalSettings']['fullCalendarView']);
+ 
+     $fields = $view->field;
+-    $options =  $view->style_plugin->options;
++    $options = $view->style_plugin->options;
+     $start_field = $options['start'];
+     $start_field_options = $fields[$start_field]->options;
+     $format_label = $start_field_options['settings']['format'];
+@@ -86,7 +86,8 @@ class SmartDateProcessor extends FullcalendarViewProcessorBase {
+    *
+    * @param array $entries
+    *   The entries as created by Fullcalendar View.
+-   * @return array $ids
++   *
++   * @return array
+    *   An array to map
+    */
+   private function getIdMappings(array $entries) {
+@@ -137,7 +138,7 @@ class SmartDateProcessor extends FullcalendarViewProcessorBase {
+     if (!empty($row_data['rrule'])) {
+       $entry['eid'] = $row_data['id'] . '-R-' . $row_data['rrule'] . '-I-' . $row_data['rrule_index'];
+     }
+-    else if (isset($row_data['delta'])) {
++    elseif (isset($row_data['delta'])) {
+       $entry['eid'] = $row_data['id'] . '-D-' . $row_data['delta'];
+     }
+   }
+diff --git a/src/Routing/RouteSubscriber.php b/src/Routing/RouteSubscriber.php
+index 59f641e..b3d7bb2 100644
+--- a/src/Routing/RouteSubscriber.php
++++ b/src/Routing/RouteSubscriber.php
+@@ -5,8 +5,14 @@ namespace Drupal\smart_date\Routing;
+ use Drupal\Core\Routing\RouteSubscriberBase;
+ use Symfony\Component\Routing\RouteCollection;
+ 
++/**
++ *
++ */
+ class RouteSubscriber extends RouteSubscriberBase {
+ 
++  /**
++   *
++   */
+   protected function alterRoutes(RouteCollection $collection) {
+     if ($route = $collection->get('fullcalendar_view.update_event')) {
+       $route->setDefault('_controller', "\Drupal\smart_date\Controller\FullCalendarController::updateEvent");
+diff --git a/src/SmartDateTrait.php b/src/SmartDateTrait.php
+index f6f3781..9102ab4 100644
+--- a/src/SmartDateTrait.php
++++ b/src/SmartDateTrait.php
+@@ -427,7 +427,7 @@ trait SmartDateTrait {
+    * @param string|null $timezone
+    *   An optional timezone override.
+    *
+-   * @return boolean
++   * @return bool
+    *   Whether or not the timestamps are considered all day by Smart Date.
+    */
+   public static function isAllDay($start_ts, $end_ts, $timezone = NULL) {

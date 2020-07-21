@@ -1,0 +1,163 @@
+diff --git a/src/Annotation/BootstrapLayoutsUpdate.php b/src/Annotation/BootstrapLayoutsUpdate.php
+index d227f0e..6b3fd98 100644
+--- a/src/Annotation/BootstrapLayoutsUpdate.php
++++ b/src/Annotation/BootstrapLayoutsUpdate.php
+@@ -26,4 +26,3 @@ class BootstrapLayoutsUpdate extends Plugin {
+   public $schema;
+ 
+ }
+-
+diff --git a/src/BootstrapLayoutsManager.php b/src/BootstrapLayoutsManager.php
+index c728cda..de310bd 100644
+--- a/src/BootstrapLayoutsManager.php
++++ b/src/BootstrapLayoutsManager.php
+@@ -14,7 +14,7 @@ use Drupal\Core\Layout\LayoutPluginManager;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Class BootstrapLayoutsManager
++ * Class BootstrapLayoutsManager.
+  */
+ class BootstrapLayoutsManager extends BootstrapLayoutsPluginManager {
+ 
+diff --git a/src/BootstrapLayoutsPluginManager.php b/src/BootstrapLayoutsPluginManager.php
+index c6041e5..84fa834 100644
+--- a/src/BootstrapLayoutsPluginManager.php
++++ b/src/BootstrapLayoutsPluginManager.php
+@@ -13,6 +13,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class BootstrapLayoutsPluginManager extends DefaultPluginManager implements ContainerInjectionInterface, ContainerAwareInterface {
+ 
+   use ContainerAwareTrait;
+diff --git a/src/BootstrapLayoutsUninstallValidator.php b/src/BootstrapLayoutsUninstallValidator.php
+index e98a528..eeb575c 100644
+--- a/src/BootstrapLayoutsUninstallValidator.php
++++ b/src/BootstrapLayoutsUninstallValidator.php
+@@ -6,7 +6,7 @@ use Drupal\Core\Extension\ModuleUninstallValidatorInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ 
+ /**
+- * Class BootstrapLayoutsUninstallValidator
++ * Class BootstrapLayoutsUninstallValidator.
+  */
+ class BootstrapLayoutsUninstallValidator implements ModuleUninstallValidatorInterface {
+ 
+diff --git a/src/BootstrapLayoutsUpdateManager.php b/src/BootstrapLayoutsUpdateManager.php
+index ba7ac02..aa36f46 100644
+--- a/src/BootstrapLayoutsUpdateManager.php
++++ b/src/BootstrapLayoutsUpdateManager.php
+@@ -7,6 +7,9 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Extension\ThemeHandlerInterface;
+ use Drupal\Core\Theme\ThemeManagerInterface;
+ 
++/**
++ *
++ */
+ class BootstrapLayoutsUpdateManager extends BootstrapLayoutsPluginManager {
+ 
+   /**
+diff --git a/src/Plugin/BootstrapLayouts/BootstrapLayoutsHandlerBase.php b/src/Plugin/BootstrapLayouts/BootstrapLayoutsHandlerBase.php
+index b208d58..002fc91 100644
+--- a/src/Plugin/BootstrapLayouts/BootstrapLayoutsHandlerBase.php
++++ b/src/Plugin/BootstrapLayouts/BootstrapLayoutsHandlerBase.php
+@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+- * Class BootstrapLayoutsHandlerBase
++ * Class BootstrapLayoutsHandlerBase.
+  */
+ abstract class BootstrapLayoutsHandlerBase extends PluginBase implements BootstrapLayoutsHandlerInterface {
+ 
+diff --git a/src/Plugin/BootstrapLayouts/BootstrapLayoutsHandlerInterface.php b/src/Plugin/BootstrapLayouts/BootstrapLayoutsHandlerInterface.php
+index 78477ed..0e7bbd5 100644
+--- a/src/Plugin/BootstrapLayouts/BootstrapLayoutsHandlerInterface.php
++++ b/src/Plugin/BootstrapLayouts/BootstrapLayoutsHandlerInterface.php
+@@ -9,7 +9,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+ 
+ /**
+- * Interface BootstrapLayoutsHandlerInterface
++ * Interface BootstrapLayoutsHandlerInterface.
+  */
+ interface BootstrapLayoutsHandlerInterface extends ContainerAwareInterface, ContainerFactoryPluginInterface, DerivativeInspectionInterface, PluginInspectionInterface {
+ 
+diff --git a/src/Plugin/BootstrapLayouts/BootstrapLayoutsUpdateBase.php b/src/Plugin/BootstrapLayouts/BootstrapLayoutsUpdateBase.php
+index 3a7938c..2307fa8 100644
+--- a/src/Plugin/BootstrapLayouts/BootstrapLayoutsUpdateBase.php
++++ b/src/Plugin/BootstrapLayouts/BootstrapLayoutsUpdateBase.php
+@@ -8,6 +8,9 @@ use Drupal\Core\Plugin\PluginBase;
+ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class BootstrapLayoutsUpdateBase extends PluginBase implements BootstrapLayoutsUpdateInterface {
+ 
+   use ContainerAwareTrait;
+diff --git a/src/Plugin/BootstrapLayouts/BootstrapLayoutsUpdateInterface.php b/src/Plugin/BootstrapLayouts/BootstrapLayoutsUpdateInterface.php
+index ff8e99e..a728e4a 100644
+--- a/src/Plugin/BootstrapLayouts/BootstrapLayoutsUpdateInterface.php
++++ b/src/Plugin/BootstrapLayouts/BootstrapLayoutsUpdateInterface.php
+@@ -9,6 +9,9 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+ 
++/**
++ *
++ */
+ interface BootstrapLayoutsUpdateInterface extends ContainerAwareInterface, ContainerFactoryPluginInterface, DerivativeInspectionInterface, PluginInspectionInterface {
+ 
+   /**
+@@ -28,8 +31,7 @@ interface BootstrapLayoutsUpdateInterface extends ContainerAwareInterface, Conta
+    *   Any static YAML data found for the update.
+    * @param bool $display_messages
+    *   Flag determining whether a message will be displayed indicating whether
+-   *   the layout was processed successfully or not.
+-
++   *   the layout was processed successfully or not.   *.
+    */
+   public function update(BootstrapLayoutsManager $manager, array $data = [], $display_messages = TRUE);
+ 
+diff --git a/src/Plugin/BootstrapLayouts/Updates/BootstrapLayoutsUpdate8401.php b/src/Plugin/BootstrapLayouts/Updates/BootstrapLayoutsUpdate8401.php
+index 8433a3d..a537f22 100644
+--- a/src/Plugin/BootstrapLayouts/Updates/BootstrapLayoutsUpdate8401.php
++++ b/src/Plugin/BootstrapLayouts/Updates/BootstrapLayoutsUpdate8401.php
+@@ -6,7 +6,7 @@ use Drupal\bootstrap_layouts\BootstrapLayout;
+ use Drupal\bootstrap_layouts\Plugin\BootstrapLayouts\BootstrapLayoutsUpdateBase;
+ 
+ /**
+- * Bootstrap Layouts Update 8401
++ * Bootstrap Layouts Update 8401.
+  *
+  * Upgrade existing Bootstrap Layout instances.
+  *
+diff --git a/src/Plugin/BootstrapLayouts/Updates/BootstrapLayoutsUpdate8402.php b/src/Plugin/BootstrapLayouts/Updates/BootstrapLayoutsUpdate8402.php
+index 9d7f0b2..f372ceb 100644
+--- a/src/Plugin/BootstrapLayouts/Updates/BootstrapLayoutsUpdate8402.php
++++ b/src/Plugin/BootstrapLayouts/Updates/BootstrapLayoutsUpdate8402.php
+@@ -6,7 +6,7 @@ use Drupal\bootstrap_layouts\BootstrapLayout;
+ use Drupal\bootstrap_layouts\Plugin\BootstrapLayouts\BootstrapLayoutsUpdateBase;
+ 
+ /**
+- * Bootstrap Layouts Update 8402
++ * Bootstrap Layouts Update 8402.
+  *
+  * Fix "1 Column (stacked)" regions.
+  *
+diff --git a/src/Plugin/Layout/BootstrapLayoutsBase.php b/src/Plugin/Layout/BootstrapLayoutsBase.php
+index 1c84a5b..7b578d8 100644
+--- a/src/Plugin/Layout/BootstrapLayoutsBase.php
++++ b/src/Plugin/Layout/BootstrapLayoutsBase.php
+@@ -251,4 +251,5 @@ class BootstrapLayoutsBase extends LayoutDefault implements PluginFormInterface
+    */
+   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+   }
++
+ }

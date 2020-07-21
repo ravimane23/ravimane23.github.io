@@ -1,0 +1,1300 @@
+diff --git a/devel_node_access/css/devel_node_access.module.css b/devel_node_access/css/devel_node_access.module.css
+index 23e0b78..81cb3cf 100644
+--- a/devel_node_access/css/devel_node_access.module.css
++++ b/devel_node_access/css/devel_node_access.module.css
+@@ -1,5 +1,3 @@
+-
+ div.devel-node-access-inline > div {
+-    display: inline-block;
++  display: inline-block;
+ }
+-
+diff --git a/devel_node_access/devel_node_access.api.php b/devel_node_access/devel_node_access.api.php
+index f33eef2..cf1b5e4 100644
+--- a/devel_node_access/devel_node_access.api.php
++++ b/devel_node_access/devel_node_access.api.php
+@@ -28,8 +28,7 @@
+  * that administrators seeking help can present English explanations.
+  *
+  * @param $row
+- *   The record from the {node_access} table, as object. The member fields are:
+- *   nid, gid, realm, grant_view, grant_update, grant_delete.
++ *   The record from the {node_access} table, as object. The member fields are:   nid, gid, realm, grant_view, grant_update, grant_delete.
+  *
+  * @return string|null
+  *   A string with a (short!) explanation of the given {node_access} row,
+@@ -46,13 +45,13 @@ function hook_node_access_explain($row) {
+     if ($row->grant_view) {
+       /** @var \Drupal\user\RoleInterface $role */
+       $role = \Drupal\user\Entity\Role::load($row->gid);
+-      return t('Role %role may view this node.', array('%role' => $role->get('name')));
++      return t('Role %role may view this node.', ['%role' => $role->get('name')]);
+     }
+     else {
+       return 'No access.';
+     }
+   }
+-  return null;
++  return NULL;
+ }
+ 
+ /**
+diff --git a/devel_node_access/devel_node_access.js b/devel_node_access/devel_node_access.js
+index 064b8f2..15f8f5c 100644
+--- a/devel_node_access/devel_node_access.js
++++ b/devel_node_access/devel_node_access.js
+@@ -22,7 +22,7 @@
+               + '/'
+               + Math.floor((1000000000 * Math.random())).toString(16);
+       // Execute Ajax callback and handle the response.
+-      $.getJSON(url, function(data) {
++      $.getJSON(url, function (data) {
+         $('#' + cell, context).html(data).addClass('ajax-processed');
+         // Call this function again.
+         devel_node_access_user_ajax(context);
+@@ -30,7 +30,7 @@
+       // Ajax fails silently on error, mark bad requests with an error message.
+       // If the request is just slow this will update when the request succeeds.
+       setTimeout(
+-        function() {
++        function () {
+           if ($('#' + cell, context).hasClass('ajax-processed') == false) {
+             $('#' + cell, context)
+               .html(
+@@ -55,7 +55,7 @@
+    * Attach the access by user behavior which initiates ajax.
+    */
+   Drupal.behaviors.develNodeAccessUserAjax = {
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+       // Start the ajax.
+       devel_node_access_user_ajax(context, settings);
+     }
+diff --git a/devel_node_access/src/Form/DnaForm.php b/devel_node_access/src/Form/DnaForm.php
+index 8d303c7..d8edaa1 100644
+--- a/devel_node_access/src/Form/DnaForm.php
++++ b/devel_node_access/src/Form/DnaForm.php
+@@ -36,56 +36,56 @@ class DnaForm extends FormBase {
+    * {@inheritdoc}
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+-    $form['#attached'] = array(
+-      'library' =>  array(
+-        'devel_node_access/devel_node_access'
+-      ),
+-    );
++    $form['#attached'] = [
++      'library' => [
++        'devel_node_access/devel_node_access',
++      ],
++    ];
+ 
+     $debug_mode = \Drupal::config('devel_node_access.settings')->get('debug_mode');
+     $by_user_mode = \Drupal::config('devel_node_access.settings')->get('by_user_mode');
+ 
+-    $form['node_content'] = array(
++    $form['node_content'] = [
+       '#prefix' => '<div id="devel-node-access-node-content-div">',
+       '#suffix' => '</div>',
+-    );
++    ];
+     $form['node_content'][0] = DnaBlock::buildNodeInfo($debug_mode);
+ 
+-    $form['user_content'] = array(
++    $form['user_content'] = [
+       '#prefix' => '<div id="devel-node-access-by-user-content-div">',
+       '#suffix' => '</div>',
+-    );
++    ];
+     if ($by_user_mode) {
+-      $form['user_content'][0] =  DnaBlock::buildByUserInfo();
++      $form['user_content'][0] = DnaBlock::buildByUserInfo();
+     }
+ 
+-    $form['setup'] = array(
++    $form['setup'] = [
+       '#markup' => t('Enable:'),
+       '#prefix' => '<div class="devel-node-access-inline">',
+       '#suffix' => '</div>',
+-    );
+-    $form['setup']['debug_mode'] = array(
++    ];
++    $form['setup']['debug_mode'] = [
+       '#type' => 'checkbox',
+       '#value' => $debug_mode,
+       '#prefix' => ' &nbsp; &nbsp; ',
+       '#title' => t('Debug Mode'),
+-      '#ajax' => array(
++      '#ajax' => [
+         'callback' => '::toggleDebugMode',
+         'wrapper' => 'devel-node-access-node-content-div',
+-      ),
++      ],
+       '#disabled' => TRUE,
+-    );
+-    $form['setup']['by_user_mode'] = array(
++    ];
++    $form['setup']['by_user_mode'] = [
+       '#type' => 'checkbox',
+       '#value' => $by_user_mode,
+       '#prefix' => ' &nbsp; &nbsp; ',
+       '#title' => t('By-User Analysis (slow!)'),
+-      '#ajax' => array(
++      '#ajax' => [
+         'callback' => '::toggleByUserMode',
+         'wrapper' => 'devel-node-access-by-user-content-div',
+-      ),
++      ],
+       '#disabled' => TRUE,
+-    );
++    ];
+ 
+     return $form;
+   }
+diff --git a/devel_node_access/src/Plugin/Block/DnaBlock.php b/devel_node_access/src/Plugin/Block/DnaBlock.php
+index 2ebc166..a9e6be9 100644
+--- a/devel_node_access/src/Plugin/Block/DnaBlock.php
++++ b/devel_node_access/src/Plugin/Block/DnaBlock.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\devel_node_access\Plugin\Block;
+ 
++use Drupal\Component\Utility\NestedArray;
+ use Drupal\Component\Utility\Unicode;
+ use Drupal\Core\Access\AccessResult;
+ use Drupal\Core\Block\BlockBase;
+@@ -26,7 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  */
+ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+ 
+-  private $node_access = array('@node_access' => 'node_access');
++  private $node_access = ['@node_access' => 'node_access'];
+ 
+   use RedirectDestinationTrait;
+ 
+@@ -102,20 +103,19 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+   public function build() {
+     $build['#cache'] = ['max-age' => 0];
+ 
+-//    $headers = array(
+-//      array('data' => t('node'), 'style' => 'text-align:right;'),
+-//      array('data' => t('prio'), 'style' => 'text-align:right;'),
+-//      t('status'),
+-//      t('realm'),
+-//      array('data' => t('gid'), 'style' => 'text-align:right;'),
+-//      t('view'),
+-//      t('update'),
+-//      t('delete'),
+-//      t('explained'),
+-//    );
+-//    $rows[] = array('data' => array(array('data' => 1, 'style' => 'background-color: red; color: blue'),
+-//                                    "CACHE 5", 3, 4, 5));
+-
++    // $headers = array(
++    //      array('data' => t('node'), 'style' => 'text-align:right;'),
++    //      array('data' => t('prio'), 'style' => 'text-align:right;'),
++    //      t('status'),
++    //      t('realm'),
++    //      array('data' => t('gid'), 'style' => 'text-align:right;'),
++    //      t('view'),
++    //      t('update'),
++    //      t('delete'),
++    //      t('explained'),
++    //    );
++    //    $rows[] = array('data' => array(array('data' => 1, 'style' => 'background-color: red; color: blue'),
++    //                                    "CACHE 5", 3, 4, 5));
+     if (empty(self::visibleNodes())) {
+       $request_uri = \Drupal::request()->getRequestUri();
+       if ($request_uri === '/' || $request_uri === '/node') {
+@@ -125,23 +125,22 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+     }
+ 
+     $build['#title'] = t('@node_access entries for nodes shown on this page', $this->node_access);
+-//    $build['test_table'] = array(
+-//      '#type' => 'table',
+-//      '#header' => $headers,
+-//      //      array(
+-//      //        t('Column 0'),
+-//      //        array('data' => t('Active'), 'colspan' => '2'),
+-//      //        array('data' => t('Staged'), 'colspan' => '2'),
+-//      //      ),
+-//      '#rows' => $rows,
+-//      '#empty' => $this->t('No records found!'),
+-//      '#responsive' => FALSE,
+-//      '#attributes' => array(
+-//        'class'       => array(),
+-//        'style'       => 'text-align: left;',
+-//      ),
+-//    );
+-
++    // $build['test_table'] = array(
++    //      '#type' => 'table',
++    //      '#header' => $headers,
++    //      //      array(
++    //      //        t('Column 0'),
++    //      //        array('data' => t('Active'), 'colspan' => '2'),
++    //      //        array('data' => t('Staged'), 'colspan' => '2'),
++    //      //      ),
++    //      '#rows' => $rows,
++    //      '#empty' => $this->t('No records found!'),
++    //      '#responsive' => FALSE,
++    //      '#attributes' => array(
++    //        'class'       => array(),
++    //        'style'       => 'text-align: left;',
++    //      ),
++    //    );
+     $build['dna_form'] = $this->formBuilder->getForm('\Drupal\devel_node_access\Form\DnaForm');
+     return $build;
+   }
+@@ -159,24 +158,22 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+ 
+     $visible_nodes = self::visibleNodes();
+     if (count($visible_nodes) == 0) {
+-      return array();
++      return [];
+     }
+     else {
+       $single_nid = reset($visible_nodes);
+     }
+ 
+     // Find out whether our DnaUser block is active or not.
+-    //dpm($blocks = \Drupal::entityTypeManager()->getStorage('block')->load());
++    // dpm($blocks = \Drupal::entityTypeManager()->getStorage('block')->load());
+     $user_block_active = FALSE;
+-    //foreach ($blocks as $block) {
++    // Foreach ($blocks as $block) {
+     //  if ($block->get('plugin') == 'devel_dna_user_block') {
+     //    $user_block_active = TRUE;
+     //  }
+-    //}
+-
+-
++    // }
+     // Include rows where nid == 0.
+-    $nids = array_merge(array(0 => 0), $visible_nodes);
++    $nids = array_merge([0 => 0], $visible_nodes);
+     $query = \Drupal::database()->select('node_access', 'na');
+     $query
+       ->fields('na')
+@@ -188,8 +185,8 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+     $nodes = Node::loadMultiple($nids);
+ 
+     if (!$debug_mode) {
+-      $headers = array('node', 'realm', 'gid', 'view', 'update', 'delete', 'explained');
+-      $rows = array();
++      $headers = ['node', 'realm', 'gid', 'view', 'update', 'delete', 'explained'];
++      $rows = [];
+       foreach ($query->execute() as $row) {
+         $explained = \Drupal::moduleHandler()->invokeAll('node_access_explain', [$row]);
+         $node_title = self::get_node_title($nodes[$row->nid]);
+@@ -199,7 +196,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+           $node_title = Unicode::substr($node_title, 0, 18) . '...';
+         }
+ 
+-        $rows[]     = array(
++        $rows[] = [
+           (empty($row->nid) ? '0'
+             : Link::fromTextAndUrl(
+               $node_title,
+@@ -207,7 +204,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+                 \Drupal::request()->getUri(),
+                 [
+                   'fragment' => 'node-' . $row->nid,
+-                  'attributes' => ['title' => $title_attribute]
++                  'attributes' => ['title' => $title_attribute],
+                 ]
+               )
+             )
+@@ -218,42 +215,42 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+           $row->grant_update,
+           $row->grant_delete,
+           implode('<br />', $explained),
+-        );
++        ];
+       }
+-      $output[] = array(
++      $output[] = [
+         '#theme'      => 'table',
+         '#header'     => $headers,
+         '#rows'       => $rows,
+-        '#attributes' => array('style' => 'text-align: left'),
+-      );
++        '#attributes' => ['style' => 'text-align: left'],
++      ];
+     }
+     else {
+       $tr = 't';
+-      $variables = array('@na' => '{node_access}');
+-      $states = array(
+-        'default'      => array(t('default'),      'ok',      t('Default record supplied by core in the absence of any other non-empty records; in @na.', $variables)),
+-        'ok'           => array(t('ok'),           'ok',      t('Highest priority record; in @na.', $variables)),
+-        'removed'      => array(t('removed'),      '',        t('Was removed in @func; not in @na.', $variables + array('@func' => 'hook_node_access_records_alter()'))),
+-        'static'       => array(t('static'),       'ok',      t('Non-standard record in @na.', $variables)),
+-        'unexpected'   => array(t('unexpected'),   'warning', t('The 0/all/0/... record applies to all nodes and all users -- usually it should not be present in @na if any node access module is active!')),
+-        'ignored'      => array(t('ignored'),      'warning', t('Lower priority record; not in @na and thus ignored.', $variables)),
+-        'empty'        => array(t('empty'),        'warning', t('Does not grant any access, but could block lower priority records; not in @na.', $variables)),
+-        'wrong'        => array(t('wrong'),        'error',   t('Is rightfully in @na but at least one access flag is wrong!', $variables)),
+-        'missing'      => array(t('missing'),      'error',   t("Should be in @na but isn't!", $variables)),
+-        'removed!'     => array(t('removed!'),     'error',   t('Was removed in @func; should NOT be in @na!', $variables + array('@func' => 'hook_node_access_records_alter()'))),
+-        'illegitimate' => array(t('illegitimate'), 'error',   t('Should NOT be in @na because of lower priority!', $variables)),
+-        'alien'        => array(t('alien'),        'error',   t('Should NOT be in @na because of unknown origin!', $variables)),
+-      );
+-      $active_states = array('default', 'ok', 'static', 'unexpected', 'wrong', 'illegitimate', 'alien');
+-      $headers = array(t('node'), t('prio'), t('status'), t('realm'), t('gid'), t('view'), t('update'), t('delete'), t('explained'));
++      $variables = ['@na' => '{node_access}'];
++      $states = [
++        'default'      => [t('default'), 'ok', t('Default record supplied by core in the absence of any other non-empty records; in @na.', $variables)],
++        'ok'           => [t('ok'), 'ok', t('Highest priority record; in @na.', $variables)],
++        'removed'      => [t('removed'), '', t('Was removed in @func; not in @na.', $variables + ['@func' => 'hook_node_access_records_alter()'])],
++        'static'       => [t('static'), 'ok', t('Non-standard record in @na.', $variables)],
++        'unexpected'   => [t('unexpected'), 'warning', t('The 0/all/0/... record applies to all nodes and all users -- usually it should not be present in @na if any node access module is active!')],
++        'ignored'      => [t('ignored'), 'warning', t('Lower priority record; not in @na and thus ignored.', $variables)],
++        'empty'        => [t('empty'), 'warning', t('Does not grant any access, but could block lower priority records; not in @na.', $variables)],
++        'wrong'        => [t('wrong'), 'error', t('Is rightfully in @na but at least one access flag is wrong!', $variables)],
++        'missing'      => [t('missing'), 'error', t("Should be in @na but isn't!", $variables)],
++        'removed!'     => [t('removed!'), 'error', t('Was removed in @func; should NOT be in @na!', $variables + ['@func' => 'hook_node_access_records_alter()'])],
++        'illegitimate' => [t('illegitimate'), 'error', t('Should NOT be in @na because of lower priority!', $variables)],
++        'alien'        => [t('alien'), 'error', t('Should NOT be in @na because of unknown origin!', $variables)],
++      ];
++      $active_states = ['default', 'ok', 'static', 'unexpected', 'wrong', 'illegitimate', 'alien'];
++      $headers = [t('node'), t('prio'), t('status'), t('realm'), t('gid'), t('view'), t('update'), t('delete'), t('explained')];
+       $headers = self::format_row($headers);
+-      $active_records = array();
++      $active_records = [];
+       foreach ($query->execute() as $active_record) {
+         $active_records[$active_record->nid][$active_record->realm][$active_record->gid] = $active_record;
+       }
+-      $all_records = $grants_data = $checked_grants = $grants = array();
++      $all_records = $grants_data = $checked_grants = $grants = [];
+ 
+-      foreach (array('view', 'update', 'delete') as $op) {
++      foreach (['view', 'update', 'delete'] as $op) {
+         $grants[$op] = self::simulate_module_invoke_all('node_grants', $user, $op);
+         // Call all hook_node_grants_alter() implementations.
+         $grants_data[$op] = self::simulate_node_grants_alter($grants[$op], $user, $op);
+@@ -261,7 +258,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+ 
+       foreach ($nids as $nid) {
+         $top_priority = -99999;
+-        $acquired_records_nid = array();
++        $acquired_records_nid = [];
+         if ($node = Node::load($nid)) {
+           // Check node_access_acquire_grants().
+           $records = self::simulate_module_invoke_all('node_access_records', $node);
+@@ -284,27 +281,25 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+                 $top_priority = (isset($top_priority) ? max($top_priority, $priority) : $priority);
+                 $record['priority'] = (isset($record['priority']) ? $priority : '&ndash;&nbsp;');
+                 $record['history'] = $data_by_realm_gid;
+-                $acquired_records_nid[$priority][$record['realm']][$record['gid']] = $record + array(
+-                    '#title'  => self::get_node_title($node),
+-                    '#module' => (isset($record['#module']) ? $record['#module'] : ''),
+-                  );
++                $acquired_records_nid[$priority][$record['realm']][$record['gid']] = $record + [
++                  '#title'  => self::get_node_title($node),
++                  '#module' => (isset($record['#module']) ? $record['#module'] : ''),
++                ];
+               }
+             }
+             krsort($acquired_records_nid);
+           }
+-          //dpm($acquired_records_nid, "acquired_records_nid =");
+-
++          // dpm($acquired_records_nid, "acquired_records_nid =");
+           // Check node_access_grants().
+           if ($node->id()) {
+-            foreach (array('view', 'update', 'delete') as $op) {
+-              $checked_grants[$nid][$op] = array_merge(array('all' => array(0)), $grants[$op]);
++            foreach (['view', 'update', 'delete'] as $op) {
++              $checked_grants[$nid][$op] = array_merge(['all' => [0]], $grants[$op]);
+             }
+           }
+         }
+ 
+         // Check for records in the node_access table that aren't returned by
+         // node_access_acquire_grants().
+-
+         if (isset($active_records[$nid])) {
+           foreach ($active_records[$nid] as $realm => $active_records_realm) {
+             foreach ($active_records_realm as $gid => $active_record) {
+@@ -326,37 +321,37 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+               }
+               $fixed_record = (array) $active_record;
+               if ($count_nonempty_records == 0 && $realm == 'all' && $gid == 0) {
+-                $fixed_record += array(
++                $fixed_record += [
+                   'priority' => '&ndash;',
+                   'state'    => 'default',
+-                );
++                ];
+               }
+               elseif (!$found) {
+                 $acknowledged = self::simulate_module_invoke_all('node_access_acknowledge', $fixed_record);
+                 if (empty($acknowledged)) {
+                   // No module acknowledged this record, mark it as alien.
+-                  $fixed_record += array(
++                  $fixed_record += [
+                     'priority' => '?',
+                     'state'    => 'alien',
+-                  );
++                  ];
+                 }
+                 else {
+                   // At least one module acknowledged the record,
+                   // attribute it to the first one.
+-                  $fixed_record += array(
++                  $fixed_record += [
+                     'priority' => '&ndash;',
+                     'state'    => 'static',
+                     '#module'  => reset(array_keys($acknowledged)),
+-                  );
++                  ];
+                 }
+               }
+               else {
+                 continue;
+               }
+-              $fixed_record += array(
++              $fixed_record += [
+                 'nid'    => $nid,
+                 '#title' => self::get_node_title($node),
+-              );
++              ];
+               $all_records[] = $fixed_record;
+             }
+           }
+@@ -369,7 +364,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+             ksort($acquired_records_realm);
+             foreach ($acquired_records_realm as $gid => $acquired_record) {
+               // TODO: Handle priority.
+-              //if ($priority == $top_priority) {
++              // if ($priority == $top_priority) {.
+               if (empty($acquired_record['grant_view']) && empty($acquired_record['grant_update']) && empty($acquired_record['grant_delete'])) {
+                 $acquired_record['state'] = 'empty';
+               }
+@@ -381,7 +376,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+                   $acquired_record['state'] = (isset($acquired_record['#removed']) ? 'removed' : 'missing');
+                 }
+                 if ($acquired_record['state'] == 'ok') {
+-                  foreach (array('view', 'update', 'delete') as $op) {
++                  foreach (['view', 'update', 'delete'] as $op) {
+                     $active_record = (array) $active_records[$nid][$realm][$gid];
+                     if (empty($acquired_record["grant_$op"]) != empty($active_record["grant_$op"])) {
+                       $acquired_record["grant_$op!"] = $active_record["grant_$op"];
+@@ -389,25 +384,25 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+                   }
+                 }
+               }
+-              //}
+-              //else {
++              // }
++              // else {
+               //  $acquired_record['state'] = (isset($active_records[$nid][$realm][$gid]) ? 'illegitimate' : 'ignored');
+-              //}
+-              $all_records[] = $acquired_record + array('nid' => $nid);
++              // }
++              $all_records[] = $acquired_record + ['nid' => $nid];
+             }
+           }
+         }
+       }
+ 
+       // Fill in the table rows.
+-      $rows = array();
++      $rows = [];
+       $error_count = 0;
+       foreach ($all_records as $record) {
+         $row = new \stdClass();
+         $row->nid = $record['nid'];
+         $row->title = $record['#title'];
+         $row->priority = $record['priority'];
+-        $row->state = array('data' => $states[$record['state']][0], 'title' => $states[$record['state']][2]);
++        $row->state = ['data' => $states[$record['state']][0], 'title' => $states[$record['state']][2]];
+         $row->realm = $record['realm'];
+         $row->gid = $record['gid'];
+         $row->grant_view = $record['grant_view'];
+@@ -416,15 +411,15 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+         $row->explained = implode('<br />', \Drupal::moduleHandler()->invokeAll('node_access_explain', $row));
+         unset($row->title);
+         if ($row->nid == 0 && $row->gid == 0 && $row->realm == 'all' && count($all_records) > 1) {
+-          $row->state = array('data' => $states['unexpected'][0], 'title' => $states['unexpected'][2]);
++          $row->state = ['data' => $states['unexpected'][0], 'title' => $states['unexpected'][2]];
+           $class = $states['unexpected'][1];
+         }
+         else {
+           $class = $states[$record['state']][1];
+         }
+         $row = (array) $row;
+-        foreach (array('view', 'update', 'delete') as $op) {
+-          $row["grant_$op"] = array('data' => $row["grant_$op"]);
++        foreach (['view', 'update', 'delete'] as $op) {
++          $row["grant_$op"] = ['data' => $row["grant_$op"]];
+           if ((isset($checked_grants[$record['nid']][$op][$record['realm']]) && in_array($record['gid'], $checked_grants[$record['nid']][$op][$record['realm']]) || ($row['nid'] == 0 && $row['gid'] == 0 && $row['realm'] == 'all')) && !empty($row["grant_$op"]['data']) && in_array($record['state'], $active_states)) {
+             $row["grant_$op"]['data'] .= '&prime;';
+             $row["grant_$op"]['title'] = t('This entry grants access to this node to this user.');
+@@ -433,28 +428,28 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+             $row["grant_$op"]['data'] = $record["grant_$op!"] . '&gt;' . (!$row["grant_$op"]['data'] ? 0 : $row["grant_$op"]['data']);
+             $row["grant_$op"]['class'][] = 'error';
+             if ($class == 'ok') {
+-              $row['state'] = array('data' => $states['wrong'][0], 'title' => $states['wrong'][2]);
++              $row['state'] = ['data' => $states['wrong'][0], 'title' => $states['wrong'][2]];
+               $class = $states['wrong'][1];
+             }
+           }
+         }
+         $error_count += ($class == 'error');
+-        $row['nid'] = array(
++        $row['nid'] = [
+           'data'  => '<a href="#node-' . $record['nid'] . '">' . $row['nid'] . '</a>',
+           'title' => $record['#title'],
+-        );
++        ];
+         if (empty($record['#module']) || strpos($record['realm'], $record['#module']) === 0) {
+           $row['realm'] = $record['realm'];
+         }
+         else {
+-          $row['realm'] = array(
++          $row['realm'] = [
+             'data' => '(' . $record['#module'] . '::) ' . $record['realm'],
+-            'title' => t("The '@module' module fails to adhere to the best practice of naming its realm(s) after itself.", array('@module' => $record['#module'])),
+-          );
++            'title' => t("The '@module' module fails to adhere to the best practice of naming its realm(s) after itself.", ['@module' => $record['#module']]),
++          ];
+         }
+ 
+         // Prepend information from the D7 hook_node_access_records_alter().
+-        $next_style = array();
++        $next_style = [];
+         if (isset($record['history'])) {
+           $history = $record['history'];
+           if (($num_changes = count($history['changes']) - empty($history['current'])) > 0) {
+@@ -471,23 +466,23 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+                 $this_action = ($first_row ? '[ ' : '') . $change['op'] . ':';
+                 array_shift($history['changes']);
+               }
+-              $rows[] = array(
+-                'data'  => array(
+-                  'data'  => array(
++              $rows[] = [
++                'data'  => [
++                  'data'  => [
+                     'data'    => $this_action,
+-                    'style'   => array('padding-bottom: 0;'),
+-                  ),
+-                ),
+-                'style' => array_merge(($first_row ? array() : array('border-top-style: dashed;', 'border-top-width: 1px;')), array('border-bottom-style: none;')),
+-              );
+-              $next_style = array('border-top-style: none;');
++                    'style'   => ['padding-bottom: 0;'],
++                  ],
++                ],
++                'style' => array_merge(($first_row ? [] : ['border-top-style: dashed;', 'border-top-width: 1px;']), ['border-bottom-style: none;']),
++              ];
++              $next_style = ['border-top-style: none;'];
+               if (count($history['changes'])) {
+                 $g = $this_record;
+-                $rows[] = array(
+-                  'data'  => array('v', $g['priority'], '', $g['realm'], $g['gid'], $g['grant_view'], $g['grant_update'], $g['grant_delete'], 'v'),
+-                  'style' => array('border-top-style: none;', 'border-bottom-style: dashed;'),
+-                );
+-                $next_style = array('border-top-style: dashed;');
++                $rows[] = [
++                  'data'  => ['v', $g['priority'], '', $g['realm'], $g['gid'], $g['grant_view'], $g['grant_update'], $g['grant_delete'], 'v'],
++                  'style' => ['border-top-style: none;', 'border-bottom-style: dashed;'],
++                ];
++                $next_style = ['border-top-style: dashed;'];
+               }
+               $first_row = FALSE;
+             }
+@@ -497,30 +492,30 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+         // Fix up the main row cells with the proper class (needed for Bartik).
+         foreach ($row as $key => $value) {
+           if (!is_array($value)) {
+-            $row[$key] = array('data' => $value);
++            $row[$key] = ['data' => $value];
+           }
+-          $row[$key]['class'] = array($class);
++          $row[$key]['class'] = [$class];
+         }
+         // Add the main row.
+         $will_append = empty($history['current']) && !empty($history['changes']);
+-        $rows[] = array(
++        $rows[] = [
+           'data'  => array_values($row),
+-          'class' => array($class),
+-          'style' => array_merge($next_style, ($will_append ? array('border-bottom-style: none;') : array())),
+-        );
++          'class' => [$class],
++          'style' => array_merge($next_style, ($will_append ? ['border-bottom-style: none;'] : [])),
++        ];
+ 
+         // Append information from the D7 hook_node_access_records_alter().
+         if ($will_append) {
+           $last_change = end($history['changes']);
+-          $rows[] = array(
+-            'data'  => array(
+-              'data'  => array(
++          $rows[] = [
++            'data'  => [
++              'data'  => [
+                 'data'    => $last_change['op'] . ' ]',
+-                'style' => array('padding-top: 0;'),
+-              ),
+-            ),
+-            'style' => array('border-top-style: none;'),
+-          );
++                'style' => ['padding-top: 0;'],
++              ],
++            ],
++            'style' => ['border-top-style: none;'],
++          ];
+         }
+       }
+ 
+@@ -528,100 +523,102 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+         $rows[$i] = self::format_row($row);
+       }
+ 
+-      $output[] = array(
++      $output[] = [
+         '#theme'      => 'table',
+         '#header'     => $headers,
+         '#rows'       => $rows,
+-        '#attributes' => array(
+-          'class'       => array('system-status-report'),
++        '#attributes' => [
++          'class'       => ['system-status-report'],
+           'style'       => 'text-align: left;',
+-        ),
+-      );
++        ],
++      ];
+ 
+-      $output[] = array(
++      $output[] = [
+         '#theme'       => 'form_element',
+         '#description' => t('(Some of the table elements provide additional information if you hover your mouse over them.)'),
+-      );
++      ];
+ 
+       if ($error_count > 0) {
+         $variables['@Rebuild_permissions'] = '<a href="' . url('admin/reports/status/rebuild') . '">' . $tr('Rebuild permissions') . '</a>';
+-        $output[] = array(
++        $output[] = [
+           '#prefix' => "\n<span class=\"error\">",
+           '#markup' => t("You have errors in your @na table! You may be able to fix these for now by running @Rebuild_permissions, but this is likely to destroy the evidence and make it impossible to identify the underlying issues. If you don't fix those, the errors will probably come back again. <br /> DON'T do this just yet if you intend to ask for help with this situation.", $variables),
+           '#suffix' => "</span><br />\n",
+-        );
++        ];
+       }
+ 
+       // Explain whether access is granted or denied, and why
+       // (using code from node_access()).
+       $tr = 't';
+-      array_shift($nids);  // Remove the 0.
+-      $accounts = array();
+-      $variables += array(
+-        //'!username' => '<em class="placeholder">' . theme('username', array('account' => $user)) . '</em>',
++      // Remove the 0.
++      array_shift($nids);
++      $accounts = [];
++      $variables += [
++        // '!username' => '<em class="placeholder">' . theme('username', array('account' => $user)) . '</em>',
+         '@username' => '<em class="placeholder">' . $user->getDisplayName() . '</em>',
+         '%uid'      => $user->id(),
+-      );
++      ];
+ 
+       if (\Drupal::currentUser()->hasPermission('bypass node access')) {
+         $variables['%bypass_node_access'] = $tr('bypass node access');
+-        $output[] = array(
++        $output[] = [
+           '#markup' => t('@username has the %bypass_node_access permission and thus full access to all nodes.', $variables),
+           '#suffix' => '<br />&nbsp;',
+-        );
++        ];
+       }
+       else {
+         $variables['@list'] = '<div style="margin-left: 2em">' . self::get_grant_list($grants_data['view']) . '</div>';
+         $variables['%access'] = 'view';
+-        $output[] = array(
++        $output[] = [
+           '#prefix' => "\n<div style='text-align: left' title='" . t('These are the grants returned by hook_node_grants() for this user.') . "'>",
+           '#markup' => t('@username (user %uid) can use these grants (if they are present above) for %access access: @list', $variables),
+           '#suffix' => "</div>\n",
+-        );
++        ];
+         $accounts[] = $user;
+       }
+ 
+       if (isset($single_nid) && !$user_block_active) {
+         // Only for single nodes.
+         if (\Drupal::currentUser()->isAuthenticated()) {
+-          $accounts[] = User::load(0);  // Anonymous, too.
++          // Anonymous, too.
++          $accounts[] = User::load(0);
+         }
+         foreach ($accounts as $account) {
+-          $nid_items = array();
++          $nid_items = [];
+           foreach ($nids as $nid) {
+-            $op_items = array();
+-            foreach (array('create', 'view', 'update', 'delete') as $op) {
++            $op_items = [];
++            foreach (['create', 'view', 'update', 'delete'] as $op) {
+               $explain = self::explainAccess($op, Node::load($nid), $account);
+-              $op_items[] = "<div style='width: 5em; display: inline-block'>" . t('%op:', array('%op' => $op)) . ' </div>' . $explain[2];
++              $op_items[] = "<div style='width: 5em; display: inline-block'>" . t('%op:', ['%op' => $op]) . ' </div>' . $explain[2];
+             }
+-            $nid_items[] = array(
++            $nid_items[] = [
+               '#theme'  => 'item_list',
+               '#items'  => $op_items,
+               '#type'   => 'ul',
+-              '#prefix' => t('to node @nid:', array('@nid' => l($nid, 'node/' . $nid))) . "\n<div style='margin-left: 2em'>",
++              '#prefix' => t('to node @nid:', ['@nid' => l($nid, 'node/' . $nid)]) . "\n<div style='margin-left: 2em'>",
+               '#suffix' => '</div>',
+-            );
++            ];
+           }
+           if (count($nid_items) == 1) {
+             $account_items = $nid_items[0];
+           }
+           else {
+-            $account_items = array(
++            $account_items = [
+               '#theme'  => 'item_list',
+               '#items'  => $nid_items,
+               '#type'   => 'ul',
+               '#prefix' => "\n<div style='margin-left: 2em'>",
+               '#suffix' => '</div>',
+-            );
++            ];
+           }
+-          $variables['@username'] = '<em class="placeholder">' . theme('username', array('account' => $account)) . '</em>';
+-          $output[] = array(
++          $variables['@username'] = '<em class="placeholder">' . theme('username', ['account' => $account]) . '</em>';
++          $output[] = [
+             '#prefix' => "\n<div style='text-align: left'>",
+             '#type'   => 'item',
+-            'lead-in' => array('#markup' => t("@username has the following access", $variables) . ' '),
++            'lead-in' => ['#markup' => t("@username has the following access", $variables) . ' '],
+             'items'   => $account_items,
+             '#suffix' => "\n</div>\n",
+-          );
++          ];
+         }
+       }
+     }
+@@ -637,7 +634,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+   public static function buildByUserInfo() {
+     global $user;
+ 
+-    $output = array();
++    $output = [];
+     return $output;
+ 
+     // Show which users can access this node.
+@@ -659,8 +656,8 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+       $langcode = $node->langcode->value;
+       $language = language_load($langcode);
+       $node_type = node_type_load($node->bundle());
+-      $headers = array(t('username'), '<span title="' . t("Create '@langname'-language nodes of the '@Node_type' type.", array('@langname' => $language->name, '@Node_type' => $node_type->name)) . '">' . t('create') . '</span>', t('view'), t('update'), t('delete'));
+-      $rows = array();
++      $headers = [t('username'), '<span title="' . t("Create '@langname'-language nodes of the '@Node_type' type.", ['@langname' => $language->name, '@Node_type' => $node_type->name]) . '">' . t('create') . '</span>', t('view'), t('update'), t('delete')];
++      $rows = [];
+       // Determine whether to use Ajax or pre-populate the tables.
+       if ($ajax = \Drupal::config('devel_node_access.settings')->get('user_ajax')) {
+         $output['#attached']['library'][] = 'devel_node_access/node_access';
+@@ -670,58 +667,58 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+       // pager query, or at least make the number of users configurable.  If
+       // anyone is up for that please submit a patch.
+       $query = db_select('users', 'u')
+-        ->fields('u', array('uid'))
++        ->fields('u', ['uid'])
+         ->orderBy('u.access', 'DESC')
+         ->range(0, 9);
+       $uids = $query->execute()->fetchCol();
+       array_unshift($uids, 0);
+       $accounts = user_load_multiple($uids);
+       foreach ($accounts as $account) {
+-        $username = theme('username', array('account' => $account));
++        $username = theme('username', ['account' => $account]);
+         $uid = $account->id();
+         if ($uid == $user->id()) {
+           $username = '<strong>' . $username . '</strong>';
+         }
+-        $rows[] = array(
++        $rows[] = [
+           $username,
+-          array(
++          [
+             'id' => 'create-' . $nid . '-' . $uid,
+             'class' => 'dna-permission',
+-            'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explainAccess('create', $node, $account, $langcode))),
+-          ),
+-          array(
++            'data' => $ajax ? NULL : theme('dna_permission', ['permission' => self::explainAccess('create', $node, $account, $langcode)]),
++          ],
++          [
+             'id' => 'view-' . $nid . '-' . $uid,
+             'class' => 'dna-permission',
+-            'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explainAccess('view', $node, $account, $langcode))),
+-          ),
+-          array(
++            'data' => $ajax ? NULL : theme('dna_permission', ['permission' => self::explainAccess('view', $node, $account, $langcode)]),
++          ],
++          [
+             'id' => 'update-' . $nid . '-' . $uid,
+             'class' => 'dna-permission',
+-            'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explainAccess('update', $node, $account, $langcode))),
+-          ),
+-          array(
++            'data' => $ajax ? NULL : theme('dna_permission', ['permission' => self::explainAccess('update', $node, $account, $langcode)]),
++          ],
++          [
+             'id' => 'delete-' . $nid . '-' . $uid,
+             'class' => 'dna-permission',
+-            'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explainAccess('delete', $node, $account, $langcode))),
+-          ),
+-        );
++            'data' => $ajax ? NULL : theme('dna_permission', ['permission' => self::explainAccess('delete', $node, $account, $langcode)]),
++          ],
++        ];
+       }
+       if (count($rows)) {
+-        $output['title'] = array(
++        $output['title'] = [
+           '#prefix' => '<h2>',
+-          '#markup' => t('Access permissions by user for the %langname language', array('%langname' => $language->name)),
++          '#markup' => t('Access permissions by user for the %langname language', ['%langname' => $language->name]),
+           '#postfix' => '</h2>',
+-        );
+-        $output[] = array(
++        ];
++        $output[] = [
+           '#theme'      => 'table',
+           '#header'     => $headers,
+           '#rows'       => $rows,
+-          '#attributes' => array('style' => 'text-align: left'),
+-        );
+-        $output[] = array(
++          '#attributes' => ['style' => 'text-align: left'],
++        ];
++        $output[] = [
+           '#theme'        => 'form_element',
+           '#description'  => t('(This table lists the most-recently active users. Hover your mouse over each result for more details.)'),
+-        );
++        ];
+       }
+     }
+     return $output;
+@@ -744,7 +741,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+     $args = func_get_args();
+     // Remove $hook from the arguments.
+     array_shift($args);
+-    $return = array();
++    $return = [];
+     foreach (\Drupal::moduleHandler()->getImplementations($hook) as $module) {
+       $function = $module . '_' . $hook;
+       $result = call_user_func_array($function, $args);
+@@ -757,9 +754,9 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+         }
+         else {
+           // Build array with result keyed by $module.
+-          $result = array($module => $result);
++          $result = [$module => $result];
+         }
+-        $return = \Drupal\Component\Utility\NestedArray::mergeDeep($return, $result);
++        $return = NestedArray::mergeDeep($return, $result);
+       }
+     }
+     return $return;
+@@ -787,7 +784,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+    *                  ['record'] - NA record after change (unless deleted)
+    */
+   private static function simulate_node_access_records_alter(&$records, $node) {
+-    //dpm($records, 'simulate_node_access_records_alter(): records IN');
++    // dpm($records, 'simulate_node_access_records_alter(): records IN');.
+     $hook = 'node_access_records_alter';
+ 
+     // Build the initial tree (and check for duplicates).
+@@ -805,16 +802,16 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+           // It's an added record.
+           $data[$record['realm']][$record['gid']]['current'] = $record;
+           $data[$record['realm']][$record['gid']]['current']['#module'] = $module;
+-          $data[$record['realm']][$record['gid']]['changes'][] = array(
++          $data[$record['realm']][$record['gid']]['changes'][] = [
+             'op'     => 'added by ' . $module,
+             'record' => $record,
+-          );
++          ];
+           $records[$i]['#module'] = $module;
+         }
+         else {
+           // It's an existing record, check for changes.
+           $view = $update = $delete = FALSE;
+-          foreach (array('view', 'update', 'delete') as $op) {
++          foreach (['view', 'update', 'delete'] as $op) {
+             $$op = $record["grant_$op"] - $data[$record['realm']][$record['gid']]['current']["grant_$op"];
+           }
+           $old_priority = isset($record['priority']) ? $record['priority'] : 0;
+@@ -823,10 +820,10 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+             // It was changed.
+             $data[$record['realm']][$record['gid']]['current'] = $record;
+             $data[$record['realm']][$record['gid']]['current']['#module'] = $module;
+-            $data[$record['realm']][$record['gid']]['changes'][] = array(
++            $data[$record['realm']][$record['gid']]['changes'][] = [
+               'op'     => 'altered by ' . $module,
+               'record' => $record,
+-            );
++            ];
+             $records[$i]['#module'] = $module;
+           }
+         }
+@@ -841,7 +838,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+         foreach ($data2 as $gid => $data3) {
+           if (empty($data[$realm][$gid]['found']) && isset($data[$realm][$gid]['current'])) {
+             unset($data[$realm][$gid]['current']);
+-            $data[$realm][$gid]['changes'][] = array('op' => 'removed by ' . $module);
++            $data[$realm][$gid]['changes'][] = ['op' => 'removed by ' . $module];
+           }
+           else {
+             unset($data[$realm][$gid]['found']);
+@@ -849,8 +846,8 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+         }
+       }
+     }
+-    //dpm($data, 'simulate_node_access_records_alter() returns');
+-    //dpm($records, 'simulate_node_access_records_alter(): records OUT');
++    // dpm($data, 'simulate_node_access_records_alter() returns');
++    // dpm($records, 'simulate_node_access_records_alter(): records OUT');.
+     return $data;
+   }
+ 
+@@ -871,11 +868,11 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+    *   See _devel_node_access_nar_alter() for the description of the result.
+    */
+   private static function build_node_access_records_data($records, $node, $function) {
+-    $data = array();
+-    $duplicates = array();
++    $data = [];
++    $duplicates = [];
+     foreach ($records as $record) {
+       if (empty($data[$record['realm']][$record['gid']])) {
+-        $data[$record['realm']][$record['gid']] = array('original' => $record, 'current' => $record, 'changes' => array());
++        $data[$record['realm']][$record['gid']] = ['original' => $record, 'current' => $record, 'changes' => []];
+       }
+       else {
+         if (empty($duplicates[$record['realm']][$record['gid']])) {
+@@ -886,7 +883,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+     }
+     if (!empty($duplicates)) {
+       // Generate an error message.
+-      $msg = t('Devel Node Access has detected duplicate records returned from %function:', array('%function' => $function));
++      $msg = t('Devel Node Access has detected duplicate records returned from %function:', ['%function' => $function]);
+       $msg .= '<ul>';
+       foreach ($duplicates as $realm => $data_by_realm) {
+         foreach ($data_by_realm as $gid => $data_by_realm_gid) {
+@@ -929,11 +926,11 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+    *                     - 'removed by module'
+    */
+   private static function simulate_node_grants_alter(&$grants, $account, $op) {
+-    //dpm($grants, "simulate_node_grants_alter($account->name, $op): grants IN");
++    // dpm($grants, "simulate_node_grants_alter($account->name, $op): grants IN");.
+     $hook = 'node_grants_alter';
+ 
+     // Build the initial structure.
+-    $data = array();
++    $data = [];
+     foreach ($grants as $realm => $gids) {
+       foreach ($gids as $i => $gid) {
+         if ($i !== '#module') {
+@@ -962,7 +959,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+ 
+       // Check for removed gids.
+       foreach ($data as $realm => $gids) {
+-        foreach  ($gids as $gid => $history) {
++        foreach ($gids as $gid => $history) {
+           if ($history['cur'] && array_search($gid, $grants[$realm]) === FALSE) {
+             $data[$realm][$gid]['cur'] = FALSE;
+             $data[$realm][$gid]['chg'][] = 'removed by ' . $module;
+@@ -971,8 +968,8 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+       }
+     }
+ 
+-    //dpm($data, "simulate_node_grants_alter($account->name, $op) returns");
+-    //dpm($grants, "simulate_node_grants_alter($account->name, $op): grants OUT");
++    // dpm($data, "simulate_node_grants_alter($account->name, $op) returns");
++    // dpm($grants, "simulate_node_grants_alter($account->name, $op): grants OUT");.
+     return $data;
+   }
+ 
+@@ -980,27 +977,30 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+    * Helper function to create a list of grants returned by hook_node_grants().
+    */
+   private static function get_grant_list($grants_data) {
+-    //dpm($grants_data, "get_grant_list() IN:");
+-    $grants_data = array_merge(array('all' => array(0 => array('cur' => TRUE, 'ori' => array('all')))), $grants_data);
+-    $items = array();
++    // dpm($grants_data, "get_grant_list() IN:");.
++    $grants_data = array_merge(['all' => [0 => ['cur' => TRUE, 'ori' => ['all']]]], $grants_data);
++    $items = [];
+     if (count($grants_data)) {
+       foreach ($grants_data as $realm => $gids) {
+         ksort($gids);
+-        $gs = array();
++        $gs = [];
+         foreach ($gids as $gid => $history) {
+           if ($history['cur']) {
+             if (isset($history['ori'])) {
+-              $g = $gid;                     // Original grant, still active.
++              // Original grant, still active.
++              $g = $gid;
+             }
+             else {
+-              $g = '<u>' . $gid . '</u>';    // New grant, still active.
++              // New grant, still active.
++              $g = '<u>' . $gid . '</u>';
+             }
+           }
+           else {
+-            $g = '<del>' . $gid . '</del>';  // Deleted grant.
++            // Deleted grant.
++            $g = '<del>' . $gid . '</del>';
+           }
+ 
+-          $ghs = array();
++          $ghs = [];
+           if (isset($history['ori']) && strpos($realm, $history['ori'][0]) !== 0) {
+             $realm = '(' . $history['ori'][0] . '::) ' . $realm;
+           }
+@@ -1017,7 +1017,7 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+         $items[] = $realm . ': ' . implode(', ', $gs);
+       }
+       if (!empty($items)) {
+-        return theme('item_list', array('items' => $items, 'type' => 'ul'));
++        return theme('item_list', ['items' => $items, 'type' => 'ul']);
+       }
+     }
+     return '';
+@@ -1050,25 +1050,25 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+     }
+     if (count($row) == 1) {
+       if (is_scalar($row['data'])) {
+-        $row['data'] = array('data' => $row['data']);
++        $row['data'] = ['data' => $row['data']];
+       }
+       $row['data']['colspan'] = 9;
+     }
+     else {
+       $row = array_values($row);
+-      foreach (array(0, 1, 4) as $j) {  // node, prio, gid
++      // node, prio, gid.
++      foreach ([0, 1, 4] as $j) {
+         if (is_scalar($row[$j])) {
+-          $row[$j] = array('data' => $row[$j]);
++          $row[$j] = ['data' => $row[$j]];
+         }
+         dpm($j);
+         dpm($row);
+-//        $row[$j]['style'][] = 'text-align: right;';
++        // $row[$j]['style'][] = 'text-align: right;';
+       }
+     }
+     return $row;
+   }
+ 
+-
+   /**
+    * Helper function that mimics node.module's node_access() function.
+    *
+@@ -1077,9 +1077,9 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+    *
+    * @param string $op
+    *   Operation to check.
+-   * @param NodeInterface $node
++   * @param \Drupal\node\Entity\NodeInterface $node
+    *   Node to check.
+-   * @param AccountInterface $account
++   * @param \Drupal\Core\Session\AccountInterface $account
+    *   (optional) The user object for the user whose access is being checked. If
+    *   omitted, the current user is used. Defaults to NULL.
+    * @param string $langcode
+@@ -1093,18 +1093,18 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+     $user = Drupal::currentUser();
+ 
+     if (!$node) {
+-      return array(
++      return [
+         FALSE,
+         '???',
+         t('No node passed to node_access(); this should never happen!'),
+-      );
++      ];
+     }
+-    if (!in_array($op, array('view', 'update', 'delete', 'create'), TRUE)) {
+-      return array(
++    if (!in_array($op, ['view', 'update', 'delete', 'create'], TRUE)) {
++      return [
+         FALSE,
+-        t('@NO: invalid $op', array('@NO' => t('NO'))),
+-        t("'@op' is an invalid operation!", array('@op' => $op)),
+-      );
++        t('@NO: invalid $op', ['@NO' => t('NO')]),
++        t("'@op' is an invalid operation!", ['@op' => $op]),
++      ];
+     }
+ 
+     if ($op == 'create' && is_object($node)) {
+@@ -1132,27 +1132,27 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+       $langcode = (is_object($node) && $node->id()) ? $node->language()->getId() : '';
+     }
+ 
+-    $variables = array(
++    $variables = [
+       '@NO'                 => t('NO'),
+       '@YES'                => t('YES'),
+       '@bypass_node_access' => t('bypass node access'),
+       '@access_content'     => t('access content'),
+-    );
++    ];
+ 
+     if (Drupal::currentUser()->hasPermission('bypass node access')) {
+-      return array(
++      return [
+         TRUE,
+         t('@YES: bypass node access', $variables),
+         t("@YES: This user has the '@bypass_node_access' permission and may do everything with nodes.", $variables),
+-      );
++      ];
+     }
+ 
+     if (!Drupal::currentUser()->hasPermission('access content')) {
+-      return array(
++      return [
+         FALSE,
+         t('@NO: access content', $variables),
+         t("@NO: This user does not have the '@access_content' permission and is denied doing anything with content.", $variables),
+-      );
++      ];
+     }
+ 
+     foreach (Drupal::moduleHandler()->getImplementations('node_access') as $module) {
+@@ -1165,73 +1165,73 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+         if (isset($result)) {
+           /* TODO
+           if ($result === NODE_ACCESS_DENY) {
+-            $denied_by[] = $module;
++          $denied_by[] = $module;
+           }
+           elseif ($result === NODE_ACCESS_ALLOW) {
+-            $allowed_by[] = $module;
++          $allowed_by[] = $module;
+           }
+-          */
++           */
+           $access[] = $result;
+         }
+       }
+     }
+-    $variables += array(
++    $variables += [
+       '@deniers'  => (empty($denied_by) ? NULL : implode(', ', $denied_by)),
+       '@allowers' => (empty($allowed_by) ? NULL : implode(', ', $allowed_by)),
+-    );
++    ];
+     if (!empty($denied_by)) {
+-      $variables += array(
++      $variables += [
+         '%module' => $denied_by[0] . (count($denied_by) > 1 ? '+' : ''),
+-      );
++      ];
+       return [
+         FALSE,
+         t('@NO: by %module', $variables),
+         empty($allowed_by)
+-          ? t("@NO: hook_node_access() of the following module(s) denies this: @deniers.", $variables)
+-          : t("@NO: hook_node_access() of the following module(s) denies this: @deniers &ndash; even though the following module(s) would allow it: @allowers.", $variables),
++        ? t("@NO: hook_node_access() of the following module(s) denies this: @deniers.", $variables)
++        : t("@NO: hook_node_access() of the following module(s) denies this: @deniers &ndash; even though the following module(s) would allow it: @allowers.", $variables),
+       ];
+     }
+     if (!empty($allowed_by)) {
+-      $variables += array(
++      $variables += [
+         '%module' => $allowed_by[0] . (count($allowed_by) > 1 ? '+' : ''),
+         '@view_own_unpublished_content' => t('view own unpublished content'),
+-      );
+-      return array(
++      ];
++      return [
+         TRUE,
+         t('@YES: by %module', $variables),
+         t("@YES: hook_node_access() of the following module(s) allows this: @allowers.", $variables),
+-      );
++      ];
+     }
+ 
+-    // TODO if ($op == 'view' && !$node->get('status', $langcode) && \Drupal::currentUser()->hasPermission('view own unpublished content') && $user->uid == $node->get('uid', $langcode) && $user->uid != 0) {
++    // TODO if ($op == 'view' && !$node->get('status', $langcode) && \Drupal::currentUser()->hasPermission('view own unpublished content') && $user->uid == $node->get('uid', $langcode) && $user->uid != 0) {.
+     if ($op == 'view' && !$node->isPublished() && Drupal::currentUser()->hasPermission('view own unpublished content') && $user->id() == $node->getRevisionAuthor()->id() && $user->id() != 0) {
+-      return array(
++      return [
+         TRUE,
+         t('@YES: view own unpublished content', $variables),
+         t("@YES: The node is unpublished, but the user has the '@view_own_unpublished_content' permission.", $variables),
+-      );
++      ];
+     }
+ 
+     if ($op != 'create' && $node->id()) {
+       $access_handler = Drupal::entityTypeManager()->getAccessControlHandler('node');
+-      // TODO if (node_access($op, $node, $user, $langcode)) {  // delegate this part
++      // TODO if (node_access($op, $node, $user, $langcode)) {  // delegate this part.
+       if ($access_handler->access($node, $op, $user)) {
+         // Delegate this part.
+         $variables['@node_access_table'] = '{node_access}';
+-        return array(
++        return [
+           TRUE,
+           t('@YES: @node_access_table', $variables),
+           t('@YES: Node access allows this based on one or more records in the @node_access_table table (see the other DNA block!).', $variables),
+-        );
++        ];
+       }
+     }
+ 
+-    return array(
++    return [
+       FALSE,
+       t('@NO: no reason', $variables),
+       t("@NO: None of the checks resulted in allowing this, so it's denied.", $variables)
+       . ($op == 'create' ? ' ' . t('This is most likely due to a withheld permission.') : ''),
+-    );
++    ];
+   }
+ 
+   /**
+@@ -1244,13 +1244,13 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+    *   The array of saved node IDs.
+    */
+   public static function visibleNodes($nid = NULL) {
+-    static $nids = array();
++    static $nids = [];
+     if (isset($nid)) {
+       $nids[$nid] = $nid;
+     }
+     elseif (empty($nids)) {
+-      ///** @var NodeInterface $node */
+-      //$node = NULL;
++      // ** @var NodeInterface $node */
++      // $node = NULL;
+       if ($node = \Drupal::routeMatch()->getParameter('node')) {
+         $nid = $node->id();
+         $nids[$nid] = $nid;
+@@ -1259,5 +1259,4 @@ class DnaBlock extends BlockBase implements ContainerFactoryPluginInterface {
+     return $nids;
+   }
+ 
+-
+ }

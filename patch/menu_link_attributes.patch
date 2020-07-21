@@ -1,0 +1,21 @@
+diff --git a/src/Form/ConfigForm.php b/src/Form/ConfigForm.php
+index 74eae00..cd80074 100644
+--- a/src/Form/ConfigForm.php
++++ b/src/Form/ConfigForm.php
+@@ -47,14 +47,14 @@ class ConfigForm extends ConfigFormBase {
+       $this->messenger()->addWarning($message);
+     }
+ 
+-    $form['config'] = array(
++    $form['config'] = [
+       '#type' => 'textarea',
+       '#title' => $this->t('Configuration'),
+       '#description' => $this->t('Available attributes can be defined in YAML syntax.'),
+       '#default_value' => $config_text,
+       '#rows' => 15,
+       '#attributes' => ['data-yaml-editor' => 'true'],
+-    );
++    ];
+ 
+     // Use module's YAML config file for example structure.
+     $module_path = \Drupal::moduleHandler()->getModule('menu_link_attributes')->getPath();

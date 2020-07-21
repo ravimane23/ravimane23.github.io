@@ -1,0 +1,563 @@
+diff --git a/css/pdf.css b/css/pdf.css
+index aac037f..bbdebe6 100755
+--- a/css/pdf.css
++++ b/css/pdf.css
+@@ -1,52 +1,51 @@
+-.pdf-canvas {
+-  border:1px solid black;
+-}
+-
+-#pdf-page {
+-  position: relative;
+-}
+-
+-/* CSS classes used by TextLayerBuilder to style the text layer divs */
+-
+-.textLayer {
+-  position: absolute;
+-  left: 0;
+-  top: 0;
+-  right: 0;
+-  bottom: 0;
+-  color: #000;
+-  font-family: sans-serif;
+-  overflow: hidden;
+-}
+-
+-.textLayer > div {
+-  color: transparent;
+-  position: absolute;
+-  line-height: 1;
+-  white-space: pre;
+-  cursor: text;
+-}
+-
+-.textLayer .highlight {
+-  margin: -1px;
+-  padding: 1px;
+-
+-  background-color: rgba(180, 0, 170, 0.2);
+-  border-radius: 4px;
+-}
+-
+-.textLayer .highlight.begin {
+-  border-radius: 4px 0px 0px 4px;
+-}
+-
+-.textLayer .highlight.end {
+-  border-radius: 0px 4px 4px 0px;
+-}
+-
+-.textLayer .highlight.middle {
+-  border-radius: 0px;
+-}
+-
+-.textLayer .highlight.selected {
+-  background-color: rgba(0, 100, 0, 0.2);
+-}
++.pdf-canvas {
++  border: 1px solid black;
++}
++
++#pdf-page {
++  position: relative;
++}
++
++/* CSS classes used by TextLayerBuilder to style the text layer divs */
++
++.textLayer {
++  position: absolute;
++  left: 0;
++  top: 0;
++  right: 0;
++  bottom: 0;
++  color: #000;
++  font-family: sans-serif;
++  overflow: hidden;
++}
++
++.textLayer > div {
++  color: transparent;
++  position: absolute;
++  line-height: 1;
++  white-space: pre;
++  cursor: text;
++}
++
++.textLayer .highlight {
++  margin: -1px;
++  padding: 1px;
++  background-color: rgba(180, 0, 170, 0.2);
++  border-radius: 4px;
++}
++
++.textLayer .highlight.begin {
++  border-radius: 4px 0px 0px 4px;
++}
++
++.textLayer .highlight.end {
++  border-radius: 0px 4px 4px 0px;
++}
++
++.textLayer .highlight.middle {
++  border-radius: 0px;
++}
++
++.textLayer .highlight.selected {
++  background-color: rgba(0, 100, 0, 0.2);
++}
+diff --git a/js/acrobat_detection.js b/js/acrobat_detection.js
+index 65ddba3..e74e421 100755
+--- a/js/acrobat_detection.js
++++ b/js/acrobat_detection.js
+@@ -1,77 +1,80 @@
+-//
+-// http://thecodeabode.blogspot.com
+-// @author: Ben Kitzelman
+-// @license:  FreeBSD: (http://opensource.org/licenses/BSD-2-Clause) Do whatever you like with it
+-// @updated: 03-03-2013
+-//
+-var getAcrobatInfo = function() {
+-
+-  var getBrowserName = function() {
+-    return this.name = this.name || function() {
+-      var userAgent = navigator ? navigator.userAgent.toLowerCase() : "other";
+-
+-      if(userAgent.indexOf("chrome") > -1)        return "chrome";
+-      else if(userAgent.indexOf("safari") > -1)   return "safari";
+-      else if(userAgent.indexOf("msie") > -1)     return "ie";
+-      else if(userAgent.indexOf("firefox") > -1)  return "firefox";
+-      return userAgent;
+-    }();
+-  };
+-
+-  var getActiveXObject = function(name) {
+-    try { return new ActiveXObject(name); } catch(e) {}
+-  };
+-
+-  var getNavigatorPlugin = function(name) {
+-    for(key in navigator.plugins) {
+-      var plugin = navigator.plugins[key];
+-      if(plugin.name == name) return plugin;
+-    }
+-  };
+-
+-  var getPDFPlugin = function() {
+-    return this.plugin = this.plugin || function() {
+-      if(getBrowserName() == 'ie') {
+-        //
+-        // load the activeX control
+-        // AcroPDF.PDF is used by version 7 and later
+-        // PDF.PdfCtrl is used by version 6 and earlier
+-        return getActiveXObject('AcroPDF.PDF') || getActiveXObject('PDF.PdfCtrl');
+-      }
+-      else {
+-        return getNavigatorPlugin('Adobe Acrobat') || getNavigatorPlugin('Chrome PDF Viewer') || getNavigatorPlugin('WebKit built-in PDF');
+-      }
+-    }();
+-  };
+-
+-  var isAcrobatInstalled = function() {
+-    return !!getPDFPlugin();
+-  };
+-
+-  var getAcrobatVersion = function() {
+-    try {
+-      var plugin = getPDFPlugin();
+-
+-      if(getBrowserName() == 'ie') {
+-        var versions = plugin.GetVersions().split(',');
+-        var latest   = versions[0].split('=');
+-        return parseFloat(latest[1]);
+-      }
+-
+-      if(plugin.version) return parseInt(plugin.version);
+-      return plugin.name
+-    }
+-    catch(e) {
+-      return null;
+-    }
+-  }
+-
+-  //
+-  // The returned object
+-  //
+-  return {
+-    browser:        getBrowserName(),
+-    acrobat:        isAcrobatInstalled() ? 'installed' : false,
+-    acrobatVersion: getAcrobatVersion()
+-  };
+-};
++//
++// http://thecodeabode.blogspot.com
++// @author: Ben Kitzelman
++// @license:  FreeBSD: (http://opensource.org/licenses/BSD-2-Clause) Do whatever you like with it
++// @updated: 03-03-2013
++//
++var getAcrobatInfo = function () {
++
++  var getBrowserName = function () {
++    return this.name = this.name || function () {
++      var userAgent = navigator ? navigator.userAgent.toLowerCase() : "other";
++
++      if(userAgent.indexOf("chrome") > -1) {        return "chrome";
++      } else if(userAgent.indexOf("safari") > -1) {   return "safari";
++      } else if(userAgent.indexOf("msie") > -1) {     return "ie";
++      } else if(userAgent.indexOf("firefox") > -1) {  return "firefox";
++      }
++      return userAgent;
++    }();
++  };
++
++  var getActiveXObject = function (name) {
++    try { return new ActiveXObject(name); } catch(e) {}
++  };
++
++  var getNavigatorPlugin = function (name) {
++    for(key in navigator.plugins) {
++      var plugin = navigator.plugins[key];
++      if(plugin.name == name) { return plugin;
++      }
++    }
++  };
++
++  var getPDFPlugin = function () {
++    return this.plugin = this.plugin || function () {
++      if(getBrowserName() == 'ie') {
++        //
++        // load the activeX control
++        // AcroPDF.PDF is used by version 7 and later
++        // PDF.PdfCtrl is used by version 6 and earlier
++        return getActiveXObject('AcroPDF.PDF') || getActiveXObject('PDF.PdfCtrl');
++      }
++      else {
++        return getNavigatorPlugin('Adobe Acrobat') || getNavigatorPlugin('Chrome PDF Viewer') || getNavigatorPlugin('WebKit built-in PDF');
++      }
++    }();
++  };
++
++  var isAcrobatInstalled = function () {
++    return !!getPDFPlugin();
++  };
++
++  var getAcrobatVersion = function () {
++    try {
++      var plugin = getPDFPlugin();
++
++      if(getBrowserName() == 'ie') {
++        var versions = plugin.GetVersions().split(',');
++        var latest   = versions[0].split('=');
++        return parseFloat(latest[1]);
++      }
++
++      if(plugin.version) { return parseInt(plugin.version);
++      }
++      return plugin.name
++    }
++    catch(e) {
++      return null;
++    }
++  }
++
++  //
++  // The returned object
++  //
++  return {
++    browser:        getBrowserName(),
++    acrobat:        isAcrobatInstalled() ? 'installed' : false,
++    acrobatVersion: getAcrobatVersion()
++  };
++};
+diff --git a/js/default.js b/js/default.js
+index 0c7d05e..d7ecd06 100755
+--- a/js/default.js
++++ b/js/default.js
+@@ -1,54 +1,54 @@
+-(function ($, Drupal, drupalSettings) {
+-  Drupal.behaviors.pdf = {
+-    attach: function(context, settings) {
+-      var info = getAcrobatInfo();
+-      console.log(info.browser + " " + info.acrobat + " " + info.acrobatVersion);
+-      var iframe = $('iframe.pdf');
+-      if (info.acrobat) {
+-        iframe.each(function(){
+-          setIframeSrc($(this));
+-          $(this).attr('src', $(this).text());
+-        });
+-      }
+-
+-      if (!isCanvasSupported()) {
+-        // pdf.js isn't going to work in this browser--let's try acrobat.
+-        if (info.acrobat) {
+-          iframe.each(function(){
+-            setIframeSrc($(this));
+-            $(this).attr('src', $(this).text());
+-          });
+-        }
+-        else {
+-          // Even Acrobat isn't going to work--output a message telling user to upgrade their browser.
+-          $('<p/>', {
+-            text: 'Your browser is not capable of displaying a pdf. Please upgrade your browser to view this page as it was intended.',
+-            'class': 'pdf acrobat-browser-messsage',
+-          }).replaceAll(iframe);
+-        }
+-      }
+-    }
+-  };
+-})(jQuery, Drupal, drupalSettings);
+-
+-/**
+- * Detect browser support for canvas.
+- *
+- * Canvas support is one of the main things that is needed by pdf.js
+- * so detecting this should rule out most of the browsers that aren't
+- * going to work.
+- *
+- * See: http://stackoverflow.com/questions/2745432/best-way-to-detect-that-html5-canvas-is-not-supported
+- */
+-function isCanvasSupported(){
+-  var elem = document.createElement('canvas');
+-  return !!(elem.getContext && elem.getContext('2d'));
+-}
+-
+-/**
+- * Set the iframe's source to be the value that was passed through in the
+- * data-src attribute.
+- */
+-function setIframeSrc(e){
+-  e.attr('src', e.attr('data-src')).removeAttr('data-src');
+-}
++(function ($, Drupal, drupalSettings) {
++  Drupal.behaviors.pdf = {
++    attach: function (context, settings) {
++      var info = getAcrobatInfo();
++      console.log(info.browser + " " + info.acrobat + " " + info.acrobatVersion);
++      var iframe = $('iframe.pdf');
++      if (info.acrobat) {
++        iframe.each(function () {
++          setIframeSrc($(this));
++          $(this).attr('src', $(this).text());
++        });
++      }
++
++      if (!isCanvasSupported()) {
++        // pdf.js isn't going to work in this browser--let's try acrobat.
++        if (info.acrobat) {
++          iframe.each(function () {
++            setIframeSrc($(this));
++            $(this).attr('src', $(this).text());
++          });
++        }
++        else {
++          // Even Acrobat isn't going to work--output a message telling user to upgrade their browser.
++          $('<p/>', {
++            text: 'Your browser is not capable of displaying a pdf. Please upgrade your browser to view this page as it was intended.',
++            'class': 'pdf acrobat-browser-messsage',
++          }).replaceAll(iframe);
++        }
++      }
++    }
++  };
++})(jQuery, Drupal, drupalSettings);
++
++/**
++ * Detect browser support for canvas.
++ *
++ * Canvas support is one of the main things that is needed by pdf.js
++ * so detecting this should rule out most of the browsers that aren't
++ * going to work.
++ *
++ * See: http://stackoverflow.com/questions/2745432/best-way-to-detect-that-html5-canvas-is-not-supported
++ */
++function isCanvasSupported(){
++  var elem = document.createElement('canvas');
++  return !!(elem.getContext && elem.getContext('2d'));
++}
++
++/**
++ * Set the iframe's source to be the value that was passed through in the
++ * data-src attribute.
++ */
++function setIframeSrc(e){
++  e.attr('src', e.attr('data-src')).removeAttr('data-src');
++}
+diff --git a/js/pdf.js b/js/pdf.js
+index f470714..b5b4e0f 100755
+--- a/js/pdf.js
++++ b/js/pdf.js
+@@ -1,14 +1,14 @@
+ (function ($, Drupal, drupalSettings) {
+   Drupal.behaviors.pdf = {
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+       pdfjsLib.GlobalWorkerOptions.workerSrc = settings.pdf.workerSrc;
+ 
+       const canvases = context.getElementsByClassName("pdf-thumbnail");
+-      Array.prototype.forEach.call(canvases, function(canvas) {
++      Array.prototype.forEach.call(canvases, function (canvas) {
+         const file = canvas.attributes.file.value;
+         let loadingTask = pdfjsLib.getDocument({url: file});
+-        loadingTask.promise.then(function(pdf) {
+-          pdf.getPage(1).then(function(page) {
++        loadingTask.promise.then(function (pdf) {
++          pdf.getPage(1).then(function (page) {
+             const scale = (canvas.attributes.scale) ? canvas.attributes.scale.value : 1;
+             let viewport = page.getViewport({ scale: scale });
+             let context = canvas.getContext('2d');
+@@ -24,12 +24,12 @@
+       });
+ 
+       const fields = context.getElementsByClassName("pdf-pages");
+-      Array.prototype.forEach.call(fields, function(container) {
++      Array.prototype.forEach.call(fields, function (container) {
+         const file = container.attributes.file.value;
+         let loadingTask = pdfjsLib.getDocument({url: file});
+-        loadingTask.promise.then(function(pdf) {
++        loadingTask.promise.then(function (pdf) {
+           for (var i = 1; i <= pdf.numPages; i++) {
+-            pdf.getPage(i).then(function(page) {
++            pdf.getPage(i).then(function (page) {
+               var canvas = document.createElement("canvas");
+               canvas.setAttribute("class", "pdf-canvas");
+               container.appendChild(canvas);
+diff --git a/src/Plugin/Field/FieldFormatter/PdfPages.php b/src/Plugin/Field/FieldFormatter/PdfPages.php
+index 8bfff4b..754d345 100755
+--- a/src/Plugin/Field/FieldFormatter/PdfPages.php
++++ b/src/Plugin/Field/FieldFormatter/PdfPages.php
+@@ -5,7 +5,6 @@ namespace Drupal\pdf\Plugin\Field\FieldFormatter;
+ use Drupal\Core\Field\FormatterBase;
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Url;
+ 
+ /**
+  * @FieldFormatter(
+@@ -17,12 +16,18 @@ use Drupal\Core\Url;
+  */
+ class PdfPages extends FormatterBase {
+ 
++  /**
++   *
++   */
+   public static function defaultSettings() {
+     return [
+       'scale' => 1,
+     ] + parent::defaultSettings();
+   }
+ 
++  /**
++   *
++   */
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+     $elements['scale'] = [
+       '#type' => 'textfield',
+@@ -32,6 +37,9 @@ class PdfPages extends FormatterBase {
+     return $elements;
+   }
+ 
++  /**
++   *
++   */
+   public function settingsSummary() {
+     $summary = [];
+     $scale = $this->getSetting('scale');
+@@ -45,6 +53,9 @@ class PdfPages extends FormatterBase {
+     return $summary;
+   }
+ 
++  /**
++   *
++   */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+     $elements = [];
+     foreach ($items as $delta => $item) {
+@@ -54,7 +65,7 @@ class PdfPages extends FormatterBase {
+         $html = [
+           '#type' => 'html_tag',
+           '#tag' => 'div',
+-          //'#value' => TODO,
++          // '#value' => TODO,
+           '#attributes' => [
+             'class' => ['pdf-pages'],
+             'id' => ['pdf-pages-' . $delta],
+@@ -80,4 +91,5 @@ class PdfPages extends FormatterBase {
+     ];
+     return $elements;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/PdfThumbnail.php b/src/Plugin/Field/FieldFormatter/PdfThumbnail.php
+index c2db851..cb3b5c1 100755
+--- a/src/Plugin/Field/FieldFormatter/PdfThumbnail.php
++++ b/src/Plugin/Field/FieldFormatter/PdfThumbnail.php
+@@ -5,7 +5,6 @@ namespace Drupal\pdf\Plugin\Field\FieldFormatter;
+ use Drupal\Core\Field\FormatterBase;
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Url;
+ 
+ /**
+  * @FieldFormatter(
+@@ -16,6 +15,10 @@ use Drupal\Core\Url;
+  * )
+  */
+ class PdfThumbnail extends FormatterBase {
++
++  /**
++   *
++   */
+   public static function defaultSettings() {
+     return [
+       'scale' => 1,
+@@ -24,6 +27,9 @@ class PdfThumbnail extends FormatterBase {
+     ] + parent::defaultSettings();
+   }
+ 
++  /**
++   *
++   */
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+     $elements = parent::settingsForm($form, $form_state);
+     $elements['scale'] = [
+@@ -46,6 +52,9 @@ class PdfThumbnail extends FormatterBase {
+     return $elements;
+   }
+ 
++  /**
++   *
++   */
+   public function settingsSummary() {
+     $summary = [];
+ 
+@@ -59,12 +68,15 @@ class PdfThumbnail extends FormatterBase {
+       $summary[] = t('Scale: @scale, Width: @width, Height: @height', [
+         '@scale' => $scale,
+         '@width' => $width,
+-        '@height' => $height
++        '@height' => $height,
+       ]);
+     }
+     return $summary;
+   }
+ 
++  /**
++   *
++   */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+     $elements = [];
+     foreach ($items as $delta => $item) {
+@@ -73,7 +85,7 @@ class PdfThumbnail extends FormatterBase {
+         $html = [
+           '#type' => 'html_tag',
+           '#tag' => 'canvas',
+-          //'#value' => ,
++          // '#value' => ,
+           '#attributes' => [
+             'class' => ['pdf-thumbnail', 'pdf-canvas'],
+             'id' => ['pdf-thumbnail-' . $delta],
+@@ -101,4 +113,5 @@ class PdfThumbnail extends FormatterBase {
+ 
+     return $elements;
+   }
++
+ }

@@ -1,0 +1,55 @@
+diff --git a/modules/mie_demo_base/gulpfile.js b/modules/mie_demo_base/gulpfile.js
+index 86048d5..2e88097 100644
+--- a/modules/mie_demo_base/gulpfile.js
++++ b/modules/mie_demo_base/gulpfile.js
+@@ -39,7 +39,7 @@ const configs = {
+ 
+   testEnv: false
+ };
+-configs.sassIncludePaths = [`${configs.npmDir}/foundation-sites/scss`];
++configs.sassIncludePaths = [`${configs.npmDir} / foundation - sites / scss`];
+ 
+ const webpackBundleConfig = require('./webpack.bundle.config')(configs);
+ const webpackStandaloneConfig = require('./webpack.standalone.config')(configs);
+@@ -87,12 +87,15 @@ gulp.task('js-lint', () => {
+     // Use gulp-notify as jshint reporter
+     .pipe(process.env.NODE_ENV && process.env.NODE_ENV === 'test' ? jshint.reporter('fail') : gutil.noop())
+     .pipe(notify(function (file) {
+-      if (!file.jshint) return false;
++      if (!file.jshint) { return false;
++      }
+       // Don't show something if success
+-      if (file.jshint.success) return false;
++      if (file.jshint.success) { return false;
++      }
+ 
+       let errors = file.jshint.results.map(function (data) {
+-        if (data.error) return `(${data.error.line}: ${data.error.character}) ${data.error.reason}`;
++        if (data.error) { return `(${data.error.line}: ${data.error.character}) ${data.error.reason}`;
++        }
+       }).join("\n");
+ 
+       return `${file.relative} (${file.jshint.results.length} errors)\n ${errors}`;
+@@ -115,7 +118,8 @@ gulp.task('js-bundle', () => {
+ 
+ gulp.task('js-standalone', done => {
+   glob(configs.standaloneScripts, {}, (err, files) => {
+-    if (err) done(err);
++    if (err) { done(err);
++    }
+     files.map(entry => webpackStandaloneConfig.entry[path.basename(entry)] = entry);
+ 
+     gulp.src(configs.standaloneScripts)
+diff --git a/src/Utility/Utility.php b/src/Utility/Utility.php
+index 06dd420..36c09a5 100644
+--- a/src/Utility/Utility.php
++++ b/src/Utility/Utility.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\menu_item_extras\Utility;
+ 
+-use Drupal\Component\Utility\Unicode;
+-
+ /**
+  * Utility functions specific to menu_item_extras.
+  */

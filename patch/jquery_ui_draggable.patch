@@ -1,0 +1,13 @@
+diff --git a/jquery.ui/themes/base/draggable.css b/jquery.ui/themes/base/draggable.css
+index 3f71945..768883a 100644
+--- a/jquery.ui/themes/base/draggable.css
++++ b/jquery.ui/themes/base/draggable.css
+@@ -7,6 +7,6 @@
+  * http://jquery.org/license
+  */
+ .ui-draggable-handle {
+-	-ms-touch-action: none;
+-	touch-action: none;
++  -ms-touch-action: none;
++  touch-action: none;
+ }

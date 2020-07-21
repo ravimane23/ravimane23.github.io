@@ -1,0 +1,889 @@
+diff --git a/src/Access/AccessInterface.php b/src/Access/AccessInterface.php
+index 1e12fd2..c54d06d 100644
+--- a/src/Access/AccessInterface.php
++++ b/src/Access/AccessInterface.php
+@@ -4,6 +4,14 @@ namespace Drupal\ctools\Access;
+ 
+ use Drupal\Core\Session\AccountInterface;
+ 
++/**
++ *
++ */
+ interface AccessInterface {
++
++  /**
++   *
++   */
+   public function access(AccountInterface $account);
++
+ }
+diff --git a/src/Access/TempstoreAccess.php b/src/Access/TempstoreAccess.php
+index e18eb95..3a392ac 100644
+--- a/src/Access/TempstoreAccess.php
++++ b/src/Access/TempstoreAccess.php
+@@ -10,7 +10,9 @@ use Drupal\ctools\Access\AccessInterface as CToolsAccessInterface;
+ use Drupal\Core\TempStore\SharedTempStoreFactory;
+ use Symfony\Component\Routing\Route;
+ 
+-
++/**
++ *
++ */
+ class TempstoreAccess implements CoreAccessInterface {
+ 
+   /**
+@@ -20,17 +22,23 @@ class TempstoreAccess implements CoreAccessInterface {
+    */
+   protected $tempstore;
+ 
+-
++  /**
++   *
++   */
+   public function __construct(SharedTempStoreFactory $tempstore) {
+     $this->tempstore = $tempstore;
+   }
+ 
+-
++  /**
++   *
++   */
+   protected function getTempstore() {
+     return $this->tempstore;
+   }
+ 
+-
++  /**
++   *
++   */
+   public function access(Route $route, RouteMatchInterface $match, AccountInterface $account) {
+     $tempstore_id = $match->getParameter('tempstore_id') ? $match->getParameter('tempstore_id') : $route->getDefault('tempstore_id');
+     $id = $match->getParameter($route->getRequirement('_ctools_access'));
+diff --git a/src/Ajax/OpenModalWizardCommand.php b/src/Ajax/OpenModalWizardCommand.php
+index 6f03032..f69b017 100644
+--- a/src/Ajax/OpenModalWizardCommand.php
++++ b/src/Ajax/OpenModalWizardCommand.php
+@@ -4,10 +4,14 @@ namespace Drupal\ctools\Ajax;
+ 
+ use Drupal\Core\Ajax\OpenModalDialogCommand;
+ 
+-
++/**
++ *
++ */
+ class OpenModalWizardCommand extends OpenModalDialogCommand {
+ 
+-
++  /**
++   *
++   */
+   public function __construct($object, $tempstore_id, array $parameters = [], array $dialog_options = [], $settings = NULL) {
+     // Instantiate the wizard class properly.
+     $parameters += [
+diff --git a/src/ConstraintConditionInterface.php b/src/ConstraintConditionInterface.php
+index 00ec2d1..eb72fb6 100644
+--- a/src/ConstraintConditionInterface.php
++++ b/src/ConstraintConditionInterface.php
+@@ -2,7 +2,9 @@
+ 
+ namespace Drupal\ctools;
+ 
+-
++/**
++ *
++ */
+ interface ConstraintConditionInterface {
+ 
+   /**
+diff --git a/src/ContextNotFoundException.php b/src/ContextNotFoundException.php
+index b9cf15c..db25f6e 100644
+--- a/src/ContextNotFoundException.php
++++ b/src/ContextNotFoundException.php
+@@ -2,5 +2,7 @@
+ 
+ namespace Drupal\ctools;
+ 
+-
++/**
++ *
++ */
+ class ContextNotFoundException extends \Exception {}
+diff --git a/src/Event/BlockVariantEvent.php b/src/Event/BlockVariantEvent.php
+index 35df32d..ed12c38 100644
+--- a/src/Event/BlockVariantEvent.php
++++ b/src/Event/BlockVariantEvent.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Block\BlockPluginInterface;
+ use Drupal\ctools\Plugin\BlockVariantInterface;
+ use Symfony\Component\EventDispatcher\Event;
+ 
++/**
++ *
++ */
+ class BlockVariantEvent extends Event {
+ 
+   /**
+diff --git a/src/Event/WizardEvent.php b/src/Event/WizardEvent.php
+index 9e28d0d..9c4d46a 100644
+--- a/src/Event/WizardEvent.php
++++ b/src/Event/WizardEvent.php
+@@ -20,23 +20,31 @@ class WizardEvent extends Event {
+    */
+   protected $values;
+ 
+-
++  /**
++   *
++   */
+   public function __construct(FormWizardInterface $wizard, $values) {
+     $this->wizard = $wizard;
+     $this->values = $values;
+   }
+ 
+-
++  /**
++   *
++   */
+   public function getWizard() {
+     return $this->wizard;
+   }
+ 
+-
++  /**
++   *
++   */
+   public function getValues() {
+     return $this->values;
+   }
+ 
+-
++  /**
++   *
++   */
+   public function setValues($values) {
+     $this->values = $values;
+     return $this;
+diff --git a/src/Form/ConditionConfigure.php b/src/Form/ConditionConfigure.php
+index 10b8224..f7c4c39 100644
+--- a/src/Form/ConditionConfigure.php
++++ b/src/Form/ConditionConfigure.php
+@@ -47,7 +47,9 @@ abstract class ConditionConfigure extends FormBase {
+     return new static($container->get('tempstore.shared'), $container->get('plugin.manager.condition'));
+   }
+ 
+-
++  /**
++   *
++   */
+   public function __construct(SharedTempStoreFactory $tempstore, PluginManagerInterface $manager) {
+     $this->tempstore = $tempstore;
+     $this->manager = $manager;
+@@ -129,7 +131,9 @@ abstract class ConditionConfigure extends FormBase {
+     $form_state->setRedirect($route_name, $route_parameters);
+   }
+ 
+-
++  /**
++   *
++   */
+   public function ajaxSave(array &$form, FormStateInterface $form_state) {
+     $response = new AjaxResponse();
+     $cached_values = $this->tempstore->get($this->tempstore_id)->get($this->machine_name);
+diff --git a/src/Form/ConditionDelete.php b/src/Form/ConditionDelete.php
+index 7ab9050..1645bf8 100644
+--- a/src/Form/ConditionDelete.php
++++ b/src/Form/ConditionDelete.php
+@@ -11,7 +11,9 @@ use Drupal\ctools\ConstraintConditionInterface;
+ use Drupal\Core\TempStore\SharedTempStoreFactory;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+-
++/**
++ *
++ */
+ abstract class ConditionDelete extends ConfirmFormBase {
+ 
+   /**
+@@ -46,7 +48,9 @@ abstract class ConditionDelete extends ConfirmFormBase {
+     return new static($container->get('tempstore.shared'), $container->get('plugin.manager.condition'));
+   }
+ 
+-
++  /**
++   *
++   */
+   public function __construct(SharedTempStoreFactory $tempstore, PluginManagerInterface $manager) {
+     $this->tempstore = $tempstore;
+     $this->manager = $manager;
+@@ -101,7 +105,9 @@ abstract class ConditionDelete extends ConfirmFormBase {
+     $form_state->setRedirect($route_name, $route_parameters);
+   }
+ 
+-
++  /**
++   *
++   */
+   public function getQuestion($id = NULL, $cached_values = NULL) {
+     $condition = $this->getConditions($cached_values)[$id];
+     return $this->t('Are you sure you want to delete the @label condition?', [
+diff --git a/src/Form/ContextConfigure.php b/src/Form/ContextConfigure.php
+index 14377bf..617ddfc 100644
+--- a/src/Form/ContextConfigure.php
++++ b/src/Form/ContextConfigure.php
+@@ -16,7 +16,9 @@ use Drupal\Core\TempStore\SharedTempStoreFactory;
+ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+-
++/**
++ *
++ */
+ abstract class ContextConfigure extends FormBase {
+ 
+   /**
+@@ -51,7 +53,9 @@ abstract class ContextConfigure extends FormBase {
+     );
+   }
+ 
+-
++  /**
++   *
++   */
+   public function __construct(SharedTempStoreFactory $tempstore, EntityTypeManagerInterface $entity_type_manager) {
+     $this->tempstore = $tempstore;
+     $this->entityTypeManager = $entity_type_manager;
+@@ -204,7 +208,9 @@ abstract class ContextConfigure extends FormBase {
+     $form_state->setRedirect($route_name, $route_parameters);
+   }
+ 
+-
++  /**
++   *
++   */
+   public function ajaxSave(array &$form, FormStateInterface $form_state) {
+     $response = new AjaxResponse();
+     $cached_values = $this->tempstore->get($this->tempstore_id)->get($this->machine_name);
+diff --git a/src/Form/ContextDelete.php b/src/Form/ContextDelete.php
+index fde4854..ca4c452 100644
+--- a/src/Form/ContextDelete.php
++++ b/src/Form/ContextDelete.php
+@@ -34,12 +34,16 @@ abstract class ContextDelete extends ConfirmFormBase {
+    */
+   protected $context_id;
+ 
+-
++  /**
++   *
++   */
+   public static function create(ContainerInterface $container) {
+     return new static($container->get('tempstore.shared'));
+   }
+ 
+-
++  /**
++   *
++   */
+   public function __construct(SharedTempStoreFactory $tempstore) {
+     $this->tempstore = $tempstore;
+   }
+@@ -75,12 +79,16 @@ abstract class ContextDelete extends ConfirmFormBase {
+     $form_state->setRedirectUrl($this->getCancelUrl());
+   }
+ 
+-
++  /**
++   *
++   */
+   protected function getTempstore() {
+     return $this->tempstore->get($this->tempstore_id)->get($this->machine_name);
+   }
+ 
+-
++  /**
++   *
++   */
+   protected function setTempstore($cached_values) {
+     $this->tempstore->get($this->tempstore_id)->set($this->machine_name, $cached_values);
+   }
+diff --git a/src/Form/ManageConditions.php b/src/Form/ManageConditions.php
+index b1dcdfe..bb7309c 100644
+--- a/src/Form/ManageConditions.php
++++ b/src/Form/ManageConditions.php
+@@ -12,7 +12,9 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+-
++/**
++ *
++ */
+ abstract class ManageConditions extends FormBase {
+ 
+   /**
+@@ -32,7 +34,9 @@ abstract class ManageConditions extends FormBase {
+    */
+   protected $machine_name;
+ 
+-
++  /**
++   *
++   */
+   public static function create(ContainerInterface $container) {
+     return new static(
+       $container->get('plugin.manager.condition'),
+@@ -40,7 +44,9 @@ abstract class ManageConditions extends FormBase {
+     );
+   }
+ 
+-
++  /**
++   *
++   */
+   public function __construct(PluginManagerInterface $manager, FormBuilderInterface $form_builder) {
+     $this->manager = $manager;
+     $this->formBuilder = $form_builder;
+@@ -102,7 +108,9 @@ abstract class ManageConditions extends FormBase {
+     $form_state->setRedirect($this->getAddRoute($cached_values), $route_parameters);
+   }
+ 
+-
++  /**
++   *
++   */
+   public function add(array &$form, FormStateInterface $form_state) {
+     $condition = $form_state->getValue('conditions');
+     $content = $this->formBuilder->getForm($this->getConditionClass(), $condition, $this->getTempstoreId(), $this->machine_name);
+@@ -148,7 +156,9 @@ abstract class ManageConditions extends FormBase {
+     return $configured_conditions;
+   }
+ 
+-
++  /**
++   *
++   */
+   protected function getOperations($route_name_base, array $route_parameters = []) {
+     $operations['edit'] = [
+       'title' => $this->t('Edit'),
+diff --git a/src/Form/ManageContext.php b/src/Form/ManageContext.php
+index d7224bf..9ee06ab 100644
+--- a/src/Form/ManageContext.php
++++ b/src/Form/ManageContext.php
+@@ -13,7 +13,9 @@ use Drupal\Core\Url;
+ use Drupal\ctools\TypedDataResolver;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+-
++/**
++ *
++ */
+ abstract class ManageContext extends FormBase {
+ 
+   /**
+@@ -169,7 +171,9 @@ abstract class ManageContext extends FormBase {
+     }
+   }
+ 
+-
++  /**
++   *
++   */
+   public function addContext(array &$form, FormStateInterface $form_state) {
+     $context = $form_state->getValue('context');
+     $content = $this->formBuilder->getForm($this->getContextClass(), $context, $this->getTempstoreId(), $this->machine_name);
+@@ -189,7 +193,9 @@ abstract class ManageContext extends FormBase {
+     return $response;
+   }
+ 
+-
++  /**
++   *
++   */
+   public function addRelationship(array &$form, FormStateInterface $form_state) {
+     $relationship = $form_state->getValue('relationships');
+     $content = $this->formBuilder->getForm($this->getRelationshipClass(), $relationship, $this->getTempstoreId(), $this->machine_name);
+@@ -209,7 +215,9 @@ abstract class ManageContext extends FormBase {
+     return $response;
+   }
+ 
+-
++  /**
++   *
++   */
+   protected function getAvailableRelationships($cached_values) {
+     /** @var \Drupal\ctools\TypedDataResolver $resolver */
+     $resolver = $this->typedDataResolver;
+diff --git a/src/Form/RelationshipConfigure.php b/src/Form/RelationshipConfigure.php
+index fcda784..0b1aa08 100644
+--- a/src/Form/RelationshipConfigure.php
++++ b/src/Form/RelationshipConfigure.php
+@@ -12,7 +12,9 @@ use Drupal\Core\TempStore\SharedTempStoreFactory;
+ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+-
++/**
++ *
++ */
+ abstract class RelationshipConfigure extends FormBase {
+ 
+   /**
+@@ -42,7 +44,9 @@ abstract class RelationshipConfigure extends FormBase {
+     return new static($container->get('tempstore.shared'), $container->get('ctools.typed_data.resolver'));
+   }
+ 
+-
++  /**
++   *
++   */
+   public function __construct(SharedTempStoreFactory $tempstore, TypedDataResolver $resolver) {
+     $this->tempstore = $tempstore;
+     $this->resolver = $resolver;
+diff --git a/src/Form/RequiredContext.php b/src/Form/RequiredContext.php
+index 336562b..660990a 100644
+--- a/src/Form/RequiredContext.php
++++ b/src/Form/RequiredContext.php
+@@ -11,7 +11,9 @@ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\Core\Form\FormBuilderInterface;
+ 
+-
++/**
++ *
++ */
+ abstract class RequiredContext extends FormBase {
+ 
+   /**
+@@ -41,7 +43,9 @@ abstract class RequiredContext extends FormBase {
+     );
+   }
+ 
+-
++  /**
++   *
++   */
+   public function __construct(PluginManagerInterface $typed_data_manager, FormBuilderInterface $form_builder) {
+     $this->typedDataManager = $typed_data_manager;
+     $this->formBuilder = $form_builder;
+@@ -144,7 +148,9 @@ abstract class RequiredContext extends FormBase {
+     return $configured_contexts;
+   }
+ 
+-
++  /**
++   *
++   */
+   protected function getOperations($route_name_base, array $route_parameters = []) {
+     $operations['edit'] = [
+       'title' => $this->t('Edit'),
+diff --git a/src/Form/ResolverRelationshipConfigure.php b/src/Form/ResolverRelationshipConfigure.php
+index 594a899..8ba7f38 100644
+--- a/src/Form/ResolverRelationshipConfigure.php
++++ b/src/Form/ResolverRelationshipConfigure.php
+@@ -11,7 +11,9 @@ use Drupal\Core\TempStore\SharedTempStoreFactory;
+ use Drupal\Core\Url;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+-
++/**
++ *
++ */
+ abstract class ResolverRelationshipConfigure extends FormBase {
+ 
+   /**
+@@ -36,7 +38,9 @@ abstract class ResolverRelationshipConfigure extends FormBase {
+     return new static($container->get('tempstore.shared'));
+   }
+ 
+-
++  /**
++   *
++   */
+   public function __construct(SharedTempStoreFactory $tempstore) {
+     $this->tempstore = $tempstore;
+   }
+@@ -105,7 +109,9 @@ abstract class ResolverRelationshipConfigure extends FormBase {
+     return $form;
+   }
+ 
+-
++  /**
++   *
++   */
+   public function validateForm(array &$form, FormStateInterface $form_state) {
+     $machine_name = $form_state->getValue('machine_name');
+     $cached_values = $this->tempstore->get($this->tempstore_id)->get($this->machine_name);
+@@ -140,7 +146,9 @@ abstract class ResolverRelationshipConfigure extends FormBase {
+     $form_state->setRedirect($route_name, $route_parameters);
+   }
+ 
+-
++  /**
++   *
++   */
+   public function ajaxSave(array &$form, FormStateInterface $form_state) {
+     $response = new AjaxResponse();
+     $cached_values = $this->tempstore->get($this->tempstore_id)->get($this->machine_name);
+diff --git a/src/Form/ResolverRelationshipDelete.php b/src/Form/ResolverRelationshipDelete.php
+index 36aec3b..da5d8b1 100644
+--- a/src/Form/ResolverRelationshipDelete.php
++++ b/src/Form/ResolverRelationshipDelete.php
+@@ -9,7 +9,9 @@ use Drupal\ctools\TypedDataResolver;
+ use Drupal\Core\TempStore\SharedTempStoreFactory;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+-
++/**
++ *
++ */
+ abstract class ResolverRelationshipDelete extends ConfirmFormBase {
+ 
+   /**
+diff --git a/src/Plugin/Condition/NodeType.php b/src/Plugin/Condition/NodeType.php
+index 1d28606..26006e4 100644
+--- a/src/Plugin/Condition/NodeType.php
++++ b/src/Plugin/Condition/NodeType.php
+@@ -5,7 +5,9 @@ namespace Drupal\ctools\Plugin\Condition;
+ use Drupal\node\Plugin\Condition\NodeType as CoreNodeType;
+ use Drupal\ctools\ConstraintConditionInterface;
+ 
+-
++/**
++ *
++ */
+ class NodeType extends CoreNodeType implements ConstraintConditionInterface {
+ 
+   /**
+diff --git a/src/Plugin/Deriver/TypedDataEntityRelationshipDeriver.php b/src/Plugin/Deriver/TypedDataEntityRelationshipDeriver.php
+index c0aae18..49ffaf4 100644
+--- a/src/Plugin/Deriver/TypedDataEntityRelationshipDeriver.php
++++ b/src/Plugin/Deriver/TypedDataEntityRelationshipDeriver.php
+@@ -4,7 +4,9 @@ namespace Drupal\ctools\Plugin\Deriver;
+ 
+ use Drupal\Core\TypedData\DataDefinitionInterface;
+ 
+-
++/**
++ *
++ */
+ class TypedDataEntityRelationshipDeriver extends TypedDataRelationshipDeriver {
+ 
+   /**
+diff --git a/src/Plugin/Deriver/TypedDataLanguageRelationshipDeriver.php b/src/Plugin/Deriver/TypedDataLanguageRelationshipDeriver.php
+index 08170be..595fffa 100644
+--- a/src/Plugin/Deriver/TypedDataLanguageRelationshipDeriver.php
++++ b/src/Plugin/Deriver/TypedDataLanguageRelationshipDeriver.php
+@@ -4,7 +4,9 @@ namespace Drupal\ctools\Plugin\Deriver;
+ 
+ use Drupal\Core\TypedData\DataDefinitionInterface;
+ 
+-
++/**
++ *
++ */
+ class TypedDataLanguageRelationshipDeriver extends TypedDataRelationshipDeriver {
+ 
+   /**
+diff --git a/src/Plugin/Deriver/TypedDataPropertyDeriverBase.php b/src/Plugin/Deriver/TypedDataPropertyDeriverBase.php
+index e412565..975f976 100644
+--- a/src/Plugin/Deriver/TypedDataPropertyDeriverBase.php
++++ b/src/Plugin/Deriver/TypedDataPropertyDeriverBase.php
+@@ -15,7 +15,9 @@ use Drupal\Core\TypedData\TypedDataManagerInterface;
+ use Drupal\field\Entity\FieldConfig;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+-
++/**
++ *
++ */
+ abstract class TypedDataPropertyDeriverBase extends DeriverBase implements ContainerDeriverInterface {
+ 
+   use StringTranslationTrait;
+diff --git a/src/Plugin/Deriver/TypedDataRelationshipDeriver.php b/src/Plugin/Deriver/TypedDataRelationshipDeriver.php
+index 5c04855..f97b75b 100644
+--- a/src/Plugin/Deriver/TypedDataRelationshipDeriver.php
++++ b/src/Plugin/Deriver/TypedDataRelationshipDeriver.php
+@@ -8,7 +8,9 @@ use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+ use Drupal\Core\TypedData\DataDefinitionInterface;
+ use Drupal\field\FieldConfigInterface;
+ 
+-
++/**
++ *
++ */
+ class TypedDataRelationshipDeriver extends TypedDataPropertyDeriverBase implements ContainerDeriverInterface {
+ 
+   /**
+diff --git a/src/Plugin/Relationship/TypedDataRelationship.php b/src/Plugin/Relationship/TypedDataRelationship.php
+index a117afc..3cc9ed0 100644
+--- a/src/Plugin/Relationship/TypedDataRelationship.php
++++ b/src/Plugin/Relationship/TypedDataRelationship.php
+@@ -47,12 +47,16 @@ class TypedDataRelationship extends RelationshipBase {
+     return new Context($context_definition, $context_value);
+   }
+ 
+-
++  /**
++   *
++   */
+   public function getName() {
+     return $this->getPluginDefinition()['property_name'];
+   }
+ 
+-
++  /**
++   *
++   */
+   protected function getData(ContextInterface $context) {
+     /** @var \Drupal\Core\TypedData\ComplexDataInterface $base */
+     $base = $context->getContextValue();
+@@ -68,12 +72,16 @@ class TypedDataRelationship extends RelationshipBase {
+     return $data;
+   }
+ 
+-
++  /**
++   *
++   */
+   protected function getMainPropertyName(FieldItemInterface $data) {
+     return $data->getFieldDefinition()->getFieldStorageDefinition()->getMainPropertyName();
+   }
+ 
+-
++  /**
++   *
++   */
+   public function getRelationshipValue() {
+     $property = $this->getMainPropertyName();
+     /** @var \Drupal\Core\TypedData\ComplexDataInterface $data */
+diff --git a/src/Testing/EntityCreationTrait.php b/src/Testing/EntityCreationTrait.php
+index 2f2927b..db161ae 100644
+--- a/src/Testing/EntityCreationTrait.php
++++ b/src/Testing/EntityCreationTrait.php
+@@ -4,7 +4,9 @@ namespace Drupal\ctools\Testing;
+ 
+ use Drupal\Component\Render\FormattableMarkup;
+ 
+-
++/**
++ *
++ */
+ trait EntityCreationTrait {
+ 
+   /**
+diff --git a/src/TypedDataResolver.php b/src/TypedDataResolver.php
+index d8fb9e6..fbda985 100644
+--- a/src/TypedDataResolver.php
++++ b/src/TypedDataResolver.php
+@@ -14,7 +14,9 @@ use Drupal\Core\TypedData\ListDataDefinitionInterface;
+ use Drupal\Core\TypedData\ListInterface;
+ use Drupal\Core\TypedData\TypedDataManagerInterface;
+ 
+-
++/**
++ *
++ */
+ class TypedDataResolver {
+ 
+   /**
+diff --git a/src/Wizard/FormWizardBase.php b/src/Wizard/FormWizardBase.php
+index 187fba8..4c60309 100644
+--- a/src/Wizard/FormWizardBase.php
++++ b/src/Wizard/FormWizardBase.php
+@@ -438,7 +438,9 @@ abstract class FormWizardBase extends FormBase implements FormWizardInterface {
+     return $actions;
+   }
+ 
+-
++  /**
++   *
++   */
+   public function ajaxSubmit(array $form, FormStateInterface $form_state) {
+     $cached_values = $form_state->getTemporaryValue('wizard');
+     $response = new AjaxResponse();
+@@ -447,7 +449,9 @@ abstract class FormWizardBase extends FormBase implements FormWizardInterface {
+     return $response;
+   }
+ 
+-
++  /**
++   *
++   */
+   public function ajaxPrevious(array $form, FormStateInterface $form_state) {
+     $cached_values = $form_state->getTemporaryValue('wizard');
+     $response = new AjaxResponse();
+@@ -456,14 +460,18 @@ abstract class FormWizardBase extends FormBase implements FormWizardInterface {
+     return $response;
+   }
+ 
+-
++  /**
++   *
++   */
+   public function ajaxFinish(array $form, FormStateInterface $form_state) {
+     $response = new AjaxResponse();
+     $response->addCommand(new CloseModalDialogCommand());
+     return $response;
+   }
+ 
+-
++  /**
++   *
++   */
+   public function getRouteName() {
+     return $this->routeMatch->getRouteName();
+   }
+diff --git a/src/Wizard/FormWizardInterface.php b/src/Wizard/FormWizardInterface.php
+index fad81cc..9da517e 100644
+--- a/src/Wizard/FormWizardInterface.php
++++ b/src/Wizard/FormWizardInterface.php
+@@ -173,13 +173,19 @@ interface FormWizardInterface extends FormInterface {
+    */
+   public function finish(array &$form, FormStateInterface $form_state);
+ 
+-
++  /**
++   *
++   */
+   public function ajaxSubmit(array $form, FormStateInterface $form_state);
+ 
+-
++  /**
++   *
++   */
+   public function ajaxPrevious(array $form, FormStateInterface $form_state);
+ 
+-
++  /**
++   *
++   */
+   public function ajaxFinish(array $form, FormStateInterface $form_state);
+ 
+ }
+diff --git a/tests/modules/ctools_block_display_test/src/Plugin/DisplayVariant/BlockDisplayVariant.php b/tests/modules/ctools_block_display_test/src/Plugin/DisplayVariant/BlockDisplayVariant.php
+index 2aa254b..1de82ba 100644
+--- a/tests/modules/ctools_block_display_test/src/Plugin/DisplayVariant/BlockDisplayVariant.php
++++ b/tests/modules/ctools_block_display_test/src/Plugin/DisplayVariant/BlockDisplayVariant.php
+@@ -4,6 +4,9 @@ namespace Drupal\ctools_block_display_test\Plugin\DisplayVariant;
+ 
+ use Drupal\ctools\Plugin\DisplayVariant\BlockDisplayVariant as BaseBlockDisplayVariant;
+ 
++/**
++ *
++ */
+ class BlockDisplayVariant extends BaseBlockDisplayVariant {
+ 
+   /**
+diff --git a/tests/modules/ctools_wizard_test/src/Wizard/EntityAddWizardTest.php b/tests/modules/ctools_wizard_test/src/Wizard/EntityAddWizardTest.php
+index 77ab5d5..568a936 100644
+--- a/tests/modules/ctools_wizard_test/src/Wizard/EntityAddWizardTest.php
++++ b/tests/modules/ctools_wizard_test/src/Wizard/EntityAddWizardTest.php
+@@ -2,7 +2,9 @@
+ 
+ namespace Drupal\ctools_wizard_test\Wizard;
+ 
+-
++/**
++ *
++ */
+ class EntityAddWizardTest extends EntityEditWizardTest {
+ 
+   /**
+diff --git a/tests/modules/ctools_wizard_test/src/Wizard/EntityEditWizardTest.php b/tests/modules/ctools_wizard_test/src/Wizard/EntityEditWizardTest.php
+index 6a42fb0..965578d 100644
+--- a/tests/modules/ctools_wizard_test/src/Wizard/EntityEditWizardTest.php
++++ b/tests/modules/ctools_wizard_test/src/Wizard/EntityEditWizardTest.php
+@@ -4,7 +4,9 @@ namespace Drupal\ctools_wizard_test\Wizard;
+ 
+ use Drupal\ctools\Wizard\EntityFormWizardBase;
+ 
+-
++/**
++ *
++ */
+ class EntityEditWizardTest extends EntityFormWizardBase {
+ 
+   /**
+diff --git a/tests/modules/ctools_wizard_test/src/Wizard/WizardTest.php b/tests/modules/ctools_wizard_test/src/Wizard/WizardTest.php
+index e7df398..fdb0cf5 100644
+--- a/tests/modules/ctools_wizard_test/src/Wizard/WizardTest.php
++++ b/tests/modules/ctools_wizard_test/src/Wizard/WizardTest.php
+@@ -5,7 +5,9 @@ namespace Drupal\ctools_wizard_test\Wizard;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\ctools\Wizard\FormWizardBase;
+ 
+-
++/**
++ *
++ */
+ class WizardTest extends FormWizardBase {
+ 
+   /**
+diff --git a/tests/src/Kernel/RelationshipsTestBase.php b/tests/src/Kernel/RelationshipsTestBase.php
+index 5145bfb..b45581d 100644
+--- a/tests/src/Kernel/RelationshipsTestBase.php
++++ b/tests/src/Kernel/RelationshipsTestBase.php
+@@ -5,7 +5,9 @@ namespace Drupal\Tests\ctools\Kernel;
+ use Drupal\ctools\Testing\EntityCreationTrait;
+ use Drupal\KernelTests\KernelTestBase;
+ 
+-
++/**
++ *
++ */
+ abstract class RelationshipsTestBase extends KernelTestBase {
+   use EntityCreationTrait;
+ 
+diff --git a/tests/src/Unit/BlockDisplayVariantTest.php b/tests/src/Unit/BlockDisplayVariantTest.php
+index 86f2513..d51cd90 100644
+--- a/tests/src/Unit/BlockDisplayVariantTest.php
++++ b/tests/src/Unit/BlockDisplayVariantTest.php
+@@ -45,7 +45,9 @@ class BlockDisplayVariantTest extends UnitTestCase {
+         return [];
+       }
+ 
+-
++      /**
++       *
++       */
+       public function getRegionNames() {
+         return [
+           'top' => 'Top',
+diff --git a/tests/src/Unit/BlockVariantTraitTest.php b/tests/src/Unit/BlockVariantTraitTest.php
+index 8a142f1..cc76c3d 100644
+--- a/tests/src/Unit/BlockVariantTraitTest.php
++++ b/tests/src/Unit/BlockVariantTraitTest.php
+@@ -35,6 +35,9 @@ class BlockVariantTraitTest extends UnitTestCase {
+     $this->assertSame($expected, $display_variant->getRegionAssignments());
+   }
+ 
++  /**
++   *
++   */
+   public function providerTestGetRegionAssignments() {
+     return [
+       [
+@@ -75,7 +78,9 @@ class BlockVariantTraitTest extends UnitTestCase {
+   }
+ 
+ }
+-
++/**
++ *
++ */
+ class TestBlockVariantTrait {
+   use BlockVariantTrait;
+ 
+diff --git a/tests/src/Unit/VariantCollectionTraitTest.php b/tests/src/Unit/VariantCollectionTraitTest.php
+index 3d12482..35018b4 100644
+--- a/tests/src/Unit/VariantCollectionTraitTest.php
++++ b/tests/src/Unit/VariantCollectionTraitTest.php
+@@ -153,7 +153,9 @@ class VariantCollectionTraitTest extends UnitTestCase {
+   }
+ 
+ }
+-
++/**
++ *
++ */
+ class TestVariantCollectionTrait {
+   use VariantCollectionTrait;
+ 

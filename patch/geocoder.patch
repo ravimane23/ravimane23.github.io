@@ -1,0 +1,73 @@
+diff --git a/js/geocoder.drupal.js b/js/geocoder.drupal.js
+index 8b156ed..ac004de 100644
+--- a/js/geocoder.drupal.js
++++ b/js/geocoder.drupal.js
+@@ -1,14 +1,14 @@
+-(function($, Drupal, drupalSettings) {
++(function ($, Drupal, drupalSettings) {
+ 
+   Drupal.behaviors.geocode_origin_autocomplete = {
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+ 
+-      function geocode (address, providers, address_format) {
++      function geocode(address, providers, address_format) {
+         var base_url = drupalSettings.path.baseUrl;
+         var geocode_path = base_url + 'geocoder/api/geocode';
+         var address_format_query_url = address_format === null ? '' : '&address_format=' + address_format;
+         return $.ajax({
+-          url: geocode_path + '?address=' +  encodeURIComponent(address) + '&geocoder=' + providers + address_format_query_url,
++          url: geocode_path + '?address=' + encodeURIComponent(address) + '&geocoder=' + providers + address_format_query_url,
+           type:"GET",
+           contentType:"application/json; charset=utf-8",
+           dataType: "json",
+@@ -37,8 +37,8 @@
+                 }));
+               },
+               // On Reject/Error.
+-              function() {
+-                response(function(){
++              function () {
++                response(function () {
+                   return false;
+                 });
+               }));
+diff --git a/modules/geocoder_field/src/PreprocessorPluginManager.php b/modules/geocoder_field/src/PreprocessorPluginManager.php
+index 79d7978..a4febd5 100644
+--- a/modules/geocoder_field/src/PreprocessorPluginManager.php
++++ b/modules/geocoder_field/src/PreprocessorPluginManager.php
+@@ -103,7 +103,7 @@ class PreprocessorPluginManager extends GeocoderPluginManagerBase {
+ 
+   /**
+    * Check if the source and the original fields are the same.
+-
++   *
+    * @param \Drupal\Core\Field\FieldItemListInterface $source_field
+    *   The Source Field.
+    * @param \Drupal\Core\Field\FieldItemListInterface $original_field
+diff --git a/modules/geocoder_geofield/src/Plugin/Geocoder/Dumper/Geometry.php b/modules/geocoder_geofield/src/Plugin/Geocoder/Dumper/Geometry.php
+index 1796a03..ece156d 100644
+--- a/modules/geocoder_geofield/src/Plugin/Geocoder/Dumper/Geometry.php
++++ b/modules/geocoder_geofield/src/Plugin/Geocoder/Dumper/Geometry.php
+@@ -46,7 +46,7 @@ class Geometry extends GeoJson {
+    * {@inheritdoc}
+    */
+   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+-    return new static (
++    return new static(
+       $configuration,
+       $plugin_id,
+       $plugin_definition,
+diff --git a/src/GeocoderThrottleInterface.php b/src/GeocoderThrottleInterface.php
+index cb4949a..d2ebfcf 100644
+--- a/src/GeocoderThrottleInterface.php
++++ b/src/GeocoderThrottleInterface.php
+@@ -18,7 +18,7 @@ interface GeocoderThrottleInterface {
+    *   - limit: number of requests allowed in the period
+    *   or null not to limit the requests.
+    *
+-   * @return void|NULL
++   * @return void|null
+    */
+   public function waitForAvailability(string $key, array $throttle_info);
+ 

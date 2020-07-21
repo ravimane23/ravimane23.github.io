@@ -1,0 +1,1152 @@
+diff --git a/modules/redirect_404/src/EventSubscriber/Redirect404Subscriber.php b/modules/redirect_404/src/EventSubscriber/Redirect404Subscriber.php
+index f7cd141..9ebd84f 100644
+--- a/modules/redirect_404/src/EventSubscriber/Redirect404Subscriber.php
++++ b/modules/redirect_404/src/EventSubscriber/Redirect404Subscriber.php
+@@ -96,7 +96,7 @@ class Redirect404Subscriber implements EventSubscriberInterface {
+   /**
+    * Logs an exception of 404 Redirect errors.
+    *
+-   * @param GetResponseForExceptionEvent $event
++   * @param \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent $event
+    *   Is given by the event dispatcher.
+    */
+   public function onKernelException(GetResponseForExceptionEvent $event) {
+diff --git a/modules/redirect_404/src/Form/RedirectFix404Form.php b/modules/redirect_404/src/Form/RedirectFix404Form.php
+index 7e01d1a..92c4aa5 100644
+--- a/modules/redirect_404/src/Form/RedirectFix404Form.php
++++ b/modules/redirect_404/src/Form/RedirectFix404Form.php
+@@ -167,7 +167,7 @@ class RedirectFix404Form extends FormBase {
+       $rows[] = $row;
+     }
+ 
+-    $form['redirect_404_table']  = [
++    $form['redirect_404_table'] = [
+       '#theme' => 'table',
+       '#header' => $header,
+       '#rows' => $rows,
+diff --git a/modules/redirect_404/src/Render/Redirect404LogSuppressor.php b/modules/redirect_404/src/Render/Redirect404LogSuppressor.php
+index cd74cab..286e133 100644
+--- a/modules/redirect_404/src/Render/Redirect404LogSuppressor.php
++++ b/modules/redirect_404/src/Render/Redirect404LogSuppressor.php
+@@ -4,7 +4,6 @@ namespace Drupal\redirect_404\Render;
+ 
+ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+-use Drupal\Core\Logger\LoggerChannelFactory;
+ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+ use Psr\Log\LoggerInterface;
+ use Psr\Log\NullLogger;
+diff --git a/modules/redirect_404/tests/src/Functional/Fix404RedirectUITest.php b/modules/redirect_404/tests/src/Functional/Fix404RedirectUITest.php
+index 58c6d3c..c848f8e 100644
+--- a/modules/redirect_404/tests/src/Functional/Fix404RedirectUITest.php
++++ b/modules/redirect_404/tests/src/Functional/Fix404RedirectUITest.php
+@@ -177,7 +177,7 @@ class Fix404RedirectUITest extends Redirect404TestBase {
+     $this->drupalGet('admin/config/search/redirect/settings');
+     $xpath = $this->xpath('//*[@id="edit-ignore-pages"]')[0]->getHtml();
+     // Check that the new page to ignore has been saved with leading slash.
+-    $this->assertSession()->elementContains('css', '#edit-ignore-pages', '/'. $nodes_to_ignore);
++    $this->assertSession()->elementContains('css', '#edit-ignore-pages', '/' . $nodes_to_ignore);
+     $this->assertSession()->elementContains('css', '#edit-ignore-pages', $terms_to_ignore);
+     $this->assertSession()->elementNotContains('css', '#edit-ignore-pages', $node_to_ignore);
+     $this->assertSession()->elementNotContains('css', '#edit-ignore-pages', $path_to_ignore);
+diff --git a/modules/redirect_404/tests/src/Functional/Redirect404LogSuppressorTest.php b/modules/redirect_404/tests/src/Functional/Redirect404LogSuppressorTest.php
+index d133b77..6daa6f6 100644
+--- a/modules/redirect_404/tests/src/Functional/Redirect404LogSuppressorTest.php
++++ b/modules/redirect_404/tests/src/Functional/Redirect404LogSuppressorTest.php
+@@ -79,4 +79,5 @@ class Redirect404LogSuppressorTest extends Redirect404TestBase {
+     $this->assertEqual(Database::getConnection()->query("SELECT COUNT(*) FROM {watchdog} WHERE type = 'access denied'")->fetchField(), 2);
+ 
+   }
++
+ }
+diff --git a/modules/redirect_404/tests/src/Functional/Redirect404TestBase.php b/modules/redirect_404/tests/src/Functional/Redirect404TestBase.php
+index f83a7c6..b5235ad 100644
+--- a/modules/redirect_404/tests/src/Functional/Redirect404TestBase.php
++++ b/modules/redirect_404/tests/src/Functional/Redirect404TestBase.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\Tests\redirect_404\Functional;
+ 
+-use Drupal\Component\Render\FormattableMarkup;
+ use Drupal\Tests\BrowserTestBase;
+ 
+ /**
+diff --git a/modules/redirect_404/tests/src/Kernel/Fix404RedirectCronJobTest.php b/modules/redirect_404/tests/src/Kernel/Fix404RedirectCronJobTest.php
+index c25818e..7b42a48 100644
+--- a/modules/redirect_404/tests/src/Kernel/Fix404RedirectCronJobTest.php
++++ b/modules/redirect_404/tests/src/Kernel/Fix404RedirectCronJobTest.php
+@@ -38,7 +38,7 @@ class Fix404RedirectCronJobTest extends KernelTestBase {
+   /**
+    * Tests adding and deleting rows from redirect_404 table.
+    */
+-  function testRedirect404CronJob() {
++  public function testRedirect404CronJob() {
+     // Set the limit to 3 just for the test.
+     \Drupal::configFactory()
+       ->getEditable('redirect_404.settings')
+@@ -78,7 +78,7 @@ class Fix404RedirectCronJobTest extends KernelTestBase {
+   /**
+    * Tests adding rows and deleting one row from redirect_404 table.
+    */
+-  function testRedirect404CronJobKeepAllButOne() {
++  public function testRedirect404CronJobKeepAllButOne() {
+     // Set the limit to 5 just for the test.
+     \Drupal::configFactory()
+       ->getEditable('redirect_404.settings')
+@@ -118,7 +118,7 @@ class Fix404RedirectCronJobTest extends KernelTestBase {
+   /**
+    * Tests resetting the daily counts in the redirect_404 table.
+    */
+-  function testRedirect404CronJobDailyCountReset() {
++  public function testRedirect404CronJobDailyCountReset() {
+     // Check that there are 2 rows with daily count value bigger than 0.
+     $result = \Drupal::database()->query("SELECT COUNT(*) FROM {redirect_404} WHERE daily_count > 0")
+       ->fetchField();
+@@ -221,4 +221,5 @@ class Fix404RedirectCronJobTest extends KernelTestBase {
+       $this->assertEquals($path, $result);
+     }
+   }
++
+ }
+diff --git a/modules/redirect_domain/src/Form/RedirectDomainForm.php b/modules/redirect_domain/src/Form/RedirectDomainForm.php
+index 46f1a69..5136bb4 100644
+--- a/modules/redirect_domain/src/Form/RedirectDomainForm.php
++++ b/modules/redirect_domain/src/Form/RedirectDomainForm.php
+@@ -18,8 +18,8 @@ class RedirectDomainForm extends ConfigFormBase {
+   }
+ 
+   /**
+-  * {@inheritdoc}
+-  */
++   * {@inheritdoc}
++   */
+   protected function getEditableConfigNames() {
+     return [
+       'redirect_domain.domains',
+@@ -40,7 +40,7 @@ class RedirectDomainForm extends ConfigFormBase {
+       '#header' => [
+         $this->t('From domain'),
+         $this->t('Sub path'),
+-        $this->t('Destination')
++        $this->t('Destination'),
+       ],
+       '#prefix' => '<div id="redirect-domain-wrapper">',
+       '#suffix' => '</div>',
+@@ -54,7 +54,7 @@ class RedirectDomainForm extends ConfigFormBase {
+           $form['redirects'][] = [
+             'from' => [
+               '#type' => 'textfield',
+-              '#value' => str_replace(':','.',$key),
++              '#value' => str_replace(':', '.', $key),
+             ],
+             'sub_path' => [
+               '#type' => 'textfield',
+@@ -154,7 +154,7 @@ class RedirectDomainForm extends ConfigFormBase {
+           $redirect['from'] = str_replace('.', ':', $redirect['from']);
+           $domain_redirects[$redirect['from']][] = [
+             'sub_path' => '/' . ltrim($redirect['sub_path'], '/'),
+-            'destination' => $redirect['destination']
++            'destination' => $redirect['destination'],
+           ];
+         }
+       }
+@@ -163,4 +163,5 @@ class RedirectDomainForm extends ConfigFormBase {
+     $domain_config->save();
+     $this->messenger()->addMessage($this->t('The domain redirects have been saved.'));
+   }
++
+ }
+diff --git a/modules/redirect_domain/tests/src/FunctionalJavascript/RedirectDomainUITest.php b/modules/redirect_domain/tests/src/FunctionalJavascript/RedirectDomainUITest.php
+index f3c59c3..2fe4194 100644
+--- a/modules/redirect_domain/tests/src/FunctionalJavascript/RedirectDomainUITest.php
++++ b/modules/redirect_domain/tests/src/FunctionalJavascript/RedirectDomainUITest.php
+@@ -32,7 +32,7 @@ class RedirectDomainUITest extends WebDriverTestBase {
+     $user = $this->drupalCreateUser([
+       'administer site configuration',
+       'access administration pages',
+-      'administer redirects'
++      'administer redirects',
+     ]);
+     $this->drupalLogin($user);
+     $this->drupalGet('/admin/config/search/redirect/domain');
+@@ -66,4 +66,5 @@ class RedirectDomainUITest extends WebDriverTestBase {
+     $this->assertFieldByName('redirects[0][sub_path]', '/sub-path');
+     $this->assertFieldByName('redirects[1][sub_path]', '/');
+   }
++
+ }
+diff --git a/modules/redirect_domain/tests/src/Unit/DomainRedirectRequestSubscriberTest.php b/modules/redirect_domain/tests/src/Unit/DomainRedirectRequestSubscriberTest.php
+index 24cc37c..883f070 100644
+--- a/modules/redirect_domain/tests/src/Unit/DomainRedirectRequestSubscriberTest.php
++++ b/modules/redirect_domain/tests/src/Unit/DomainRedirectRequestSubscriberTest.php
+@@ -128,7 +128,7 @@ class DomainRedirectRequestSubscriberTest extends UnitTestCase {
+    * @param $query_string
+    *   The query string in the url.
+    *
+-   * @return GetResponseEvent
++   * @return \Symfony\Component\HttpKernel\Event\GetResponseEvent
+    *   The response for the request.
+    */
+   protected function getGetResponseEventStub($path_info, $query_string) {
+@@ -158,4 +158,5 @@ class DomainRedirectRequestSubscriberTest extends UnitTestCase {
+     $datasets[] = ['http://wildcardtest.com/does-not-exist', 'http://wildcardredirect.com'];
+     return $datasets;
+   }
++
+ }
+diff --git a/redirect.api.php b/redirect.api.php
+index 9ec1bdf..0e1c5ac 100644
+--- a/redirect.api.php
++++ b/redirect.api.php
+@@ -47,7 +47,6 @@
+  *   - hook_redirect_validate() (all)
+  * @}
+  */
+-
+ /**
+  * @addtogroup hooks
+  * @{
+diff --git a/redirect.drush.inc b/redirect.drush.inc
+index e9bc058..1e3d2f1 100644
+--- a/redirect.drush.inc
++++ b/redirect.drush.inc
+@@ -4,7 +4,9 @@
+  * @file
+  * Drush integration for the redirect module.
+  */
++
+ use Drupal\Component\Utility\Environment;
++
+ /**
+  * Implements hook_drush_command().
+  */
+diff --git a/redirect.generate.inc b/redirect.generate.inc
+index 50bf69b..ae68910 100644
+--- a/redirect.generate.inc
++++ b/redirect.generate.inc
+@@ -5,7 +5,6 @@
+  * Generate callbacks for the redirect module.
+  */
+ 
+-use Drupal\Component\Utility\Random;
+ use Drupal\devel_generate\DevelGenerateBase;
+ use Drupal\node\NodeInterface;
+ use Drupal\redirect\Entity\Redirect;
+@@ -16,6 +15,9 @@ use Drupal\Core\Database\Database;
+  * Devel generate integration for the redirect module.
+  */
+ 
++/**
++ *
++ */
+ function redirect_generate_form() {
+   $form['count'] = [
+     '#type' => 'textfield',
+@@ -36,12 +38,18 @@ function redirect_generate_form() {
+   return $form;
+ }
+ 
++/**
++ *
++ */
+ function redirect_generate_form_submit(&$form, &$form_state) {
+   // Run the batch.
+   $batch = redirect_generate_redirects_batch_info($form_state['values']['count'], $form_state['values']['delete']);
+   batch_set($batch);
+ }
+ 
++/**
++ *
++ */
+ function redirect_generate_redirects_batch_info($count, $delete = FALSE) {
+   if ($delete) {
+     $operations[] = ['redirect_generate_batch_delete', []];
+@@ -56,6 +64,9 @@ function redirect_generate_redirects_batch_info($count, $delete = FALSE) {
+   ];
+ }
+ 
++/**
++ *
++ */
+ function redirect_generate_batch_delete(array &$context) {
+   if (empty($context['sandbox'])) {
+     $context['sandbox'] = [];
+@@ -82,6 +93,9 @@ function redirect_generate_batch_delete(array &$context) {
+   }
+ }
+ 
++/**
++ *
++ */
+ function redirect_generate_batch_generate($num, array &$context) {
+   if (empty($context['sandbox'])) {
+     $context['sandbox'] = [];
+@@ -141,14 +155,14 @@ function redirect_generate_batch_generate($num, array &$context) {
+     $redirect->save();
+ 
+     if (mt_rand(0, 1)) {
+-    $query = \Drupal::database();
+-    $query->update('redirect')
+-      ->fields([
+-        'count' => mt_rand(1, 500),
+-        'access' => mt_rand(Drupal::time()->getRequestTime() - 31536000, Drupal::time()->getRequestTime()),
+-      ])
+-      ->condition('rid', $redirect->id())
+-      ->execute();
++      $query = \Drupal::database();
++      $query->update('redirect')
++        ->fields([
++          'count' => mt_rand(1, 500),
++          'access' => mt_rand(Drupal::time()->getRequestTime() - 31536000, Drupal::time()->getRequestTime()),
++        ])
++        ->condition('rid', $redirect->id())
++        ->execute();
+     }
+ 
+     $context['results'][] = $redirect->id();
+@@ -156,8 +170,7 @@ function redirect_generate_batch_generate($num, array &$context) {
+ 
+   // Update our progress information.
+   $context['sandbox']['progress'] += $limit;
+-  //$context['message'] = t('Deleted URL redirect @rid.', array('@rid' => end($rids)));
+-
++  // $context['message'] = t('Deleted URL redirect @rid.', array('@rid' => end($rids)));
+   // Inform the batch engine that we are not finished,
+   // and provide an estimation of the completion level we reached.
+   if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
+@@ -165,6 +178,9 @@ function redirect_generate_batch_generate($num, array &$context) {
+   }
+ }
+ 
++/**
++ *
++ */
+ function redirect_generate_batch_finished($success, $results, $operations) {
+   if ($success) {
+     \Drupal::messenger()->addMessage(\Drupal::translation()->formatPlural(count($results), 'One URL redirect created.', '@count URL redirects created.'));
+@@ -177,11 +193,14 @@ function redirect_generate_batch_finished($success, $results, $operations) {
+   }
+ }
+ 
++/**
++ *
++ */
+ function _redirect_generate_url($external = FALSE, $max_levels = 2) {
+   $url = [];
+   if ($external) {
+     $tlds = ['com', 'net', 'org'];
+-    $url[] = 'http://www.example.'. $tlds[array_rand($tlds)];
++    $url[] = 'http://www.example.' . $tlds[array_rand($tlds)];
+   }
+   $max_levels = mt_rand($external ? 0 : 1, $max_levels);
+   for ($i = 1; $i <= $max_levels; $i++) {
+@@ -190,6 +209,9 @@ function _redirect_generate_url($external = FALSE, $max_levels = 2) {
+   return implode('/', $url);
+ }
+ 
++/**
++ *
++ */
+ function _redirect_generate_querystring() {
+   $query = [DevelGenerateBase::generateWord(mt_rand(1, 3)) => DevelGenerateBase::generateWord(mt_rand(2, 4))];
+   return $query;
+diff --git a/src/Entity/Redirect.php b/src/Entity/Redirect.php
+index c1796c1..757d584 100644
+--- a/src/Entity/Redirect.php
++++ b/src/Entity/Redirect.php
+@@ -305,7 +305,7 @@ class Redirect extends ContentEntityBase {
+       ->setTranslatable(FALSE)
+       ->setSettings([
+         'link_type' => LinkItemInterface::LINK_GENERIC,
+-        'title' => DRUPAL_DISABLED
++        'title' => DRUPAL_DISABLED,
+       ])
+       ->setDisplayOptions('form', [
+         'type' => 'link',
+diff --git a/src/EventSubscriber/RedirectRequestSubscriber.php b/src/EventSubscriber/RedirectRequestSubscriber.php
+index f3e35f8..e4ff453 100644
+--- a/src/EventSubscriber/RedirectRequestSubscriber.php
++++ b/src/EventSubscriber/RedirectRequestSubscriber.php
+@@ -25,7 +25,8 @@ use Symfony\Component\Routing\RequestContext;
+  */
+ class RedirectRequestSubscriber implements EventSubscriberInterface {
+ 
+-  /** @var  \Drupal\redirect\RedirectRepository */
++  /**
++   * @var  \Drupal\redirect\RedirectRepository*/
+   protected $redirectRepository;
+ 
+   /**
+diff --git a/src/EventSubscriber/RouteNormalizerRequestSubscriber.php b/src/EventSubscriber/RouteNormalizerRequestSubscriber.php
+index 274ba1e..858a70e 100644
+--- a/src/EventSubscriber/RouteNormalizerRequestSubscriber.php
++++ b/src/EventSubscriber/RouteNormalizerRequestSubscriber.php
+@@ -106,7 +106,7 @@ class RouteNormalizerRequestSubscriber implements EventSubscriberInterface {
+ 
+       // Strip off query parameters added by the route such as a CSRF token.
+       if (strpos($redirect_uri, '?') !== FALSE) {
+-        $redirect_uri  = strtok($redirect_uri, '?');
++        $redirect_uri = strtok($redirect_uri, '?');
+       }
+ 
+       // Append back the request query string from $_SERVER.
+@@ -135,7 +135,7 @@ class RouteNormalizerRequestSubscriber implements EventSubscriberInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  static function getSubscribedEvents() {
++  public static function getSubscribedEvents() {
+     $events[KernelEvents::REQUEST][] = ['onKernelRequestRedirect', 30];
+     return $events;
+   }
+diff --git a/src/Exception/RedirectLoopException.php b/src/Exception/RedirectLoopException.php
+index 2482862..faf4ae6 100644
+--- a/src/Exception/RedirectLoopException.php
++++ b/src/Exception/RedirectLoopException.php
+@@ -53,7 +53,6 @@ class RedirectLoopException extends \RuntimeException {
+    *
+    * @return int
+    *   The redirect ID.
+-   *
+    */
+   public function getRedirectId() {
+     return $this->rid;
+diff --git a/src/Form/RedirectDeleteForm.php b/src/Form/RedirectDeleteForm.php
+index 7d0d9ec..22dad0b 100644
+--- a/src/Form/RedirectDeleteForm.php
++++ b/src/Form/RedirectDeleteForm.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Entity\ContentEntityConfirmFormBase;
+ use Drupal\Core\Url;
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ class RedirectDeleteForm extends ContentEntityConfirmFormBase {
+ 
+   /**
+diff --git a/src/Form/RedirectForm.php b/src/Form/RedirectForm.php
+index 1b4f453..72ec6b5 100644
+--- a/src/Form/RedirectForm.php
++++ b/src/Form/RedirectForm.php
+@@ -11,6 +11,9 @@ use Drupal\Core\Url;
+ use Drupal\redirect\Entity\Redirect;
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ class RedirectForm extends ContentEntityForm {
+ 
+   /**
+@@ -23,7 +26,7 @@ class RedirectForm extends ContentEntityForm {
+     if ($redirect->isNew()) {
+ 
+       // To pass in the query set parameters into GET as follows:
+-      // source_query[key1]=value1&source_query[key2]=value2
++      // source_query[key1]=value1&source_query[key2]=value2.
+       $source_query = [];
+       if ($this->getRequest()->get('source_query')) {
+         $source_query = $this->getRequest()->get('source_query');
+@@ -67,7 +70,7 @@ class RedirectForm extends ContentEntityForm {
+     $redirect = $this->entity;
+ 
+     // Only add the configured languages and a single key for all languages.
+-    if (isset($form['language']['widget'][0]['value']))  {
++    if (isset($form['language']['widget'][0]['value'])) {
+       foreach (\Drupal::languageManager()->getLanguages(LanguageInterface::STATE_CONFIGURABLE) as $langcode => $language) {
+         $form['language']['widget'][0]['value']['#options'][$langcode] = $language->getName();
+       }
+@@ -140,7 +143,8 @@ class RedirectForm extends ContentEntityForm {
+         $form_state->setErrorByName('redirect_source', $this->t('The source path %source is already being redirected. Do you want to <a href="@edit-page">edit the existing redirect</a>?',
+           [
+             '%source' => $source['path'],
+-            '@edit-page' => $redirect->toUrl('edit-form')->toString()]));
++            '@edit-page' => $redirect->toUrl('edit-form')->toString(),
++          ]));
+       }
+     }
+   }
+@@ -153,4 +157,5 @@ class RedirectForm extends ContentEntityForm {
+     $this->messenger()->addMessage($this->t('The redirect has been saved.'));
+     $form_state->setRedirect('redirect.list');
+   }
++
+ }
+diff --git a/src/Form/RedirectSettingsForm.php b/src/Form/RedirectSettingsForm.php
+index 1cfe0ca..c70ce5c 100644
+--- a/src/Form/RedirectSettingsForm.php
++++ b/src/Form/RedirectSettingsForm.php
+@@ -5,6 +5,9 @@ namespace Drupal\redirect\Form;
+ use Drupal\Core\Form\ConfigFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ class RedirectSettingsForm extends ConfigFormBase {
+ 
+   /**
+@@ -13,6 +16,7 @@ class RedirectSettingsForm extends ConfigFormBase {
+   public function getFormId() {
+     return 'redirect_settings_form';
+   }
++
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/Plugin/Action/DeleteRedirect.php b/src/Plugin/Action/DeleteRedirect.php
+index 305a465..2e6f475 100644
+--- a/src/Plugin/Action/DeleteRedirect.php
++++ b/src/Plugin/Action/DeleteRedirect.php
+@@ -45,7 +45,7 @@ class DeleteRedirect extends ActionBase implements ContainerFactoryPluginInterfa
+    *   The plugin implementation definition.
+    * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store_factory
+    *   The tempstore factory.
+-   * @param AccountInterface $current_user
++   * @param \Drupal\Core\Session\AccountInterface $current_user
+    *   Current user.
+    */
+   public function __construct(array $configuration, $plugin_id, $plugin_definition, PrivateTempStoreFactory $temp_store_factory, AccountInterface $current_user) {
+diff --git a/src/Plugin/Field/FieldWidget/RedirectSourceWidget.php b/src/Plugin/Field/FieldWidget/RedirectSourceWidget.php
+index a07f218..22a7bba 100644
+--- a/src/Plugin/Field/FieldWidget/RedirectSourceWidget.php
++++ b/src/Plugin/Field/FieldWidget/RedirectSourceWidget.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\redirect\Plugin\Field\FieldWidget;
+ 
+-use Drupal\Component\Utility\NestedArray;
+ use Drupal\Component\Utility\UrlHelper;
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Field\WidgetBase;
+@@ -119,4 +118,5 @@ class RedirectSourceWidget extends WidgetBase {
+     }
+     return $values;
+   }
++
+ }
+diff --git a/src/Plugin/Validation/Constraint/SourceLinkTypeConstraint.php b/src/Plugin/Validation/Constraint/SourceLinkTypeConstraint.php
+index 96a4595..b6e7d42 100644
+--- a/src/Plugin/Validation/Constraint/SourceLinkTypeConstraint.php
++++ b/src/Plugin/Validation/Constraint/SourceLinkTypeConstraint.php
+@@ -88,5 +88,5 @@ class SourceLinkTypeConstraint extends Constraint implements ConstraintValidator
+       }
+     }
+   }
+-}
+ 
++}
+diff --git a/src/Plugin/migrate/process/d7/PathRedirect.php b/src/Plugin/migrate/process/d7/PathRedirect.php
+index 0f44170..799a380 100644
+--- a/src/Plugin/migrate/process/d7/PathRedirect.php
++++ b/src/Plugin/migrate/process/d7/PathRedirect.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\redirect\Plugin\migrate\process\d7\PathRedirect.
+- */
+-
+ namespace Drupal\redirect\Plugin\migrate\process\d7;
+ 
+ use Drupal\migrate\MigrateExecutableInterface;
+@@ -51,4 +46,4 @@ class PathRedirect extends ProcessPluginBase {
+     return $uri;
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/Plugin/migrate/process/d7/RedirectSourceQuery.php b/src/Plugin/migrate/process/d7/RedirectSourceQuery.php
+index 8548d80..b02abfa 100644
+--- a/src/Plugin/migrate/process/d7/RedirectSourceQuery.php
++++ b/src/Plugin/migrate/process/d7/RedirectSourceQuery.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\redirect\Plugin\migrate\process\d7\RedirectSourceQuery.
+- */
+-
+ namespace Drupal\redirect\Plugin\migrate\process\d7;
+ 
+ use Drupal\migrate\MigrateExecutableInterface;
+diff --git a/src/Plugin/migrate/source/d7/PathRedirect.php b/src/Plugin/migrate/source/d7/PathRedirect.php
+index c9ec720..f1cd2e7 100644
+--- a/src/Plugin/migrate/source/d7/PathRedirect.php
++++ b/src/Plugin/migrate/source/d7/PathRedirect.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\redirect\Plugin\migrate\source\d7\PathRedirect.
+- */
+-
+ namespace Drupal\redirect\Plugin\migrate\source\d7;
+ 
+ use Drupal\migrate\Row;
+diff --git a/src/RedirectChecker.php b/src/RedirectChecker.php
+index 02da7ad..426c8bf 100644
+--- a/src/RedirectChecker.php
++++ b/src/RedirectChecker.php
+@@ -40,6 +40,9 @@ class RedirectChecker {
+    */
+   protected $routeProvider;
+ 
++  /**
++   *
++   */
+   public function __construct(ConfigFactoryInterface $config, StateInterface $state, AccessManager $access_manager, AccountInterface $account, RouteProviderInterface $route_provider) {
+     $this->config = $config->get('redirect.settings');
+     $this->accessManager = $access_manager;
+@@ -51,7 +54,7 @@ class RedirectChecker {
+   /**
+    * Determines if redirect may be performed.
+    *
+-   * @param Request $request
++   * @param \Symfony\Component\HttpFoundation\Request $request
+    *   The current request object.
+    * @param string $route_name
+    *   The current route name.
+diff --git a/src/RedirectRepository.php b/src/RedirectRepository.php
+index ff1ccf8..d8976a1 100644
+--- a/src/RedirectRepository.php
++++ b/src/RedirectRepository.php
+@@ -9,6 +9,9 @@ use Drupal\Core\Language\Language;
+ use Drupal\redirect\Entity\Redirect;
+ use Drupal\redirect\Exception\RedirectLoopException;
+ 
++/**
++ *
++ */
+ class RedirectRepository {
+ 
+   /**
+@@ -179,4 +182,5 @@ class RedirectRepository {
+   public function loadMultiple(array $redirect_ids = NULL) {
+     return $this->manager->getStorage('redirect')->loadMultiple($redirect_ids);
+   }
++
+ }
+diff --git a/tests/fixtures/drupal6.php b/tests/fixtures/drupal6.php
+index ca04d67..ef90943 100644
+--- a/tests/fixtures/drupal6.php
++++ b/tests/fixtures/drupal6.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ /**
+  * @file
+  * A database agnostic dump for testing purposes.
+diff --git a/tests/fixtures/drupal7.php b/tests/fixtures/drupal7.php
+index 3652ee8..03b341d 100644
+--- a/tests/fixtures/drupal7.php
++++ b/tests/fixtures/drupal7.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ /**
+  * @file
+  * A database agnostic dump for testing purposes.
+@@ -70,7 +71,7 @@ $connection->schema()->createTable('redirect', [
+   'primary key' => ['rid'],
+   'unique keys' => [
+     'source_language' => ['source', 'language'],
+-    'expires' => ['type', 'access']
++    'expires' => ['type', 'access'],
+   ],
+   'mysql_character_set' => 'utf8',
+ ]);
+@@ -142,15 +143,15 @@ $connection->schema()->createTable('variable', [
+ ]);
+ 
+ $connection->insert('variable')
+-->fields([
+-  'name',
+-  'value',
+-])
+-->values([
+-  'name' => 'redirect_default_status_code',
+-  'value' => 's:3:"307";',
+-])
+-->execute();
++  ->fields([
++    'name',
++    'value',
++  ])
++  ->values([
++    'name' => 'redirect_default_status_code',
++    'value' => 's:3:"307";',
++  ])
++  ->execute();
+ 
+ $connection->schema()->createTable('system', [
+   'fields' => [
+@@ -215,26 +216,26 @@ $connection->schema()->createTable('system', [
+ ]);
+ 
+ $connection->insert('system')
+-->fields([
+-  'filename',
+-  'name',
+-  'type',
+-  'owner',
+-  'status',
+-  'bootstrap',
+-  'schema_version',
+-  'weight',
+-  'info',
+-])
+-->values([
+-  'filename' => 'modules/contrib/redirect/redirect.module',
+-  'name' => 'redirect',
+-  'type' => 'module',
+-  'owner' => '',
+-  'status' => '1',
+-  'bootstrap' => '0',
+-  'schema_version' => '7000',
+-  'weight' => '0',
+-  'info' => 'a:13:{s:4:"name";s:8:"Redirect";s:11:"description";s:51:"Allows users to redirect from old URLs to new URLs.";s:4:"core";s:3:"7.x";s:5:"files";a:11:{i:0;s:15:"redirect.module";i:1;s:18:"redirect.admin.inc";i:2;s:16:"redirect.install";i:3;s:13:"redirect.test";i:4;s:24:"views/redirect.views.inc";i:5;s:47:"views/redirect_handler_filter_redirect_type.inc";i:6;s:48:"views/redirect_handler_field_redirect_source.inc";i:7;s:50:"views/redirect_handler_field_redirect_redirect.inc";i:8;s:52:"views/redirect_handler_field_redirect_operations.inc";i:9;s:51:"views/redirect_handler_field_redirect_link_edit.inc";i:10;s:53:"views/redirect_handler_field_redirect_link_delete.inc";}s:9:"configure";s:37:"admin/config/search/redirect/settings";s:7:"version";s:11:"7.x-1.0-rc1";s:7:"project";s:8:"redirect";s:9:"datestamp";s:10:"1347989995";s:5:"mtime";i:1347989995;s:12:"dependencies";a:0:{}s:7:"package";s:5:"Other";s:3:"php";s:5:"5.2.4";s:9:"bootstrap";i:0;}',
+-])
+-->execute();
++  ->fields([
++    'filename',
++    'name',
++    'type',
++    'owner',
++    'status',
++    'bootstrap',
++    'schema_version',
++    'weight',
++    'info',
++  ])
++  ->values([
++    'filename' => 'modules/contrib/redirect/redirect.module',
++    'name' => 'redirect',
++    'type' => 'module',
++    'owner' => '',
++    'status' => '1',
++    'bootstrap' => '0',
++    'schema_version' => '7000',
++    'weight' => '0',
++    'info' => 'a:13:{s:4:"name";s:8:"Redirect";s:11:"description";s:51:"Allows users to redirect from old URLs to new URLs.";s:4:"core";s:3:"7.x";s:5:"files";a:11:{i:0;s:15:"redirect.module";i:1;s:18:"redirect.admin.inc";i:2;s:16:"redirect.install";i:3;s:13:"redirect.test";i:4;s:24:"views/redirect.views.inc";i:5;s:47:"views/redirect_handler_filter_redirect_type.inc";i:6;s:48:"views/redirect_handler_field_redirect_source.inc";i:7;s:50:"views/redirect_handler_field_redirect_redirect.inc";i:8;s:52:"views/redirect_handler_field_redirect_operations.inc";i:9;s:51:"views/redirect_handler_field_redirect_link_edit.inc";i:10;s:53:"views/redirect_handler_field_redirect_link_delete.inc";}s:9:"configure";s:37:"admin/config/search/redirect/settings";s:7:"version";s:11:"7.x-1.0-rc1";s:7:"project";s:8:"redirect";s:9:"datestamp";s:10:"1347989995";s:5:"mtime";i:1347989995;s:12:"dependencies";a:0:{}s:7:"package";s:5:"Other";s:3:"php";s:5:"5.2.4";s:9:"bootstrap";i:0;}',
++  ])
++  ->execute();
+diff --git a/tests/src/Functional/AssertRedirectTrait.php b/tests/src/Functional/AssertRedirectTrait.php
+index 6fa2296..611e693 100644
+--- a/tests/src/Functional/AssertRedirectTrait.php
++++ b/tests/src/Functional/AssertRedirectTrait.php
+@@ -31,8 +31,9 @@ trait AssertRedirectTrait {
+     /** @var \Psr\Http\Message\ResponseInterface $response */
+     $url = $this->getAbsoluteUrl($path);
+     try {
+-      $response = $client->request($method, $url, ['allow_redirects' => false]);
+-    } catch (ClientException $e) {
++      $response = $client->request($method, $url, ['allow_redirects' => FALSE]);
++    }
++    catch (ClientException $e) {
+       $this->assertEquals($expected_ending_status, $e->getResponse()->getStatusCode());
+       return $e->getResponse();
+     }
+diff --git a/tests/src/Functional/GlobalRedirectTest.php b/tests/src/Functional/GlobalRedirectTest.php
+index 6f806d6..9e7b809 100644
+--- a/tests/src/Functional/GlobalRedirectTest.php
++++ b/tests/src/Functional/GlobalRedirectTest.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\Tests\redirect\Functional;
+ 
+ use Behat\Mink\Driver\GoutteDriver;
+-use Drupal\Core\Cache\Cache;
+ use Drupal\Core\Language\Language;
+ use Drupal\language\Entity\ConfigurableLanguage;
+ use Drupal\taxonomy\Entity\Term;
+@@ -199,7 +198,7 @@ class GlobalRedirectTest extends BrowserTestBase {
+       ->getClient()
+       ->post($this->getAbsoluteUrl('Test-node'), [
+         // Do not follow redirects. This way, we can assert that the server did
+-        // not even _try_ to redirect us
++        // not even _try_ to redirect us.
+         'allow_redirects' => FALSE,
+         'headers' => [
+           'Accept' => 'application/json',
+@@ -217,8 +216,7 @@ class GlobalRedirectTest extends BrowserTestBase {
+     $this->config->set('access_check', FALSE)->save();
+     // @todo - here it seems that the access check runs prior to our redirecting
+     //   check why so and enable the test.
+-    //$this->assertRedirect('admin/config/system/site-information', 'site-info');
+-
++    // $this->assertRedirect('admin/config/system/site-information', 'site-info');
+     // Test original query string is preserved with alias normalization.
+     $this->assertRedirect('Test-node?&foo&.bar=baz', 'test-node?&foo&.bar=baz');
+ 
+diff --git a/tests/src/Functional/RedirectUITest.php b/tests/src/Functional/RedirectUITest.php
+index 51fb2ab..310aed1 100644
+--- a/tests/src/Functional/RedirectUITest.php
++++ b/tests/src/Functional/RedirectUITest.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\Tests\redirect\Functional;
+ 
+-use Drupal\Component\Render\FormattableMarkup;
+ use Drupal\Core\Language\Language;
+ use Drupal\Core\Logger\RfcLogLevel;
+ use Drupal\Core\Url;
+@@ -32,7 +31,7 @@ class RedirectUITest extends BrowserTestBase {
+   /**
+    * @var \Drupal\Core\Entity\Sql\SqlContentEntityStorage
+    */
+-   protected $storage;
++  protected $storage;
+ 
+   /**
+    * {@inheritdoc}
+@@ -153,7 +152,7 @@ class RedirectUITest extends BrowserTestBase {
+   /**
+    * Test the redirect loop protection and logging.
+    */
+-  function testRedirectLoop() {
++  public function testRedirectLoop() {
+     // Redirect loop redirection only works when page caching is disabled.
+     \Drupal::service('module_installer')->uninstall(['page_cache']);
+ 
+@@ -191,7 +190,7 @@ class RedirectUITest extends BrowserTestBase {
+   /**
+    * Returns a new vocabulary with random properties.
+    */
+-  function createVocabulary() {
++  public function createVocabulary() {
+     // Create a vocabulary.
+     $vocabulary = Vocabulary::create([
+       'name' => $this->randomMachineName(),
+@@ -207,7 +206,7 @@ class RedirectUITest extends BrowserTestBase {
+   /**
+    * Returns a new term with random properties in vocabulary $vid.
+    */
+-  function createTerm($vocabulary) {
++  public function createTerm($vocabulary) {
+     $filter_formats = filter_formats();
+     $format = array_pop($filter_formats);
+     $term = Term::create([
+diff --git a/tests/src/FunctionalJavascript/RedirectJavascriptTest.php b/tests/src/FunctionalJavascript/RedirectJavascriptTest.php
+index ae8895e..acb2bf4 100644
+--- a/tests/src/FunctionalJavascript/RedirectJavascriptTest.php
++++ b/tests/src/FunctionalJavascript/RedirectJavascriptTest.php
+@@ -70,13 +70,13 @@ class RedirectJavascriptTest extends WebDriverTestBase {
+     // Test populating the redirect form with predefined values.
+     $this->drupalGet(
+       'admin/config/search/redirect/add', [
+-      'query' => [
+-        'source' => 'non-existing',
+-        'source_query' => ['key' => 'val', 'key1' => 'val1'],
+-        'redirect' => 'node',
+-        'redirect_options' => ['query' => ['key' => 'val', 'key1' => 'val1']],
++        'query' => [
++          'source' => 'non-existing',
++          'source_query' => ['key' => 'val', 'key1' => 'val1'],
++          'redirect' => 'node',
++          'redirect_options' => ['query' => ['key' => 'val', 'key1' => 'val1']],
++        ],
+       ]
+-    ]
+     );
+     $this->assertFieldByName('redirect_source[0][path]', 'non-existing?key=val&key1=val1');
+     $this->assertFieldByName('redirect_redirect[0][uri]', '/node?key=val&key1=val1');
+@@ -109,8 +109,8 @@ class RedirectJavascriptTest extends WebDriverTestBase {
+     // Append a query string to see if we handle query data properly.
+     $this->drupalPostForm(
+       NULL, [
+-      'redirect_source[0][path]' => 'non-existing?key=value',
+-    ], t('Save')
++        'redirect_source[0][path]' => 'non-existing?key=value',
++      ], t('Save')
+     );
+ 
+     // Check the location after update and check if the value has been updated
+@@ -193,7 +193,7 @@ class RedirectJavascriptTest extends WebDriverTestBase {
+     $page->pressButton('Save');
+     $this->assertRaw(t('The anchor fragments are not allowed.'));
+ 
+-    // Adding path that starts with /
++    // Adding path that starts with /.
+     $this->drupalGet('admin/config/search/redirect/add');
+     $page = $this->getSession()->getPage();
+     $page->fillField('redirect_source[0][path]', '/page-to-redirect');
+@@ -215,10 +215,10 @@ class RedirectJavascriptTest extends WebDriverTestBase {
+     // Filter with non existing value.
+     $this->drupalGet(
+       'admin/config/search/redirect', [
+-      'query' => [
+-        'status_code' => '3',
+-      ],
+-    ]
++        'query' => [
++          'status_code' => '3',
++        ],
++      ]
+     );
+ 
+     $rows = $this->xpath('//tbody/tr');
+@@ -228,11 +228,11 @@ class RedirectJavascriptTest extends WebDriverTestBase {
+     // Filter with existing values.
+     $this->drupalGet(
+       'admin/config/search/redirect', [
+-      'query' => [
+-        'redirect_source__path' => 'test',
+-        'status_code' => '2',
+-      ],
+-    ]
++        'query' => [
++          'redirect_source__path' => 'test',
++          'status_code' => '2',
++        ],
++      ]
+     );
+ 
+     $rows = $this->xpath('//tbody/tr');
+@@ -241,10 +241,10 @@ class RedirectJavascriptTest extends WebDriverTestBase {
+ 
+     $this->drupalGet(
+       'admin/config/search/redirect', [
+-      'query' => [
+-        'redirect_redirect__uri' => 'nod',
+-      ],
+-    ]
++        'query' => [
++          'redirect_redirect__uri' => 'nod',
++        ],
++      ]
+     );
+ 
+     $rows = $this->xpath('//tbody/tr');
+diff --git a/tests/src/Kernel/Migrate/d6/PathRedirectTest.php b/tests/src/Kernel/Migrate/d6/PathRedirectTest.php
+index c3eebbc..a1e0867 100644
+--- a/tests/src/Kernel/Migrate/d6/PathRedirectTest.php
++++ b/tests/src/Kernel/Migrate/d6/PathRedirectTest.php
+@@ -5,7 +5,6 @@ namespace Drupal\Tests\redirect\Kernel\Migrate\d6;
+ use Drupal\redirect\Entity\Redirect;
+ use Drupal\Tests\migrate_drupal\Kernel\MigrateDrupalTestBase;
+ 
+-
+ /**
+  * Tests the d6_path_redirect source plugin.
+  *
+@@ -24,7 +23,7 @@ class PathRedirectTest extends MigrateDrupalTestBase {
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('redirect');
+-    $this->loadFixture( __DIR__ . '/../../../../../tests/fixtures/drupal6.php');
++    $this->loadFixture(__DIR__ . '/../../../../../tests/fixtures/drupal6.php');
+ 
+     $this->executeMigrations(['d6_path_redirect']);
+   }
+@@ -34,7 +33,7 @@ class PathRedirectTest extends MigrateDrupalTestBase {
+    */
+   public function testPathRedirect() {
+ 
+-    /** @var Redirect $redirect */
++    /** @var \Drupal\redirect\Entity\Redirect $redirect */
+     $redirect = Redirect::load(5);
+     $this->assertSame($this->getMigration('d6_path_redirect')
+       ->getIdMap()
+@@ -46,4 +45,5 @@ class PathRedirectTest extends MigrateDrupalTestBase {
+     $this->assertSame("/test/source/url2", $redirect->getSourceUrl());
+     $this->assertSame("http://test/external/redirect/url?foo=bar&biz=buz", $redirect->getRedirectUrl()->toUriString());
+   }
++
+ }
+diff --git a/tests/src/Kernel/Migrate/d7/PathRedirectSourceTest.php b/tests/src/Kernel/Migrate/d7/PathRedirectSourceTest.php
+index a5f37a8..45b439d 100644
+--- a/tests/src/Kernel/Migrate/d7/PathRedirectSourceTest.php
++++ b/tests/src/Kernel/Migrate/d7/PathRedirectSourceTest.php
+@@ -26,7 +26,7 @@ class PathRedirectSourceTest extends MigrateSqlSourceTestBase {
+       [
+         'name' => 'redirect_default_status_code',
+         'value' => 's:3:"307";',
+-      ]
++      ],
+     ];
+ 
+     $tests[0]['source_data']['redirect'] = [
+diff --git a/tests/src/Kernel/Migrate/d7/PathRedirectTest.php b/tests/src/Kernel/Migrate/d7/PathRedirectTest.php
+index 15134cd..0362ada 100644
+--- a/tests/src/Kernel/Migrate/d7/PathRedirectTest.php
++++ b/tests/src/Kernel/Migrate/d7/PathRedirectTest.php
+@@ -1,16 +1,10 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\Tests\redirect\Kernel\Migrate\d7\PathRedirectTest.
+- */
+-
+ namespace Drupal\Tests\redirect\Kernel\Migrate\d7;
+ 
+ use Drupal\redirect\Entity\Redirect;
+ use Drupal\Tests\migrate_drupal\Kernel\MigrateDrupalTestBase;
+ 
+-
+ /**
+  * Tests the d7_path_redirect source plugin.
+  *
+@@ -47,7 +41,7 @@ class PathRedirectTest extends MigrateDrupalTestBase {
+    *   The expected status code.
+    */
+   protected function assertEntity($id, $source_url, $redirect_url, $status_code) {
+-    /** @var Redirect $redirect */
++    /** @var \Drupal\redirect\Entity\Redirect $redirect */
+     $redirect = Redirect::load($id);
+     $this->assertSame($this->getMigration('d7_path_redirect')
+       ->getIdMap()
+@@ -65,4 +59,5 @@ class PathRedirectTest extends MigrateDrupalTestBase {
+     $this->assertEntity(5, '/test/source/url', 'base:test/redirect/url', '301');
+     $this->assertEntity(7, '/test/source/url2', 'http://test/external/redirect/url?foo=bar&biz=buz#fragment-1', '307');
+   }
++
+ }
+diff --git a/tests/src/Kernel/RedirectAPITest.php b/tests/src/Kernel/RedirectAPITest.php
+index a379b12..01bc880 100644
+--- a/tests/src/Kernel/RedirectAPITest.php
++++ b/tests/src/Kernel/RedirectAPITest.php
+@@ -270,16 +270,16 @@ class RedirectAPITest extends KernelTestBase {
+    * Test redirect_parse_url().
+    */
+   public function testParseURL() {
+-    //$test_cases = array(
++    // $test_cases = array(
+     //  array(
+     //    'input' => array('b' => 'aa', 'c' => array('c2' => 'aa', 'c1' => 'aa'), 'a' => 'aa'),
+     //    'expected' => array('a' => 'aa', 'b' => 'aa', 'c' => array('c1' => 'aa', 'c2' => 'aa')),
+     //  ),
+-    //);
+-    //foreach ($test_cases as $index => $test_case) {
++    // );
++    // foreach ($test_cases as $index => $test_case) {
+     //  $output = redirect_parse_url($test_case['input']);
+     //  $this->assertIdentical($output, $test_case['expected']);
+-    //}
++    // }
+   }
+ 
+   /**
+diff --git a/tests/src/Unit/RedirectCheckerTest.php b/tests/src/Unit/RedirectCheckerTest.php
+index 73aba86..e6fb5f9 100644
+--- a/tests/src/Unit/RedirectCheckerTest.php
++++ b/tests/src/Unit/RedirectCheckerTest.php
+@@ -4,8 +4,6 @@ namespace Drupal\Tests\redirect\Unit;
+ 
+ use Drupal\redirect\RedirectChecker;
+ use Drupal\Tests\UnitTestCase;
+-use PHPUnit_Framework_MockObject_MockObject;
+-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
+ use Symfony\Component\HttpFoundation\ParameterBag;
+ use Symfony\Component\Routing\Route;
+ 
+@@ -63,7 +61,6 @@ class RedirectCheckerTest extends UnitTestCase {
+     $request = $this->getRequestStub('index.php', 'POST');
+     $this->assertFalse($checker->canRedirect($request), 'Cannot redirect other than GET method');
+ 
+-
+     // Route access check, deny access.
+     $request = $this->getRequestStub('index.php', 'GET');
+     $this->assertFalse($checker->canRedirect($request, 'denied_route'), 'Can not redirect');
+@@ -97,27 +94,27 @@ class RedirectCheckerTest extends UnitTestCase {
+       ->with('system.maintenance_mode')
+       ->will($this->returnValue(FALSE));
+ 
+-//    $checker = new RedirectChecker($this->getConfigFactoryStub($config), $state);
+-//
+-//    $route = $this->getMockBuilder('Symfony\Component\Routing\Route')
+-//      ->disableOriginalConstructor()
+-//      ->getMock();
+-//    $route->expects($this->any())
+-//      ->method('getOption')
+-//      ->with('_admin_route')
+-//      ->will($this->returnValue('system.admin_config_search'));
+-//
+-//    $request = $this->getRequestStub('index.php', 'GET',
+-//      array(RouteObjectInterface::ROUTE_OBJECT => $route));
+-//    $this->assertFalse($checker->canRedirect($request), 'Cannot redirect if we are requesting a admin path');
+-//
+-//    // We are at admin path with ignore_admin_path set to TRUE.
+-//    $config['redirect.settings']['ignore_admin_path'] = TRUE;
+-//    $checker = new RedirectChecker($this->getConfigFactoryStub($config), $state);
+-//
+-//    $request = $this->getRequestStub('index.php', 'GET',
+-//      array(RouteObjectInterface::ROUTE_OBJECT => $route));
+-//    $this->assertTrue($checker->canRedirect($request), 'Can redirect a admin with ignore_admin_path set to TRUE');
++    // $checker = new RedirectChecker($this->getConfigFactoryStub($config), $state);
++    //
++    //    $route = $this->getMockBuilder('Symfony\Component\Routing\Route')
++    //      ->disableOriginalConstructor()
++    //      ->getMock();
++    //    $route->expects($this->any())
++    //      ->method('getOption')
++    //      ->with('_admin_route')
++    //      ->will($this->returnValue('system.admin_config_search'));
++    //
++    //    $request = $this->getRequestStub('index.php', 'GET',
++    //      array(RouteObjectInterface::ROUTE_OBJECT => $route));
++    //    $this->assertFalse($checker->canRedirect($request), 'Cannot redirect if we are requesting a admin path');
++    //
++    //    // We are at admin path with ignore_admin_path set to TRUE.
++    //    $config['redirect.settings']['ignore_admin_path'] = TRUE;
++    //    $checker = new RedirectChecker($this->getConfigFactoryStub($config), $state);
++    //
++    //    $request = $this->getRequestStub('index.php', 'GET',
++    //      array(RouteObjectInterface::ROUTE_OBJECT => $route));
++    //    $this->assertTrue($checker->canRedirect($request), 'Can redirect a admin with ignore_admin_path set to TRUE');
+   }
+ 
+   /**
+@@ -132,7 +129,7 @@ class RedirectCheckerTest extends UnitTestCase {
+    * @param array $query
+    *   Query paramter to be passed into request->query.
+    *
+-   * @return PHPUnit_Framework_MockObject_MockObject
++   * @return \PHPUnit_Framework_MockObject_MockObject
+    *   Mocked request object.
+    */
+   protected function getRequestStub($script_name, $method, array $attributes = [], array $query = []) {
+diff --git a/tests/src/Unit/RedirectRequestSubscriberTest.php b/tests/src/Unit/RedirectRequestSubscriberTest.php
+index 3f38469..53cbe22 100644
+--- a/tests/src/Unit/RedirectRequestSubscriberTest.php
++++ b/tests/src/Unit/RedirectRequestSubscriberTest.php
+@@ -8,7 +8,6 @@ use Drupal\Core\Language\Language;
+ use Drupal\path_alias\AliasManagerInterface;
+ use Drupal\redirect\EventSubscriber\RedirectRequestSubscriber;
+ use Drupal\Tests\UnitTestCase;
+-use PHPUnit_Framework_MockObject_MockObject;
+ use Symfony\Component\HttpFoundation\RedirectResponse;
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\HttpFoundation\Response;
+@@ -189,7 +188,7 @@ class RedirectRequestSubscriberTest extends UnitTestCase {
+    * @param $redirect
+    *   The redirect object to be returned.
+    *
+-   * @return PHPUnit_Framework_MockObject_MockObject
++   * @return \PHPUnit_Framework_MockObject_MockObject
+    *   The redirect repository.
+    */
+   protected function getRedirectRepositoryStub($method, $redirect) {
+@@ -223,7 +222,7 @@ class RedirectRequestSubscriberTest extends UnitTestCase {
+    * @param int $status_code
+    *   The redirect status code.
+    *
+-   * @return PHPUnit_Framework_MockObject_MockObject
++   * @return \PHPUnit_Framework_MockObject_MockObject
+    *   The mocked redirect object.
+    */
+   protected function getRedirectStub($url, $status_code = 301) {
+@@ -273,7 +272,7 @@ class RedirectRequestSubscriberTest extends UnitTestCase {
+    * @param $path_info
+    * @param $query_string
+    *
+-   * @return GetResponseEvent
++   * @return \Symfony\Component\HttpKernel\Event\GetResponseEvent
+    */
+   protected function getGetResponseEventStub($path_info, $query_string) {
+     $request = Request::create($path_info . '?' . $query_string, 'GET', [], [], [], ['SCRIPT_NAME' => 'index.php']);

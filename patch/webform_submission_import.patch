@@ -1,0 +1,185 @@
+diff --git a/src/Form/SubmissionImportForm.php b/src/Form/SubmissionImportForm.php
+index 57ce563..3045392 100644
+--- a/src/Form/SubmissionImportForm.php
++++ b/src/Form/SubmissionImportForm.php
+@@ -1,27 +1,17 @@
+ <?php
+-/**
+- * Created by PhpStorm.
+- * User: dchaf
+- * Date: 1/28/2019
+- * Time: 2:50 PM
+- */
+ 
+ namespace Drupal\webform_submission_import\Form;
+ 
++use Drupal\webform\Utility\WebformElementHelper;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\FormBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\webform\Entity;
+-use Drupal\webform\Entity\Webform;
+-use Drupal\webform\Entity\WebformSubmission;
+ use Drupal\webform\WebformRequestInterface;
+ use Drupal\webform\WebformSubmissionForm;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+-
+-
+ /**
+- * Class SubmissionImportForm
++ * Class SubmissionImportForm.
+  */
+ class SubmissionImportForm extends FormBase {
+ 
+@@ -88,36 +78,35 @@ class SubmissionImportForm extends FormBase {
+    * {@inheritdoc}
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+-    $form = array(
+-      '#attributes' => array('enctype' => 'multipart/form-data'),
+-    );
++    $form = [
++      '#attributes' => ['enctype' => 'multipart/form-data'],
++    ];
+ 
+-    $form['file_upload_details'] = array(
+-      '#markup' => '<p>'.t('Upload a CSV file. First row should contain headers matching field names from the form. Extra columns will be ignored.').'</p>',
+-    );
++    $form['file_upload_details'] = [
++      '#markup' => '<p>' . t('Upload a CSV file. First row should contain headers matching field names from the form. Extra columns will be ignored.') . '</p>',
++    ];
+ 
+-    $fieldNames = array();
++    $fieldNames = [];
+     $elements = $this->webform->getElementsDecoded();
+-    $elementsFlattened = \Drupal\webform\Utility\WebformElementHelper::getFlattened($elements);
+-    $fields = array_filter($elementsFlattened, function($e){
++    $elementsFlattened = WebformElementHelper::getFlattened($elements);
++    $fields = array_filter($elementsFlattened, function ($e) {
+       return $e['#type'] != 'webform_wizard_page';
+     });
+-    $requiredFields = array_filter($fields, function($e){
++    $requiredFields = array_filter($fields, function ($e) {
+       return isset($e['#required']) && $e['#required'] == 1;
+     });
+ 
+-    $form['help_required_fields'] = array(
+-      '#markup' => '<strong>Required Fields:</strong> '.implode(', ', array_keys($requiredFields)),
+-    );
+-    $form['help_additional_fields'] = array(
+-      '#markup' => '<br /><strong>Additional Fields:</strong> '.implode(', ', array_keys(array_diff_key($fields, $requiredFields))),
+-    );
+-
++    $form['help_required_fields'] = [
++      '#markup' => '<strong>Required Fields:</strong> ' . implode(', ', array_keys($requiredFields)),
++    ];
++    $form['help_additional_fields'] = [
++      '#markup' => '<br /><strong>Additional Fields:</strong> ' . implode(', ', array_keys(array_diff_key($fields, $requiredFields))),
++    ];
+ 
+-    $validators = array(
+-      'file_validate_extensions' => array('csv'),
+-    );
+-    $form['sub_file'] = array(
++    $validators = [
++      'file_validate_extensions' => ['csv'],
++    ];
++    $form['sub_file'] = [
+       '#type' => 'managed_file',
+       '#name' => 'sub_file',
+       '#title' => t('Submissions File'),
+@@ -125,14 +114,14 @@ class SubmissionImportForm extends FormBase {
+       '#description' => t('CSV format only'),
+       '#upload_validators' => $validators,
+       '#upload_location' => 'public://webform_submission_imports/',
+-    );
++    ];
+ 
+     $form['actions']['#type'] = 'actions';
+-    $form['actions']['submit'] = array(
++    $form['actions']['submit'] = [
+       '#type' => 'submit',
+       '#value' => $this->t('Import'),
+       '#button_type' => 'primary',
+-    );
++    ];
+ 
+     return $form;
+   }
+@@ -142,12 +131,11 @@ class SubmissionImportForm extends FormBase {
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+    */
+   public function validateForm(array &$form, FormStateInterface $form_state) {
+-    if($form_state->getValue('sub_file') == NULL){
++    if ($form_state->getValue('sub_file') == NULL) {
+       $form_state->setErrorByName('sub_file', $this->t('File.'));
+     }
+   }
+ 
+-
+   /**
+    * @param array $form
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+@@ -162,43 +150,47 @@ class SubmissionImportForm extends FormBase {
+     $importCount = 0;
+     ini_set('memory_limit', '8192M');
+     drupal_set_time_limit(1800);
+-    while(($rowData = fgetcsv($handle)) !== FALSE){
+-      if(empty($fields)){
++    while (($rowData = fgetcsv($handle)) !== FALSE) {
++      if (empty($fields)) {
+         $fields = $rowData;
+         continue;
+       }
+       $fieldData = array_combine($fields, $rowData);
+-      if($fieldData !== FALSE) {
++      if ($fieldData !== FALSE) {
+         $import = $this->import_row(array_combine($fields, $rowData));
+-        if($import){
++        if ($import) {
+           $importCount++;
+         }
+       }
+     }
+     fclose($handle);
+     drupal_set_time_limit(120);
+-    dpm('Successfully imported '.$importCount.' submission(s).');
++    dpm('Successfully imported ' . $importCount . ' submission(s).');
+   }
+ 
+-  private function import_row($rowData = array()){
++  /**
++   *
++   */
++  private function import_row($rowData = []) {
+     $values = [
+       'webform_id' => $this->webform->id(),
+       'current_page' => 'webform_submission_import',
+       'data' => $rowData,
+     ];
+ 
+-    if(WebformSubmissionForm::isOpen($this->webform) === TRUE){
++    if (WebformSubmissionForm::isOpen($this->webform) === TRUE) {
+       $errors = WebformSubmissionForm::validateFormValues($values);
+-      if(!empty($errors)){
+-        \Drupal::logger('webform_submission_import')->error('Error importing record ::: <br /><pre>'.print_r($values, true).'</pre><hr /><pre>'.print_r($errors, true).'</pre>');
+-        return false;
++      if (!empty($errors)) {
++        \Drupal::logger('webform_submission_import')->error('Error importing record ::: <br /><pre>' . print_r($values, TRUE) . '</pre><hr /><pre>' . print_r($errors, TRUE) . '</pre>');
++        return FALSE;
+       }
+       else {
+         $webform_submission = WebformSubmissionForm::submitFormValues($values);
+-        if(is_numeric($webform_submission->id()) && $webform_submission->id() > 0){
+-          return true;
++        if (is_numeric($webform_submission->id()) && $webform_submission->id() > 0) {
++          return TRUE;
+         }
+       }
+     }
+   }
+-}
+\ No newline at end of file
++
++}

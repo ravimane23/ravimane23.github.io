@@ -1,0 +1,150 @@
+diff --git a/src/EventSubscriber/StatisticsCounterSubscriber.php b/src/EventSubscriber/StatisticsCounterSubscriber.php
+index 781fd7e..e0d1177 100644
+--- a/src/EventSubscriber/StatisticsCounterSubscriber.php
++++ b/src/EventSubscriber/StatisticsCounterSubscriber.php
+@@ -11,10 +11,11 @@ use Symfony\Component\HttpKernel\KernelEvents;
+  * Subscribe to KernelEvents::TERMINATE events to recalculate nodes statistics.
+  */
+ class StatisticsCounterSubscriber implements EventSubscriberInterface {
++
+   /**
+    * {@inheritdoc}
+    */
+-  static function getSubscribedEvents() {
++  public static function getSubscribedEvents() {
+     $events[KernelEvents::TERMINATE][] = ['updateStatistics'];
+     return $events;
+   }
+@@ -25,7 +26,7 @@ class StatisticsCounterSubscriber implements EventSubscriberInterface {
+    * @param Symfony\Component\EventDispatcher\Event $event
+    *   Event.
+    */
+-  static function updateStatistics(Event $event) {
++  public static function updateStatistics(Event $event) {
+     $node = \Drupal::request()->attributes->get('node');
+     $views = \Drupal::config('statistics.settings')->get('count_content_views');
+ 
+@@ -38,16 +39,17 @@ class StatisticsCounterSubscriber implements EventSubscriberInterface {
+       // We are counting content views.
+       // A node has been viewed, so update the node's counters.
+       db_merge('node_counter')
+-        ->key(array('nid' => $node->id()))
+-        ->fields(array(
++        ->key(['nid' => $node->id()])
++        ->fields([
+           'weekcount' => 1,
+           'monthcount' => 1,
+           'yearcount' => 1,
+-        ))
++        ])
+         ->expression('weekcount', 'weekcount + 1')
+         ->expression('monthcount', 'monthcount + 1')
+         ->expression('yearcount', 'yearcount + 1')
+         ->execute();
+     }
+   }
++
+ }
+diff --git a/statistics_counter.views.inc b/statistics_counter.views.inc
+index 19cd2ed..cafb4bd 100644
+--- a/statistics_counter.views.inc
++++ b/statistics_counter.views.inc
+@@ -2,7 +2,7 @@
+ 
+ /**
+  * @file
+- * Statistics Counter: Views support
++ * Statistics Counter: Views support.
+  */
+ 
+ /**
+@@ -14,59 +14,59 @@ function statistics_counter_views_data_alter(&$data) {
+   }
+ 
+   // Week counts.
+-  $data['node_counter']['weekcount'] = array(
++  $data['node_counter']['weekcount'] = [
+     'title' => t('Views this week'),
+     'help' => t('The total number of times the node has been viewed this week.'),
+-    'field' => array(
++    'field' => [
+       'id' => 'numeric',
+       'click sortable' => TRUE,
+-    ),
+-    'filter' => array(
++    ],
++    'filter' => [
+       'id' => 'numeric',
+-    ),
+-    'argument' => array(
++    ],
++    'argument' => [
+       'id' => 'numeric',
+-    ),
+-    'sort' => array(
++    ],
++    'sort' => [
+       'id' => 'standard',
+-    ),
+-  );
++    ],
++  ];
+ 
+   // Month counts.
+-  $data['node_counter']['monthcount'] = array(
++  $data['node_counter']['monthcount'] = [
+     'title' => t('Views this month'),
+     'help' => t('The total number of times the node has been viewed this month.'),
+-    'field' => array(
++    'field' => [
+       'id' => 'numeric',
+       'click sortable' => TRUE,
+-    ),
+-    'filter' => array(
++    ],
++    'filter' => [
+       'id' => 'numeric',
+-    ),
+-    'argument' => array(
++    ],
++    'argument' => [
+       'id' => 'numeric',
+-    ),
+-    'sort' => array(
++    ],
++    'sort' => [
+       'id' => 'standard',
+-    ),
+-  );
++    ],
++  ];
+ 
+   // Year counts.
+-  $data['node_counter']['yearcount'] = array(
++  $data['node_counter']['yearcount'] = [
+     'title' => t('Views this year'),
+     'help' => t('The total number of times the node has been viewed this year.'),
+-    'field' => array(
++    'field' => [
+       'id' => 'numeric',
+       'click sortable' => TRUE,
+-    ),
+-    'filter' => array(
++    ],
++    'filter' => [
+       'id' => 'numeric',
+-    ),
+-    'argument' => array(
++    ],
++    'argument' => [
+       'id' => 'numeric',
+-    ),
+-    'sort' => array(
++    ],
++    'sort' => [
+       'id' => 'standard',
+-    ),
+-  );
++    ],
++  ];
+ }

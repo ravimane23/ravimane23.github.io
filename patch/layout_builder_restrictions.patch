@@ -1,0 +1,19 @@
+diff --git a/modules/layout_builder_restrictions_by_region/js/display_mode_form.js b/modules/layout_builder_restrictions_by_region/js/display_mode_form.js
+index 73674a0..6b74f70 100644
+--- a/modules/layout_builder_restrictions_by_region/js/display_mode_form.js
++++ b/modules/layout_builder_restrictions_by_region/js/display_mode_form.js
+@@ -2,12 +2,12 @@
+   Drupal.behaviors.layoutBuilderRestrictionsByRegion = {
+     attach: function (context, settings) {
+       // On page load.
+-      $( 'input.restriction-type:checked').each(function() {
++      $( 'input.restriction-type:checked').each(function () {
+         displayToggle(this);
+       });
+ 
+       // On change of restrictions radios.
+-      $( 'input.restriction-type', context ).change(function(e) {
++      $( 'input.restriction-type', context ).change(function (e) {
+         displayToggle(this);
+       });
+ 

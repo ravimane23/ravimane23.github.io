@@ -1,0 +1,627 @@
+diff --git a/src/Controller/EpsilonHarmonyController.php b/src/Controller/EpsilonHarmonyController.php
+index a371b8d..f9b4806 100644
+--- a/src/Controller/EpsilonHarmonyController.php
++++ b/src/Controller/EpsilonHarmonyController.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\epsilon_harmony\Controller;
+ 
+ use Drupal\Core\Controller\ControllerBase;
+-use GuzzleHttp\Exception\ClientException;
+ 
+ /**
+  * Controller routines for menu example routes.
+@@ -38,4 +37,5 @@ class EpsilonHarmonyController extends ControllerBase {
+     $response = $service->testApi();
+     return $this->redirect('epsilon_harmony.logs');
+   }
++
+ }
+diff --git a/src/Entity/Controller/EpsilonLogListBuilder.php b/src/Entity/Controller/EpsilonLogListBuilder.php
+index 65400ed..68a1a98 100644
+--- a/src/Entity/Controller/EpsilonLogListBuilder.php
++++ b/src/Entity/Controller/EpsilonLogListBuilder.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\epsilon_harmony\Entity\Controller;
+ 
+ use Drupal\Core\Datetime\DateFormatter;
+-use Drupal\Core\Url;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Entity\EntityListBuilder;
+@@ -88,11 +87,10 @@ class EpsilonLogListBuilder extends EntityListBuilder {
+     return $query->execute();
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    *
+-   * Building the header and content lines for the epsilon log list
++   * Building the header and content lines for the epsilon log list.
+    */
+   public function buildHeader() {
+     $header['id'] = $this->t('Log ID');
+@@ -125,11 +123,11 @@ class EpsilonLogListBuilder extends EntityListBuilder {
+    * Adding custom operation on the list.
+    */
+   public function getOperations(EntityInterface $entity) {
+-    $operations['view'] = array(
++    $operations['view'] = [
+       'title' => t('View'),
+       'url' => $this->ensureDestination($entity->toUrl('canonical')),
+       'weight' => -10,
+-    );
++    ];
+     return $operations;
+   }
+ 
+diff --git a/src/Form/ConfigForm.php b/src/Form/ConfigForm.php
+index c84907a..6f883fb 100644
+--- a/src/Form/ConfigForm.php
++++ b/src/Form/ConfigForm.php
+@@ -137,16 +137,16 @@ class ConfigForm extends ConfigFormBase {
+    *   Object describing the current state of the form.
+    */
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+-    // Retrieve the configuration
++    // Retrieve the configuration.
+     $this->configFactory->getEditable(static::SETTINGS)
+-    // Set the submitted configuration setting
+-    ->set('epsilon_harmony_client_id', $form_state->getValue('epsilon_harmony_client_id'))
+-    ->set('epsilon_harmony_secret_key', $form_state->getValue('epsilon_harmony_secret_key'))
+-    ->set('epsilon_harmony_username', $form_state->getValue('epsilon_harmony_username'))
+-    ->set('epsilon_harmony_password', $form_state->getValue('epsilon_harmony_password'))
+-    ->set('epsilon_harmony_xouid', $form_state->getValue('epsilon_harmony_xouid'))
+-    ->set('epsilon_harmony_region', $form_state->getValue('epsilon_harmony_region'))
+-    ->save();
++    // Set the submitted configuration setting.
++      ->set('epsilon_harmony_client_id', $form_state->getValue('epsilon_harmony_client_id'))
++      ->set('epsilon_harmony_secret_key', $form_state->getValue('epsilon_harmony_secret_key'))
++      ->set('epsilon_harmony_username', $form_state->getValue('epsilon_harmony_username'))
++      ->set('epsilon_harmony_password', $form_state->getValue('epsilon_harmony_password'))
++      ->set('epsilon_harmony_xouid', $form_state->getValue('epsilon_harmony_xouid'))
++      ->set('epsilon_harmony_region', $form_state->getValue('epsilon_harmony_region'))
++      ->save();
+ 
+     $this->messenger()->addMessage($this->t('Your configurations have been saved.'));
+   }
+diff --git a/src/Form/MessageConfiguration.php b/src/Form/MessageConfiguration.php
+index fc5f855..5c67fc8 100644
+--- a/src/Form/MessageConfiguration.php
++++ b/src/Form/MessageConfiguration.php
+@@ -66,21 +66,21 @@ class MessageConfiguration extends ConfigFormBase {
+     }
+ 
+     for ($init = 1; $init <= $form_state->get('available_message_fields'); $init++) {
+-      $form['container'][$init] = array(
++      $form['container'][$init] = [
+         '#type' => 'details',
+         '#title' => $this->t('Message'),
+-        '#open' => TRUE
+-      );
+-      $form['container'][$init]['name'] = array(
++        '#open' => TRUE,
++      ];
++      $form['container'][$init]['name'] = [
+         '#type' => 'textfield',
+         '#title' => $this->t('Message Identifier'),
+         '#required' => TRUE,
+-      );
+-      $form['container'][$init]['message_id'] = array(
++      ];
++      $form['container'][$init]['message_id'] = [
+         '#type' => 'textfield',
+         '#title' => $this->t('Message ID'),
+         '#required' => TRUE,
+-      );
++      ];
+     }
+ 
+     $existing_message_array = $config->get('message_id_array');
+@@ -88,24 +88,24 @@ class MessageConfiguration extends ConfigFormBase {
+     $available_message_fields = count($message_array);
+ 
+     $init = 1;
+-    if($available_message_fields > 0) {
++    if ($available_message_fields > 0) {
+       foreach ($message_array as $key => $value) {
+-        $form['container'][$init] = array(
++        $form['container'][$init] = [
+           '#type' => 'details',
+           '#title' => $this->t('Message: ' . $key),
+-          '#open' => FALSE
+-        );
+-        $form['container'][$init]['name'] = array(
++          '#open' => FALSE,
++        ];
++        $form['container'][$init]['name'] = [
+           '#type' => 'textfield',
+           '#title' => $this->t('Message Identifier'),
+           '#disabled' => TRUE,
+           '#default_value' => $key,
+-        );
+-        $form['container'][$init]['message_id'] = array(
++        ];
++        $form['container'][$init]['message_id'] = [
+           '#type' => 'textfield',
+           '#title' => $this->t('Message ID'),
+           '#default_value' => $value,
+-        );
++        ];
+         $init++;
+       }
+     }
+@@ -118,16 +118,16 @@ class MessageConfiguration extends ConfigFormBase {
+       '#type' => 'actions',
+     ];
+ 
+-    $form['actions']['add_item'] = array(
++    $form['actions']['add_item'] = [
+       '#type' => 'submit',
+       '#value' => $this->t('Add another message ID'),
+-      '#submit' => array('::epsilon_harmony_message_form_add_item'),
+-    );
++      '#submit' => ['::epsilon_harmony_message_form_add_item'],
++    ];
+ 
+-    $form['actions']['submit'] = array(
++    $form['actions']['submit'] = [
+       '#type' => 'submit',
+       '#value' => $this->t('Submit'),
+-    );
++    ];
+     return $form;
+   }
+ 
+@@ -139,10 +139,10 @@ class MessageConfiguration extends ConfigFormBase {
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The current state of the form.
+    */
+-  function epsilon_harmony_message_form_add_item(array $form, FormStateInterface $form_state) {
++  public function epsilon_harmony_message_form_add_item(array $form, FormStateInterface $form_state) {
+     $current_count = $form_state->get('available_message_fields');
+     $form_state->set('available_message_fields', $current_count + 1);
+-    $form_state->setRebuild(true);
++    $form_state->setRebuild(TRUE);
+   }
+ 
+   /**
+@@ -159,10 +159,11 @@ class MessageConfiguration extends ConfigFormBase {
+     foreach ($form_state->getValues()['container'] as $key => $value) {
+       $message_id_array[$value['name']] = $value['message_id'];
+     }
+-    // Set the submitted configuration setting
++    // Set the submitted configuration setting.
+     $this->configFactory->getEditable(static::SETTINGS)
+-    ->set('message_id_array', Json::encode($message_id_array))->save();
++      ->set('message_id_array', Json::encode($message_id_array))->save();
+ 
+     $this->messenger()->addMessage($this->t('Your configurations have been saved.'));
+   }
++
+ }
+diff --git a/src/Services/EpsilonApiFactory.php b/src/Services/EpsilonApiFactory.php
+index 4c97be2..d169742 100644
+--- a/src/Services/EpsilonApiFactory.php
++++ b/src/Services/EpsilonApiFactory.php
+@@ -4,27 +4,24 @@ namespace Drupal\epsilon_harmony\Services;
+ 
+ use function GuzzleHttp\json_decode;
+ use Exception as Exception;
+-use Drupal\Core\Form\ConfigFormBase;
+ use GuzzleHttp\Exception\ClientException;
+ use Drupal\Component\Serialization\Json;
+ use Drupal\epsilon_harmony\StatusCodes;
+-use Drupal\epsilon_harmony\Services\EpsilonConnectionFactory;
+ 
+ /**
+  * Description for API Factory of Harmony API.
+  *
+  * @author Darshan Choudhary
+  */
+-
+ class EpsilonApiFactory extends EpsilonConnectionFactory {
++
+   /**
+    * Get a new access token or an existing one for the API.
+    *
+    * @return string
+    *   Returns the access token.
+    */
+-  public static function getToken($object, $test = FALSE)
+-  {
++  public static function getToken($object, $test = FALSE) {
+     if ($test == TRUE || ($object->getTokenTimeout() == NULL || (time() - $object->getTokenTimeout() > 3600))) {
+       try {
+         $url = $object->tokenUrl . '/Epsilon/oauth2/access_token';
+@@ -43,7 +40,7 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+ 
+         $response = \Drupal::httpClient()->post($url, [
+           'headers' => $headers,
+-          'form_params' => $data
++          'form_params' => $data,
+         ]);
+ 
+         $response_data_json = $response->getBody()->getContents();
+@@ -54,17 +51,17 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+           'uid' => \Drupal::currentUser()->id(),
+           'method' => 'POST',
+           'status_code' => $response->getStatusCode(),
+-          'status_message'=> $response->getReasonPhrase(),
+-          'header'=> Json::encode($headers),
+-          'request'=> Json::encode($data),
+-          'response' => Json::encode($response_data)
++          'status_message' => $response->getReasonPhrase(),
++          'header' => Json::encode($headers),
++          'request' => Json::encode($data),
++          'response' => Json::encode($response_data),
+         ];
+         $object->logEpsilon($values);
+ 
+         if ($response->getStatusCode() == StatusCodes::HTTP_OK && !empty($response_data)) {
+           $config = \Drupal::service('config.factory')->getEditable('epsilon_harmony.settings');
+-          $config->set('epsilon_harmony_token_timeout',  time())->save();
+-          $config->set('epsilon_harmony_access_token',  $response_data['access_token'])->save();
++          $config->set('epsilon_harmony_token_timeout', time())->save();
++          $config->set('epsilon_harmony_access_token', $response_data['access_token'])->save();
+ 
+           \Drupal::messenger()->addStatus(t('Token refreshed successfully.'), TRUE);
+ 
+@@ -73,18 +70,19 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+         else {
+           throw new Exception('Something went wrong while fetching the token. Please check the logs for further details.');
+         }
+-      } catch (Exception $e) {
+-        if($e->getResponse() != null) {
++      }
++      catch (Exception $e) {
++        if ($e->getResponse() != NULL) {
+           $response = (string) $e->getResponse()->getBody();
+           $values = [
+             'endpoint' => $url,
+             'uid' => \Drupal::currentUser()->id(),
+             'method' => 'POST',
+             'status_code' => $e->getCode(),
+-            'status_message'=> (isset(Json::decode($response)['fault']['faultstring'])) ? Json::decode($response)['fault']['faultstring'] : NULL,
+-            'header'=> Json::encode($headers),
+-            'request'=> Json::encode($data),
+-            'response' => $response
++            'status_message' => (isset(Json::decode($response)['fault']['faultstring'])) ? Json::decode($response)['fault']['faultstring'] : NULL,
++            'header' => Json::encode($headers),
++            'request' => Json::encode($data),
++            'response' => $response,
+           ];
+           $log = $object->logEpsilon($values);
+           \Drupal::messenger()->addError(t('Failure!! Please check the epsilon log @link for further details.', [
+@@ -112,8 +110,7 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+    * @return array
+    *   Returns the response recieved from the API.
+    */
+-  public function createRecord($record)
+-  {
++  public function createRecord($record) {
+     try {
+       $url = $this->apiUrl . "/v4/profiles/records";
+ 
+@@ -126,7 +123,7 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+       // HTTP Form request.
+       $response = \Drupal::httpClient()->post($url, [
+         'headers' => $headers,
+-        'json' => $record
++        'json' => $record,
+       ]);
+ 
+       $response_data_json = $response->getBody()->getContents();
+@@ -137,10 +134,10 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+         'uid' => \Drupal::currentUser()->id(),
+         'method' => 'POST',
+         'status_code' => $response->getStatusCode(),
+-        'status_message'=> $response->getReasonPhrase(),
+-        'header'=> Json::encode($headers),
+-        'request'=> Json::encode($record),
+-        'response' => Json::encode($response_data)
++        'status_message' => $response->getReasonPhrase(),
++        'header' => Json::encode($headers),
++        'request' => Json::encode($record),
++        'response' => Json::encode($response_data),
+       ];
+       $log = self::logEpsilon($values);
+ 
+@@ -161,10 +158,10 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+         'uid' => \Drupal::currentUser()->id(),
+         'method' => 'POST',
+         'status_code' => $e->getCode(),
+-        'status_message'=> Json::decode($response)['resultCode'],
+-        'header'=> Json::encode($headers),
+-        'request'=> Json::encode($record),
+-        'response' => $response
++        'status_message' => Json::decode($response)['resultCode'],
++        'header' => Json::encode($headers),
++        'request' => Json::encode($record),
++        'response' => $response,
+       ];
+       $log = self::logEpsilon($values);
+ 
+@@ -183,8 +180,7 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+    * @return array
+    *   Returns the response recieved from the API.
+    */
+-  public function updateRecord($record)
+-  {
++  public function updateRecord($record) {
+     try {
+       $url = $this->apiUrl . "/v4/profiles/records/" . $record['CustomerKey'];
+ 
+@@ -197,7 +193,7 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+       // HTTP Form request.
+       $response = \Drupal::httpClient()->put($url, [
+         'headers' => $headers,
+-        'json' => $record
++        'json' => $record,
+       ]);
+ 
+       $response_data_json = $response->getBody()->getContents();
+@@ -209,10 +205,10 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+         'uid' => \Drupal::currentUser()->id(),
+         'method' => 'PUT',
+         'status_code' => $response->getStatusCode(),
+-        'status_message'=> $response->getReasonPhrase(),
+-        'header'=> Json::encode($headers),
+-        'request'=> Json::encode($record),
+-        'response' => Json::encode($response_data)
++        'status_message' => $response->getReasonPhrase(),
++        'header' => Json::encode($headers),
++        'request' => Json::encode($record),
++        'response' => Json::encode($response_data),
+       ];
+       $log = self::logEpsilon($values);
+ 
+@@ -233,10 +229,10 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+         'uid' => \Drupal::currentUser()->id(),
+         'method' => 'PUT',
+         'status_code' => $e->getCode(),
+-        'status_message'=> Json::decode($response)['resultCode'],
+-        'header'=> Json::encode($headers),
+-        'request'=> Json::encode($record),
+-        'response' => $response
++        'status_message' => Json::decode($response)['resultCode'],
++        'header' => Json::encode($headers),
++        'request' => Json::encode($record),
++        'response' => $response,
+       ];
+       $log = self::logEpsilon($values);
+ 
+@@ -255,8 +251,7 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+    * @return array
+    *   Returns the response recieved from the API.
+    */
+-  public function deleteRecord($customer_key)
+-  {
++  public function deleteRecord($customer_key) {
+     try {
+       $url = $this->apiUrl . "/v4/profiles/records/" . $customer_key;
+ 
+@@ -280,10 +275,10 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+         'uid' => \Drupal::currentUser()->id(),
+         'method' => 'DELETE',
+         'status_code' => $response->getStatusCode(),
+-        'status_message'=> $response->getReasonPhrase(),
+-        'header'=> Json::encode($headers),
+-        'request'=> Json::encode($record),
+-        'response' => Json::encode($response_data)
++        'status_message' => $response->getReasonPhrase(),
++        'header' => Json::encode($headers),
++        'request' => Json::encode($record),
++        'response' => Json::encode($response_data),
+       ];
+       $log = self::logEpsilon($values);
+ 
+@@ -304,10 +299,10 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+         'uid' => \Drupal::currentUser()->id(),
+         'method' => 'DELETE',
+         'status_code' => $e->getCode(),
+-        'status_message'=> Json::decode($response)['resultCode'],
+-        'header'=> Json::encode($headers),
+-        'request'=> Json::encode($record),
+-        'response' => $response
++        'status_message' => Json::decode($response)['resultCode'],
++        'header' => Json::encode($headers),
++        'request' => Json::encode($record),
++        'response' => $response,
+       ];
+       $log = self::logEpsilon($values);
+ 
+@@ -328,8 +323,7 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+    * @return array
+    *   Returns the response recieved from the API.
+    */
+-  public function sendMessage($message_id = NULL, $record = array())
+-  {
++  public function sendMessage($message_id = NULL, $record = []) {
+     try {
+       if ($message_id == NULL) {
+         throw new Exception('Message ID not available.');
+@@ -346,7 +340,7 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+       // HTTP Form request.
+       $response = \Drupal::httpClient()->put($url, [
+         'headers' => $headers,
+-        'json' => $record
++        'json' => $record,
+       ]);
+ 
+       $response_data_json = $response->getBody()->getContents();
+@@ -358,10 +352,10 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+         'uid' => \Drupal::currentUser()->id(),
+         'method' => 'PUT',
+         'status_code' => $response->getStatusCode(),
+-        'status_message'=> $response->getReasonPhrase(),
+-        'header'=> Json::encode($headers),
+-        'request'=> Json::encode($record),
+-        'response' => Json::encode($response_data)
++        'status_message' => $response->getReasonPhrase(),
++        'header' => Json::encode($headers),
++        'request' => Json::encode($record),
++        'response' => Json::encode($response_data),
+       ];
+       $log = self::logEpsilon($values);
+ 
+@@ -379,10 +373,10 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+         'uid' => \Drupal::currentUser()->id(),
+         'method' => 'PUT',
+         'status_code' => $e->getCode(),
+-        'status_message'=> Json::decode($response)['resultCode'],
+-        'header'=> Json::encode($headers),
+-        'request'=> Json::encode($record),
+-        'response' => $response
++        'status_message' => Json::decode($response)['resultCode'],
++        'header' => Json::encode($headers),
++        'request' => Json::encode($record),
++        'response' => $response,
+       ];
+       $log = self::logEpsilon($values);
+ 
+@@ -402,8 +396,7 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+    * @return array
+    *   Returns the response recieved from the API.
+    */
+-  public function retrieveRecord($customer_key)
+-  {
++  public function retrieveRecord($customer_key) {
+     try {
+       $url = $this->apiUrl . "/v4/profiles/records/" . $customer_key;
+ 
+@@ -427,10 +420,10 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+         'uid' => \Drupal::currentUser()->id(),
+         'method' => 'GET',
+         'status_code' => $response->getStatusCode(),
+-        'status_message'=> $response->getReasonPhrase(),
+-        'header'=> Json::encode($headers),
+-        'request'=> Json::encode($record),
+-        'response' => Json::encode($response_data)
++        'status_message' => $response->getReasonPhrase(),
++        'header' => Json::encode($headers),
++        'request' => Json::encode($record),
++        'response' => Json::encode($response_data),
+       ];
+       $log = self::logEpsilon($values);
+ 
+@@ -451,10 +444,10 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+         'uid' => \Drupal::currentUser()->id(),
+         'method' => 'GET',
+         'status_code' => $e->getCode(),
+-        'status_message'=> Json::decode($response)['resultCode'],
+-        'header'=> Json::encode($headers),
+-        'request'=> Json::encode($record),
+-        'response' => $response
++        'status_message' => Json::decode($response)['resultCode'],
++        'header' => Json::encode($headers),
++        'request' => Json::encode($record),
++        'response' => $response,
+       ];
+       $log = self::logEpsilon($values);
+ 
+@@ -470,8 +463,7 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+    * @return string
+    *   Return the access key for testing.
+    */
+-  public function testApi()
+-  {
++  public function testApi() {
+     return self::getToken($this, TRUE);
+   }
+ 
+@@ -484,10 +476,10 @@ class EpsilonApiFactory extends EpsilonConnectionFactory {
+    * @return object
+    *   Return the log created.
+    */
+-  protected function logEpsilon($record = [])
+-  {
++  protected function logEpsilon($record = []) {
+     $log = \Drupal::service('entity_type.manager')->getStorage('epsilon_harmony_log')->create($record);
+     $log->save();
+     return $log;
+   }
++
+ }
+diff --git a/src/Services/EpsilonConnectionFactory.php b/src/Services/EpsilonConnectionFactory.php
+index dc6f7a3..2f26544 100644
+--- a/src/Services/EpsilonConnectionFactory.php
++++ b/src/Services/EpsilonConnectionFactory.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\epsilon_harmony\Services;
+ 
+ use Exception as Exception;
+-use GuzzleHttp\Exception\ClientException;
+ use Drupal\Component\Serialization\Json;
+ 
+ /**
+@@ -98,7 +97,8 @@ class EpsilonConnectionFactory {
+       $this->setApiBaseUrl();
+       // Setting the static variable.
+       self::$accessToken = $config->get('epsilon_harmony_access_token');
+-    } catch (Exception $e) {
++    }
++    catch (Exception $e) {
+       \Drupal::logger('epsilon_harmony')->error($e->getMessage());
+     }
+   }
+@@ -109,7 +109,7 @@ class EpsilonConnectionFactory {
+    * @param string $username
+    *   Username.
+    *
+-   * @throws Exception
++   * @throws \Exception
+    *   Username must be at least 1 character long.
+    */
+   protected function setUsername($username) {
+@@ -138,7 +138,7 @@ class EpsilonConnectionFactory {
+    * @param string $password
+    *   Password.
+    *
+-   * @throws Exception
++   * @throws \Exception
+    *   Password must be at least 1 character long.
+    */
+   protected function setPassword($password) {
+@@ -167,7 +167,7 @@ class EpsilonConnectionFactory {
+    * @param string $clientId
+    *   Client ID.
+    *
+-   * @throws Exception
++   * @throws \Exception
+    *   Client ID must be at least 1 character long.
+    */
+   protected function setClientId($clientId) {
+@@ -196,7 +196,7 @@ class EpsilonConnectionFactory {
+    * @param string $secretKey
+    *   Secret Key.
+    *
+-   * @throws Exception
++   * @throws \Exception
+    *   Secret Key must be at least 1 character long.
+    */
+   protected function setsecretKey($secretKey) {
+@@ -225,7 +225,7 @@ class EpsilonConnectionFactory {
+    * @param string $xouid
+    *   X-OUID.
+    *
+-   * @throws Exception
++   * @throws \Exception
+    *   X-OUID must be at least 1 character long.
+    */
+   protected function setXouid($xouid) {
+@@ -319,7 +319,7 @@ class EpsilonConnectionFactory {
+    * Create the base URL for the selected region.
+    */
+   protected function setApiBaseUrl() {
+-    if($this->defaultApiRegion == "eu") {
++    if ($this->defaultApiRegion == "eu") {
+       $this->tokenUrl = "https://api-public.eu.epsilon.com";
+       $this->apiUrl = "https://api.harmony.eu.epsilon.com";
+     }
+@@ -338,4 +338,5 @@ class EpsilonConnectionFactory {
+   protected function getBaseToken() {
+     return base64_encode($this->clientId . ":" . $this->secretKey);
+   }
++
+ }

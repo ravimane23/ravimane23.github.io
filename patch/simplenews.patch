@@ -1,0 +1,38 @@
+diff --git a/src/Mail/Mailer.php b/src/Mail/Mailer.php
+index 44b850b..1643d4e 100644
+--- a/src/Mail/Mailer.php
++++ b/src/Mail/Mailer.php
+@@ -49,7 +49,7 @@ class Mailer implements MailerInterface {
+    */
+   const TRACK_RESULTS = [
+     SpoolStorageInterface::STATUS_DONE => TRUE,
+-    SpoolStorageInterface::STATUS_FAILED =>TRUE
++    SpoolStorageInterface::STATUS_FAILED => TRUE,
+   ];
+ 
+   /**
+diff --git a/src/Plugin/migrate/source/d7/Issue.php b/src/Plugin/migrate/source/d7/Issue.php
+index 52e7567..ae48a36 100644
+--- a/src/Plugin/migrate/source/d7/Issue.php
++++ b/src/Plugin/migrate/source/d7/Issue.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\simplenews\Plugin\migrate\source\d7;
+ 
+-use Drupal\migrate\Row;
+ use Drupal\migrate_drupal\Plugin\migrate\source\DrupalSqlBase;
+ 
+ /**
+diff --git a/tests/src/Functional/SimplenewsSendTest.php b/tests/src/Functional/SimplenewsSendTest.php
+index 9a2f6a5..3dcde3e 100644
+--- a/tests/src/Functional/SimplenewsSendTest.php
++++ b/tests/src/Functional/SimplenewsSendTest.php
+@@ -474,7 +474,7 @@ class SimplenewsSendTest extends SimplenewsTestBase {
+     $this->assertEqual(count(\Drupal::messenger()->messagesByType(MessengerInterface::TYPE_ERROR)), 0, t('No error messages printed'));
+ 
+     // Check the status on the newsletter tab.  The pending mail should be
+-    // retried
++    // retried.
+     $this->drupalGet('node/1/simplenews');
+     $this->assertText('Newsletter issue is pending, 0 mails sent out of 5, 1 errors.');
+ 

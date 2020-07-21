@@ -1,0 +1,184 @@
+diff --git a/modules/features_ui/src/Form/AssignmentConfigureForm.php b/modules/features_ui/src/Form/AssignmentConfigureForm.php
+index 72279e5..f3f861d 100644
+--- a/modules/features_ui/src/Form/AssignmentConfigureForm.php
++++ b/modules/features_ui/src/Form/AssignmentConfigureForm.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\features_ui\Form;
+ 
+ use Drupal\Component\Utility\Html;
+-use Drupal\Component\Utility\Unicode;
+ use Drupal\features\FeaturesManagerInterface;
+ use Drupal\features\FeaturesAssignerInterface;
+ use Drupal\features\FeaturesBundleInterface;
+diff --git a/modules/features_ui/src/Form/AssignmentExcludeForm.php b/modules/features_ui/src/Form/AssignmentExcludeForm.php
+index 170c2b5..00b6bcd 100644
+--- a/modules/features_ui/src/Form/AssignmentExcludeForm.php
++++ b/modules/features_ui/src/Form/AssignmentExcludeForm.php
+@@ -42,8 +42,7 @@ class AssignmentExcludeForm extends AssignmentFormBase {
+    * @param \Drupal\features\FeaturesAssignerInterface $assigner
+    *   The assigner.
+    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+-   *   The entity type manager.
+-
++   *   The entity type manager.   *.
+    */
+   public function __construct(FeaturesManagerInterface $features_manager, FeaturesAssignerInterface $assigner, EntityTypeManagerInterface $entity_type_manager, ExtensionList $profile_list, $install_profile) {
+     parent::__construct($features_manager, $assigner, $entity_type_manager);
+diff --git a/modules/features_ui/src/Form/FeaturesEditForm.php b/modules/features_ui/src/Form/FeaturesEditForm.php
+index 58736f9..ec0cf3d 100644
+--- a/modules/features_ui/src/Form/FeaturesEditForm.php
++++ b/modules/features_ui/src/Form/FeaturesEditForm.php
+@@ -512,7 +512,7 @@ class FeaturesEditForm extends FormBase {
+         foreach ($sections as $section) {
+           $element[$component][$section] = [
+             '#type' => 'checkboxes',
+-            '#options' => !empty($component_info['_features_options'][$section]) ?  $this->domDecodeOptions($component_info['_features_options'][$section]) : [],
++            '#options' => !empty($component_info['_features_options'][$section]) ? $this->domDecodeOptions($component_info['_features_options'][$section]) : [],
+             '#default_value' => !empty($component_info['_features_selected'][$section]) ? $this->domDecodeOptions($component_info['_features_selected'][$section], FALSE) : [],
+             '#attributes' => ['class' => ['component-' . $section]],
+             '#prefix' => "<span class='component-$section'>",
+@@ -543,10 +543,10 @@ class FeaturesEditForm extends FormBase {
+     ];
+     $element['features_legend']['legend'] = [
+       '#markup' =>
+-        "<span class='component-included'>" . $this->t('Normal') . "</span> " .
+-        "<span class='component-added'>" . $this->t('Added') . "</span> " .
+-        "<span class='component-detected'>" . $this->t('Auto detected') . "</span> " .
+-        "<span class='component-conflict'>" . $this->t('Conflict') . "</span> ",
++      "<span class='component-included'>" . $this->t('Normal') . "</span> " .
++      "<span class='component-added'>" . $this->t('Added') . "</span> " .
++      "<span class='component-detected'>" . $this->t('Auto detected') . "</span> " .
++      "<span class='component-conflict'>" . $this->t('Conflict') . "</span> ",
+     ];
+ 
+     return $element;
+@@ -631,7 +631,7 @@ class FeaturesEditForm extends FormBase {
+       if (isset($config[$item_name])) {
+         $item = $config[$item_name];
+         // Remove any conflicts if those are not being allowed.
+-        // if ($this->allowConflicts || !isset($this->conflicts[$item['type']][$item['name_short']])) {
++        // if ($this->allowConflicts || !isset($this->conflicts[$item['type']][$item['name_short']])) {.
+         $exported_features_info[$item->getType()][$item->getShortName()] = $item->getLabel();
+         // }
+       }
+@@ -976,7 +976,8 @@ class FeaturesEditForm extends FormBase {
+         try {
+           $this->configRevert->import($type, $item['name_short']);
+           $this->messenger()->addStatus($this->t('Imported @name', ['@name' => $config_name]));
+-        } catch (\Exception $e) {
++        }
++        catch (\Exception $e) {
+           $this->messenger()->addError($this->t('Error importing @name : @message',
+             ['@name' => $config_name, '@message' => $e->getMessage()]));
+         }
+diff --git a/src/FeaturesConfigDependencyManager.php b/src/FeaturesConfigDependencyManager.php
+index ef6ea09..c377e1d 100644
+--- a/src/FeaturesConfigDependencyManager.php
++++ b/src/FeaturesConfigDependencyManager.php
+@@ -46,9 +46,9 @@ class FeaturesConfigDependencyManager extends ConfigDependencyManager {
+         ->getGraph();
+       $sorts = $this
+         ->prepareMultisort($this->sorted_graph, [
+-        'weight',
+-        'name',
+-      ]);
++          'weight',
++          'name',
++        ]);
+       array_multisort($sorts['weight'], SORT_DESC, SORT_NUMERIC, $sorts['name'], SORT_ASC, SORT_NATURAL | SORT_FLAG_CASE, $this->sorted_graph);
+     }
+     return array_replace(array_intersect_key($this->sorted_graph, $dependencies), $dependencies);
+diff --git a/src/FeaturesExtensionStoragesInterface.php b/src/FeaturesExtensionStoragesInterface.php
+index a48ebd0..8bd17fd 100644
+--- a/src/FeaturesExtensionStoragesInterface.php
++++ b/src/FeaturesExtensionStoragesInterface.php
+@@ -56,7 +56,7 @@ interface FeaturesExtensionStoragesInterface {
+    *
+    * Given the following configuration objects:
+    * - node.type.article
+-   * - node.type.page
++   * - node.type.page.
+    *
+    * Passing the prefix 'node.type.' will return an array containing the above
+    * names.
+diff --git a/src/FeaturesManager.php b/src/FeaturesManager.php
+index dc0d2b1..4dde52e 100644
+--- a/src/FeaturesManager.php
++++ b/src/FeaturesManager.php
+@@ -1,6 +1,7 @@
+ <?php
+ 
+ namespace Drupal\features;
++
+ use Drupal\Core\Config\ImmutableConfig;
+ use Drupal;
+ use Drupal\Component\Serialization\Yaml;
+@@ -591,7 +592,7 @@ class FeaturesManager implements FeaturesManagerInterface {
+     if (isset($packages[$package_name])) {
+       $package =& $packages[$package_name];
+     }
+-    // Also look for existing package within the current bundle
++    // Also look for existing package within the current bundle.
+     elseif (isset($current_bundle) && isset($this->packages[$current_bundle->getFullName($package_name)])) {
+       $package =& $this->packages[$current_bundle->getFullName($package_name)];
+     }
+@@ -1137,7 +1138,7 @@ class FeaturesManager implements FeaturesManagerInterface {
+     // dependencies on the config entity classes. Assume data with UUID is a
+     // config entity. Only configuration entities can be depended on so we can
+     // ignore everything else.
+-    $data = array_map(function(ImmutableConfig $config) {
++    $data = array_map(function (ImmutableConfig $config) {
+       $data = $config->get();
+       if (isset($data['uuid'])) {
+         return $data;
+diff --git a/src/FeaturesManagerInterface.php b/src/FeaturesManagerInterface.php
+index 5ce64df..a5b4ac0 100644
+--- a/src/FeaturesManagerInterface.php
++++ b/src/FeaturesManagerInterface.php
+@@ -649,6 +649,7 @@ interface FeaturesManagerInterface {
+    *   An array of module names to import (revert)
+    * @param bool $any
+    *   Set to TRUE to import config from non-Features modules.
++   *
+    * @return array of config imported
+    *   keyed by name of module, then:
+    *     'new': list of new config created keyed by name.
+diff --git a/src/Package.php b/src/Package.php
+index 848143b..4d1fe2b 100644
+--- a/src/Package.php
++++ b/src/Package.php
+@@ -469,7 +469,7 @@ class Package {
+   }
+ 
+   /**
+-   * @param array|TRUE $features_info
++   * @param array|true $features_info
+    *
+    * @return $this
+    */
+diff --git a/src/Plugin/FeaturesAssignment/FeaturesAssignmentBaseType.php b/src/Plugin/FeaturesAssignment/FeaturesAssignmentBaseType.php
+index 4728b96..eb9a3f6 100644
+--- a/src/Plugin/FeaturesAssignment/FeaturesAssignmentBaseType.php
++++ b/src/Plugin/FeaturesAssignment/FeaturesAssignmentBaseType.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\features\Plugin\FeaturesAssignment;
+ 
+-use Drupal\Component\Utility\Unicode;
+ use Drupal\features\FeaturesAssignmentMethodBase;
+ 
+ /**
+diff --git a/tests/src/Unit/FeaturesManagerTest.php b/tests/src/Unit/FeaturesManagerTest.php
+index f7a198f..29eb7f1 100644
+--- a/tests/src/Unit/FeaturesManagerTest.php
++++ b/tests/src/Unit/FeaturesManagerTest.php
+@@ -146,6 +146,9 @@ class FeaturesManagerTest extends UnitTestCase {
+     $this->featuresManager = new FeaturesManager($this->root, $this->entityTypeManager, $this->configFactory, $this->configStorage, $this->configManager, $this->moduleHandler, $this->configReverter);
+   }
+ 
++  /**
++   *
++   */
+   protected function setupVfsWithTestFeature() {
+     vfsStream::setup('drupal');
+     \Drupal::getContainer()->set('app.root', 'vfs://drupal');

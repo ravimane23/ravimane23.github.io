@@ -1,0 +1,225 @@
+diff --git a/pathologic.api.php b/pathologic.api.php
+index f75dd52..5d67654 100644
+--- a/pathologic.api.php
++++ b/pathologic.api.php
+@@ -21,27 +21,11 @@
+  * url(), or even stop Pathologic from altering a URL entirely.
+  *
+  * @param $url_params
+- *   An array with 'path' and 'options' values, which correspond to the $path
+- *   and $options parameters of the url() function. The 'options' array has an
+- *   extra parameter labeled 'use_original' which is set to FALSE by default.
+- *   This parameter is ignored by url(), but if its value is set to TRUE after
+- *   all alter hook invocations, Pathologic will return the original, unaltered
+- *   path it found in the content instead of calling url() and generating a new
+- *   one. Thus, it provides a way for modules to halt the alteration of paths
+- *   which Pathologic has incorrectly decided should be altered.
++ *   An array with 'path' and 'options' values, which correspond to the $path   and $options parameters of the url() function. The 'options' array has an   extra parameter labeled 'use_original' which is set to FALSE by default.   This parameter is ignored by url(), but if its value is set to TRUE after   all alter hook invocations, Pathologic will return the original, unaltered   path it found in the content instead of calling url() and generating a new   one. Thus, it provides a way for modules to halt the alteration of paths   which Pathologic has incorrectly decided should be altered.
+  * @param $parts
+- *   This array contains the result of running parse_url() on the path that
+- *   Pathologic found in content, though Pathologic likely altered some of the
+- *   values in this array since. It contains another parameter, 'original',
+- *   which contains the original URL Pathologic found in the content, unaltered.
+- *   You should not alter this value in any way; to alter how Pathologic
+- *   constructs the new URL, alter $url_params instead.
++ *   This array contains the result of running parse_url() on the path that   Pathologic found in content, though Pathologic likely altered some of the   values in this array since. It contains another parameter, 'original',   which contains the original URL Pathologic found in the content, unaltered.   You should not alter this value in any way; to alter how Pathologic   constructs the new URL, alter $url_params instead.
+  * @param $settings
+- *   This contains the settings Pathologic is using to decide how to alter the
+- *   URL; some settings are from the graphical filter form and alterable by the
+- *   user, while others are determined programmatically. If you're looking for
+- *   the filter settings which Pathologic is currently using (if you've altered
+- *   your own field onto the filter settings form, for example), try looking in
++ *   This contains the settings Pathologic is using to decide how to alter the   URL; some settings are from the graphical filter form and alterable by the   user, while others are determined programmatically. If you're looking for   the filter settings which Pathologic is currently using (if you've altered   your own field onto the filter settings form, for example), try looking in
+  *   $settings['current_settings'].
+  *
+  * @see url()
+diff --git a/src/PathologicSettingsCommon.php b/src/PathologicSettingsCommon.php
+index d279188..9be40f5 100644
+--- a/src/PathologicSettingsCommon.php
++++ b/src/PathologicSettingsCommon.php
+@@ -4,6 +4,9 @@ namespace Drupal\pathologic;
+ 
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ 
++/**
++ *
++ */
+ class PathologicSettingsCommon {
+ 
+   use StringTranslationTrait;
+@@ -16,6 +19,7 @@ class PathologicSettingsCommon {
+    *
+    * @param array $defaults
+    *   An array of default values for the configuration form fields.
++   *
+    * @return
+    *   The common form elements
+    */
+@@ -35,12 +39,12 @@ class PathologicSettingsCommon {
+       ],
+       'local_paths' => [
+         '#type' => 'textarea',
+-        '#title' =>  $this->t('All base paths for this site'),
++        '#title' => $this->t('All base paths for this site'),
+         '#default_value' => $defaults['local_paths'],
+-          '#description' => $this->t('If this site is or was available at more than one base path or URL, enter them here, separated by line breaks. For example, if this site is live at <code>http://example.com/</code> but has a staging version at <code>http://dev.example.org/staging/</code>, you would enter both those URLs here. If confused, please read <a href=":docs" target="_blank">Pathologic&rsquo;s documentation</a> for more information about this option and what it affects.', [':docs' => 'https://www.drupal.org/node/257026']),
++        '#description' => $this->t('If this site is or was available at more than one base path or URL, enter them here, separated by line breaks. For example, if this site is live at <code>http://example.com/</code> but has a staging version at <code>http://dev.example.org/staging/</code>, you would enter both those URLs here. If confused, please read <a href=":docs" target="_blank">Pathologic&rsquo;s documentation</a> for more information about this option and what it affects.', [':docs' => 'https://www.drupal.org/node/257026']),
+         '#weight' => 20,
+       ],
+     ];
+   }
+-  
++
+ }
+diff --git a/src/PathologicSettingsForm.php b/src/PathologicSettingsForm.php
+index a8fb169..3a4448c 100644
+--- a/src/PathologicSettingsForm.php
++++ b/src/PathologicSettingsForm.php
+@@ -4,10 +4,12 @@ namespace Drupal\pathologic;
+ 
+ use Drupal\Core\Form\ConfigFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\pathologic\PathologicSettingsCommon;
+ 
++/**
++ *
++ */
+ class PathologicSettingsForm extends ConfigFormBase {
+-  
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -34,7 +36,7 @@ class PathologicSettingsForm extends ConfigFormBase {
+     $common = new PathologicSettingsCommon();
+     $form += $common->commonSettingsForm($defaults);
+ 
+-    return parent::buildForm($form, $form_state);       
++    return parent::buildForm($form, $form_state);
+   }
+ 
+   /**
+diff --git a/tests/src/Functional/PathologicTest.php b/tests/src/Functional/PathologicTest.php
+index 68919be..3d0233e 100644
+--- a/tests/src/Functional/PathologicTest.php
++++ b/tests/src/Functional/PathologicTest.php
+@@ -3,11 +3,9 @@
+ namespace Drupal\Tests\pathologic\Functional;
+ 
+ use Drupal\Component\Utility\Html;
+-use Drupal\Core\Language\Language;
+ use Drupal\Core\Url;
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\filter\Entity\FilterFormat;
+-use Drupal\pathologic\Plugin\Filter\FilterPathologic;
+ 
+ /**
+  * Tests Pathologic functionality.
+@@ -26,11 +24,13 @@ class PathologicTest extends BrowserTestBase {
+    */
+   protected $defaultTheme = 'stark';
+ 
+-
+-  function testPathologic() {
++  /**
++   *
++   */
++  public function testPathologic() {
+     global $script_path;
+ 
+-    // Start by testing our function to build protocol-relative URLs
++    // Start by testing our function to build protocol-relative URLs.
+     $this->assertEqual(
+       _pathologic_url_to_protocol_relative('http://example.com/foo/bar'),
+       '//example.com/foo/bar',
+@@ -42,23 +42,23 @@ class PathologicTest extends BrowserTestBase {
+       t('Protocol-relative URL creation with https:// URL')
+     );
+ 
+-    // Build some paths to check against
+-    $test_paths =[
++    // Build some paths to check against.
++    $test_paths = [
+       'foo' => [
+         'path' => 'foo',
+-        'opts' => []
++        'opts' => [],
+       ],
+       'foo/bar' => [
+         'path' => 'foo/bar',
+-        'opts' => []
++        'opts' => [],
+       ],
+       'foo/bar?baz' => [
+         'path' => 'foo/bar',
+-        'opts' => ['query' => ['baz' => NULL]]
++        'opts' => ['query' => ['baz' => NULL]],
+       ],
+       'foo/bar?baz=qux' => [
+         'path' => 'foo/bar',
+-        'opts' => ['query' => ['baz' => 'qux']]
++        'opts' => ['query' => ['baz' => 'qux']],
+       ],
+       'foo/bar#baz' => [
+         'path' => 'foo/bar',
+@@ -154,13 +154,13 @@ class PathologicTest extends BrowserTestBase {
+     global $base_path;
+     $this->assertEqual(
+       check_markup('<a href="' . $base_path . 'foo">bar</a>', $format_id),
+-      '<a href="' . _pathologic_content_url('foo', ['absolute' => FALSE]) .'">bar</a>',
++      '<a href="' . _pathologic_content_url('foo', ['absolute' => FALSE]) . '">bar</a>',
+       t('Paths beginning with $base_path (like WYSIWYG editors like to make)')
+     );
+     global $base_url;
+     $this->assertEqual(
+       check_markup('<a href="' . $base_url . '/foo">bar</a>', $format_id),
+-      '<a href="' . _pathologic_content_url('foo', ['absolute' => FALSE]) .'">bar</a>',
++      '<a href="' . _pathologic_content_url('foo', ['absolute' => FALSE]) . '">bar</a>',
+       t('Paths beginning with $base_url')
+     );
+ 
+@@ -171,7 +171,7 @@ class PathologicTest extends BrowserTestBase {
+       t('Off-site schemeless URLs (//example.com/foo) ignored')
+     );
+ 
+-    // Test internal: and all base paths
++    // Test internal: and all base paths.
+     $format_id = _pathologic_build_format([
+       'settings_source' => 'local',
+       'local_settings' => [
+@@ -193,7 +193,7 @@ class PathologicTest extends BrowserTestBase {
+     );
+     $this->assertEqual(
+       check_markup('<a href="files:image.jpeg">look</a>', $format_id),
+-      '<a href="' . _pathologic_content_url(file_create_url( \Drupal::config('system.file')->get('default_scheme') . '://image.jpeg'), ['absolute' => TRUE]) . '">look</a>',
++      '<a href="' . _pathologic_content_url(file_create_url(\Drupal::config('system.file')->get('default_scheme') . '://image.jpeg'), ['absolute' => TRUE]) . '">look</a>',
+       t('Path Filter compatibility (files:)')
+     );
+     $this->assertEqual(
+@@ -293,12 +293,12 @@ function _pathologic_content_url($path, $options) {
+   return Html::escape(Url::fromUri(htmlspecialchars_decode($path), $options)->toString());
+ }
+ 
+-
+ /**
+  * Build a text format with Pathologic configured a certain way.
+  *
+  * @param $settings
+  *   An array of settings for the Pathologic instance on the format.
++ *
+  * @return
+  *   A format machine name (consisting of random characters) for the format.
+  */
+diff --git a/tests/src/Functional/PathologicUITest.php b/tests/src/Functional/PathologicUITest.php
+index ccb36f2..e216607 100644
+--- a/tests/src/Functional/PathologicUITest.php
++++ b/tests/src/Functional/PathologicUITest.php
+@@ -84,7 +84,7 @@ class PathologicUITest extends BrowserTestBase {
+     $this->drupalPostForm(NULL, [
+       'filters[filter_pathologic][settings][settings_source]' => 'local',
+       'filters[filter_pathologic][settings][local_settings][protocol_style]' => 'full',
+-      ], t('Save configuration'));
++    ], t('Save configuration'));
+ 
+     $this->drupalGet('/admin/config/content/formats/manage/plain_text');
+     $this->assertFieldChecked('edit-filters-filter-pathologic-settings-settings-source-local');

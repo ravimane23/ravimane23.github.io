@@ -1,0 +1,152 @@
+diff --git a/js/marketo_ma.js b/js/marketo_ma.js
+index 45a48e5..61cfaec 100644
+--- a/js/marketo_ma.js
++++ b/js/marketo_ma.js
+@@ -1,8 +1,8 @@
+-(function($, Drupal) {
++(function ($, Drupal) {
+   Drupal.behaviors.marketo_ma = {
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+       // Only load Marketo Once.
+-      $(document).once('marketo').each(function() {
++      $(document).once('marketo').each(function () {
+         // Only track Marketo if the setting is enabled.
+         if (typeof settings.marketo_ma !== 'undefined' && settings.marketo_ma.track) {
+           $.ajax({
+@@ -21,7 +21,7 @@
+         }
+       });
+     },
+-    marketoMunchkinFunction: function(actionType, data, hash) {
++    marketoMunchkinFunction: function (actionType, data, hash) {
+       Munchkin.munchkinFunction(actionType, data, hash);
+     }
+   };
+diff --git a/modules/marketo_ma_user/src/Controller/MarketoMaUserLeadDataController.php b/modules/marketo_ma_user/src/Controller/MarketoMaUserLeadDataController.php
+index 629d9f3..b8c52cd 100644
+--- a/modules/marketo_ma_user/src/Controller/MarketoMaUserLeadDataController.php
++++ b/modules/marketo_ma_user/src/Controller/MarketoMaUserLeadDataController.php
+@@ -127,7 +127,7 @@ class MarketoMaUserLeadDataController extends ControllerBase {
+       $this->t('Activity Type'),
+       $this->t('Asset Name'),
+     ];
+-    // ID	Date/Time	Activity Type	Asset Name
++    // ID    Date/Time    Activity Type    Asset Name
+     // Convert the lead data to table rows.
+     $rows = array_map(function ($activity) {
+       return [
+diff --git a/modules/marketo_ma_webform/src/Plugin/WebformHandler/MarketoMaWebformHandler.php b/modules/marketo_ma_webform/src/Plugin/WebformHandler/MarketoMaWebformHandler.php
+index 808f44b..3b56a21 100644
+--- a/modules/marketo_ma_webform/src/Plugin/WebformHandler/MarketoMaWebformHandler.php
++++ b/modules/marketo_ma_webform/src/Plugin/WebformHandler/MarketoMaWebformHandler.php
+@@ -181,7 +181,7 @@ class MarketoMaWebformHandler extends WebformHandlerBase {
+         if ($this->configuration['marketo_ma_list'] !== '') {
+           $this->marketoMaService->addLeadToListByEmail($lead->getEmail(), $this->configuration['marketo_ma_list']);
+           $result = $this->marketoMaService->getUpdateLeadResult();
+-          $this->getLogger()->error('<pre>' . print_r($result, TRUE) .'</pre>');
++          $this->getLogger()->error('<pre>' . print_r($result, TRUE) . '</pre>');
+           $context['@list_id'] = $this->configuration['marketo_ma_list'];
+           if (!$result) {
+             $this->getLogger()->error('@form webform failed to add Marketo MA lead @lead_id to list @list_id.', $context);
+diff --git a/src/FieldDefinitionSet.php b/src/FieldDefinitionSet.php
+index c84c495..75293bf 100644
+--- a/src/FieldDefinitionSet.php
++++ b/src/FieldDefinitionSet.php
+@@ -87,6 +87,9 @@ class FieldDefinitionSet {
+     return $this->readonly;
+   }
+ 
++  /**
++   *
++   */
+   public function getWriteable() {
+     return $this->writeable;
+   }
+diff --git a/src/Service/MarketoMaApiClient.php b/src/Service/MarketoMaApiClient.php
+index babdfb7..7928dd1 100644
+--- a/src/Service/MarketoMaApiClient.php
++++ b/src/Service/MarketoMaApiClient.php
+@@ -168,12 +168,14 @@ class MarketoMaApiClient implements MarketoMaApiClientInterface {
+     return $this->getClient()->deleteLead($leads)->getResult();
+   }
+ 
+-   public function addLeadsToList($listId, array $leads, array $options = []) {
++  /**
++   *
++   */
++  public function addLeadsToList($listId, array $leads, array $options = []) {
+     $leads_raw = $this->getLeadsIds($leads);
+     return $this->getClient()->addLeadsToList($listId, $leads_raw, $options)->getResult();
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/Service/MarketoMaService.php b/src/Service/MarketoMaService.php
+index d39d154..bf88043 100644
+--- a/src/Service/MarketoMaService.php
++++ b/src/Service/MarketoMaService.php
+@@ -337,7 +337,6 @@ class MarketoMaService implements MarketoMaServiceInterface {
+     return $body ? json_decode($body, TRUE) : [];
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/Service/MarketoMaServiceInterface.php b/src/Service/MarketoMaServiceInterface.php
+index 1c21575..536f976 100644
+--- a/src/Service/MarketoMaServiceInterface.php
++++ b/src/Service/MarketoMaServiceInterface.php
+@@ -81,6 +81,7 @@ interface MarketoMaServiceInterface {
+    * @return $this
+    */
+   public function addLeadToListByEmail($email, $listId);
++
+   /**
+    * Sets temporary user data for this session.
+    *
+@@ -123,9 +124,8 @@ interface MarketoMaServiceInterface {
+    */
+   public function updateLead(Lead $lead);
+ 
+-
+   /**
+-   * Posts a form
++   * Posts a form.
+    *
+    * @param \Drupal\marketo_ma\Lead $lead
+    *   The lead.
+diff --git a/tests/behat/features/bootstrap/FeatureContext.php b/tests/behat/features/bootstrap/FeatureContext.php
+index f3aaab4..cd68f08 100644
+--- a/tests/behat/features/bootstrap/FeatureContext.php
++++ b/tests/behat/features/bootstrap/FeatureContext.php
+@@ -2,16 +2,13 @@
+ 
+ use Drupal\DrupalExtension\Context\RawDrupalContext;
+ use Behat\Behat\Context\SnippetAcceptingContext;
+-use Behat\Gherkin\Node\PyStringNode;
+-use Behat\Gherkin\Node\TableNode;
+-use Behat\Behat\Tester\Exception\PendingException;
+ 
+ /**
+  * Defines application features from the specific context.
+  */
+ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext {
+ 
+-  private $params = array();
++  private $params = [];
+ 
+   /**
+    * Initializes context.
+@@ -32,7 +29,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
+    * @Given all Marketo MA modules are clean and using :config with lead fields :fields
+    */
+   public function allMarketoMaModulesClean($config = 'marketo_default_settings', $fields = 'marketo_default_lead_fields') {
+-    $module_list = array('marketo_ma');
++    $module_list = ['marketo_ma'];
+ 
+     foreach ($module_list as $module) {
+       if (!\Drupal::moduleHandler()->moduleExists($module)) {

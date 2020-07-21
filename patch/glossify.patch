@@ -1,0 +1,12 @@
+diff --git a/src/GlossifyBase.php b/src/GlossifyBase.php
+index a332c06..36791d0 100644
+--- a/src/GlossifyBase.php
++++ b/src/GlossifyBase.php
+@@ -125,7 +125,6 @@ abstract class GlossifyBase extends FilterBase {
+             }
+             else {
+               // Has to be 'tooltips'.
+-
+               // Insert the matched term instance as tooltip.
+               $tip = $this->sanitizeTip($terms[$terms_key]->tip);
+ 

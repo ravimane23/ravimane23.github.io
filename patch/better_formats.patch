@@ -1,0 +1,28 @@
+diff --git a/src/Tests/BetterFormatsFilterFormatAccessTest.php b/src/Tests/BetterFormatsFilterFormatAccessTest.php
+index 33adc8f..4ea4598 100644
+--- a/src/Tests/BetterFormatsFilterFormatAccessTest.php
++++ b/src/Tests/BetterFormatsFilterFormatAccessTest.php
+@@ -21,7 +21,8 @@ class BetterFormatsFilterFormatAccessTest extends FilterFormatAccessTest {
+   /**
+    * {@inheritdoc}
+    */
+-  function setUp() {
++  public function setUp() {
+     parent::setUp();
+   }
++
+ }
+diff --git a/src/Tests/BetterFormatsTermTest.php b/src/Tests/BetterFormatsTermTest.php
+index c57ec0f..d074151 100644
+--- a/src/Tests/BetterFormatsTermTest.php
++++ b/src/Tests/BetterFormatsTermTest.php
+@@ -21,7 +21,8 @@ class BetterFormatsTermTest extends TermTest {
+   /**
+    * {@inheritdoc}
+    */
+-  function setUp() {
++  public function setUp() {
+     parent::setUp();
+   }
++
+ }

@@ -1,0 +1,49 @@
+diff --git a/js/models/WidgetItemModel.js b/js/models/WidgetItemModel.js
+index 7572ff9..f31a652 100644
+--- a/js/models/WidgetItemModel.js
++++ b/js/models/WidgetItemModel.js
+@@ -7,7 +7,6 @@
+ 
+   'use strict';
+ 
+-
+   /**
+    * Backbone model for widget items in SHS.
+    *
+diff --git a/js/models/WidgetItemOptionModel.js b/js/models/WidgetItemOptionModel.js
+index ba4a2f8..e5ea84b 100644
+--- a/js/models/WidgetItemOptionModel.js
++++ b/js/models/WidgetItemOptionModel.js
+@@ -7,7 +7,6 @@
+ 
+   'use strict';
+ 
+-
+   /**
+    * Backbone model for widget item options in SHS.
+    *
+diff --git a/js/models/WidgetModel.js b/js/models/WidgetModel.js
+index d62b4f4..11391c2 100644
+--- a/js/models/WidgetModel.js
++++ b/js/models/WidgetModel.js
+@@ -7,7 +7,6 @@
+ 
+   'use strict';
+ 
+-
+   /**
+    * Backbone model for a single widget in SHS.
+    *
+diff --git a/js/views/AppView.js b/js/views/AppView.js
+index 8693214..b0881f0 100644
+--- a/js/views/AppView.js
++++ b/js/views/AppView.js
+@@ -109,7 +109,7 @@
+      * @param {Drupal.shs.WidgetModel} widgetModel
+      *   The changed model.
+      */
+-    updateElementValue: function(value, container, widgetModel) {
++    updateElementValue: function (value, container, widgetModel) {
+       var app = this;
+ 
+       if (app.getSetting('multiple')) {

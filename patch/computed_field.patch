@@ -1,0 +1,421 @@
+diff --git a/computed_field_example_formatter/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterExample.php b/computed_field_example_formatter/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterExample.php
+index c15c4c5..5d10945 100644
+--- a/computed_field_example_formatter/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterExample.php
++++ b/computed_field_example_formatter/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterExample.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\Core\Field\Plugin\Field\FieldFormatter\ComputedPhpFormatterExample.
+- */
+-
+ namespace Drupal\computed_field_example_formatter\Plugin\Field\FieldFormatter;
+ 
+ use Drupal\computed_field\Plugin\Field\FieldFormatter\ComputedPhpFormatterBase;
+@@ -33,14 +28,16 @@ class ComputedPhpFormatterExample extends ComputedPhpFormatterBase {
+    * @param mixed $value
+    *   The (computed) value of the item.
+    * @param \Drupal\Core\Field\FieldItemInterface $item
+-   *   The item to format for output
++   *   The item to format for output.
+    * @param int $delta
+-   *   The delta value (index) of the item in case of multiple items
++   *   The delta value (index) of the item in case of multiple items.
+    * @param string $langcode
+-   *   The language code
++   *   The language code.
++   *
+    * @return mixed
+    */
+   public function formatItem($value, FieldItemInterface $item, $delta = 0, $langcode = NULL) {
+     return '<b>PHP example:</b> $value = ' . $value;
+   }
++
+ }
+diff --git a/computed_field_php_formatter/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterPhp.php b/computed_field_php_formatter/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterPhp.php
+index e25cae2..1017015 100644
+--- a/computed_field_php_formatter/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterPhp.php
++++ b/computed_field_php_formatter/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterPhp.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\Core\Field\Plugin\Field\FieldFormatter\ComputedPhpFormatterPhp.
+- */
+-
+ namespace Drupal\computed_field_php_formatter\Plugin\Field\FieldFormatter;
+ 
+ use Drupal\Component\Utility\Html;
+@@ -34,7 +29,7 @@ class ComputedPhpFormatterPhp extends ComputedPhpFormatterBase {
+    */
+   public static function defaultSettings() {
+     return [
+-      'php_code' => '$display_value = \'<b>PHP:</b> $value = \' . $value_escaped;'
++      'php_code' => '$display_value = \'<b>PHP:</b> $value = \' . $value_escaped;',
+     ] + parent::defaultSettings();
+   }
+ 
+@@ -48,7 +43,7 @@ class ComputedPhpFormatterPhp extends ComputedPhpFormatterBase {
+         '#title' => t('PHP Code'),
+         '#default_value' => $this->getSetting('php_code'),
+         '#description' =>
+-          t('Enter the PHP expression to format the value. The variables available to your code include:
++        t('Enter the PHP expression to format the value. The variables available to your code include:
+ <ul>
+ <li><code>$display_value</code>: the resulting value (to be set in this code),</li>
+ <li><code>$value</code>: the raw value to be formatted,</li>
+@@ -56,8 +51,8 @@ class ComputedPhpFormatterPhp extends ComputedPhpFormatterBase {
+ <li><code>$item</code>: the field item,</li>
+ <li><code>$delta</code>: current index of the field in case of multi-value computed fields (counting from 0).</li>
+ <li><code>$langcode</code>: The language code.</li>
+-</ul>')
+-      ]
++</ul>'),
++      ],
+     ] + parent::settingsForm($form, $form_state);
+   }
+ 
+@@ -73,18 +68,18 @@ class ComputedPhpFormatterPhp extends ComputedPhpFormatterBase {
+     return $summary;
+   }
+ 
+-
+   /**
+    * Do something with the value before displaying it.
+    *
+    * @param mixed $value
+    *   The (computed) value of the item.
+    * @param \Drupal\Core\Field\FieldItemInterface $item
+-   *   The item to format for output
++   *   The item to format for output.
+    * @param int $delta
+-   *   The delta value (index) of the item in case of multiple items
++   *   The delta value (index) of the item in case of multiple items.
+    * @param string $langcode
+-   *   The language code
++   *   The language code.
++   *
+    * @return mixed
+    */
+   public function formatItem($value, FieldItemInterface $item, $delta = 0, $langcode = NULL) {
+@@ -96,4 +91,5 @@ class ComputedPhpFormatterPhp extends ComputedPhpFormatterBase {
+ 
+     return $display_value;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/ComputedCacheFormatterTrait.php b/src/Plugin/Field/FieldFormatter/ComputedCacheFormatterTrait.php
+index b27e76b..adcb59c 100644
+--- a/src/Plugin/Field/FieldFormatter/ComputedCacheFormatterTrait.php
++++ b/src/Plugin/Field/FieldFormatter/ComputedCacheFormatterTrait.php
+@@ -14,8 +14,11 @@ use Drupal\Core\Form\FormStateInterface;
+ trait ComputedCacheFormatterTrait {
+ 
+   /**
+-   * List of time options and their factor in seconds to calculate cache seconds
+-   * @param $mode string 'singular' or 'plural'
++   * List of time options and their factor in seconds to calculate cache seconds.
++   *
++   * @param $mode
++   *   string 'singular' or 'plural'
++   *
+    * @return array
+    */
+   private static function unitOptions($mode) {
+@@ -30,7 +33,8 @@ trait ComputedCacheFormatterTrait {
+           3600 => t('hours'),
+           84400 => t('days'),
+         ];
+-        break;
++
++      break;
+ 
+       case 'singular':
+         return [
+@@ -39,7 +43,8 @@ trait ComputedCacheFormatterTrait {
+           3600 => t('hour'),
+           84400 => t('day'),
+         ];
+-        break;
++
++      break;
+ 
+       default:
+         return [];
+@@ -56,7 +61,6 @@ trait ComputedCacheFormatterTrait {
+     ] + parent::defaultSettings();
+   }
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -85,7 +89,7 @@ trait ComputedCacheFormatterTrait {
+    * {@inheritdoc}
+    */
+   public function settingsSummary() {
+-    $cache_duration = (int)$this->getSetting('cache_duration');
++    $cache_duration = (int) $this->getSetting('cache_duration');
+     $cache_unit = $this->getSetting('cache_unit');
+     $mode = ($cache_duration == 1) ? 'singular' : 'plural';
+ 
+@@ -93,10 +97,12 @@ trait ComputedCacheFormatterTrait {
+     if ($cache_unit < 0) {
+       $summary[] = t('Cache: default');
+     }
+-    elseif ($cache_unit == 0) { // off
++    // Off.
++    elseif ($cache_unit == 0) {
+       $summary[] = t('Cache: <b>off</b>');
+     }
+-    elseif ($cache_unit == 1) { // seconds
++    // Seconds.
++    elseif ($cache_unit == 1) {
+       $summary[] = t('Cache: @duration @unit',
+         $args = [
+           '@duration' => $cache_duration,
+@@ -117,4 +123,4 @@ trait ComputedCacheFormatterTrait {
+     return $summary;
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/Plugin/Field/FieldFormatter/ComputedFormatterBase.php b/src/Plugin/Field/FieldFormatter/ComputedFormatterBase.php
+index a6bae8f..6dd8cb9 100644
+--- a/src/Plugin/Field/FieldFormatter/ComputedFormatterBase.php
++++ b/src/Plugin/Field/FieldFormatter/ComputedFormatterBase.php
+@@ -41,7 +41,7 @@ abstract class ComputedFormatterBase extends FormatterBase {
+               $this->viewMode,
+             ],
+             'max-age' => $cache_duration * $cache_unit,
+-          ]
++          ],
+         ];
+       }
+     }
+@@ -51,6 +51,7 @@ abstract class ComputedFormatterBase extends FormatterBase {
+ 
+   /**
+    * Do something with the value before displaying it.
++   *
+    * @param mixed $value
+    *
+    * @return mixed
+@@ -58,4 +59,5 @@ abstract class ComputedFormatterBase extends FormatterBase {
+   protected function prepareValue($value) {
+     return $value;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/ComputedNumericFormatterTrait.php b/src/Plugin/Field/FieldFormatter/ComputedNumericFormatterTrait.php
+index c49898f..eb96027 100644
+--- a/src/Plugin/Field/FieldFormatter/ComputedNumericFormatterTrait.php
++++ b/src/Plugin/Field/FieldFormatter/ComputedNumericFormatterTrait.php
+@@ -11,7 +11,6 @@ use Drupal\Core\Field\FieldItemListInterface;
+  *
+  * @class NumericFormatterBase;
+  */
+-
+ trait ComputedNumericFormatterTrait {
+ 
+   /**
+@@ -26,10 +25,13 @@ trait ComputedNumericFormatterTrait {
+     foreach ($items as $delta => $item) {
+       if ($cache_unit < 0) {
+         $value = $item->value;
+-      } else {
++      }
++      else {
+         $value = $item->executeCode();
+       }
+-      if (is_null($value)) continue;
++      if (is_null($value)) {
++        continue;
++      }
+       $output = $this->numberFormat($value);
+ 
+       // Account for prefix and suffix.
+@@ -56,7 +58,7 @@ trait ComputedNumericFormatterTrait {
+               $this->viewMode,
+             ],
+             'max-age' => $cache_duration * $cache_unit,
+-          ]
++          ],
+         ];
+       }
+     }
+@@ -64,4 +66,4 @@ trait ComputedNumericFormatterTrait {
+     return $elements;
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterBase.php b/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterBase.php
+index 5548960..b3b6a10 100644
+--- a/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterBase.php
++++ b/src/Plugin/Field/FieldFormatter/ComputedPhpFormatterBase.php
+@@ -6,7 +6,7 @@ use Drupal\Core\Field\FieldItemInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+ 
+ /**
+- * Base class for own php-formatter
++ * Base class for own php-formatter.
+  */
+ abstract class ComputedPhpFormatterBase extends ComputedStringFormatter {
+ 
+@@ -21,7 +21,7 @@ abstract class ComputedPhpFormatterBase extends ComputedStringFormatter {
+     foreach ($items as $delta => $item) {
+       if ($cache_unit < 0) {
+         $elements[$delta] = [
+-          '#markup' => $this->prepareValue($this->formatItem($item->value, $item, $delta, $langcode))
++          '#markup' => $this->prepareValue($this->formatItem($item->value, $item, $delta, $langcode)),
+         ];
+       }
+       else {
+@@ -35,7 +35,7 @@ abstract class ComputedPhpFormatterBase extends ComputedStringFormatter {
+               $this->viewMode,
+             ],
+             'max-age' => $cache_duration * $cache_unit,
+-          ]
++          ],
+         ];
+       }
+     }
+@@ -49,14 +49,16 @@ abstract class ComputedPhpFormatterBase extends ComputedStringFormatter {
+    * @param mixed $value
+    *   The (computed) value of the item.
+    * @param \Drupal\Core\Field\FieldItemInterface $item
+-   *   The item to format for output
++   *   The item to format for output.
+    * @param int $delta
+-   *   The delta value (index) of the item in case of multiple items
++   *   The delta value (index) of the item in case of multiple items.
+    * @param string $langcode
+-   *   The language code
++   *   The language code.
++   *
+    * @return mixed
+    */
+   public function formatItem($value, FieldItemInterface $item, $delta = 0, $langcode = NULL) {
+     return $value;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldFormatter/ComputedStringFormatter.php b/src/Plugin/Field/FieldFormatter/ComputedStringFormatter.php
+index 36be5e9..ff5f19f 100644
+--- a/src/Plugin/Field/FieldFormatter/ComputedStringFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/ComputedStringFormatter.php
+@@ -18,12 +18,13 @@ use Drupal\Core\Form\FormStateInterface;
+  * )
+  */
+ class ComputedStringFormatter extends ComputedFormatterBase {
++
+   /**
+    * {@inheritdoc}
+    */
+   public static function defaultSettings() {
+     return [
+-      'sanitized' => TRUE
++      'sanitized' => TRUE,
+     ] + parent::defaultSettings();
+   }
+ 
+@@ -36,7 +37,7 @@ class ComputedStringFormatter extends ComputedFormatterBase {
+         '#type' => 'checkbox',
+         '#title' => t('Sanitized'),
+         '#default_value' => $this->getSetting('sanitized'),
+-      ]
++      ],
+     ] + parent::settingsForm($form, $form_state);
+   }
+ 
+@@ -58,10 +59,10 @@ class ComputedStringFormatter extends ComputedFormatterBase {
+ 
+     if ($this->getSetting('sanitized')) {
+       return nl2br(Html::escape($value));
+-    } else {
++    }
++    else {
+       return nl2br($value);
+     }
+   }
+ 
+-
+ }
+diff --git a/src/Plugin/Field/FieldWidget/ComputedNumberWidget.php b/src/Plugin/Field/FieldWidget/ComputedNumberWidget.php
+index 3e4b011..0da639a 100644
+--- a/src/Plugin/Field/FieldWidget/ComputedNumberWidget.php
++++ b/src/Plugin/Field/FieldWidget/ComputedNumberWidget.php
+@@ -15,12 +15,13 @@ namespace Drupal\computed_field\Plugin\Field\FieldWidget;
+  *   }
+  * )
+  */
+-
+ class ComputedNumberWidget extends ComputedWidgetBase {
++
+   /**
+    * Define how the widget is constructed.
+    */
+   public function getDefaultValue() {
+     return 0;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldWidget/ComputedStringWidget.php b/src/Plugin/Field/FieldWidget/ComputedStringWidget.php
+index 53cdf52..659a477 100644
+--- a/src/Plugin/Field/FieldWidget/ComputedStringWidget.php
++++ b/src/Plugin/Field/FieldWidget/ComputedStringWidget.php
+@@ -14,12 +14,13 @@ namespace Drupal\computed_field\Plugin\Field\FieldWidget;
+  *   }
+  * )
+  */
+-
+ class ComputedStringWidget extends ComputedWidgetBase {
++
+   /**
+    * Define how the widget is constructed.
+    */
+   public function getDefaultValue() {
+     return '';
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldWidget/ComputedWidgetBase.php b/src/Plugin/Field/FieldWidget/ComputedWidgetBase.php
+index fa39b72..d07782b 100644
+--- a/src/Plugin/Field/FieldWidget/ComputedWidgetBase.php
++++ b/src/Plugin/Field/FieldWidget/ComputedWidgetBase.php
+@@ -8,9 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
+ 
+ /**
+  * Base class for computed field's dummy widgets.
+- *
+  */
+-
+ abstract class ComputedWidgetBase extends WidgetBase {
+   public $default_value = '';
+ 
+@@ -45,14 +43,13 @@ abstract class ComputedWidgetBase extends WidgetBase {
+     $element = [];
+ 
+     $element['value'] = $element + [
+-        '#title' => $this->fieldDefinition->getName(),
+-        '#type' => 'hidden',
+-        '#default_value' => $this->getDefaultValue(),
+-        '#disabled' => TRUE,
+-        '#description' => $this->t('Normally this field should not be shown!'),
+-      ];
++      '#title' => $this->fieldDefinition->getName(),
++      '#type' => 'hidden',
++      '#default_value' => $this->getDefaultValue(),
++      '#disabled' => TRUE,
++      '#description' => $this->t('Normally this field should not be shown!'),
++    ];
+     return $element;
+   }
+ 
+-
+ }

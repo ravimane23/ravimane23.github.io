@@ -1,0 +1,134 @@
+diff --git a/search_config.node.inc b/search_config.node.inc
+index 40dc295..b5cd248 100644
+--- a/search_config.node.inc
++++ b/search_config.node.inc
+@@ -1,10 +1,15 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
+ use Drupal\Core\Form\FormStateInterface;
+ 
+ /**
+  * Does the string overrides unconditional on what other changes are pending for
+  * the form.
++ *
+  * @param $form
+  * @param $form_state
+  */
+@@ -71,26 +76,28 @@ function _search_config_set_string_overrides(&$form, $form_state) {
+ /**
+  * This function implements the options to configure the default Drupal search
+  * form, including type filter, field visibility, form visibility, etc.
++ *
+  * @param $form
+  * @param $form_state
++ *
+  * @return mixed
+  */
+ function _search_config_advanced_form(&$form, $form_state) {
+   global $user, $search_config_node_results;
+ 
+-  // Settings
++  // Settings.
+   $settings = search_config_node_settings();
+   $fs_phrase = $settings['fields']['containing_phrase'];
+   $fs_any = $settings['fields']['containing_any'];
+   $fs_none = $settings['fields']['containing_none'];
+   $fs_types = $settings['fields']['types'];
+ 
+-  // Return the form for super admin unchanged
++  // Return the form for super admin unchanged.
+   if ($user->id() == 1 && !empty($settings['restrictions']['admin_bypass'])) {
+     return $form;
+   }
+ 
+-  // Form elements
++  // Form elements.
+   $fkeys = &$form['basic']['keys'];
+   $fkeywords = &$form['advanced']['keywords'];
+   $ftype = &$form['advanced']['type'];
+@@ -120,7 +127,6 @@ function _search_config_advanced_form(&$form, $form_state) {
+     case 'default':
+     default:
+       // Do nothing!
+-
+   }
+ 
+   // Set form element access rights.
+@@ -222,7 +228,7 @@ function _search_config_advanced_form(&$form, $form_state) {
+       }
+     }
+ 
+-    // Lose the values if we have no access
++    // Lose the values if we have no access.
+     $access = empty($fkeys['#access']) ? 1 : $fkeys['#access'];
+     if ($access) {
+       $fkeys['#default_value'] = implode(' ', $basic_values);
+@@ -236,12 +242,12 @@ function _search_config_advanced_form(&$form, $form_state) {
+     $allowed_types = [];
+     foreach (search_config_content_types() as $key => $type) {
+       if (in_array($key, $base_types) || !($access || \Drupal::currentUser()
+-            ->hasPermission("search $key content"))
++        ->hasPermission("search $key content"))
+       ) {
+         unset($ftype['#options'][$key]);
+       }
+       else {
+-        $allowed_types [$key] = $key;
++        $allowed_types[$key] = $key;
+       }
+     }
+     if (!empty($fs_types['groupings'])) {
+@@ -252,17 +258,17 @@ function _search_config_advanced_form(&$form, $form_state) {
+       foreach ($fs_types['groupings'] as $gtypes => $glabel) {
+         foreach (explode(',', $gtypes) as $gtype) {
+           if (isset($allowed_types[$gtype])) {
+-            $used_types [$gtype] = $gtype;
++            $used_types[$gtype] = $gtype;
+           }
+         }
+       }
+-      // And again to set the values
++      // And again to set the values.
+       $filtered_groupings = [];
+       foreach ($fs_types['groupings'] as $gtypes => $glabel) {
+         $filtered_gtypes = [];
+         foreach (explode(',', $gtypes) as $gtype) {
+           if (isset($allowed_types[$gtype])) {
+-            $filtered_gtypes [$gtype] = $gtype;
++            $filtered_gtypes[$gtype] = $gtype;
+           }
+           elseif ($gtype == '<all-types>') {
+             $filtered_gtypes += $allowed_types;
+@@ -292,8 +298,7 @@ function _search_config_advanced_form(&$form, $form_state) {
+     }
+   }
+ 
+-  // TODO - Categories et al
+-
++  // TODO - Categories et al.
+   // This moves the keywords search element into the advanced form.
+   if ($settings['forms']['move_keyword_search']) {
+     $fkeys['#size'] = $fkeywords['or']['#size'];
+@@ -329,7 +334,7 @@ function _parse_search_expression($expression) {
+     'options' => [],
+   ];
+ 
+-  // Pull out known option selectors
++  // Pull out known option selectors.
+   foreach (['type', 'language', 'term'] as $option) {
+     if (preg_match('/(^| )' . $option . ':([^ ]*)( |$)/i', $expression, $matches)) {
+       $sections['options'][$option] = $matches[2];
+diff --git a/src/searchConfigPermissions.php b/src/searchConfigPermissions.php
+index 8eeb5ef..2135c38 100644
+--- a/src/searchConfigPermissions.php
++++ b/src/searchConfigPermissions.php
+@@ -31,4 +31,5 @@ class searchConfigPermissions {
+ 
+     return $perms;
+   }
++
+ }

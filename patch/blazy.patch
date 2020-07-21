@@ -1,0 +1,12 @@
+diff --git a/tests/src/Traits/BlazyManagerUnitTestTrait.php b/tests/src/Traits/BlazyManagerUnitTestTrait.php
+index 154ac4d..6ef44b4 100644
+--- a/tests/src/Traits/BlazyManagerUnitTestTrait.php
++++ b/tests/src/Traits/BlazyManagerUnitTestTrait.php
+@@ -4,7 +4,6 @@ namespace Drupal\Tests\blazy\Traits;
+ 
+ use Drupal\Core\DependencyInjection\ContainerBuilder;
+ use Drupal\blazy\BlazyManager;
+-use Drupal\Tests\PhpunitCompatibilityTrait;
+ 
+ /**
+  * A Trait common for Blazy related service managers.

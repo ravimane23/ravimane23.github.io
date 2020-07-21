@@ -1,0 +1,200 @@
+diff --git a/src/Access/FieldAccess/AbstractFieldAccessOverride.php b/src/Access/FieldAccess/AbstractFieldAccessOverride.php
+index d297964..d37b5e9 100644
+--- a/src/Access/FieldAccess/AbstractFieldAccessOverride.php
++++ b/src/Access/FieldAccess/AbstractFieldAccessOverride.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\override_node_options\Access\FieldAccess;
+ 
++/**
++ *
++ */
+ abstract class AbstractFieldAccessOverride implements FieldAccessOverrideInterface {
+ 
+   /**
+@@ -9,6 +12,9 @@ abstract class AbstractFieldAccessOverride implements FieldAccessOverrideInterfa
+    */
+   protected static $context;
+ 
++  /**
++   *
++   */
+   protected static function hasNodeEditPermission() {
+     $entityType = self::$context['field_definition']->getTargetEntityTypeId();
+ 
+@@ -17,6 +23,9 @@ abstract class AbstractFieldAccessOverride implements FieldAccessOverrideInterfa
+       && !self::$context['account']->hasPermission('administer nodes');
+   }
+ 
++  /**
++   *
++   */
+   protected static function isFieldName($fieldName) {
+     return self::$context['field_definition']->getName() == $fieldName;
+   }
+diff --git a/src/Access/FieldAccess/FieldAccessOverrideInterface.php b/src/Access/FieldAccess/FieldAccessOverrideInterface.php
+index 4ab8325..c98e235 100644
+--- a/src/Access/FieldAccess/FieldAccessOverrideInterface.php
++++ b/src/Access/FieldAccess/FieldAccessOverrideInterface.php
+@@ -2,8 +2,14 @@
+ 
+ namespace Drupal\override_node_options\Access\FieldAccess;
+ 
++/**
++ *
++ */
+ interface FieldAccessOverrideInterface {
+ 
++  /**
++   *
++   */
+   public static function access(array &$grants, array $context);
+ 
+ }
+diff --git a/src/Access/FieldAccess/GrantAuthoredByAccess.php b/src/Access/FieldAccess/GrantAuthoredByAccess.php
+index 5dc962d..33d2700 100644
+--- a/src/Access/FieldAccess/GrantAuthoredByAccess.php
++++ b/src/Access/FieldAccess/GrantAuthoredByAccess.php
+@@ -4,8 +4,14 @@ namespace Drupal\override_node_options\Access\FieldAccess;
+ 
+ use Drupal\Core\Access\AccessResult;
+ 
++/**
++ *
++ */
+ class GrantAuthoredByAccess extends AbstractFieldAccessOverride implements FieldAccessOverrideInterface {
+ 
++  /**
++   *
++   */
+   public static function access(array &$grants, array $context) {
+     self::$context = $context;
+ 
+diff --git a/src/Access/FieldAccess/GrantCreatedAccess.php b/src/Access/FieldAccess/GrantCreatedAccess.php
+index 5066cda..2361453 100644
+--- a/src/Access/FieldAccess/GrantCreatedAccess.php
++++ b/src/Access/FieldAccess/GrantCreatedAccess.php
+@@ -9,6 +9,9 @@ use Drupal\Core\Access\AccessResult;
+  */
+ class GrantCreatedAccess extends AbstractFieldAccessOverride implements FieldAccessOverrideInterface {
+ 
++  /**
++   *
++   */
+   public static function access(array &$grants, array $context) {
+     self::$context = $context;
+ 
+diff --git a/src/Access/FieldAccess/GrantPromoteAccess.php b/src/Access/FieldAccess/GrantPromoteAccess.php
+index c251cc0..439178e 100644
+--- a/src/Access/FieldAccess/GrantPromoteAccess.php
++++ b/src/Access/FieldAccess/GrantPromoteAccess.php
+@@ -4,8 +4,14 @@ namespace Drupal\override_node_options\Access\FieldAccess;
+ 
+ use Drupal\Core\Access\AccessResult;
+ 
++/**
++ *
++ */
+ class GrantPromoteAccess extends AbstractFieldAccessOverride implements FieldAccessOverrideInterface {
+ 
++  /**
++   *
++   */
+   public static function access(array &$grants, array $context) {
+     self::$context = $context;
+ 
+diff --git a/src/Access/FieldAccess/GrantPublishedStatusAccess.php b/src/Access/FieldAccess/GrantPublishedStatusAccess.php
+index d60c20b..a361b51 100644
+--- a/src/Access/FieldAccess/GrantPublishedStatusAccess.php
++++ b/src/Access/FieldAccess/GrantPublishedStatusAccess.php
+@@ -4,8 +4,14 @@ namespace Drupal\override_node_options\Access\FieldAccess;
+ 
+ use Drupal\Core\Access\AccessResult;
+ 
++/**
++ *
++ */
+ class GrantPublishedStatusAccess extends AbstractFieldAccessOverride implements FieldAccessOverrideInterface {
+ 
++  /**
++   *
++   */
+   public static function access(array &$grants, array $context) {
+     self::$context = $context;
+ 
+diff --git a/src/Access/FieldAccess/GrantRevisionLogAccess.php b/src/Access/FieldAccess/GrantRevisionLogAccess.php
+index 476e955..5d36638 100644
+--- a/src/Access/FieldAccess/GrantRevisionLogAccess.php
++++ b/src/Access/FieldAccess/GrantRevisionLogAccess.php
+@@ -4,8 +4,14 @@ namespace Drupal\override_node_options\Access\FieldAccess;
+ 
+ use Drupal\Core\Access\AccessResult;
+ 
++/**
++ *
++ */
+ class GrantRevisionLogAccess extends AbstractFieldAccessOverride implements FieldAccessOverrideInterface {
+ 
++  /**
++   *
++   */
+   public static function access(array &$grants, array $context) {
+     self::$context = $context;
+ 
+diff --git a/src/Access/FieldAccess/GrantStickyAccess.php b/src/Access/FieldAccess/GrantStickyAccess.php
+index 2ffe6d4..54d2f5a 100644
+--- a/src/Access/FieldAccess/GrantStickyAccess.php
++++ b/src/Access/FieldAccess/GrantStickyAccess.php
+@@ -4,8 +4,14 @@ namespace Drupal\override_node_options\Access\FieldAccess;
+ 
+ use Drupal\Core\Access\AccessResult;
+ 
++/**
++ *
++ */
+ class GrantStickyAccess extends AbstractFieldAccessOverride implements FieldAccessOverrideInterface {
+ 
++  /**
++   *
++   */
+   public static function access(array &$grants, array $context) {
+     self::$context = $context;
+ 
+diff --git a/src/Access/FormAccess/FormAccessOverrideInterface.php b/src/Access/FormAccess/FormAccessOverrideInterface.php
+index 82144dc..3daa77a 100644
+--- a/src/Access/FormAccess/FormAccessOverrideInterface.php
++++ b/src/Access/FormAccess/FormAccessOverrideInterface.php
+@@ -4,8 +4,14 @@ namespace Drupal\override_node_options\Access\FormAccess;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ interface FormAccessOverrideInterface {
+ 
++  /**
++   *
++   */
+   public static function access(array &$form, FormStateInterface $form_state);
+ 
+ }
+diff --git a/src/Access/FormAccess/GrantRevisionAccess.php b/src/Access/FormAccess/GrantRevisionAccess.php
+index 87e8376..25f27b9 100644
+--- a/src/Access/FormAccess/GrantRevisionAccess.php
++++ b/src/Access/FormAccess/GrantRevisionAccess.php
+@@ -5,8 +5,14 @@ namespace Drupal\override_node_options\Access\FormAccess;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\node\NodeForm;
+ 
++/**
++ *
++ */
+ class GrantRevisionAccess implements FormAccessOverrideInterface {
+ 
++  /**
++   *
++   */
+   public static function access(array &$form, FormStateInterface $form_state) {
+     $form_object = $form_state->getFormObject();
+ 

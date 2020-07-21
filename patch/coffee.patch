@@ -1,0 +1,39 @@
+diff --git a/tests/modules/coffee_test/src/Controller/CoffeeTestController.php b/tests/modules/coffee_test/src/Controller/CoffeeTestController.php
+index b51c08c..a38f9b9 100644
+--- a/tests/modules/coffee_test/src/Controller/CoffeeTestController.php
++++ b/tests/modules/coffee_test/src/Controller/CoffeeTestController.php
+@@ -5,9 +5,16 @@ namespace Drupal\coffee_test\Controller;
+ use Drupal\Core\Controller\ControllerBase;
+ use Drupal\Core\Render\HtmlResponse;
+ 
++/**
++ *
++ */
+ class CoffeeTestController extends ControllerBase {
+ 
++  /**
++   *
++   */
+   public function csrf() {
+     return new HtmlResponse('ok');
+   }
++
+ }
+diff --git a/tests/src/Functional/CoffeeTest.php b/tests/src/Functional/CoffeeTest.php
+index 9a59bb2..674e8d0 100644
+--- a/tests/src/Functional/CoffeeTest.php
++++ b/tests/src/Functional/CoffeeTest.php
+@@ -5,7 +5,6 @@ namespace Drupal\Tests\coffee\Functional;
+ use Drupal\menu_link_content\Entity\MenuLinkContent;
+ use Drupal\system\Entity\Menu;
+ use Drupal\Tests\BrowserTestBase;
+-use PHPUnit\Util\Json;
+ 
+ /**
+  * Tests Coffee module functionality.
+@@ -192,4 +191,5 @@ class CoffeeTest extends BrowserTestBase {
+     $this->drupalGet('/coffee-test-csrf', ['query' => ['token' => $token]]);
+     $this->assertResponse(200);
+   }
++
+ }

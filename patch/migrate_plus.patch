@@ -1,0 +1,13 @@
+diff --git a/tests/src/Kernel/Plugin/migrate/process/EntityGenerateTest.php b/tests/src/Kernel/Plugin/migrate/process/EntityGenerateTest.php
+index 2b3fb72..b6124e8 100644
+--- a/tests/src/Kernel/Plugin/migrate/process/EntityGenerateTest.php
++++ b/tests/src/Kernel/Plugin/migrate/process/EntityGenerateTest.php
+@@ -151,7 +151,7 @@ class EntityGenerateTest extends KernelTestBase implements MigrateMessageInterfa
+     $migration = $this->migrationPluginManager->createStubMigration($definition);
+     $reflector = new \ReflectionObject($migration->getDestinationPlugin());
+     $attribute = $reflector->getProperty('storage');
+-    $attribute->setAccessible(true);
++    $attribute->setAccessible(TRUE);
+     /** @var \Drupal\Core\Entity\EntityStorageBase $storage */
+     $storage = $attribute->getValue($migration->getDestinationPlugin());
+     $migrationExecutable = (new MigrateExecutable($migration, $this));

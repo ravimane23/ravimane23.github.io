@@ -1,0 +1,433 @@
+diff --git a/ajax_comments.js b/ajax_comments.js
+index 524996c..201e4fb 100644
+--- a/ajax_comments.js
++++ b/ajax_comments.js
+@@ -3,7 +3,7 @@
+   "use strict";
+ 
+  // Scroll to given element
+-  Drupal.AjaxCommands.prototype.ajaxCommentsScrollToElement = function(ajax, response, status) {
++  Drupal.AjaxCommands.prototype.ajaxCommentsScrollToElement = function (ajax, response, status) {
+     try {
+       var pos = $(response.selector).offset();
+       $('html, body').animate({ scrollTop: pos.top}, 'slow');
+@@ -18,7 +18,7 @@
+    * On the server side we have a current state of node and comments, but on client side we may have a outdated state
+    * and some div's may be not present
+    */
+-  Drupal.AjaxCommands.prototype.ajaxCommentsAddDummyDivAfter = function(ajax, response, status) {
++  Drupal.AjaxCommands.prototype.ajaxCommentsAddDummyDivAfter = function (ajax, response, status) {
+     try {
+       if (!$(response.selector).next().hasClass(response.class)) {
+         $('<div class="' + response.class + '"></div>').insertAfter(response.selector);
+@@ -39,7 +39,7 @@
+    * Own implementation of ajax_command_replace()
+    * see bug: https://www.drupal.org/node/736066
+    */
+-  Drupal.AjaxCommands.prototype.ajaxCommentsReplace = function(ajax, response, status) {
++  Drupal.AjaxCommands.prototype.ajaxCommentsReplace = function (ajax, response, status) {
+     try {
+       // Removing content from the wrapper, detach behaviors first.
+       var wrapper = response.selector ? $(response.selector) : $(ajax.wrapper);
+@@ -63,7 +63,7 @@
+    * Own implementation of ajax_command_before()
+    * see bug: https://www.drupal.org/node/736066
+    */
+-  Drupal.AjaxCommands.prototype.ajaxCommentsBefore = function(ajax, response, status) {
++  Drupal.AjaxCommands.prototype.ajaxCommentsBefore = function (ajax, response, status) {
+     try {
+       $(response.html).insertBefore(response.selector);
+ 
+@@ -82,7 +82,7 @@
+    * Own implementation of ajax_command_after()
+    * see bug: https://www.drupal.org/node/736066
+    */
+-  Drupal.AjaxCommands.prototype.ajaxCommentsAfter = function(ajax, response, status) {
++  Drupal.AjaxCommands.prototype.ajaxCommentsAfter = function (ajax, response, status) {
+     try {
+       $(response.html).insertAfter(response.selector);
+ 
+@@ -101,7 +101,7 @@
+    * Own implementation of ajax_command_insert()
+    * see bug: https://www.drupal.org/node/736066
+    */
+-  Drupal.AjaxCommands.prototype.ajaxCommentsPrepend = function(ajax, response, status) {
++  Drupal.AjaxCommands.prototype.ajaxCommentsPrepend = function (ajax, response, status) {
+     try {
+       $(response.selector).prepend(response.html);
+ 
+@@ -120,7 +120,7 @@
+    * Own implementation of ajax_command_append()
+    * see bug: https://www.drupal.org/node/736066
+    */
+-  Drupal.AjaxCommands.prototype.ajaxCommentsAppend = function(ajax, response, status) {
++  Drupal.AjaxCommands.prototype.ajaxCommentsAppend = function (ajax, response, status) {
+     try {
+       $(response.selector).append(response.html);
+ 
+@@ -139,7 +139,7 @@
+    * Own Bind Ajax behavior for comment links.
+    */
+   Drupal.behaviors.ajaxCommentsBehavior = {
+-    attach: function(context, settings) {
++    attach: function (context, settings) {
+       // Bind Ajax behavior to all items showing the class.
+       $('.js-use-ajax-comments', context).once('ajax-comments').each(function () {
+         $(this).click(function (e) {
+diff --git a/src/Ajax/ajaxCommentsScrollToElementCommand.php b/src/Ajax/ajaxCommentsScrollToElementCommand.php
+index 462a1bd..f4c5799 100644
+--- a/src/Ajax/ajaxCommentsScrollToElementCommand.php
++++ b/src/Ajax/ajaxCommentsScrollToElementCommand.php
+@@ -1,10 +1,5 @@
+ <?php
+ 
+-/**
+- * @file
+- * Contains \Drupal\ajax_comments\Ajax\ajaxCommentsScrollToElementCommand.
+- */
+-
+ namespace Drupal\ajax_comments\Ajax;
+ 
+ use Drupal\Core\Ajax\CommandInterface;
+@@ -14,7 +9,7 @@ use Drupal\Core\Ajax\CommandInterface;
+  *
+  * @ingroup ajax
+  */
+-class ajaxCommentsScrollToElementCommand Implements CommandInterface {
++class ajaxCommentsScrollToElementCommand implements CommandInterface {
+ 
+   /**
+    * The CSS selector for the element.
+@@ -27,7 +22,6 @@ class ajaxCommentsScrollToElementCommand Implements CommandInterface {
+    * Constructs a ajaxCommentsScrollToElementCommand object.
+    *
+    * @param string $selector
+-   *
+    */
+   public function __construct($selector) {
+     $this->selector = $selector;
+diff --git a/src/Controller/AjaxCommentsController.php b/src/Controller/AjaxCommentsController.php
+index 47868c9..a1787ce 100644
+--- a/src/Controller/AjaxCommentsController.php
++++ b/src/Controller/AjaxCommentsController.php
+@@ -324,7 +324,6 @@ class AjaxCommentsController extends ControllerBase {
+       // if (\Drupal::config('ajax_comments.settings')->get('enable_scroll')) {
+       //   $response->addCommand(new ajaxCommentsScrollToElementCommand('.ajax-comments-reply-form-' . $comment->getCommentedEntityId() . '-' . $comment->get('pid')->target_id . '-' . $comment->id()));
+       // }
+-
+       // Don't delete the tempStore variables here; we need them
+       // to persist for the save() method below, where the form returned
+       // here will be submitted.
+@@ -824,7 +823,7 @@ class AjaxCommentsController extends ControllerBase {
+    *   (optional) Some comments are replies to other comments. In those cases,
+    *   $pid is the parent comment's comment ID. Defaults to NULL.
+    *
+-   * @return \Drupal\Core\Ajax\AjaxResponse $response
++   * @return \Drupal\Core\Ajax\AjaxResponse
+    *   The ajax response, if access is denied.
+    */
+   public function replyAccess(Request $request, AjaxResponse $response, EntityInterface $entity, $field_name, $pid = NULL) {
+diff --git a/src/Form/SettingsForm.php b/src/Form/SettingsForm.php
+index 86e8b6d..247b7e4 100644
+--- a/src/Form/SettingsForm.php
++++ b/src/Form/SettingsForm.php
+@@ -4,10 +4,8 @@ namespace Drupal\ajax_comments\Form;
+ 
+ use Drupal\field_ui\FieldUI;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+-use Drupal\Core\Entity\EntityListBuilderInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\ConfigFormBase;
+-use Drupal\Core\Cache\Cache;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Url;
+ use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+diff --git a/src/TempStore.php b/src/TempStore.php
+index fb19a59..5e3bb2c 100644
+--- a/src/TempStore.php
++++ b/src/TempStore.php
+@@ -2,11 +2,8 @@
+ 
+ namespace Drupal\ajax_comments;
+ 
+-use Drupal\ajax_comments\Utility;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\user\PrivateTempStore;
+ use Drupal\user\PrivateTempStoreFactory;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\HttpFoundation\Request;
+ 
+ /**
+diff --git a/src/Tests/AjaxCommentsTest.php b/src/Tests/AjaxCommentsTest.php
+index e22764a..8b2be5f 100644
+--- a/src/Tests/AjaxCommentsTest.php
++++ b/src/Tests/AjaxCommentsTest.php
+@@ -361,10 +361,10 @@ class AjaxCommentsTest extends CommentTestBase {
+     $reply_comment = $this->container->get('entity_type.manager')
+       ->getStorage('comment')
+       ->create([
+-      'entity_id' => $nid,
+-      'pid' => $pid,
+-      'entity_type' => $entity_type,
+-      'field_name' => $comment_field_name,
++        'entity_id' => $nid,
++        'pid' => $pid,
++        'entity_type' => $entity_type,
++        'field_name' => $comment_field_name,
+       ]);
+     $reply_form_render_array = $this->container
+       ->get('entity.form_builder')
+diff --git a/src/Utility.php b/src/Utility.php
+index 10c7ac9..99e8545 100644
+--- a/src/Utility.php
++++ b/src/Utility.php
+@@ -189,8 +189,8 @@ class Utility {
+       $input[AjaxResponseSubscriber::AJAX_REQUEST_PARAMETER]
+     );
+     $has_ajax_format = $request
+-        ->query
+-        ->get(MainContentViewSubscriber::WRAPPER_FORMAT) == 'drupal_ajax';
++      ->query
++      ->get(MainContentViewSubscriber::WRAPPER_FORMAT) == 'drupal_ajax';
+     return $has_ajax_parameter || $has_ajax_input_parameter || $has_ajax_format;
+   }
+ 
+diff --git a/views/ajax_comments_handler_field_ajax_add_comment.inc b/views/ajax_comments_handler_field_ajax_add_comment.inc
+index 389b2f9..9d14200 100644
+--- a/views/ajax_comments_handler_field_ajax_add_comment.inc
++++ b/views/ajax_comments_handler_field_ajax_add_comment.inc
+@@ -1,20 +1,31 @@
+ <?php
+-/*
+- ** @file
+- *  views handler class
+- *  mostyly just  renders the field for views display  and adds  js and css
++
++/**
++ * @file
++ * Views handler class
++ * mostyly just  renders the field for views display  and adds  js and css.
++ */
++
++/**
++ *
+  */
+ class ajax_comments_handler_field_ajax_add_comment extends views_handler_field_comment_node_link {
+-  var $output;
++  public $output;
+ 
+-  function option_definition() {
++  /**
++   *
++   */
++  public function option_definition() {
+     $options = parent::option_definition();
+     $options['text'] = ['default' => '', 'translatable' => TRUE];
+     $options['submit_action'] = ['default' => 1];
+     return $options;
+   }
+ 
+-  function options_form(&$form, &$form_state) {
++  /**
++   *
++   */
++  public function options_form(&$form, &$form_state) {
+     $form['text'] = [
+       '#type' => 'textfield',
+       '#title' => t('Text to display'),
+@@ -35,13 +46,16 @@ class ajax_comments_handler_field_ajax_add_comment extends views_handler_field_c
+     ];
+ 
+     parent::options_form($form, $form_state);
+-    
++
+     // The path is set by render_link function so don't allow to set it.
+     $form['alter']['path'] = ['#access' => FALSE];
+     $form['alter']['external'] = ['#access' => FALSE];
+   }
+ 
+-  function pre_render(&$values) {
++  /**
++   *
++   */
++  public function pre_render(&$values) {
+     parent::pre_render($values);
+ 
+     // Load necessary AJAX libraries.
+@@ -49,13 +63,16 @@ class ajax_comments_handler_field_ajax_add_comment extends views_handler_field_c
+     drupal_add_library('system', 'drupal.ajax');
+   }
+ 
+-  function render($values) {
++  /**
++   *
++   */
++  public function render($values) {
+     if (user_access('post comments') && $node = $this->get_value($values)) {
+-      // Add Comment wrapper
+-      $result = '<div class="comment-wrapper views-comment-wrapper-nid-' . $node->nid .'">';
+-      // Add result text
+-      $result .= '<p class="views-comment-result-nid-' . $node->nid . '" style="display: none;">'. t('Your comment has been posted.') .'</p>';
+-        // Add dummy comment
++      // Add Comment wrapper.
++      $result = '<div class="comment-wrapper views-comment-wrapper-nid-' . $node->nid . '">';
++      // Add result text.
++      $result .= '<p class="views-comment-result-nid-' . $node->nid . '" style="display: none;">' . t('Your comment has been posted.') . '</p>';
++      // Add dummy comment.
+       $result .= '<div class="ajax-comment-wrapper ajax-comment-dummy-comment"></div>';
+       // Generate a unique token to prevent illegitimate requests.
+       $options = [
+@@ -68,9 +85,10 @@ class ajax_comments_handler_field_ajax_add_comment extends views_handler_field_c
+       ];
+       $path = 'comment/reply/' . $node->nid . '/0/' . $this->options['submit_action'];
+       $text = !empty($this->options['text']) ? $this->options['text'] : t('Add new comment');
+-      // Close Comment wrapper
++      // Close Comment wrapper.
+       $result .= l($text, $path, $options) . '</div>';
+       return $result;
+     }
+   }
++
+ }
+diff --git a/views/ajax_comments_handler_field_list_comments.inc b/views/ajax_comments_handler_field_list_comments.inc
+index 3f43c0a..0a024a8 100644
+--- a/views/ajax_comments_handler_field_list_comments.inc
++++ b/views/ajax_comments_handler_field_list_comments.inc
+@@ -1,9 +1,10 @@
+ <?php
+- /**
++
++/**
+  * @file
+- * Definition of ajax_comments_handler_field_list_comments. 
++ * Definition of ajax_comments_handler_field_list_comments.
+  * TODO: Comments per page as setting
+- * TODO: Flat or nested as option
++ * TODO: Flat or nested as option.
+  */
+ 
+ /**
+@@ -11,39 +12,44 @@
+  */
+ class ajax_comments_handler_field_list_comments extends views_handler_field_entity {
+ 
+-  function option_definition() {
++  /**
++   *
++   */
++  public function option_definition() {
+     $options = parent::option_definition();
+     $options['ajax_comments_display_add_comment_form'] = ['default' => FALSE, 'bool' => TRUE];
+     return $options;
+   }
+-  
+-  function options_form(&$form, &$form_state) {
++
++  /**
++   *
++   */
++  public function options_form(&$form, &$form_state) {
+     $form['ajax_comments_display_add_comment_form'] = [
+       '#title' => t('Show Add Comment form'),
+       '#description' => t("Enable to display the Add Comment form below the list of comments."),
+-      '#type' => 'checkbox', 
++      '#type' => 'checkbox',
+       '#default_value' => $this->options['ajax_comments_display_add_comment_form'],
+     ];
+     parent::options_form($form, $form_state);
+   }
+-  
+ 
+   /**
+    * Render the list of comments
+    * modified to add the ajax_comments wrapper and the add comment form option.
+    */
+-  function render($values) {
++  public function render($values) {
+     if (user_access('post comments') && $node = $this->get_value($values)) {
+       // Init with dummy Comment. For explanation look at ajax_comments_process_node().
+       $result = [
+         'comments' => [
+           'dummyComment' => [
+-        '#prefix' => '<div class="ajax-comment-wrapper ajax-comment-dummy-comment" style="display:none">',
+-        '#type' => 'item',
+-        '#markup' => '',
+-        '#suffix' => '</div>',
+-          ]
+-        ]
++            '#prefix' => '<div class="ajax-comment-wrapper ajax-comment-dummy-comment" style="display:none">',
++            '#type' => 'item',
++            '#markup' => '',
++            '#suffix' => '</div>',
++          ],
++        ],
+       ];
+ 
+       // Only attempt to render comments if the node has visible comments.
+@@ -58,35 +64,34 @@ class ajax_comments_handler_field_list_comments extends views_handler_field_enti
+           comment_prepare_thread($comments);
+           $build = comment_view_multiple($comments, $node);
+           // TODO: There seems to be a problem with nested pagers :/
+-          //$build['pager']['#theme'] = 'pager';
+-
++          // $build['pager']['#theme'] = 'pager';.
+           $result['comments'] += $build;
+         }
+       }
+ 
+       // Append comment form if needed.
+-      if (user_access('post comments') && $node->comment == COMMENT_NODE_OPEN 
+-          && (variable_get('comment_form_location_' . $node->type, COMMENT_FORM_BELOW) == COMMENT_FORM_BELOW 
++      if (user_access('post comments') && $node->comment == COMMENT_NODE_OPEN
++          && (variable_get('comment_form_location_' . $node->type, COMMENT_FORM_BELOW) == COMMENT_FORM_BELOW
+           && $this->options['ajax_comments_display_add_comment_form'])) {
+         $result['comment_form'] = drupal_get_form("comment_node_{$node->type}_form", (object) ['nid' => $node->nid]);
+       }
+ 
+-      // Theme comments
++      // Theme comments.
+       $result += [
+-          '#theme' => 'comment_wrapper__node_' . $node->type, 
+-          '#node' => $node, 
+-          'comments' => [],
+-          'comment_form' => [],
++        '#theme' => 'comment_wrapper__node_' . $node->type,
++        '#node' => $node,
++        'comments' => [],
++        'comment_form' => [],
+       ];
+       return $result;
+     }
+   }
+ 
+-  /* 
++  /**
+    * We need to fetch this in our own method since Drupal doesn't seeem
+-   * to support nested pagers 
++   * to support nested pagers.
+    */
+-  function comment_get_thread($node, $mode, $comments_per_page = 150) {
++  public function comment_get_thread($node, $mode, $comments_per_page = 150) {
+     $query = db_select('comment', 'c');
+     $query->addField('c', 'cid');
+     $query
+@@ -94,17 +99,17 @@ class ajax_comments_handler_field_list_comments extends views_handler_field_enti
+       ->addTag('node_access')
+       ->addTag('comment_filter')
+       ->addMetaData('node', $node);
+-      //->limit(0,$comments_per_page);
++    // ->limit(0,$comments_per_page);
+     if (!user_access('administer comments')) {
+       $query->condition('c.status', COMMENT_PUBLISHED);
+     }
+     if ($mode === COMMENT_MODE_FLAT) {
+       $query->orderBy('c.cid', 'ASC');
+     }
+-    
+ 
+     $cids = $query->execute()->fetchCol();
+ 
+     return $cids;
+   }
++
+ }

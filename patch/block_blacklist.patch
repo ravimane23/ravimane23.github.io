@@ -1,0 +1,109 @@
+diff --git a/src/Controller/DefaultController.php b/src/Controller/DefaultController.php
+index c7ebe23..a59e0b5 100644
+--- a/src/Controller/DefaultController.php
++++ b/src/Controller/DefaultController.php
+@@ -46,9 +46,9 @@ class DefaultController extends ControllerBase {
+    * Constructs a new DefaultController object.
+    *
+    * @param Drupal\Core\Block\BlockManagerInterface $block_manager
+-   *  The Block Manager service.
++   *   The Block Manager service.
+    * @param Drupal\Core\Plugin\Context\LazyContextRepository $context_repository
+-   *  The Context Repository service.
++   *   The Context Repository service.
+    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+    *   Configuration factory.
+    * @param \Drupal\block_blacklist\Blacklist $blacklist_service
+@@ -127,4 +127,5 @@ class DefaultController extends ControllerBase {
+     $contexts = $this->contextRepository->getAvailableContexts();
+     return $this->blockManager->getDefinitionsForContexts($contexts);
+   }
++
+ }
+diff --git a/src/Controller/LayoutController.php b/src/Controller/LayoutController.php
+index 5f13c3f..5544390 100644
+--- a/src/Controller/LayoutController.php
++++ b/src/Controller/LayoutController.php
+@@ -2,8 +2,6 @@
+ 
+ namespace Drupal\block_blacklist\Controller;
+ 
+-use Drupal\block_blacklist\LayoutPluginAlter;
+-
+ /**
+  * Class DefaultController.
+  */
+diff --git a/src/Form/SettingsForm.php b/src/Form/SettingsForm.php
+index c4fdd7a..db45096 100644
+--- a/src/Form/SettingsForm.php
++++ b/src/Form/SettingsForm.php
+@@ -28,6 +28,9 @@ class SettingsForm extends ConfigFormBase {
+     $this->entityTypeManager = $entity_type_manager;
+   }
+ 
++  /**
++   *
++   */
+   public static function create(ContainerInterface $container) {
+     return new static(
+       $container->get('config.factory'),
+diff --git a/src/LayoutPluginAlter.php b/src/LayoutPluginAlter.php
+index 4de3755..7631f6d 100644
+--- a/src/LayoutPluginAlter.php
++++ b/src/LayoutPluginAlter.php
+@@ -5,7 +5,7 @@ namespace Drupal\block_blacklist;
+ /**
+  * Implementation callbacks for layout builder plugin alter hooks.
+  */
+-class LayoutPluginAlter extends PluginAlter{
++class LayoutPluginAlter extends PluginAlter {
+ 
+   /**
+    * {@inheritdoc}
+diff --git a/src/PluginAlter.php b/src/PluginAlter.php
+index 759faf4..8a11a9f 100644
+--- a/src/PluginAlter.php
++++ b/src/PluginAlter.php
+@@ -6,7 +6,6 @@ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+-use Drupal\block_blacklist\Blacklist;
+ 
+ /**
+  * Implementation callbacks for plugin alter hooks.
+diff --git a/tests/src/Functional/BlockBlacklistTest.php b/tests/src/Functional/BlockBlacklistTest.php
+index 16096ce..e2c9295 100644
+--- a/tests/src/Functional/BlockBlacklistTest.php
++++ b/tests/src/Functional/BlockBlacklistTest.php
+@@ -22,8 +22,8 @@ class BlockBlacklistTest extends BrowserTestBase {
+   ];
+ 
+   /**
+-    * A simple user.
+-    */
++   * A simple user.
++   */
+   private $user;
+ 
+   /**
+@@ -102,7 +102,7 @@ class BlockBlacklistTest extends BrowserTestBase {
+     $this->assertResponse(200);
+     // Test the form elements exist and have default values.
+     $config = $this->config('block_blacklist.settings');
+-    
++
+     foreach ($replace as $field => $opt) {
+       $this->assertFieldByName(
+         $field,
+@@ -128,8 +128,8 @@ class BlockBlacklistTest extends BrowserTestBase {
+       $elements = $this->xpath($string);
+       $value = count($elements) ? $elements[0]->getValue() : NULL;
+       $this->assertEquals($value, $opt['rule']);
+-    }  
+-    
++    }
++
+     // Test block list results.
+     $pages = [
+       'system' => 'admin/config/block_blacklist/system-list',

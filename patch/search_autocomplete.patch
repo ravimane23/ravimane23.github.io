@@ -1,0 +1,606 @@
+diff --git a/src/AutocompletionConfigurationInterface.php b/src/AutocompletionConfigurationInterface.php
+index 102f2af..f41b64d 100644
+--- a/src/AutocompletionConfigurationInterface.php
++++ b/src/AutocompletionConfigurationInterface.php
+@@ -24,7 +24,7 @@ interface AutocompletionConfigurationInterface extends ConfigEntityInterface {
+   /**
+    * Returns the configuration status.
+    *
+-   * @return boolean
++   * @return bool
+    *   TRUE/FALSE depending if the configuration is set active.
+    */
+   public function getStatus();
+@@ -113,7 +113,7 @@ interface AutocompletionConfigurationInterface extends ConfigEntityInterface {
+   /**
+    * Returns whether the configuration is editable by authorized users.
+    *
+-   * @return boolean
++   * @return bool
+    *   TRUE if the configuration is editable, FALSE otherwise.
+    */
+   public function getEditable();
+@@ -121,7 +121,7 @@ interface AutocompletionConfigurationInterface extends ConfigEntityInterface {
+   /**
+    * Returns whether the configuration is deletable by authorized users.
+    *
+-   * @return boolean
++   * @return bool
+    *   TRUE if the configuration is deletable, FALSE otherwise.
+    */
+   public function getDeletable();
+@@ -141,7 +141,7 @@ interface AutocompletionConfigurationInterface extends ConfigEntityInterface {
+   /**
+    * Sets the configuration status : wheter it is active or not.
+    *
+-   * @param boolean $status
++   * @param bool $status
+    *   TRUE/FALSE depending if the configuration is set active.
+    */
+   public function setStatus($status);
+@@ -232,7 +232,7 @@ interface AutocompletionConfigurationInterface extends ConfigEntityInterface {
+    * Sets whether the configuration is editable by authorized users.
+    * None editable configurations cannot be created from GUI.
+    *
+-   * @param boolean $editable
++   * @param bool $editable
+    *   TRUE if the configuration is $editable, FALSE otherwise.
+    */
+   public function setEditable($editable);
+@@ -241,7 +241,7 @@ interface AutocompletionConfigurationInterface extends ConfigEntityInterface {
+    * Sets whether the configuration is deletable by authorized users.
+    * None deletable configurations cannot be created from GUI.
+    *
+-   * @param boolean $deletable
++   * @param bool $deletable
+    *   TRUE if the configuration is $deletable, FALSE otherwise.
+    */
+   public function setDeletable($deletable);
+diff --git a/src/Controller/AutocompletionConfigurationListBuilder.php b/src/Controller/AutocompletionConfigurationListBuilder.php
+index 0cfa731..47bb705 100644
+--- a/src/Controller/AutocompletionConfigurationListBuilder.php
++++ b/src/Controller/AutocompletionConfigurationListBuilder.php
+@@ -104,6 +104,7 @@ class AutocompletionConfigurationListBuilder extends ConfigEntityListBuilder imp
+ 
+   /**
+    * Implements \Drupal\Core\Form\FormInterface::validateForm().
++   *
+    * @param array $form
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+    */
+@@ -133,7 +134,7 @@ class AutocompletionConfigurationListBuilder extends ConfigEntityListBuilder imp
+     }
+     $this->messenger()->addMessage($this->t('Data have been saved. You may have to %clear_caches for theses changes to apply.', [
+       '%clear_caches' => Link::fromTextAndUrl(t('Clear all caches'),
+-        Url::fromRoute('system.performance_settings'))->toString()
++        Url::fromRoute('system.performance_settings'))->toString(),
+     ]));
+   }
+ 
+diff --git a/src/Entity/AutocompletionConfiguration.php b/src/Entity/AutocompletionConfiguration.php
+index 1e53ca6..d3aa18f 100644
+--- a/src/Entity/AutocompletionConfiguration.php
++++ b/src/Entity/AutocompletionConfiguration.php
+@@ -2,12 +2,8 @@
+ 
+ namespace Drupal\search_autocomplete\Entity;
+ 
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\Core\Config\Entity\ConfigEntityBase;
+-use Drupal\Core\Entity\Annotation\ConfigEntityType;
+ use Drupal\search_autocomplete\AutocompletionConfigurationInterface;
+-use Drupal\search_autocomplete\Suggestion;
+-use Drupal\search_autocomplete\SuggestionGroup;
+ 
+ /**
+  * Defines the autocompletion_configuration entity.
+@@ -90,8 +86,7 @@ use Drupal\search_autocomplete\SuggestionGroup;
+  *   }
+  * )
+  */
+-class AutocompletionConfiguration extends ConfigEntityBase implements AutocompletionConfigurationInterface
+-{
++class AutocompletionConfiguration extends ConfigEntityBase implements AutocompletionConfigurationInterface {
+ 
+   /**
+    * The autocompletion_configuration ID.
+@@ -148,14 +143,14 @@ class AutocompletionConfiguration extends ConfigEntityBase implements Autocomple
+   /**
+    * Define if form should be submitted when suggestion is chosen.
+    *
+-   * @var boolean
++   * @var bool
+    */
+   protected $autoSubmit;
+ 
+   /**
+    * Define if user should be redirected to suggestion when it is chosen.
+    *
+-   * @var boolean
++   * @var bool
+    */
+   protected $autoRedirect;
+ 
+@@ -231,275 +226,242 @@ class AutocompletionConfiguration extends ConfigEntityBase implements Autocomple
+    */
+   protected $deletable;
+ 
+-
+   /**
+    * {@inheritdoc}
+    */
+-  public function __construct(array $values, $entity_type_id = 'autocompletion_configuration')
+-  {
++  public function __construct(array $values, $entity_type_id = 'autocompletion_configuration') {
+     parent::__construct($values, $entity_type_id);
+   }
+ 
+-
+-  /** ------------------------------ *
+-   *  ---------  GETTERS  ---------- */
++  /**
++   * ------------------------------ *
++   *  ---------  GETTERS  ---------- .*/
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getSelector()
+-  {
++  public function getSelector() {
+     return $this->selector;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setSelector($selector)
+-  {
++  public function setSelector($selector) {
+     $this->selector = $selector;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getStatus()
+-  {
++  public function getStatus() {
+     return $this->status;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setStatus($status)
+-  {
++  public function setStatus($status) {
+     $this->status = $status;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getMinChar()
+-  {
++  public function getMinChar() {
+     return $this->minChar;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setMinChar($min_char)
+-  {
++  public function setMinChar($min_char) {
+     $this->minChar = $min_char;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getMaxSuggestions()
+-  {
++  public function getMaxSuggestions() {
+     return $this->maxSuggestions;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setMaxSuggestions($max_suggestions)
+-  {
++  public function setMaxSuggestions($max_suggestions) {
+     $this->maxSuggestions = $max_suggestions;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getAutoSubmit()
+-  {
++  public function getAutoSubmit() {
+     return $this->autoSubmit;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setAutoSubmit($auto_submit)
+-  {
++  public function setAutoSubmit($auto_submit) {
+     $this->autoSubmit = $auto_submit;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getAutoRedirect()
+-  {
++  public function getAutoRedirect() {
+     return $this->autoRedirect;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setAutoRedirect($auto_redirect)
+-  {
++  public function setAutoRedirect($auto_redirect) {
+     $this->autoRedirect = $auto_redirect;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getNoResultLabel()
+-  {
++  public function getNoResultLabel() {
+     return $this->noResultLabel;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setNoResultLabel($no_result_label)
+-  {
++  public function setNoResultLabel($no_result_label) {
+     $this->noResultLabel = $no_result_label;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getNoResultValue()
+-  {
++  public function getNoResultValue() {
+     return $this->noResultValue;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setNoResultValue($no_result_value)
+-  {
++  public function setNoResultValue($no_result_value) {
+     $this->noResultValue = $no_result_value;
+   }
+ 
+-  /** ----------------------------- *
+-   *  ---------  SETTERS  --------- */
++  /**
++   * ----------------------------- *
++   *  ---------  SETTERS  --------- .*/
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getNoResultLink()
+-  {
++  public function getNoResultLink() {
+     return $this->noResultLink;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setNoResultLink($no_result_link)
+-  {
++  public function setNoResultLink($no_result_link) {
+     $this->noResultLink = $no_result_link;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getMoreResultsLabel()
+-  {
++  public function getMoreResultsLabel() {
+     return $this->moreResultsLabel;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setMoreResultsLabel($more_results_label)
+-  {
++  public function setMoreResultsLabel($more_results_label) {
+     $this->moreResultsLabel = $more_results_label;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getMoreResultsValue()
+-  {
++  public function getMoreResultsValue() {
+     return $this->moreResultsValue;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setMoreResultsValue($more_results_value)
+-  {
++  public function setMoreResultsValue($more_results_value) {
+     $this->moreResultsValue = $more_results_value;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getMoreResultsLink()
+-  {
++  public function getMoreResultsLink() {
+     return $this->moreResultsLink;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setMoreResultsLink($more_results_link)
+-  {
++  public function setMoreResultsLink($more_results_link) {
+     $this->moreResultsLink = $more_results_link;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getSource()
+-  {
++  public function getSource() {
+     return $this->source;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setSource($source)
+-  {
++  public function setSource($source) {
+     $this->source = $source;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getTheme()
+-  {
++  public function getTheme() {
+     return $this->theme;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setTheme($theme)
+-  {
++  public function setTheme($theme) {
+     $this->theme = $theme;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getEditable()
+-  {
++  public function getEditable() {
+     return $this->editable;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setEditable($editable)
+-  {
++  public function setEditable($editable) {
+     $this->editable = $editable;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function getDeletable()
+-  {
++  public function getDeletable() {
+     return $this->deletable;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function setDeletable($deletable)
+-  {
++  public function setDeletable($deletable) {
+     $this->deletable = $deletable;
+   }
+ 
+diff --git a/src/Form/AutocompletionConfigurationEditForm.php b/src/Form/AutocompletionConfigurationEditForm.php
+index edb9ef3..06882d6 100644
+--- a/src/Form/AutocompletionConfigurationEditForm.php
++++ b/src/Form/AutocompletionConfigurationEditForm.php
+@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
+ use Symfony\Component\HttpFoundation\Request;
+ 
+ /**
+- * Class AutocompletionConfigurationEditForm
++ * Class AutocompletionConfigurationEditForm.
+  *
+  * Provides the edit form for our AutocompletionConfiguration entity.
+  *
+@@ -186,9 +186,9 @@ class AutocompletionConfigurationEditForm extends AutocompletionConfigurationFor
+       '#type' => 'textfield',
+       '#autocomplete_route_name' => 'search_autocomplete.view_autocomplete',
+       '#description' => $this->t('Enter the URL of your callback for suggestions.') . '<br/>' . $this->t('You can enter an internal path such as %node-xx or an external URL such as %url. You can also use autocompletion to target a specific View display.', [
+-          '%node-xx' => '/node/xx',
+-          '%url' => 'http://example.com',
+-        ]),
++        '%node-xx' => '/node/xx',
++        '%url' => 'http://example.com',
++      ]),
+       '#element_validate' => [[$this, 'validateUriElement']],
+       '#default_value' => $this->entity->getSource(),
+       '#size' => 80,
+@@ -236,8 +236,8 @@ class AutocompletionConfigurationEditForm extends AutocompletionConfigurationFor
+    * Validation callback for URI form.
+    *
+    * @param array $element
+-   *   The element itself
+-   * @param FormStateInterface $form_state
++   *   The element itself.
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The submitted form data.
+    */
+   public function validateUriElement($element, FormStateInterface $form_state) {
+@@ -285,7 +285,7 @@ class AutocompletionConfigurationEditForm extends AutocompletionConfigurationFor
+     // Retrieve elligible views.
+     $displays = Views::getApplicableViews('autocompletion_callback_display');
+ 
+-    // Add the view as a suggestion if meeting user_input
++    // Add the view as a suggestion if meeting user_input.
+     $options = [];
+     foreach ($displays as $data) {
+       list($view_id, $display_id) = $data;
+diff --git a/src/Plugin/views/display/AutocompletionCallback.php b/src/Plugin/views/display/AutocompletionCallback.php
+index a1b72a7..fa6ed0b 100644
+--- a/src/Plugin/views/display/AutocompletionCallback.php
++++ b/src/Plugin/views/display/AutocompletionCallback.php
+@@ -3,8 +3,6 @@
+ namespace Drupal\search_autocomplete\Plugin\views\display;
+ 
+ use Drupal;
+-use Drupal\views\Annotation\ViewsDisplay;
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Cache\CacheableResponse;
+ use Drupal\Core\Render\RenderContext;
+@@ -91,7 +89,7 @@ class AutocompletionCallback extends PathPluginBase implements ResponseDisplayPl
+    * @param mixed $plugin_definition
+    *   The plugin implementation definition.
+    * @param \Drupal\Core\Routing\RouteProviderInterface $route_provider
+-   *   The route provider
++   *   The route provider.
+    * @param \Drupal\Core\State\StateInterface $state
+    *   The state key value store.
+    * @param \Drupal\Core\Render\RendererInterface $renderer
+@@ -233,7 +231,7 @@ class AutocompletionCallback extends PathPluginBase implements ResponseDisplayPl
+       $build['#suffix'] = '</pre>';
+     }
+     elseif ($this->view->getRequest()
+-        ->getFormat($this->view->element['#content_type']) !== 'html') {
++      ->getFormat($this->view->element['#content_type']) !== 'html') {
+       // This display plugin is primarily for returning non-HTML formats.
+       // However, we still invoke the renderer to collect cacheability metadata.
+       // Because the renderer is designed for HTML rendering, it filters
+diff --git a/src/Plugin/views/row/CallbackFieldRow.php b/src/Plugin/views/row/CallbackFieldRow.php
+index 50630d0..8fbb2f2 100644
+--- a/src/Plugin/views/row/CallbackFieldRow.php
++++ b/src/Plugin/views/row/CallbackFieldRow.php
+@@ -2,9 +2,7 @@
+ 
+ namespace Drupal\search_autocomplete\Plugin\views\row;
+ 
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\views\Annotation\ViewsRow;
+ use Drupal\views\Plugin\views\display\DisplayPluginBase;
+ use Drupal\views\Plugin\views\row\RowPluginBase;
+ use Drupal\views\ViewExecutable;
+diff --git a/src/Plugin/views/style/CallbackSerializer.php b/src/Plugin/views/style/CallbackSerializer.php
+index 55e2c83..3115b38 100644
+--- a/src/Plugin/views/style/CallbackSerializer.php
++++ b/src/Plugin/views/style/CallbackSerializer.php
+@@ -5,9 +5,7 @@ namespace Drupal\search_autocomplete\Plugin\views\style;
+ use Drupal\Component\Render\HtmlEscapedText;
+ use Drupal\Component\Utility\Html;
+ use Drupal\Core\Ajax\AjaxResponse;
+-use Drupal\Core\Annotation\Translation;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\views\Annotation\ViewsStyle;
+ use Drupal\views\Plugin\views\style\StylePluginBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+diff --git a/src/Tests/Entity/EditableDeletableConfigTest.php b/src/Tests/Entity/EditableDeletableConfigTest.php
+index afc80da..f3569f4 100644
+--- a/src/Tests/Entity/EditableDeletableConfigTest.php
++++ b/src/Tests/Entity/EditableDeletableConfigTest.php
+@@ -108,5 +108,4 @@ class EditableDeletableConfigTest extends BrowserTestBase {
+     $this->drupalLogin($this->adminUser);
+   }
+ 
+-
+ }
+diff --git a/src/Tests/InstallTest.php b/src/Tests/InstallTest.php
+index 4c85470..185ba4d 100644
+--- a/src/Tests/InstallTest.php
++++ b/src/Tests/InstallTest.php
+@@ -42,7 +42,6 @@ class InstallTest extends BrowserTestBase {
+    * 3) Verify that admin users can access admin paths.
+    *
+    * 4) Check that menu links is added in Search fieldset of Configuration page.
+-   *
+    */
+   public function testInstallModule() {
+ 
+diff --git a/src/Tests/SettingsTest.php b/src/Tests/SettingsTest.php
+index b807d30..3037b14 100644
+--- a/src/Tests/SettingsTest.php
++++ b/src/Tests/SettingsTest.php
+@@ -35,13 +35,12 @@ class SettingsTest extends BrowserTestBase {
+    * Check that Search Autocomplete module installs properly.
+    *
+    * 1) Check the default settings value : configs are activated,
+-   * admin_helper is FALSE
++   * admin_helper is FALSE.
+    *
+    * 2) Desactivate all available configurations and reverse settings.
+    *
+    * 3) Check that all default configurations are desactivate,
+    *    and settings are toogled.
+-   *
+    */
+   public function testInstallModule() {
+ 
+diff --git a/src/Tests/Views/CallbackViewsTest.php b/src/Tests/Views/CallbackViewsTest.php
+index d3e0975..fc8e4de 100644
+--- a/src/Tests/Views/CallbackViewsTest.php
++++ b/src/Tests/Views/CallbackViewsTest.php
+@@ -33,7 +33,7 @@ class CallbackViewsTest extends ViewTestBase {
+   ];
+ 
+   /**
+-   * The admin user
++   * The admin user.
+    *
+    * @var \Drupal\user\Entity\User
+    */
+@@ -107,7 +107,7 @@ class CallbackViewsTest extends ViewTestBase {
+   /**
+    * Helper methods: creates a given number of nodes of a give type.
+    *
+-   * @param integer $number
++   * @param int $number
+    *   number of nodes to create.
+    * @param string $type
+    *   the type machine name of nodes to create.

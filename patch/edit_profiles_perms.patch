@@ -1,0 +1,16 @@
+diff --git a/src/EditProfilesPermsAccessHandler.php b/src/EditProfilesPermsAccessHandler.php
+index a8c8e17..997e137 100644
+--- a/src/EditProfilesPermsAccessHandler.php
++++ b/src/EditProfilesPermsAccessHandler.php
+@@ -12,8 +12,9 @@ use Drupal\user\UserAccessControlHandler;
+  */
+ class EditProfilesPermsAccessHandler extends UserAccessControlHandler {
+ 
+-  /**s
+-   * {@inheritdoc}
++  /**
++   * S
++   * {@inheritdoc}.
+    */
+   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+     // Parent class allowing access takes precedence.

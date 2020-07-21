@@ -1,0 +1,88 @@
+diff --git a/css/views_field_view.css b/css/views_field_view.css
+index 87c2da7..2c8335c 100644
+--- a/css/views_field_view.css
++++ b/css/views_field_view.css
+@@ -1,6 +1,6 @@
+ #edit-options-view-edit {
+   margin: 15px 0px;
+-  background-color: #F3F4EE;
++  background-color: #f3f4ee;
+   padding: 5px;
+ }
+ 
+diff --git a/src/Plugin/views/field/View.php b/src/Plugin/views/field/View.php
+index e610927..d5faf58 100644
+--- a/src/Plugin/views/field/View.php
++++ b/src/Plugin/views/field/View.php
+@@ -148,7 +148,7 @@ class View extends FieldPluginBase {
+       // Provide a way to directly access the views edit link of the child view.
+       // Don't show this link if the current view is the selected child view.
+       if (!empty($this->options['view']) && !empty($this->options['display']) && ($this->view->storage->id() != $this->options['view'])) {
+-        // use t() here, and set HTML on #link options.
++        // Use t() here, and set HTML on #link options.
+         $link_text = $this->t('Edit "%view (@display)" view', ['%view' => $view_options[$this->options['view']], '@display' => $this->options['display']]);
+         $form['view_edit'] = [
+           '#type' => 'container',
+@@ -287,15 +287,15 @@ class View extends FieldPluginBase {
+    * Gets field values from tokens.
+    *
+    * @param string $token
+-   *  The token string. E.g. explode(',', $this->options['args']);
++   *   The token string. E.g. explode(',', $this->options['args']);.
+    * @param \Drupal\views\ResultRow $values
+-   *  The values retrieved from a single row of a view's query result.
++   *   The values retrieved from a single row of a view's query result.
+    * @param \Drupal\views\ViewExecutable $view
+-   *  The full view object to get token values from.
++   *   The full view object to get token values from.
+    *
+    * @return array
+-   *  An array of raw argument values, returned in the same order as the token
+-   *  were passed in.
++   *   An array of raw argument values, returned in the same order as the token
++   *   were passed in.
+    */
+   public function getTokenValue($token, ResultRow $values, ViewExecutable $view) {
+     $token_info = $this->getTokenArgument($token);
+@@ -308,15 +308,19 @@ class View extends FieldPluginBase {
+       case 'raw_fields':
+         $value = $view->field[$id]->getValue($values);
+         break;
++
+       case 'fields':
+         $value = $view->field[$id]->last_render;
+         break;
++
+       case 'raw_arguments':
+         $value = $view->args[array_flip(array_keys($view->argument))[$id]];
+         break;
++
+       case 'arguments':
+         $value = $view->argument[$id]->getTitle();
+         break;
++
+       default:
+         $value = Html::escape(trim($token, '\'"'));
+     }
+@@ -329,10 +333,10 @@ class View extends FieldPluginBase {
+    * E.g. {{ raw_arguments.null }} will return "array('type' => 'raw_arguments', 'id' => null)".
+    *
+    * @param string $token
+-   *  A single token string.
++   *   A single token string.
+    *
+    * @return array
+-   *  An array containing type and arg (As described above).
++   *   An array containing type and arg (As described above).
+    */
+   protected function getTokenArgument($token) {
+     // Trim whitespace and remove the brackets around the token.
+@@ -410,7 +414,7 @@ class View extends FieldPluginBase {
+               cause unexpected behaviour, as this will use the last output of
+               the field. This could be re written output also. If no prefix is
+               used in the token pattern, "raw_fields" / "raw_arguments" will be used as a default.') .
+-          '</em></p>',
++        '</em></p>',
+       ];
+     }
+     else {

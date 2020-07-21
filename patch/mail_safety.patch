@@ -1,0 +1,412 @@
+diff --git a/mail_safety.api.php b/mail_safety.api.php
+index 8cbc29a..968f258 100644
+--- a/mail_safety.api.php
++++ b/mail_safety.api.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ /**
+  * @file
+  * Hooks provided by the Mail Safety module.
+@@ -56,11 +57,11 @@ function hook_mail_safety_pre_send($message) {
+   // Loop through the attachments in a message.
+   foreach ($message['attachments'] as $key => $attachment) {
+     // Return the attachment to the e-mail to send it again.
+-    $message['params']['attachments'][$key] = array(
++    $message['params']['attachments'][$key] = [
+       'content' => file_get_contents($attachment->uri),
+       'mime' => $attachment->filemime,
+       'filename' => $attachment->filename,
+-    );
++    ];
+   }
+   return $message;
+ }
+@@ -73,21 +74,21 @@ function hook_mail_safety_pre_send($message) {
+  */
+ function hook_mail_safety_table_structure_alter($table_structure) {
+   // Add a new column.
+-  $table_structure['header'][] = array(
++  $table_structure['header'][] = [
+     'data' => t('Files'),
+-  );
++  ];
+ 
+   // Loop through the mails to add the attachments in the table.
+   foreach ($table_structure['rows'] as $mail_id => $row) {
+     $mail = mail_safety_load($mail_id);
+ 
+     if (!empty($mail['mail']['attachments'])) {
+-      $attachments = array();
++      $attachments = [];
+       foreach ($mail['mail']['attachments'] as $attachment) {
+-        $attachments[] = array(
++        $attachments[] = [
+           '#theme' => 'file_link',
+           '#file' => $attachment,
+-        );
++        ];
+       }
+     }
+     $table_structure['rows'][$mail_id]['data'][] = $attachments;
+diff --git a/src/Controller/MailSafetyController.php b/src/Controller/MailSafetyController.php
+index 7b2aa6c..1396ff2 100644
+--- a/src/Controller/MailSafetyController.php
++++ b/src/Controller/MailSafetyController.php
+@@ -1,12 +1,14 @@
+ <?php
++
+ namespace Drupal\mail_safety\Controller;
+ 
+ /**
+- * Class MailSafetyController
++ * Class MailSafetyController.
++ *
+  * @package Drupal\mail_safety\Controller
+  */
+ class MailSafetyController {
+-  
++
+   /**
+    * Let's the user view the e-mail caught by Mail Safety.
+    *
+@@ -22,7 +24,7 @@ class MailSafetyController {
+       '#mail' => $mail_safety['mail'],
+     ];
+   }
+-  
++
+   /**
+    * Let's the user view the details of an e-mail caught by Mail Safety.
+    *
+@@ -51,7 +53,7 @@ class MailSafetyController {
+ 
+     $connection = \Drupal::database();
+     $query = $connection->select('mail_safety_dashboard', 'msd');
+-    $query->fields('msd', array('mail_id', 'sent', 'mail'));
++    $query->fields('msd', ['mail_id', 'sent', 'mail']);
+ 
+     // Add a condition for the mail id is given.
+     if (!is_null($mail_id)) {
+@@ -63,11 +65,11 @@ class MailSafetyController {
+     $result = $query->execute();
+ 
+     while ($row = $result->fetchAssoc()) {
+-      $mails[$row['mail_id']] = array(
++      $mails[$row['mail_id']] = [
+         'mail' => unserialize($row['mail']),
+         'sent' => $row['sent'],
+         'mail_id' => $row['mail_id'],
+-      );
++      ];
+     };
+ 
+     // Let other modules respond before a mail is loaded.
+@@ -115,10 +117,10 @@ class MailSafetyController {
+     // E.g. save attachments that are sent with the mail.
+     \Drupal::moduleHandler()->alter('mail_safety_pre_insert', $message);
+ 
+-    $mail = array(
++    $mail = [
+       'sent' => time(),
+       'mail' => serialize($message),
+-    );
++    ];
+ 
+     $connection = \Drupal::database();
+     $connection->insert('mail_safety_dashboard')
+@@ -137,8 +139,7 @@ class MailSafetyController {
+    */
+   public static function getMailSystem($mail) {
+     $mail_manager = \Drupal::service('plugin.manager.mail');
+-    return $mail_manager->getInstance(array('module' => $mail['module'], 'key' => $mail['key']));
++    return $mail_manager->getInstance(['module' => $mail['module'], 'key' => $mail['key']]);
+   }
+ 
+ }
+-
+diff --git a/src/Form/DashboardForm.php b/src/Form/DashboardForm.php
+index d55f14f..c0d6002 100644
+--- a/src/Form/DashboardForm.php
++++ b/src/Form/DashboardForm.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\mail_safety\Form;
+ 
+ use Drupal\Core\Form\FormBase;
+@@ -25,20 +26,20 @@ class DashboardForm extends FormBase {
+    * {@inheritdoc}
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+-    $table_structure = array();
++    $table_structure = [];
+     // Create the headers.
+-    $table_structure['header'] = array(
+-      array('data' => t('Subject')),
+-      array('data' => t('Date sent'), 'field' => 'sent', 'sort' => 'desc'),
+-      array('data' => t('To')),
+-      array('data' => t('CC')),
+-      array('data' => t('Module')),
+-      array('data' => t('Key')),
+-      array('data' => t('Details')),
+-      array('data' => t('Send to original')),
+-      array('data' => t('Send to default mail')),
+-      array('data' => t('Delete')),
+-    );
++    $table_structure['header'] = [
++      ['data' => t('Subject')],
++      ['data' => t('Date sent'), 'field' => 'sent', 'sort' => 'desc'],
++      ['data' => t('To')],
++      ['data' => t('CC')],
++      ['data' => t('Module')],
++      ['data' => t('Key')],
++      ['data' => t('Details')],
++      ['data' => t('Send to original')],
++      ['data' => t('Send to default mail')],
++      ['data' => t('Delete')],
++    ];
+ 
+     $connection = \Drupal::database();
+     // Create the query.
+@@ -47,11 +48,11 @@ class DashboardForm extends FormBase {
+       ->limit(50)
+       ->extend('Drupal\Core\Database\Query\TableSortExtender')
+       ->orderByHeader($table_structure['header'])
+-      ->fields('msd', array(
++      ->fields('msd', [
+         'mail_id',
+         'sent',
+         'mail',
+-      ));
++      ]);
+ 
+     $results = $query->execute();
+ 
+@@ -62,14 +63,14 @@ class DashboardForm extends FormBase {
+       $mail = unserialize($row->mail);
+ 
+       // Build the links for the row.
+-      $view_url = Url::fromRoute('mail_safety.view', array('mail_safety' => $row->mail_id));
+-      $details_url = Url::fromRoute('mail_safety.details', array('mail_safety' => $row->mail_id));
+-      $send_original_url = Url::fromRoute('mail_safety.send_original', array('mail_safety' => $row->mail_id));
+-      $send_default_url = Url::fromRoute('mail_safety.send_default', array('mail_safety' => $row->mail_id));
+-      $delete_url = Url::fromRoute('mail_safety.delete', array('mail_safety' => $row->mail_id));
+-
+-      $table_structure['rows'][$row->mail_id] = array(
+-        'data' => array(
++      $view_url = Url::fromRoute('mail_safety.view', ['mail_safety' => $row->mail_id]);
++      $details_url = Url::fromRoute('mail_safety.details', ['mail_safety' => $row->mail_id]);
++      $send_original_url = Url::fromRoute('mail_safety.send_original', ['mail_safety' => $row->mail_id]);
++      $send_default_url = Url::fromRoute('mail_safety.send_default', ['mail_safety' => $row->mail_id]);
++      $delete_url = Url::fromRoute('mail_safety.delete', ['mail_safety' => $row->mail_id]);
++
++      $table_structure['rows'][$row->mail_id] = [
++        'data' => [
+           Link::fromTextAndUrl($mail['subject'], $view_url),
+           \Drupal::service('date.formatter')->format((int) $row->sent, 'short'),
+           $mail['to'],
+@@ -80,27 +81,27 @@ class DashboardForm extends FormBase {
+           Link::fromTextAndUrl($this->t('Send to original'), $send_original_url),
+           Link::fromTextAndUrl($this->t('Send to default mail'), $send_default_url),
+           Link::fromTextAndUrl($this->t('Delete'), $delete_url),
+-        ),
+-      );
++        ],
++      ];
+     }
+ 
+     // Let other modules change the table structure to add or remove
+     // information to be shown. E.g. attachments that need to be downloaded.
+     \Drupal::moduleHandler()->alter('mail_safety_table_structure', $table_structure);
+ 
+-    $form['mails']['table'] = array(
++    $form['mails']['table'] = [
+       '#theme' => 'table',
+       '#header' => $table_structure['header'],
+       '#rows' => $table_structure['rows'],
+       '#caption' => 'Mail Safety Dashboard',
+       '#sticky' => TRUE,
+       '#empty' => t('No mails found'),
+-    );
++    ];
+ 
+-    $form['mails']['pager'] = array(
++    $form['mails']['pager'] = [
+       '#type' => 'pager',
+-      '#tags' => array(),
+-    );
++      '#tags' => [],
++    ];
+ 
+     return $form;
+   }
+diff --git a/src/Form/DeleteForm.php b/src/Form/DeleteForm.php
+index 278d0bc..6c6effc 100644
+--- a/src/Form/DeleteForm.php
++++ b/src/Form/DeleteForm.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\mail_safety\Form;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+diff --git a/src/Form/SendDefaultForm.php b/src/Form/SendDefaultForm.php
+index 8ca6b5c..c111ec1 100644
+--- a/src/Form/SendDefaultForm.php
++++ b/src/Form/SendDefaultForm.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\mail_safety\Form;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+@@ -33,7 +34,7 @@ class SendDefaultForm extends ConfirmFormBase {
+   public function getQuestion() {
+     $config = \Drupal::config('mail_safety.settings');
+ 
+-    return $this->t('Are you sure you want to send "@subject" to @to', array('@subject' => $this->mailSafety['mail']['subject'], '@to' => $config->get('default_mail_address')));
++    return $this->t('Are you sure you want to send "@subject" to @to', ['@subject' => $this->mailSafety['mail']['subject'], '@to' => $config->get('default_mail_address')]);
+   }
+ 
+   /**
+@@ -57,12 +58,12 @@ class SendDefaultForm extends ConfirmFormBase {
+     $config = \Drupal::config('mail_safety.settings');
+     $this->mailSafety = $mail_safety;
+ 
+-    $form['to'] = array(
++    $form['to'] = [
+       '#type' => 'textfield',
+       '#title' => t('Send to another address'),
+       '#description' => t('Only use this field if you want the e-mail to go to an address other than the default address.'),
+       '#default_value' => $config->get('default_mail_address'),
+-    );
++    ];
+ 
+     return parent::buildForm($form, $form_state);
+   }
+@@ -93,10 +94,10 @@ class SendDefaultForm extends ConfirmFormBase {
+     $mail_array['result'] = $system->mail($mail_array);
+ 
+     if ($mail_array['result']) {
+-      $this->messenger()->addStatus(t('Succesfully sent the message to @to', array('@to' => $mail_array['to'])));
++      $this->messenger()->addStatus(t('Succesfully sent the message to @to', ['@to' => $mail_array['to']]));
+     }
+     else {
+-      $this->messenger()->addError(t('Failed to send the message to @to', array('@to' => $mail_array['to'])));
++      $this->messenger()->addError(t('Failed to send the message to @to', ['@to' => $mail_array['to']]));
+     }
+     $form_state->setRedirectUrl($this->getCancelUrl());
+   }
+diff --git a/src/Form/SendOriginalForm.php b/src/Form/SendOriginalForm.php
+index bc4bd69..4503ea3 100644
+--- a/src/Form/SendOriginalForm.php
++++ b/src/Form/SendOriginalForm.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\mail_safety\Form;
+ 
+ use Drupal\Core\Form\FormStateInterface;
+@@ -19,6 +20,7 @@ class SendOriginalForm extends ConfirmFormBase {
+    * @var array
+    */
+   protected $mailSafety = [];
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -30,7 +32,7 @@ class SendOriginalForm extends ConfirmFormBase {
+    * {@inheritdoc}
+    */
+   public function getQuestion() {
+-    return $this->t('Are you sure you want to send "@subject" to @to', array('@subject' => $this->mailSafety['mail']['subject'], '@to' => $this->mailSafety['mail']['to']));
++    return $this->t('Are you sure you want to send "@subject" to @to', ['@subject' => $this->mailSafety['mail']['subject'], '@to' => $this->mailSafety['mail']['to']]);
+   }
+ 
+   /**
+@@ -80,10 +82,10 @@ class SendOriginalForm extends ConfirmFormBase {
+     $mail_array['result'] = $system->mail($mail_array);
+ 
+     if ($mail_array['result']) {
+-      $this->messenger()->addStatus(t('Succesfully sent the message to @to', array('@to' => $mail_array['to'])));
++      $this->messenger()->addStatus(t('Succesfully sent the message to @to', ['@to' => $mail_array['to']]));
+     }
+     else {
+-      $this->messenger()->addError(t('Failed to send the message to @to', array('@to' => $mail_array['to'])));
++      $this->messenger()->addError(t('Failed to send the message to @to', ['@to' => $mail_array['to']]));
+     }
+     $form_state->setRedirectUrl($this->getCancelUrl());
+   }
+diff --git a/src/Form/SettingsForm.php b/src/Form/SettingsForm.php
+index 5ade236..7bac917 100644
+--- a/src/Form/SettingsForm.php
++++ b/src/Form/SettingsForm.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\mail_safety\Form;
+ 
+ use Drupal\Core\Form\ConfigFormBase;
+@@ -8,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
+  * Defines a form for the mail safety settings.
+  */
+ class SettingsForm extends ConfigFormBase {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -27,34 +29,34 @@ class SettingsForm extends ConfigFormBase {
+    */
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     $config = $this->config('mail_safety.settings');
+-    
+-    $form['enabled'] = array(
++
++    $form['enabled'] = [
+       '#title' => t('Stop outgoing mails'),
+       '#type' => 'checkbox',
+       '#description' => t('When Mail Safety is enabled it will stop all outgoing emails from being sent and will send them to either the dashboard and/or the defaut mail address instead.'),
+       '#default_value' => $config->get('enabled'),
+-    );
++    ];
+ 
+-    $form['send_mail_to_dashboard'] = array(
++    $form['send_mail_to_dashboard'] = [
+       '#title' => t('Send mail to dashboard'),
+       '#type' => 'checkbox',
+       '#description' => t('If enabled, all mails will be sent to the dashboard'),
+       '#default_value' => $config->get('send_mail_to_dashboard'),
+-    );
++    ];
+ 
+-    $form['send_mail_to_default_mail'] = array(
++    $form['send_mail_to_default_mail'] = [
+       '#title' => t('Send mail to default mail'),
+       '#type' => 'checkbox',
+       '#description' => t('If enabled, all mails will be sent to the the default mail address'),
+       '#default_value' => $config->get('send_mail_to_default_mail'),
+-    );
++    ];
+ 
+-    $form['default_mail_address'] = array(
++    $form['default_mail_address'] = [
+       '#title' => t('Default mail address'),
+       '#type' => 'textfield',
+       '#description' => t('The default email address that outgoing e-mails will be rerouted to if enabled.'),
+       '#default_value' => $config->get('default_mail_address'),
+-    );
++    ];
+ 
+     return parent::buildForm($form, $form_state);
+   }
+diff --git a/src/ParamConverter/MailSafetyParamConverter.php b/src/ParamConverter/MailSafetyParamConverter.php
+index c7dbf51..0405cc8 100644
+--- a/src/ParamConverter/MailSafetyParamConverter.php
++++ b/src/ParamConverter/MailSafetyParamConverter.php
+@@ -1,4 +1,5 @@
+ <?php
++
+ namespace Drupal\mail_safety\ParamConverter;
+ 
+ use Drupal\Core\ParamConverter\ParamConverterInterface;

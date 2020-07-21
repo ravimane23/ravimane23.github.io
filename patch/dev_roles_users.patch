@@ -1,0 +1,13 @@
+diff --git a/src/Controller/DevRolesUsersController.php b/src/Controller/DevRolesUsersController.php
+index e0eb1fc..2b2206d 100644
+--- a/src/Controller/DevRolesUsersController.php
++++ b/src/Controller/DevRolesUsersController.php
+@@ -22,7 +22,7 @@ class DevRolesUsersController extends ControllerBase {
+    */
+   public static function getUsersInfo() {
+ 
+-    $users = array();
++    $users = [];
+     $roles = user_roles(TRUE);
+ 
+     // Remove "authenticated user" form the roles list.

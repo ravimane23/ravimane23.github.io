@@ -1,0 +1,1243 @@
+diff --git a/hacked.details.inc b/hacked.details.inc
+index 960f570..c51c698 100644
+--- a/hacked.details.inc
++++ b/hacked.details.inc
+@@ -1,5 +1,9 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
+ use Drupal\Core\Template\Attribute;
+ use Drupal\Core\Url;
+ 
+@@ -19,7 +23,7 @@ function template_preprocess_hacked_detailed_report(&$variables) {
+       'library' => [
+         'update/drupal.update.admin',
+       ],
+-    ]
++    ],
+   ];
+ 
+   foreach ($project['files'] as $file => $status) {
+@@ -29,7 +33,7 @@ function template_preprocess_hacked_detailed_report(&$variables) {
+ 
+     $url = NULL;
+     if (\Drupal::currentUser()->hasPermission('view diffs of changed files') && \Drupal::moduleHandler()->moduleExists('diff') && ($status != HACKED_STATUS_UNHACKED) && !empty($project['diffable'][$file])) {
+-      $url = Url::fromRoute('hacked.project_diff', ['project' => $project['project_name'], 'file' => $file ]);
++      $url = Url::fromRoute('hacked.project_diff', ['project' => $project['project_name'], 'file' => $file]);
+     }
+ 
+     $file_status = [
+@@ -48,9 +52,11 @@ function template_preprocess_hacked_detailed_report(&$variables) {
+       case HACKED_STATUS_UNHACKED:
+         $variables['files'][$file]['#attributes'] = ['class' => ['color-success']];
+         break;
++
+       case HACKED_STATUS_DELETED:
+         $variables['files'][$file]['#attributes'] = ['class' => ['color-error']];
+         break;
++
+       case HACKED_STATUS_HACKED:
+       case HACKED_STATUS_PERMISSION_DENIED:
+       case HACKED_STATUS_UNCHECKED:
+@@ -70,18 +76,22 @@ function template_preprocess_hacked_file_status(&$variables) {
+       $uri = 'core/misc/icons/73b355/check.svg';
+       $text = t('Unchanged');
+       break;
++
+     case HACKED_STATUS_DELETED:
+       $uri = 'core/misc/icons/e32700/error.svg';
+       $text = t('Deleted');
+       break;
++
+     case HACKED_STATUS_HACKED:
+       $uri = 'core/misc/icons/e29700/warning.svg';
+       $text = t('Changed!');
+       break;
++
+     case HACKED_STATUS_PERMISSION_DENIED:
+       $uri = 'core/misc/icons/e29700/warning.svg';
+       $text = t('Permission Denied');
+       break;
++
+     case HACKED_STATUS_UNCHECKED:
+     default:
+       $uri = 'core/misc/icons/e29700/warning.svg';
+@@ -99,4 +109,4 @@ function template_preprocess_hacked_file_status(&$variables) {
+     '#alt'    => $text,
+     '#title'  => $text,
+   ];
+-}
+\ No newline at end of file
++}
+diff --git a/hacked.drush.inc b/hacked.drush.inc
+index ece0d4c..019103d 100644
+--- a/hacked.drush.inc
++++ b/hacked.drush.inc
+@@ -79,7 +79,7 @@ function hacked_drush_command() {
+  *
+  * @param array $projects
+  *   An array of Drupal projects.
+- * @param bool|FALSE $force
++ * @param bool|false $force
+  *   If TRUE, force rebuild of project data.
+  */
+ function hacked_calculate_project_data_drush($projects, $force = FALSE) {
+diff --git a/hacked.report.inc b/hacked.report.inc
+index 862e7ca..84e83fa 100644
+--- a/hacked.report.inc
++++ b/hacked.report.inc
+@@ -1,5 +1,9 @@
+ <?php
+ 
++/**
++ * @file
++ */
++
+ use Drupal\Component\Utility\Unicode;
+ use Drupal\Core\Link;
+ use Drupal\Core\Url;
+@@ -10,13 +14,13 @@ use Drupal\hacked\hackedProject;
+  */
+ function hacked_build_report_batch($project_name, &$context) {
+   if (!isset($context['results']['report'])) {
+-    $context['results']['report'] = array();
++    $context['results']['report'] = [];
+   }
+   \Drupal::moduleHandler()
+     ->loadInclude('hacked', 'inc', 'includes/hacked_project');
+   $project = new hackedProject($project_name);
+   $context['results']['report'][$project_name] = $project->compute_report();
+-  $context['message'] = t('Finished processing: @name', array('@name' => $project->title()));
++  $context['message'] = t('Finished processing: @name', ['@name' => $project->title()]);
+ }
+ 
+ /**
+@@ -42,10 +46,10 @@ function hacked_build_report_batch_finished($success, $results) {
+ function hacked_preprocess_update_last_check(&$variables) {
+   $route = \Drupal::routeMatch()->getRouteName();
+   if ($route == 'hacked.report') {
+-    $variables['link'] = $variables['link'] = Link::fromTextAndUrl(t('Check manually'), new Url('hacked.manual_status', array(), array(
++    $variables['link'] = $variables['link'] = Link::fromTextAndUrl(t('Check manually'), new Url('hacked.manual_status', [], [
+       'query' => \Drupal::destination()
+-        ->getAsArray()
+-    )));
++        ->getAsArray(),
++    ]));
+   }
+ }
+ 
+@@ -77,7 +81,7 @@ function hacked_preprocess_update_project_status(&$variables) {
+       [
+         '#theme'   => 'hacked_project_summary',
+         '#project' => $project,
+-      ]
++      ],
+     ];
+ 
+     switch ($project['status']) {
+@@ -86,11 +90,13 @@ function hacked_preprocess_update_project_status(&$variables) {
+         $text = t('Unchanged');
+         $project['status'] = UPDATE_CURRENT;
+         break;
++
+       case HACKED_STATUS_HACKED:
+         $uri = 'core/misc/icons/e32700/error.svg';
+         $text = t('Changed!');
+         $project['status'] = UPDATE_NOT_CHECKED;
+         break;
++
+       case HACKED_STATUS_UNCHECKED:
+       default:
+         $uri = 'core/misc/icons/e29700/warning.svg';
+@@ -132,17 +138,17 @@ function template_preprocess_hacked_report(&$variables) {
+     '#attached' => [
+       'library' => [
+         'update/drupal.update.admin',
+-      ]
++      ],
+     ],
+   ];
+ 
+   // For no project update data, populate no data message.
+   if (empty($data)) {
+     $destination = \Drupal::destination()->getAsArray();
+-    $variables['no_updates_message'] = t('No hacked information available. <a href=":check_manually">check manually</a>.', array(
++    $variables['no_updates_message'] = t('No hacked information available. <a href=":check_manually">check manually</a>.', [
+       ':run_cron'       => Url::fromRoute('system.run_cron', [], ['query' => $destination]),
+       ':check_manually' => Url::fromRoute('hacked.manual_status', [], ['query' => $destination]),
+-    ));
++    ]);
+   }
+ 
+   $rows = [];
+@@ -174,9 +180,11 @@ function template_preprocess_hacked_report(&$variables) {
+       case HACKED_STATUS_UNHACKED:
+         $rows[$project['project_type']][$row_key]['#attributes'] = ['class' => ['color-success']];
+         break;
++
+       case HACKED_STATUS_HACKED:
+         $rows[$project['project_type']][$row_key]['#attributes'] = ['class' => ['color-error']];
+         break;
++
+       case HACKED_STATUS_UNCHECKED:
+       default:
+         $rows[$project['project_type']][$row_key]['#attributes'] = ['class' => ['color-warning']];
+@@ -222,4 +230,3 @@ function template_preprocess_hacked_project_summary(&$variables) {
+ 
+   $variables['link'] = Url::fromRoute('hacked.project', ['project' => $project['project_name']]);
+ }
+-
+diff --git a/src/Controller/HackedController.php b/src/Controller/HackedController.php
+index 74840ad..e20ddf1 100644
+--- a/src/Controller/HackedController.php
++++ b/src/Controller/HackedController.php
+@@ -17,7 +17,7 @@ class HackedController extends ControllerBase {
+   public function hackedProject(hackedProject $project) {
+     return [
+       '#theme' => 'hacked_detailed_report',
+-      '#project' => $project->compute_details()
++      '#project' => $project->compute_details(),
+     ];
+   }
+ 
+@@ -32,7 +32,7 @@ class HackedController extends ControllerBase {
+    * Page callback to build up a full report.
+    */
+   public function hackedStatus() {
+-    // We're going to be borrowing heavily from the update module
++    // We're going to be borrowing heavily from the update module.
+     $build = ['#theme' => 'update_report'];
+     if ($available = update_get_available(TRUE)) {
+       $build = ['#theme' => 'hacked_report'];
+@@ -50,7 +50,7 @@ class HackedController extends ControllerBase {
+    * Page callback to rebuild the hacked report.
+    */
+   public function hackedStatusManually() {
+-    // We're going to be borrowing heavily from the update module
++    // We're going to be borrowing heavily from the update module.
+     if ($available = update_get_available(TRUE)) {
+       $this->moduleHandler()->loadInclude('update', 'compare.inc');
+       $data = update_calculate_project_data($available);
+@@ -62,9 +62,10 @@ class HackedController extends ControllerBase {
+   /**
+    * Compute the report data for hacked.
+    *
+-   * @param            $projects
+-   * @param bool|FALSE $force
+-   * @param null       $redirect
++   * @param $projects
++   * @param bool|false $force
++   * @param null $redirect
++   *
+    * @return mixed
+    */
+   protected function getProjectData($projects, $force = FALSE, $redirect = NULL) {
+@@ -83,12 +84,12 @@ class HackedController extends ControllerBase {
+       ];
+     }
+ 
+-    $batch = array(
++    $batch = [
+       'operations' => $operations,
+       'finished' => 'hacked_build_report_batch_finished',
+       'file' => drupal_get_path('module', 'hacked') . '/hacked.report.inc',
+       'title' => t('Building report'),
+-    );
++    ];
+ 
+     batch_set($batch);
+     // End page execution and run the batch.
+diff --git a/src/Controller/HackedDiffController.php b/src/Controller/HackedDiffController.php
+index d18bd8b..1dc68ad 100644
+--- a/src/Controller/HackedDiffController.php
++++ b/src/Controller/HackedDiffController.php
+@@ -4,7 +4,6 @@ namespace Drupal\hacked\Controller;
+ 
+ use Drupal\Core\Controller\ControllerBase;
+ use Drupal\diff\DiffEntityComparison;
+-use Drupal\hacked\hackedFileHasher;
+ use Drupal\hacked\hackedProject;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+@@ -14,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ class HackedDiffController extends ControllerBase {
+ 
+   /**
+-   * Wrapper object for writing/reading configuration from diff.plugins.yml
++   * Wrapper object for writing/reading configuration from diff.plugins.yml.
+    */
+   protected $config;
+ 
+@@ -26,7 +25,7 @@ class HackedDiffController extends ControllerBase {
+   /**
+    * Constructs a HackedDiffController object.
+    *
+-   * @param DiffEntityComparison $entity_comparison
++   * @param \Drupal\diff\DiffEntityComparison $entity_comparison
+    *   DiffEntityComparison service.
+    */
+   public function __construct(DiffEntityComparison $entity_comparison) {
+@@ -46,16 +45,17 @@ class HackedDiffController extends ControllerBase {
+   /**
+    * Shows a diff report for a specific file in a project.
+    *
+-   * @param                              $project
++   * @param $project
+    *   The hackedProject instance.
+    *
+    * @param \Drupal\hacked\hackedProject $project
++   *
+    * @return array
+    */
+   public function hackedProjectDiff(hackedProject $project) {
+     if (!\Drupal::moduleHandler()->moduleExists('diff')) {
+       return [
+-        '#markup' => $this->t('The diff module is required to use this feature.')
++        '#markup' => $this->t('The diff module is required to use this feature.'),
+       ];
+     }
+ 
+@@ -63,20 +63,19 @@ class HackedDiffController extends ControllerBase {
+     $project->identify_project();
+ 
+     // Find a better way to do this:
+-//    $breadcrumb = array(
+-//      l('Home', '<front>'),
+-//      l('Administer', 'admin'),
+-//      l('Reports', 'admin/reports'),
+-//      l('Hacked', 'admin/reports/hacked'),
+-//      l($project->title(), 'admin/reports/hacked/' . $project->name),
+-//    );
+-//    drupal_set_breadcrumb($breadcrumb);
+-
++    //    $breadcrumb = array(
++    //      l('Home', '<front>'),
++    //      l('Administer', 'admin'),
++    //      l('Reports', 'admin/reports'),
++    //      l('Hacked', 'admin/reports/hacked'),
++    //      l($project->title(), 'admin/reports/hacked/' . $project->name),
++    //    );
++    //    drupal_set_breadcrumb($breadcrumb);
+     if ($project->file_is_diffable($file)) {
+       $original_file = $project->file_get_location('remote', $file);
+       $installed_file = $project->file_get_location('local', $file);
+ 
+-      /** @var hackedFileHasher $hasher */
++      /** @var \Drupal\hacked\hackedFileHasher $hasher */
+       $hasher = hacked_get_file_hasher();
+ 
+       $build = [
+@@ -103,7 +102,7 @@ class HackedDiffController extends ControllerBase {
+       return $build;
+     }
+     return [
+-      '#markup' => $this->t('Cannot hash binary file or file not found: %file', array('%file' => $file))
++      '#markup' => $this->t('Cannot hash binary file or file not found: %file', ['%file' => $file]),
+     ];
+   }
+ 
+diff --git a/src/Form/HackedSettingsForm.php b/src/Form/HackedSettingsForm.php
+index 3ec36e4..7f970d3 100644
+--- a/src/Form/HackedSettingsForm.php
++++ b/src/Form/HackedSettingsForm.php
+@@ -10,6 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
+  * Configure locale settings for this site.
+  */
+ class HackedSettingsForm extends ConfigFormBase {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -32,19 +33,19 @@ class HackedSettingsForm extends ConfigFormBase {
+ 
+     $hashers = hacked_get_file_hashers();
+ 
+-    $form['selected_file_hasher'] = array(
++    $form['selected_file_hasher'] = [
+       '#type' => 'details',
+       '#title' => t('File hasher'),
+       '#open' => TRUE,
+-    );
++    ];
+ 
+-    $parents = array('selected_file_hasher');
++    $parents = ['selected_file_hasher'];
+ 
+     foreach ($hashers as $name => $hasher_info) {
+       // Generate the parents as the autogenerator does, so we will have a
+       // unique id for each radio button.
+-      $parents_for_id = array_merge($parents, array($name));
+-      $form['selected_file_hasher'][$name] = array(
++      $parents_for_id = array_merge($parents, [$name]);
++      $form['selected_file_hasher'][$name] = [
+         '#type' => 'radio',
+         '#title' => $hasher_info['name'],
+         '#default_value' => $config->get('selected_file_hasher'),
+@@ -52,7 +53,7 @@ class HackedSettingsForm extends ConfigFormBase {
+         '#parents' => $parents,
+         '#description' => !empty($hasher_info['description']) ? $hasher_info['description'] : '',
+         '#id' => Html::getId('edit-' . implode('-', $parents_for_id)),
+-      );
++      ];
+     }
+ 
+     return parent::buildForm($form, $form_state);
+@@ -63,8 +64,7 @@ class HackedSettingsForm extends ConfigFormBase {
+    */
+   public function submitForm(array &$form, FormStateInterface $form_state) {
+     // Clear the Hacked! report cache.
+-//    cache_clear_all('hacked:full-report', HACKED_CACHE_TABLE);
+-
++    //    cache_clear_all('hacked:full-report', HACKED_CACHE_TABLE);.
+     $values = $form_state->getValues();
+ 
+     $config = $this->config('hacked.settings');
+diff --git a/src/ParamConverter/HackedProjectConverter.php b/src/ParamConverter/HackedProjectConverter.php
+index f6db13d..a299fa4 100644
+--- a/src/ParamConverter/HackedProjectConverter.php
++++ b/src/ParamConverter/HackedProjectConverter.php
+@@ -25,4 +25,4 @@ class HackedProjectConverter implements ParamConverterInterface {
+     return (!empty($definition['type']) && $definition['type'] === 'hacked_project');
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/hackedFileGroup.php b/src/hackedFileGroup.php
+index cfdcda6..6f9d7c7 100644
+--- a/src/hackedFileGroup.php
++++ b/src/hackedFileGroup.php
+@@ -10,17 +10,17 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ class hackedFileGroup {
+   use StringTranslationTrait;
+ 
+-  var $base_path = '';
+-  var $files = array();
+-  var $files_hashes = array();
+-  var $file_mtimes = array();
++  public $base_path = '';
++  public $files = [];
++  public $files_hashes = [];
++  public $file_mtimes = [];
+ 
+-  var $hasher;
++  public $hasher;
+ 
+   /**
+    * Constructor.
+    */
+-  function __construct($base_path) {
++  public function __construct($base_path) {
+     $this->base_path = $base_path;
+     $this->hasher = hacked_get_file_hasher();
+   }
+@@ -28,7 +28,7 @@ class hackedFileGroup {
+   /**
+    * Return a new hackedFileGroup listing all files inside the given $path.
+    */
+-  static function fromDirectory($path) {
++  public static function fromDirectory($path) {
+     $filegroup = new hackedFileGroup($path);
+     // Find all the files in the path, and add them to the file group.
+     $filegroup->scan_base_path();
+@@ -38,7 +38,7 @@ class hackedFileGroup {
+   /**
+    * Return a new hackedFileGroup listing all files specified.
+    */
+-  static function fromList($path, $files) {
++  public static function fromList($path, $files) {
+     $filegroup = new hackedFileGroup($path);
+     // Find all the files in the path, and add them to the file group.
+     $filegroup->files = $files;
+@@ -48,14 +48,14 @@ class hackedFileGroup {
+   /**
+    * Locate all sensible files at the base path of the file group.
+    */
+-  function scan_base_path() {
+-    $files = hacked_file_scan_directory($this->base_path, '/.*/', array(
++  public function scan_base_path() {
++    $files = hacked_file_scan_directory($this->base_path, '/.*/', [
+       '.',
+       '..',
+       'CVS',
+       '.svn',
+-      '.git'
+-    ));
++      '.git',
++    ]);
+     foreach ($files as $file) {
+       $filename = str_replace($this->base_path . '/', '', $file->filename);
+       $this->files[] = $filename;
+@@ -65,7 +65,7 @@ class hackedFileGroup {
+   /**
+    * Hash all files listed in the file group.
+    */
+-  function compute_hashes() {
++  public function compute_hashes() {
+     foreach ($this->files as $filename) {
+       $this->files_hashes[$filename] = $this->hasher->hash($this->base_path . '/' . $filename);
+     }
+@@ -74,26 +74,29 @@ class hackedFileGroup {
+   /**
+    * Determine if the given file is readable.
+    */
+-  function is_readable($file) {
++  public function is_readable($file) {
+     return is_readable($this->base_path . '/' . $file);
+   }
+ 
+   /**
+    * Determine if a file exists.
+    */
+-  function file_exists($file) {
++  public function file_exists($file) {
+     return file_exists($this->base_path . '/' . $file);
+   }
+ 
+   /**
+    * Determine if the given file is binary.
+    */
+-  function is_not_binary($file) {
++  public function is_not_binary($file) {
+     return is_readable($this->base_path . '/' . $file) && !hacked_file_is_binary($this->base_path . '/' . $file);
+   }
+ 
+-  function file_get_location($file) {
++  /**
++   *
++   */
++  public function file_get_location($file) {
+     return $this->base_path . '/' . $file;
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/hackedFileHasher.php b/src/hackedFileHasher.php
+index 5af258b..cd392f6 100644
+--- a/src/hackedFileHasher.php
++++ b/src/hackedFileHasher.php
+@@ -6,12 +6,13 @@ namespace Drupal\hacked;
+  * Base class for the different ways that files can be hashed.
+  */
+ abstract class hackedFileHasher {
++
+   /**
+    * Returns a hash of the given filename.
+    *
+-   * Ignores file line endings
++   * Ignores file line endings.
+    */
+-  function hash($filename) {
++  public function hash($filename) {
+     if (file_exists($filename)) {
+       if ($hash = $this->cache_get($filename)) {
+         return $hash;
+@@ -24,23 +25,32 @@ abstract class hackedFileHasher {
+     }
+   }
+ 
+-  function cache_set($filename, $hash) {
++  /**
++   *
++   */
++  public function cache_set($filename, $hash) {
+     \Drupal::cache(HACKED_CACHE_TABLE)->set($this->cache_key($filename), $hash, strtotime('+7 days'));
+   }
+ 
+-  function cache_get($filename) {
++  /**
++   *
++   */
++  public function cache_get($filename) {
+     $cache = \Drupal::cache(HACKED_CACHE_TABLE)->get($this->cache_key($filename));
+     if (!empty($cache->data)) {
+       return $cache->data;
+     }
+   }
+ 
+-  function cache_key($filename) {
+-    $key = array(
++  /**
++   *
++   */
++  public function cache_key($filename) {
++    $key = [
+       'filename' => $filename,
+       'mtime' => filemtime($filename),
+       'class_name' => get_class($this),
+-    );
++    ];
+     return sha1(serialize($key));
+   }
+ 
+@@ -53,7 +63,7 @@ abstract class hackedFileHasher {
+    * @return string
+    *   The computed hash of the given file.
+    */
+-  abstract function perform_hash($filename);
++  abstract public function perform_hash($filename);
+ 
+   /**
+    * Compute and return the lines of the given file.
+@@ -64,5 +74,6 @@ abstract class hackedFileHasher {
+    * @return array|bool
+    *   The lines of the given filename or FALSE on failure.
+    */
+-  abstract function fetch_lines($filename);
+-}
+\ No newline at end of file
++  abstract public function fetch_lines($filename);
++
++}
+diff --git a/src/hackedFileIgnoreEndingsHasher.php b/src/hackedFileIgnoreEndingsHasher.php
+index 4c99c45..94b357c 100644
+--- a/src/hackedFileIgnoreEndingsHasher.php
++++ b/src/hackedFileIgnoreEndingsHasher.php
+@@ -3,16 +3,18 @@
+ namespace Drupal\hacked;
+ 
+ /**
+- * Class hackedFileIgnoreEndingsHasher
++ * Class hackedFileIgnoreEndingsHasher.
++ *
+  * @package Drupal\hacked
+  */
+ class hackedFileIgnoreEndingsHasher extends hackedFileHasher {
++
+   /**
+    * Returns a hash of the given filename.
+    *
+    * Ignores file line endings.
+    */
+-  function perform_hash($filename) {
++  public function perform_hash($filename) {
+     if (!hacked_file_is_binary($filename)) {
+       $file = file($filename, FILE_IGNORE_NEW_LINES);
+       return sha1(serialize($file));
+@@ -22,7 +24,11 @@ class hackedFileIgnoreEndingsHasher extends hackedFileHasher {
+     }
+   }
+ 
+-  function fetch_lines($filename) {
++  /**
++   *
++   */
++  public function fetch_lines($filename) {
+     return file($filename, FILE_IGNORE_NEW_LINES);
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/hackedFileIncludeEndingsHasher.php b/src/hackedFileIncludeEndingsHasher.php
+index a8b468c..4026119 100644
+--- a/src/hackedFileIncludeEndingsHasher.php
++++ b/src/hackedFileIncludeEndingsHasher.php
+@@ -6,11 +6,19 @@ namespace Drupal\hacked;
+  * This is a much faster, but potentially less useful file hasher.
+  */
+ class hackedFileIncludeEndingsHasher extends hackedFileHasher {
+-  function perform_hash($filename) {
++
++  /**
++   *
++   */
++  public function perform_hash($filename) {
+     return sha1_file($filename);
+   }
+ 
+-  function fetch_lines($filename) {
++  /**
++   *
++   */
++  public function fetch_lines($filename) {
+     return file($filename);
+   }
++
+ }
+diff --git a/src/hackedProject.php b/src/hackedProject.php
+index 33f82e3..fe9af74 100644
+--- a/src/hackedProject.php
++++ b/src/hackedProject.php
+@@ -18,32 +18,38 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ class hackedProject {
+   use StringTranslationTrait;
+ 
+-  var $name = '';
++  public $name = '';
+ 
+-  var $project_info = array();
++  public $project_info = [];
+ 
+-  var $remote_files_downloader;
++  public $remote_files_downloader;
+ 
+-  /* @var hackedFileGroup $remote_files */
+-  var $remote_files;
++  /**
++   * @var hackedFileGroup
++   */
++
++  public $remote_files;
++
++  /**
++   * @var hackedFileGroup
++   */
+ 
+-  /* @var hackedFileGroup $local_files */
+-  var $local_files;
++  public $local_files;
+ 
+-  var $project_type = '';
+-  var $existing_version = '';
++  public $project_type = '';
++  public $existing_version = '';
+ 
+-  var $result = array();
++  public $result = [];
+ 
+-  var $project_identified = FALSE;
+-  var $remote_downloaded = FALSE;
+-  var $remote_hashed = FALSE;
+-  var $local_hashed = FALSE;
++  public $project_identified = FALSE;
++  public $remote_downloaded = FALSE;
++  public $remote_hashed = FALSE;
++  public $local_hashed = FALSE;
+ 
+   /**
+    * Constructor.
+    */
+-  function __construct($name) {
++  public function __construct($name) {
+     // Identify the project.
+     $this->name = $name;
+     $this->identify_project();
+@@ -60,7 +66,7 @@ class hackedProject {
+   /**
+    * Get the Human readable title of this project.
+    */
+-  function title() {
++  public function title() {
+     $this->identify_project();
+     return isset($this->project_info['title']) ? $this->project_info['title'] : $this->name;
+   }
+@@ -72,7 +78,7 @@ class hackedProject {
+    * projects. We just pull the information in, and make descisions about this
+    * project being from CVS or not.
+    */
+-  function identify_project() {
++  public function identify_project() {
+     // Only do this once, no matter how many times we're called.
+     if (!empty($this->project_identified)) {
+       return;
+@@ -89,7 +95,7 @@ class hackedProject {
+       if ($key == $this->name) {
+         $this->project_info = $project;
+         if (!isset($this->project_info['releases']) || !is_array($this->project_info['releases'])) {
+-          $this->project_info['releases'] = array();
++          $this->project_info['releases'] = [];
+         }
+         if (isset($releases[$key]['releases']) && is_array($releases[$key]['releases'])) {
+           $this->project_info['releases'] += $releases[$key]['releases'];
+@@ -99,7 +105,6 @@ class hackedProject {
+         // This is a really naff way of doing this, but update (status) module
+         // ripped out a lot of useful stuff in issue:
+         // http://drupal.org/node/669554
+-
+         $this->project_identified = TRUE;
+         $this->existing_version = $this->project_info['existing_version'];
+         $this->project_type = $this->project_info['project_type'];
+@@ -109,7 +114,7 @@ class hackedProject {
+ 
+     // Logging.
+     if (!$this->project_identified) {
+-      $message = $this->t('Could not identify project: @name', array('@name' => $this->name));
++      $message = $this->t('Could not identify project: @name', ['@name' => $this->name]);
+       \Drupal::logger('hacked')->warning($message->render());
+     }
+   }
+@@ -117,10 +122,10 @@ class hackedProject {
+   /**
+    * Determines if the project is a development version or has an explicit release.
+    *
+-   * @return boolean
++   * @return bool
+    *   TRUE if the project is a dev release; FALSE otherwise.
+    */
+-  function isDevVersion() {
++  public function isDevVersion() {
+     // Grab the version string.
+     $version = $this->existing_version;
+ 
+@@ -131,7 +136,7 @@ class hackedProject {
+   /**
+    * Downloads the remote project to be hashed later.
+    */
+-  function download_remote_project() {
++  public function download_remote_project() {
+     // Only do this once, no matter how many times we're called.
+     if (!empty($this->remote_downloaded)) {
+       return;
+@@ -142,7 +147,7 @@ class hackedProject {
+ 
+     // Logging.
+     if (!$this->remote_downloaded) {
+-      $message = $this->t('Could not download project: @title', array('@title' => $this->title()));
++      $message = $this->t('Could not download project: @title', ['@title' => $this->title()]);
+       \Drupal::logger('hacked')->error($message->render());
+     }
+   }
+@@ -150,7 +155,7 @@ class hackedProject {
+   /**
+    * Hashes the remote project downloaded earlier.
+    */
+-  function hash_remote_project() {
++  public function hash_remote_project() {
+     // Only do this once, no matter how many times we're called.
+     if (!empty($this->remote_hashed)) {
+       return;
+@@ -168,7 +173,7 @@ class hackedProject {
+ 
+     // Logging.
+     if (!$this->remote_hashed) {
+-      $message = $this->t('Could not hash remote project: @title', array('@title' => $this->title()));
++      $message = $this->t('Could not hash remote project: @title', ['@title' => $this->title()]);
+       \Drupal::logger('hacked')->error($message->render());
+     }
+   }
+@@ -176,8 +181,8 @@ class hackedProject {
+   /**
+    * Locate the base directory of the local project.
+    */
+-  function locate_local_project() {
+-    // we need a remote project to do this :(
++  public function locate_local_project() {
++    // We need a remote project to do this :(.
+     $this->hash_remote_project();
+ 
+     // Do we have at least some modules to check for:
+@@ -185,20 +190,19 @@ class hackedProject {
+       return FALSE;
+     }
+ 
+-    // If this project is drupal it, we need to handle it specially
++    // If this project is drupal it, we need to handle it specially.
+     if ($this->project_type != 'core') {
+       $includes = array_keys($this->project_info['includes']);
+       $include = array_shift($includes);
+       $include_type = $this->project_info['project_type'];
+     }
+     else {
+-      // Just use the system module to find where we've installed drupal
++      // Just use the system module to find where we've installed drupal.
+       $include = 'system';
+       $include_type = 'module';
+     }
+ 
+-    //$include = 'image_captcha';
+-
++    // $include = 'image_captcha';
+     $path = drupal_get_path($include_type, $include);
+ 
+     // Now we need to find the path of the info file in the downloaded package:
+@@ -220,7 +224,7 @@ class hackedProject {
+   /**
+    * Hash the local version of the project.
+    */
+-  function hash_local_project() {
++  public function hash_local_project() {
+     // Only do this once, no matter how many times we're called.
+     if (!empty($this->local_hashed)) {
+       return;
+@@ -243,7 +247,7 @@ class hackedProject {
+   /**
+    * Compute the differences between our version and the canonical version of the project.
+    */
+-  function compute_differences() {
++  public function compute_differences() {
+     // Make sure we've hashed both remote and local files.
+     $this->hash_remote_project();
+     $this->hash_local_project();
+@@ -277,12 +281,11 @@ class hackedProject {
+   /**
+    * Return a nice report, a simple overview of the status of this project.
+    */
+-  function compute_report() {
++  public function compute_report() {
+     // Ensure we know the differences.
+     $this->compute_differences();
+ 
+-    // Do some counting
+-
++    // Do some counting.
+     $report = [
+       'project_name' => $this->name,
+       'status'       => HACKED_STATUS_UNCHECKED,
+@@ -296,7 +299,7 @@ class hackedProject {
+     ];
+ 
+     // Add more details into the report result (if we can).
+-    $details = array(
++    $details = [
+       'link',
+       'name',
+       'existing_version',
+@@ -304,14 +307,13 @@ class hackedProject {
+       'datestamp',
+       'project_type',
+       'includes',
+-    );
++    ];
+     foreach ($details as $item) {
+       if (isset($this->project_info[$item])) {
+         $report[$item] = $this->project_info[$item];
+       }
+     }
+ 
+-
+     if ($report['counts']['access_denied'] > 0) {
+       $report['status'] = HACKED_STATUS_PERMISSION_DENIED;
+     }
+@@ -331,19 +333,19 @@ class hackedProject {
+   /**
+    * Return a nice detailed report.
+    */
+-  function compute_details() {
++  public function compute_details() {
+     // Ensure we know the differences.
+     $report = $this->compute_report();
+ 
+-    $report['files'] = array();
++    $report['files'] = [];
+ 
+     // Add extra details about every file.
+-    $states = array(
++    $states = [
+       'access_denied' => HACKED_STATUS_PERMISSION_DENIED,
+       'missing'       => HACKED_STATUS_DELETED,
+       'different'     => HACKED_STATUS_HACKED,
+       'same'          => HACKED_STATUS_UNHACKED,
+-    );
++    ];
+ 
+     foreach ($states as $state => $status) {
+       foreach ($this->result[$state] as $file) {
+@@ -355,17 +357,24 @@ class hackedProject {
+     return $report;
+   }
+ 
+-  function file_is_diffable($file) {
++  /**
++   *
++   */
++  public function file_is_diffable($file) {
+     $this->hash_remote_project();
+     $this->hash_local_project();
+     return $this->remote_files->is_not_binary($file) && $this->local_files->is_not_binary($file);
+   }
+ 
+-  function file_get_location($storage = 'local', $file) {
++  /**
++   *
++   */
++  public function file_get_location($storage = 'local', $file) {
+     switch ($storage) {
+       case 'remote':
+         $this->download_remote_project();
+         return $this->remote_files->file_get_location($file);
++
+       case 'local':
+         $this->hash_local_project();
+         return $this->local_files->file_get_location($file);
+@@ -373,4 +382,4 @@ class hackedProject {
+     return FALSE;
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/hackedProjectWebDevDownloader.php b/src/hackedProjectWebDevDownloader.php
+index 1717995..b9b0460 100644
+--- a/src/hackedProjectWebDevDownloader.php
++++ b/src/hackedProjectWebDevDownloader.php
+@@ -18,12 +18,12 @@ class hackedProjectWebDevDownloader extends hackedProjectWebDownloader {
+    *   'branch'    => The development branch the snapshot was taken from.
+    *   'timestamp' => When the project was originally downloaded.
+    */
+-  function download_link() {
+-    $info = array();
++  public function download_link() {
++    $info = [];
+     $project = &$this->project->project_info;
+ 
+     // Get the branch we're on.
+-    $release = strtok($project['existing_version'],'-') . '-' . $project['existing_major'] . '.x-dev';
++    $release = strtok($project['existing_version'], '-') . '-' . $project['existing_major'] . '.x-dev';
+     $branch = $project['releases'][$release]['tag'];
+ 
+     // Assign some information depending on the project type.
+@@ -48,10 +48,10 @@ class hackedProjectWebDevDownloader extends hackedProjectWebDownloader {
+   /**
+    * Download the version of the project to compare.
+    *
+-   * @return boolean
++   * @return bool
+    *   TRUE if the download was successful; FALSE otherwise.
+    */
+-  function download() {
++  public function download() {
+     // Get detailed information about the download.
+     $destination = $this->get_destination();
+     $info = $this->download_link();
+@@ -96,9 +96,10 @@ class hackedProjectWebDevDownloader extends hackedProjectWebDownloader {
+    *   The location in which to place the checkout.
+    * @param $branch
+    *   The branch to check out.
+-   * @throws Exception on failure.
++   *
++   * @throws \Exception on failure.
+    */
+-  function git_clone($giturl, $path, $branch) {
++  public function git_clone($giturl, $path, $branch) {
+ 
+     // Get the Git command and location information.
+     $git_cmd = $this->git_get_command();
+@@ -131,9 +132,10 @@ class hackedProjectWebDevDownloader extends hackedProjectWebDownloader {
+    *   The desired branch within the repository containing the commit.
+    * @param $timestamp
+    *   The UNIX timestamp for the downloaded project.
+-   * @throws Exception on failure.
++   *
++   * @throws \Exception on failure.
+    */
+-  function git_checkout($path, $branch, $timestamp) {
++  public function git_checkout($path, $branch, $timestamp) {
+ 
+     // Fetch the Git command.
+     $git_cmd = $this->git_get_command();
+@@ -157,7 +159,7 @@ class hackedProjectWebDevDownloader extends hackedProjectWebDownloader {
+    * @return string
+    *   The command with which to run Git.
+    */
+-  function git_get_command() {
++  public function git_get_command() {
+     $command = \Drupal::config('hacked.settings')->get('git_cmd');
+     return is_null($command) ? 'git' : $command;
+   }
+@@ -168,9 +170,10 @@ class hackedProjectWebDevDownloader extends hackedProjectWebDownloader {
+    * @return string
+    *   The unpacked project's path.
+    */
+-  function get_final_destination() {
++  public function get_final_destination() {
+     // Simply return the original destination as Git's cloning already provides
+     // an unpacked project.
+     return $this->get_destination();
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/hackedProjectWebDownloader.php b/src/hackedProjectWebDownloader.php
+index c5f7592..051baf3 100644
+--- a/src/hackedProjectWebDownloader.php
++++ b/src/hackedProjectWebDownloader.php
+@@ -10,12 +10,12 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ class hackedProjectWebDownloader {
+   use StringTranslationTrait;
+ 
+-  var $project;
++  public $project;
+ 
+   /**
+    * Constructor, pass in the project this downloaded is expected to download.
+    */
+-  function __construct(&$project) {
++  public function __construct(&$project) {
+     $this->project = $project;
+   }
+ 
+@@ -24,9 +24,10 @@ class hackedProjectWebDownloader {
+    *
+    * @param null $namespace
+    *   The optional namespace of the temp directory, defaults to the classname.
++   *
+    * @return bool|string
+    */
+-  function get_temp_directory($namespace = NULL) {
++  public function get_temp_directory($namespace = NULL) {
+     if (is_null($namespace)) {
+       $reflect = new \ReflectionClass($this);
+       $namespace = $reflect->getShortName();
+@@ -38,7 +39,7 @@ class hackedProjectWebDownloader {
+     ];
+     $dir = implode('/', array_filter($segments));
+     if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY) && !mkdir($dir, 0775, TRUE)) {
+-      $message = $this->t('Failed to create temp directory: %dir', array('%dir' => $dir));
++      $message = $this->t('Failed to create temp directory: %dir', ['%dir' => $dir]);
+       \Drupal::logger('hacked')->error($message);
+       return FALSE;
+     }
+@@ -48,7 +49,7 @@ class hackedProjectWebDownloader {
+   /**
+    * Returns a directory to save the downloaded project into.
+    */
+-  function get_destination() {
++  public function get_destination() {
+     $type = $this->project->project_type;
+     $name = $this->project->name;
+     $version = $this->project->existing_version;
+@@ -66,7 +67,7 @@ class hackedProjectWebDownloader {
+   /**
+    * Returns the final destination of the unpacked project.
+    */
+-  function get_final_destination() {
++  public function get_final_destination() {
+     $dir = $this->get_destination();
+     $name = $this->project->name;
+     $version = $this->project->existing_version;
+@@ -84,7 +85,7 @@ class hackedProjectWebDownloader {
+   /**
+    * Download the remote files to the local filesystem.
+    */
+-  function download() {
++  public function download() {
+ 
+   }
+ 
+@@ -97,7 +98,7 @@ class hackedProjectWebDownloader {
+    * @param string $path
+    *   A filepath relative to file_directory_path.
+    */
+-  function remove_dir($path) {
++  public function remove_dir($path) {
+     if (is_file($path) || is_link($path)) {
+       unlink($path);
+     }
+@@ -116,10 +117,10 @@ class hackedProjectWebDownloader {
+     else {
+       $message = $this->t('Unknown file type(%path) stat: %stat ', [
+         '%path' => $path,
+-        '%stat' => print_r(stat($path), 1)
++        '%stat' => print_r(stat($path), 1),
+       ]);
+       \Drupal::logger('hacked')->error($message);
+     }
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/hackedProjectWebFilesDownloader.php b/src/hackedProjectWebFilesDownloader.php
+index 966022c..1228b0b 100644
+--- a/src/hackedProjectWebFilesDownloader.php
++++ b/src/hackedProjectWebFilesDownloader.php
+@@ -9,27 +9,34 @@ use Exception;
+  * Downloads a project using a standard Drupal method.
+  */
+ class hackedProjectWebFilesDownloader extends hackedProjectWebDownloader {
+-  function download_link() {
++
++  /**
++   *
++   */
++  public function download_link() {
+     if (!empty($this->project->project_info['releases'][$this->project->existing_version])) {
+       $this_release = $this->project->project_info['releases'][$this->project->existing_version];
+       return $this_release['download_link'];
+     }
+   }
+ 
+-  function download() {
++  /**
++   *
++   */
++  public function download() {
+     $dir = $this->get_destination();
+     if (!($release_url = $this->download_link())) {
+       return FALSE;
+     }
+ 
+-    // If our directory already exists, we can just return the path to this cached version
++    // If our directory already exists, we can just return the path to this cached version.
+     if (file_exists($dir) && count(hacked_file_scan_directory($dir, '/.*/', [
+-        '.',
+-        '..',
+-        'CVS',
+-        '.svn',
+-        '.git'
+-      ]))
++      '.',
++      '..',
++      'CVS',
++      '.svn',
++      '.git',
++    ]))
+     ) {
+       return $dir;
+     }
+@@ -44,7 +51,7 @@ class hackedProjectWebFilesDownloader extends hackedProjectWebDownloader {
+     if (!($local_file = $this->file_get($release_url))) {
+       $message = $this->t('Could not download the project: @name from URL: @url', [
+         '@name' => $this->project->title(),
+-        '@url'  => $release_url
++        '@url'  => $release_url,
+       ]);
+       \Drupal::logger('hacked')->error($message->render());
+       return FALSE;
+@@ -55,7 +62,7 @@ class hackedProjectWebFilesDownloader extends hackedProjectWebDownloader {
+     catch (Exception $e) {
+       $message = $this->t('Could not extract the project: @name. Error was: !error', [
+         '@name'  => $this->project->title(),
+-        '!error' => $e->getMessage()
++        '!error' => $e->getMessage(),
+       ]);
+       \Drupal::logger('hacked')->error($message->render());
+       return FALSE;
+@@ -75,7 +82,7 @@ class hackedProjectWebFilesDownloader extends hackedProjectWebDownloader {
+    * @return string
+    *   Path to local file.
+    */
+-  function file_get($url) {
++  public function file_get($url) {
+     $parsed_url = parse_url($url);
+     $remote_schemes = ['http', 'https', 'ftp', 'ftps', 'smb', 'nfs'];
+     if (!in_array($parsed_url['scheme'], $remote_schemes)) {
+@@ -101,11 +108,13 @@ class hackedProjectWebFilesDownloader extends hackedProjectWebDownloader {
+    *   The filename of the archive you wish to extract.
+    * @param string $directory
+    *   The directory you wish to extract the archive into.
++   *
+    * @return Archiver
+    *   The Archiver object used to extract the archive.
+-   * @throws Exception on failure.
++   *
++   * @throws \Exception on failure.
+    */
+-  function archive_extract($file, $directory) {
++  public function archive_extract($file, $directory) {
+     $archiver = archiver_get_archiver($file);
+     if (!$archiver) {
+       throw new Exception(t('Cannot extract %file, not a valid archive.', ['%file' => $file]));
+@@ -115,7 +124,7 @@ class hackedProjectWebFilesDownloader extends hackedProjectWebDownloader {
+     // old files mixed with the new files (e.g. in cases where files were removed
+     // from a later release).
+     $files = $archiver->listContents();
+-    // Unfortunately, we can only use the directory name for this. :(
++    // Unfortunately, we can only use the directory name for this. :(.
+     $project = Unicode::substr($files[0], 0, -1);
+     $extract_location = $directory . '/' . $project;
+     if (file_exists($extract_location)) {
+@@ -126,5 +135,4 @@ class hackedProjectWebFilesDownloader extends hackedProjectWebDownloader {
+     return $archiver;
+   }
+ 
+-
+-}
+\ No newline at end of file
++}

@@ -1,0 +1,100 @@
+diff --git a/js/qt_accordion.js b/js/qt_accordion.js
+index 1e5c423..b314bb6 100644
+--- a/js/qt_accordion.js
++++ b/js/qt_accordion.js
+@@ -1,12 +1,12 @@
+ (function ($, Drupal, drupalSettings) {
+-  
++
+ 'use strict';
+ 
+ Drupal.behaviors.qt_accordion = {
+   attach: function (context, settings) {
+-    $(context).find('div.quicktabs-accordion').once('quicktabs-accordion').each(function() {
++    $(context).find('div.quicktabs-accordion').once('quicktabs-accordion').each(function () {
+       var id = $(this).attr('id');
+-      var qtKey = 'qt_' + this.id.substring(this.id.indexOf('-') +1);
++      var qtKey = 'qt_' + this.id.substring(this.id.indexOf('-') + 1);
+       var options = drupalSettings.quicktabs[qtKey].options;
+       $(this).accordion(options);
+     });
+diff --git a/js/qt_ui_tabs.js b/js/qt_ui_tabs.js
+index 0d22014..3ca86cb 100644
+--- a/js/qt_ui_tabs.js
++++ b/js/qt_ui_tabs.js
+@@ -4,9 +4,9 @@
+ 
+ Drupal.behaviors.qt_ui_tabs = {
+   attach: function (context) {
+-    $(context).find('div.quicktabs-ui-wrapper').once('quicktabs-ui-wrapper').each(function() {
++    $(context).find('div.quicktabs-ui-wrapper').once('quicktabs-ui-wrapper').each(function () {
+       var id = $(this).attr('id');
+-      var qtKey = 'qt_' + this.id.substring(this.id.indexOf('-') +1);
++      var qtKey = 'qt_' + this.id.substring(this.id.indexOf('-') + 1);
+       $(this).tabs({ active: drupalSettings.quicktabs[qtKey].default_tab });
+     });
+   }
+diff --git a/js/quicktabs.js b/js/quicktabs.js
+index 8da3035..ab1d922 100644
+--- a/js/quicktabs.js
++++ b/js/quicktabs.js
+@@ -10,7 +10,7 @@ Drupal.quicktabs.getQTName = function (el) {
+ 
+ Drupal.behaviors.quicktabs = {
+   attach: function (context, settings) {
+-    $(context).find('div.quicktabs-wrapper').once('quicktabs-wrapper').each(function() {
++    $(context).find('div.quicktabs-wrapper').once('quicktabs-wrapper').each(function () {
+       var el = $(this);
+       Drupal.quicktabs.prepare(el);
+     });
+@@ -18,11 +18,11 @@ Drupal.behaviors.quicktabs = {
+ }
+ 
+ // Setting up the inital behaviours
+-Drupal.quicktabs.prepare = function(el) {
++Drupal.quicktabs.prepare = function (el) {
+   // el.id format: "quicktabs-$name"
+   var qt_name = Drupal.quicktabs.getQTName(el);
+   var $ul = $(el).find('ul.quicktabs-tabs:first');
+-  $ul.find('li a').each(function(i, element){
++  $ul.find('li a').each(function (i, element) {
+     element.myTabIndex = i;
+     element.qt_name = qt_name;
+     var tab = new Drupal.quicktabs.tab(element);
+@@ -32,7 +32,7 @@ Drupal.quicktabs.prepare = function(el) {
+   });
+ }
+ 
+-Drupal.quicktabs.clickHandler = function(event) {
++Drupal.quicktabs.clickHandler = function (event) {
+   var tab = event.data.tab;
+   var element = this;
+   // Set clicked tab to active.
+@@ -110,7 +110,6 @@ Drupal.quicktabs.tab = function (el) {
+     }
+   };
+ 
+-
+ if (Drupal.Ajax) {
+ 
+   /**
+diff --git a/js/quicktabs_form.js b/js/quicktabs_form.js
+index 6c91183..748e504 100644
+--- a/js/quicktabs_form.js
++++ b/js/quicktabs_form.js
+@@ -16,13 +16,13 @@
+    * @prop {Drupal~behaviorAttach} attach
+    *   Attaches the show/hide functionality to each table row in the QT edit form.
+    */
+-  Drupal.quicktabsShowHide = function() {
++  Drupal.quicktabsShowHide = function () {
+     $(this).parents('tr').find('div.qt-tab-' + this.value + '-options-form').show().siblings('div.qt-tab-options-form').hide();
+   };
+ 
+   Drupal.behaviors.quicktabsform = {
+     attach: function (context, settings) {
+-      $('#quicktab-instance-edit tr').each(function(index) {
++      $('#quicktab-instance-edit tr').each(function (index) {
+         var currentRow = $(this),
+           select = currentRow.find('div.form-item :input[name*="type"]');
+ 

@@ -1,0 +1,14 @@
+diff --git a/tests/src/Functional/ConfigPermsTest.php b/tests/src/Functional/ConfigPermsTest.php
+index 352e798..303728e 100644
+--- a/tests/src/Functional/ConfigPermsTest.php
++++ b/tests/src/Functional/ConfigPermsTest.php
+@@ -21,6 +21,9 @@ class ConfigPermsTest extends BrowserTestBase {
+    */
+   protected static $modules = ['config_perms'];
+ 
++  /**
++   *
++   */
+   public function testAdministerConfigPermsPermission() {
+     $user_with_permission = $this->drupalCreateUser(['administer config permissions']);
+     $user_without_permission = $this->drupalCreateUser();

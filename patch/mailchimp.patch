@@ -1,0 +1,567 @@
+diff --git a/lib/mailchimp-api-php/src/Mailchimp.php b/lib/mailchimp-api-php/src/Mailchimp.php
+index 6980e2b..da1ed6f 100644
+--- a/lib/mailchimp-api-php/src/Mailchimp.php
++++ b/lib/mailchimp-api-php/src/Mailchimp.php
+@@ -37,35 +37,35 @@ class Mailchimp {
+   /**
+    * API version.
+    *
+-   * @var string $version
++   * @var string
+    */
+   public $version = self::VERSION;
+ 
+   /**
+    * The HTTP client.
+    *
+-   * @var MailchimpHttpClientInterface $client
++   * @var \Mailchimp\http\MailchimpHttpClientInterface
+    */
+   protected $client;
+ 
+   /**
+    * The REST API endpoint.
+    *
+-   * @var string $endpoint
++   * @var string
+    */
+   protected $endpoint = 'https://us1.api.mailchimp.com/3.0';
+ 
+   /**
+    * The Mailchimp API key to authenticate with.
+    *
+-   * @var string $api_key
++   * @var string
+    */
+   private $api_key;
+ 
+   /**
+    * The Mailchimp API username to authenticate with.
+    *
+-   * @var string $api_user
++   * @var string
+    */
+   private $api_user;
+ 
+@@ -75,14 +75,14 @@ class Mailchimp {
+    * Used for testing / debugging error handling.
+    * See ERROR_CODE_* constants.
+    *
+-   * @var string $debug_error_code
++   * @var string
+    */
+   private $debug_error_code;
+ 
+   /**
+    * Array of pending batch operations.
+    *
+-   * @var array $batch_operations
++   * @var array
+    *
+    * @see http://developer.mailchimp.com/documentation/mailchimp/reference/batches/#create-post_batches
+    */
+@@ -97,7 +97,7 @@ class Mailchimp {
+    *   The Mailchimp API username.
+    * @param array $http_options
+    *   HTTP client options.
+-   * @param MailchimpHttpClientInterface $client
++   * @param \Mailchimp\http\MailchimpHttpClientInterface $client
+    *   Optional custom HTTP client. $http_options are ignored if this is set.
+    */
+   public function __construct($api_key, $api_user = 'apikey', $http_options = [], MailchimpHttpClientInterface $client = NULL) {
+@@ -310,7 +310,7 @@ class Mailchimp {
+    * @param array $http_options
+    *   HTTP client options.
+    *
+-   * @return MailchimpHttpClientInterface
++   * @return \Mailchimp\http\MailchimpHttpClientInterface
+    *   The HTTP client.
+    */
+   private function getDefaultHttpClient($http_options) {
+diff --git a/lib/mailchimp-api-php/src/MailchimpAPIException.php b/lib/mailchimp-api-php/src/MailchimpAPIException.php
+index 57f6599..e27a926 100644
+--- a/lib/mailchimp-api-php/src/MailchimpAPIException.php
++++ b/lib/mailchimp-api-php/src/MailchimpAPIException.php
+@@ -2,7 +2,7 @@
+ 
+ namespace Mailchimp;
+ 
+-use \Exception;
++use Exception;
+ 
+ /**
+  * Custom Mailchimp API exception.
+diff --git a/lib/mailchimp-api-php/src/MailchimpAutomations.php b/lib/mailchimp-api-php/src/MailchimpAutomations.php
+index 3faaf3e..c94ac1a 100644
+--- a/lib/mailchimp-api-php/src/MailchimpAutomations.php
++++ b/lib/mailchimp-api-php/src/MailchimpAutomations.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Mailchimp;
+ 
++/**
++ *
++ */
+ class MailchimpAutomations extends Mailchimp {
+ 
+   /**
+diff --git a/lib/mailchimp-api-php/src/MailchimpLists.php b/lib/mailchimp-api-php/src/MailchimpLists.php
+index 0bb0e4a..624c584 100644
+--- a/lib/mailchimp-api-php/src/MailchimpLists.php
++++ b/lib/mailchimp-api-php/src/MailchimpLists.php
+@@ -199,11 +199,11 @@ class MailchimpLists extends Mailchimp {
+    */
+   public function getMemberInfoById($list_id, $mc_eid, $parameters = []) {
+     $tokens = [
+-        'list_id' => $list_id,
++      'list_id' => $list_id,
+     ];
+ 
+     $parameters = [
+-        'unique_email_id' => $mc_eid,
++      'unique_email_id' => $mc_eid,
+     ];
+ 
+     return $this->request('GET', '/lists/{list_id}/members/', $tokens, $parameters);
+diff --git a/lib/mailchimp-api-php/src/MailchimpReports.php b/lib/mailchimp-api-php/src/MailchimpReports.php
+index 4f668ed..fecdfe7 100644
+--- a/lib/mailchimp-api-php/src/MailchimpReports.php
++++ b/lib/mailchimp-api-php/src/MailchimpReports.php
+@@ -59,7 +59,7 @@ class MailchimpReports extends Mailchimp {
+    *    - locations           @see http://developer.mailchimp.com/documentation/mailchimp/reference/reports/locations
+    *    - sent-to             @see http://developer.mailchimp.com/documentation/mailchimp/reference/reports/sent-to
+    *    - sub-reports         @see http://developer.mailchimp.com/documentation/mailchimp/reference/reports/sub-reports
+-   *    - unsubscribed        @see http://developer.mailchimp.com/documentation/mailchimp/reference/reports/unsubscribed
++   *    - unsubscribed        @see http://developer.mailchimp.com/documentation/mailchimp/reference/reports/unsubscribed.
+    * @param array $parameters
+    *   Associative array of optional request parameters.
+    *
+diff --git a/lib/mailchimp-api-php/src/http/MailchimpGuzzleHttpClient.php b/lib/mailchimp-api-php/src/http/MailchimpGuzzleHttpClient.php
+index 633cabb..ef9f4ee 100644
+--- a/lib/mailchimp-api-php/src/http/MailchimpGuzzleHttpClient.php
++++ b/lib/mailchimp-api-php/src/http/MailchimpGuzzleHttpClient.php
+@@ -16,7 +16,7 @@ class MailchimpGuzzleHttpClient implements MailchimpHttpClientInterface {
+   /**
+    * The GuzzleHttp client.
+    *
+-   * @var Client $client
++   * @var \GuzzleHttp\Client
+    */
+   private $guzzle;
+ 
+diff --git a/lib/mailchimp-api-php/tests/MailchimpAutomationsTest.php b/lib/mailchimp-api-php/tests/MailchimpAutomationsTest.php
+index 0715e5b..0d02f5c 100644
+--- a/lib/mailchimp-api-php/tests/MailchimpAutomationsTest.php
++++ b/lib/mailchimp-api-php/tests/MailchimpAutomationsTest.php
+@@ -4,6 +4,9 @@ namespace Mailchimp\Tests;
+ 
+ use PHPUnit\Framework\TestCase;
+ 
++/**
++ *
++ */
+ class MailchimpAutomationsTest extends TestCase {
+ 
+   /**
+diff --git a/lib/mailchimp-api-php/tests/src/Client.php b/lib/mailchimp-api-php/tests/src/Client.php
+index 2ef363b..b5dea0f 100644
+--- a/lib/mailchimp-api-php/tests/src/Client.php
++++ b/lib/mailchimp-api-php/tests/src/Client.php
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use GuzzleHttp\Client;
++
+ namespace Mailchimp\Tests;
+ 
+ /**
+@@ -7,7 +9,7 @@ namespace Mailchimp\Tests;
+  *
+  * @package Mailchimp\Tests
+  */
+-class Client extends \GuzzleHttp\Client {
++class Client extends Client {
+ 
+   public $method;
+ 
+diff --git a/lib/mailchimp-api-php/tests/src/Mailchimp.php b/lib/mailchimp-api-php/tests/src/Mailchimp.php
+index 4b07c1c..b3c2b12 100644
+--- a/lib/mailchimp-api-php/tests/src/Mailchimp.php
++++ b/lib/mailchimp-api-php/tests/src/Mailchimp.php
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use Mailchimp\Mailchimp;
++
+ namespace Mailchimp\Tests;
+ 
+ /**
+@@ -7,7 +9,7 @@ namespace Mailchimp\Tests;
+  *
+  * @package Mailchimp\Tests
+  */
+-class Mailchimp extends \Mailchimp\Mailchimp {
++class Mailchimp extends Mailchimp {
+ 
+   /**
+    * @inheritdoc
+@@ -16,10 +18,16 @@ class Mailchimp extends \Mailchimp\Mailchimp {
+     $this->client = new MailchimpTestHttpClient();
+   }
+ 
++  /**
++   *
++   */
+   public function getClient() {
+     return $this->client;
+   }
+ 
++  /**
++   *
++   */
+   public function getEndpoint() {
+     return $this->endpoint;
+   }
+diff --git a/lib/mailchimp-api-php/tests/src/MailchimpAutomations.php b/lib/mailchimp-api-php/tests/src/MailchimpAutomations.php
+index af46ec8..6b2c8ba 100644
+--- a/lib/mailchimp-api-php/tests/src/MailchimpAutomations.php
++++ b/lib/mailchimp-api-php/tests/src/MailchimpAutomations.php
+@@ -1,8 +1,13 @@
+ <?php
+ 
++use Mailchimp\MailchimpAutomations;
++
+ namespace Mailchimp\Tests;
+ 
+-class MailchimpAutomations extends \Mailchimp\MailchimpAutomations {
++/**
++ *
++ */
++class MailchimpAutomations extends MailchimpAutomations {
+ 
+   /**
+    * @inheritdoc
+@@ -11,10 +16,16 @@ class MailchimpAutomations extends \Mailchimp\MailchimpAutomations {
+     $this->client = new MailchimpTestHttpClient();
+   }
+ 
++  /**
++   *
++   */
+   public function getClient() {
+     return $this->client;
+   }
+ 
++  /**
++   *
++   */
+   public function getEndpoint() {
+     return $this->endpoint;
+   }
+@@ -89,7 +100,7 @@ class MailchimpAutomations extends \Mailchimp\MailchimpAutomations {
+   /**
+    * @inheritdoc
+    */
+-  public function getWorkflowEmail($workflow_id,$workflow_email_id) {
++  public function getWorkflowEmail($workflow_id, $workflow_email_id) {
+     parent::getWorkflowEmail($workflow_id, $workflow_email_id);
+ 
+     $response = (object) [
+diff --git a/lib/mailchimp-api-php/tests/src/MailchimpCampaigns.php b/lib/mailchimp-api-php/tests/src/MailchimpCampaigns.php
+index 2eec998..5b74d41 100644
+--- a/lib/mailchimp-api-php/tests/src/MailchimpCampaigns.php
++++ b/lib/mailchimp-api-php/tests/src/MailchimpCampaigns.php
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use Mailchimp\MailchimpCampaigns;
++
+ namespace Mailchimp\Tests;
+ 
+ /**
+@@ -7,7 +9,7 @@ namespace Mailchimp\Tests;
+  *
+  * @package Mailchimp\Tests
+  */
+-class MailchimpCampaigns extends \Mailchimp\MailchimpCampaigns {
++class MailchimpCampaigns extends MailchimpCampaigns {
+ 
+   /**
+    * @inheritdoc
+@@ -16,10 +18,16 @@ class MailchimpCampaigns extends \Mailchimp\MailchimpCampaigns {
+     $this->client = new MailchimpTestHttpClient();
+   }
+ 
++  /**
++   *
++   */
+   public function getClient() {
+     return $this->client;
+   }
+ 
++  /**
++   *
++   */
+   public function getEndpoint() {
+     return $this->endpoint;
+   }
+diff --git a/lib/mailchimp-api-php/tests/src/MailchimpEcommerce.php b/lib/mailchimp-api-php/tests/src/MailchimpEcommerce.php
+index a6286d5..8be208b 100644
+--- a/lib/mailchimp-api-php/tests/src/MailchimpEcommerce.php
++++ b/lib/mailchimp-api-php/tests/src/MailchimpEcommerce.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Mailchimp\Tests;
+ 
++use Mailchimp\MailchimpEcommerce;
+ use Mailchimp\MailchimpAPIException;
+ 
+ /**
+@@ -9,26 +10,26 @@ use Mailchimp\MailchimpAPIException;
+  *
+  * @package Mailchimp\Tests
+  */
+-class MailchimpEcommerce extends \Mailchimp\MailchimpEcommerce {
++class MailchimpEcommerce extends MailchimpEcommerce {
+ 
+   /**
+    * Storage for stores. Used in place of real Mailchimp API.
+    *
+-   * @var array $stores
++   * @var array
+    */
+   private $stores = [];
+ 
+   /**
+    * Storage for customers. Used in place of real Mailchimp API.
+    *
+-   * @var array $customers
++   * @var array
+    */
+   private $customers = [];
+ 
+   /**
+    * Storage for orders. Used in place of real Mailchimp API.
+    *
+-   * @var array $orders
++   * @var array
+    */
+   private $orders = [];
+ 
+@@ -39,10 +40,16 @@ class MailchimpEcommerce extends \Mailchimp\MailchimpEcommerce {
+     $this->client = new MailchimpTestHttpClient();
+   }
+ 
++  /**
++   *
++   */
+   public function getClient() {
+     return $this->client;
+   }
+ 
++  /**
++   *
++   */
+   public function getEndpoint() {
+     return $this->endpoint;
+   }
+diff --git a/lib/mailchimp-api-php/tests/src/MailchimpLists.php b/lib/mailchimp-api-php/tests/src/MailchimpLists.php
+index 3aa9e1e..d770174 100644
+--- a/lib/mailchimp-api-php/tests/src/MailchimpLists.php
++++ b/lib/mailchimp-api-php/tests/src/MailchimpLists.php
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use Mailchimp\MailchimpLists;
++
+ namespace Mailchimp\Tests;
+ 
+ /**
+@@ -7,7 +9,7 @@ namespace Mailchimp\Tests;
+  *
+  * @package Mailchimp\Tests
+  */
+-class MailchimpLists extends \Mailchimp\MailchimpLists {
++class MailchimpLists extends MailchimpLists {
+ 
+   /**
+    * @inheritdoc
+@@ -16,10 +18,16 @@ class MailchimpLists extends \Mailchimp\MailchimpLists {
+     $this->client = new MailchimpTestHttpClient();
+   }
+ 
++  /**
++   *
++   */
+   public function getClient() {
+     return $this->client;
+   }
+ 
++  /**
++   *
++   */
+   public function getEndpoint() {
+     return $this->endpoint;
+   }
+diff --git a/lib/mailchimp-api-php/tests/src/MailchimpReports.php b/lib/mailchimp-api-php/tests/src/MailchimpReports.php
+index 5ddca38..10545f8 100644
+--- a/lib/mailchimp-api-php/tests/src/MailchimpReports.php
++++ b/lib/mailchimp-api-php/tests/src/MailchimpReports.php
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use Mailchimp\MailchimpReports;
++
+ namespace Mailchimp\Tests;
+ 
+ /**
+@@ -7,7 +9,7 @@ namespace Mailchimp\Tests;
+  *
+  * @package Mailchimp\Tests
+  */
+-class MailchimpReports extends \Mailchimp\MailchimpReports {
++class MailchimpReports extends MailchimpReports {
+ 
+   /**
+    * @inheritdoc
+@@ -16,10 +18,16 @@ class MailchimpReports extends \Mailchimp\MailchimpReports {
+     $this->client = new MailchimpTestHttpClient();
+   }
+ 
++  /**
++   *
++   */
+   public function getClient() {
+     return $this->client;
+   }
+ 
++  /**
++   *
++   */
+   public function getEndpoint() {
+     return $this->endpoint;
+   }
+diff --git a/lib/mailchimp-api-php/tests/src/MailchimpTemplates.php b/lib/mailchimp-api-php/tests/src/MailchimpTemplates.php
+index 09db9ee..676a596 100644
+--- a/lib/mailchimp-api-php/tests/src/MailchimpTemplates.php
++++ b/lib/mailchimp-api-php/tests/src/MailchimpTemplates.php
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use Mailchimp\MailchimpTemplates;
++
+ namespace Mailchimp\Tests;
+ 
+ /**
+@@ -7,7 +9,7 @@ namespace Mailchimp\Tests;
+  *
+  * @package Mailchimp\Tests
+  */
+-class MailchimpTemplates extends \Mailchimp\MailchimpTemplates {
++class MailchimpTemplates extends MailchimpTemplates {
+ 
+   /**
+    * @inheritdoc
+@@ -16,10 +18,16 @@ class MailchimpTemplates extends \Mailchimp\MailchimpTemplates {
+     $this->client = new MailchimpTestHttpClient();
+   }
+ 
++  /**
++   *
++   */
+   public function getClient() {
+     return $this->client;
+   }
+ 
++  /**
++   *
++   */
+   public function getEndpoint() {
+     return $this->endpoint;
+   }
+diff --git a/lib/mailchimp-api-php/tests/src/MailchimpTestHttpClient.php b/lib/mailchimp-api-php/tests/src/MailchimpTestHttpClient.php
+index b16a318..cc180ba 100644
+--- a/lib/mailchimp-api-php/tests/src/MailchimpTestHttpClient.php
++++ b/lib/mailchimp-api-php/tests/src/MailchimpTestHttpClient.php
+@@ -2,10 +2,8 @@
+ 
+ namespace Mailchimp\Tests;
+ 
+-//use GuzzleHttp\Client;
+-use GuzzleHttp\Exception\RequestException;
++// Use GuzzleHttp\Client;.
+ use Mailchimp\http\MailchimpHttpClientInterface;
+-use Mailchimp\MailchimpAPIException;
+ 
+ /**
+  * A dummy HTTP client used when running unit tests.
+diff --git a/lib/mailchimp-api-php/tests/src/MailchimpTestHttpResponse.php b/lib/mailchimp-api-php/tests/src/MailchimpTestHttpResponse.php
+index ad06cb4..c0865ae 100644
+--- a/lib/mailchimp-api-php/tests/src/MailchimpTestHttpResponse.php
++++ b/lib/mailchimp-api-php/tests/src/MailchimpTestHttpResponse.php
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use GuzzleHttp\Psr7\Response;
++
+ namespace Mailchimp\Tests;
+ 
+ /**
+@@ -7,8 +9,11 @@ namespace Mailchimp\Tests;
+  *
+  * @package Mailchimp\Tests
+  */
+-class MailchimpTestHttpResponse extends \GuzzleHttp\Psr7\Response {
++class MailchimpTestHttpResponse extends Response {
+ 
++  /**
++   *
++   */
+   public function getBody() {
+     return '{}';
+   }
+diff --git a/modules/mailchimp_lists/src/Plugin/Field/FieldWidget/MailchimpListsSelectWidget.php b/modules/mailchimp_lists/src/Plugin/Field/FieldWidget/MailchimpListsSelectWidget.php
+index 13aff72..05756e8 100644
+--- a/modules/mailchimp_lists/src/Plugin/Field/FieldWidget/MailchimpListsSelectWidget.php
++++ b/modules/mailchimp_lists/src/Plugin/Field/FieldWidget/MailchimpListsSelectWidget.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\mailchimp_lists\Plugin\Field\FieldWidget;
+ 
+ use Drupal\Component\Utility\Html;
+-use Drupal\Core\Entity\EntityFormInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Field\WidgetBase;
+ use Drupal\Core\Form\FormStateInterface;
+diff --git a/modules/mailchimp_signup/src/Plugin/Field/FieldFormatter/MailchimpSignupFormFormatter.php b/modules/mailchimp_signup/src/Plugin/Field/FieldFormatter/MailchimpSignupFormFormatter.php
+index a8ead52..753eead 100644
+--- a/modules/mailchimp_signup/src/Plugin/Field/FieldFormatter/MailchimpSignupFormFormatter.php
++++ b/modules/mailchimp_signup/src/Plugin/Field/FieldFormatter/MailchimpSignupFormFormatter.php
+@@ -2,12 +2,10 @@
+ 
+ namespace Drupal\mailchimp_signup\Plugin\Field\FieldFormatter;
+ 
++use Drupal\mailchimp_signup\Form\MailchimpSignupPageForm;
+ use Drupal\Core\Field\FieldItemListInterface;
+-use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\Plugin\Field\FieldFormatter\EntityReferenceFormatterBase;
+-use Drupal\Core\Messenger\MessengerInterface;
+ use Drupal\mailchimp_signup\Entity\MailchimpSignup;
+-use Drupal\mailchimp_signup\Form\MailchimpSignupPageForm;
+ 
+ /**
+  * Plugin implementation of the 'mailchimp_signup_form' formatter.
+@@ -46,7 +44,7 @@ class MailchimpSignupFormFormatter extends EntityReferenceFormatterBase {
+ 
+       $messenger = \Drupal::messenger();
+ 
+-      $form = new \Drupal\mailchimp_signup\Form\MailchimpSignupPageForm($messenger);
++      $form = new MailchimpSignupPageForm($messenger);
+ 
+       $form->setFormID($this->getFormId($signup));
+       $form->setSignup($signup);
+@@ -85,4 +83,5 @@ class MailchimpSignupFormFormatter extends EntityReferenceFormatterBase {
+ 
+     return $id;
+   }
++
+ }

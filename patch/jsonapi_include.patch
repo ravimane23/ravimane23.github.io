@@ -1,0 +1,13 @@
+diff --git a/src/EventSubscriber/ResponseSubscriber.php b/src/EventSubscriber/ResponseSubscriber.php
+index 5ed508c..768e8ac 100644
+--- a/src/EventSubscriber/ResponseSubscriber.php
++++ b/src/EventSubscriber/ResponseSubscriber.php
+@@ -72,7 +72,7 @@ class ResponseSubscriber implements EventSubscriberInterface {
+    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+    *   The  route match service.
+    */
+-  public function setRouteMatch(RouteMatchInterface $route_match){
++  public function setRouteMatch(RouteMatchInterface $route_match) {
+     $this->routeMatch = $route_match;
+   }
+ 

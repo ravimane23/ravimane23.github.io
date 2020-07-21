@@ -1,0 +1,44 @@
+diff --git a/js/mixitup_views.js b/js/mixitup_views.js
+index 01c1fb9..fbd6904 100644
+--- a/js/mixitup_views.js
++++ b/js/mixitup_views.js
+@@ -29,10 +29,10 @@
+           self.$filters = filters;
+           self.$reset = reset;
+           self.$container = container;
+-          self.checkboxes =  $('.mixitup_views_filter.form-checkbox');
++          self.checkboxes = $('.mixitup_views_filter.form-checkbox');
+ 
+           switch(self.widgetType) {
+-            case 'checkboxes' :
++            case 'checkboxes':
+               self.$filters.find('.form-type-checkbox').each(function () {
+                 self.groups.push({
+                   $inputs: $(this).find('input'),
+@@ -41,7 +41,8 @@
+                 });
+               });
+               break;
+-            case 'select' :
++
++            case 'select':
+               self.$filters.find('.form-type-select').each(function () {
+                 self.groups.push({
+                   $selects: $(this).find('select'),
+@@ -85,6 +86,7 @@
+                   $(this).is(':checked') && group.active.push(this.value);
+                 });
+                 break;
++
+               case 'select':
+                 group.$selects.each(function () {
+                   group.active.push(this.value);
+@@ -121,7 +123,7 @@
+             return (done < self.groups.length);
+           };
+ 
+-          var unique = function(value,index,self) {
++          var unique = function (value,index,self) {
+             return self.indexOf(value) === index;
+           }
+ 

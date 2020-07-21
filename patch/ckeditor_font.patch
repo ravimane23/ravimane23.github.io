@@ -1,0 +1,174 @@
+diff --git a/src/Plugin/CKEditorPlugin/FontCKEditorButton.php b/src/Plugin/CKEditorPlugin/FontCKEditorButton.php
+index 7ff1046..4b83eb3 100644
+--- a/src/Plugin/CKEditorPlugin/FontCKEditorButton.php
++++ b/src/Plugin/CKEditorPlugin/FontCKEditorButton.php
+@@ -32,16 +32,16 @@ class FontCKEditorButton extends CKEditorPluginBase implements CKEditorPluginCon
+     // Make sure that the path to the image matches the file structure of
+     // the CKEditor plugin you are implementing.
+     $modulePath = drupal_get_path('module', 'ckeditor_font');
+-    return array(
+-      'Font' => array(
++    return [
++      'Font' => [
+         'label' => $this->t('Font Families'),
+         'image' => $modulePath . '/icons/font.png',
+-      ),
+-      'FontSize' => array(
++      ],
++      'FontSize' => [
+         'label' => $this->t('Font ckeditor button'),
+         'image' => $modulePath . '/icons/fontsize.png',
+-      ),
+-    );
++      ],
++    ];
+   }
+ 
+   /**
+@@ -93,29 +93,29 @@ class FontCKEditorButton extends CKEditorPluginBase implements CKEditorPluginCon
+   /**
+    * {@inheritdoc}
+    */
+-  function isInternal() {
++  public function isInternal() {
+     return FALSE;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  function getDependencies(Editor $editor) {
+-    return array();
++  public function getDependencies(Editor $editor) {
++    return [];
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  function getLibraries(Editor $editor) {
+-    return array();
++  public function getLibraries(Editor $editor) {
++    return [];
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function getConfig(Editor $editor) {
+-    $config = array();
++    $config = [];
+     $settings = $editor->getSettings();
+     if (!isset($settings['plugins']['font']['font_names']) && !isset($settings['plugins']['font']['font_sizes'])) {
+       return $config;
+@@ -142,39 +142,40 @@ class FontCKEditorButton extends CKEditorPluginBase implements CKEditorPluginCon
+    */
+   public function settingsForm(array $form, FormStateInterface $form_state, Editor $editor) {
+     // Defaults.
+-    $config = array('font_names' => '', 'font_sizes' => '');
++    $config = ['font_names' => '', 'font_sizes' => ''];
+     $settings = $editor->getSettings();
+     if (isset($settings['plugins']['font'])) {
+       $config = $settings['plugins']['font'];
+     }
+ 
+-    $form['font_names'] = array(
++    $form['font_names'] = [
+       '#title' => $this->t('Font families'),
+       '#type' => 'textarea',
+       '#default_value' => $config['font_names'],
+       '#description' => $this->t('Enter fonts on new lines. Fonts must be added with the following syntax:<br><code>Primary font, fallback1, fallback2|Font Label</code>'),
+-      '#element_validate' => array(
+-        array($this, 'validateFontValue'),
+-      ),
+-    );
++      '#element_validate' => [
++        [$this, 'validateFontValue'],
++      ],
++    ];
+ 
+-    $form['font_sizes'] = array(
++    $form['font_sizes'] = [
+       '#title' => $this->t('Font sizes'),
+       '#type' => 'textarea',
+       '#default_value' => $config['font_sizes'],
+       '#description' => $this->t('Enter font sizes on new lines. Sizes must be added with the following syntax:<br><code>123px|Size label</code><br><code>123em|Size label</code><br><code>123%|Size label</code>'),
+-      '#element_validate' => array(
+-        array($this, 'validateFontSizeValue'),
+-      ),
+-    );
++      '#element_validate' => [
++        [$this, 'validateFontSizeValue'],
++      ],
++    ];
+ 
+     return $form;
+   }
+ 
+   /**
+    * #element_validate handler for the "font" element in settingsForm().
++   *
+    * @param array $element
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    */
+   public function validateFontValue(array $element, FormStateInterface $form_state) {
+     if ($this->generateFontStyleSetting($element['#value'], 'font') === FALSE) {
+@@ -184,8 +185,9 @@ class FontCKEditorButton extends CKEditorPluginBase implements CKEditorPluginCon
+ 
+   /**
+    * #element_validate handler for the "font" element in settingsForm().
++   *
+    * @param array $element
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    */
+   public function validateFontSizeValue(array $element, FormStateInterface $form_state) {
+     if ($this->generateFontStyleSetting($element['#value'], 'size') === FALSE) {
+@@ -200,12 +202,13 @@ class FontCKEditorButton extends CKEditorPluginBase implements CKEditorPluginCon
+    *
+    * @param string $fonts
+    *   The "font_names" setting.
+-   * @return array|FALSE
++   *
++   * @return array|false
+    *   An array containing the "font_names" configuration, or FALSE when the
+    *   syntax is invalid.
+    */
+   protected function generateFontStyleSetting($fonts, $type) {
+-    $font_style = array();
++    $font_style = [];
+ 
+     // Early-return when empty.
+     $fonts = trim($fonts);
+@@ -213,7 +216,7 @@ class FontCKEditorButton extends CKEditorPluginBase implements CKEditorPluginCon
+       return $font_style;
+     }
+ 
+-    $fonts = str_replace(array("\r\n", "\r"), "\n", $fonts);
++    $fonts = str_replace(["\r\n", "\r"], "\n", $fonts);
+     foreach (explode("\n", $fonts) as $font) {
+       $font = trim($font);
+ 
+@@ -226,12 +229,13 @@ class FontCKEditorButton extends CKEditorPluginBase implements CKEditorPluginCon
+         case 'font':
+           // Match for patterns:
+           // font1, font2, font3|font label
+-          // font1|font label
++          // font1|font label.
+           $pattern = '@^\s*[a-zA-Z0-9\,\-\s]+\s*\|\s*.+\s*$@';
+           break;
++
+         case 'size':
+           // Match for patterns:
+-          // 123px/pt/em/rem/%|Label
++          // 123px/pt/em/rem/%|Label.
+           $pattern = '@^\s*\d+(\.?\d+)?(px|em|%|pt|rem)\|.*$@';
+           break;
+       }
+@@ -250,4 +254,5 @@ class FontCKEditorButton extends CKEditorPluginBase implements CKEditorPluginCon
+     }
+     return $font_style;
+   }
++
+ }

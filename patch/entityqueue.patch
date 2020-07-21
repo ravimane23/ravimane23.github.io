@@ -1,0 +1,95 @@
+diff --git a/modules/entityqueue_smartqueue/src/Plugin/EntityQueueHandler/SmartQueue.php b/modules/entityqueue_smartqueue/src/Plugin/EntityQueueHandler/SmartQueue.php
+index 75c9f66..bcda60d 100644
+--- a/modules/entityqueue_smartqueue/src/Plugin/EntityQueueHandler/SmartQueue.php
++++ b/modules/entityqueue_smartqueue/src/Plugin/EntityQueueHandler/SmartQueue.php
+@@ -102,7 +102,7 @@ class SmartQueue extends Multiple implements ContainerFactoryPluginInterface {
+         'wrapper' => 'smartqueue-bundle-wrapper',
+         'callback' => [get_class($this), 'smartqueueSettingsAjax'],
+         'method' => 'replace',
+-      ]
++      ],
+     ];
+ 
+     $form_state_values = $form_state->getCompleteFormState()->getValues();
+diff --git a/src/Controller/EntityQueueUIController.php b/src/Controller/EntityQueueUIController.php
+index e075b63..50bcca3 100644
+--- a/src/Controller/EntityQueueUIController.php
++++ b/src/Controller/EntityQueueUIController.php
+@@ -27,14 +27,14 @@ class EntityQueueUIController extends ControllerBase {
+   /**
+    * The Entityqueue repository service.
+    *
+-   * @var EntityQueueRepositoryInterface
++   * @var \Drupal\entityqueue\EntityQueueRepositoryInterface
+    */
+   protected $entityQueueRepository;
+ 
+   /**
+-   * Constructs a EntityQueueUIController object
++   * Constructs a EntityQueueUIController object.
+    *
+-   * @param EntityQueueRepositoryInterface $entityqueue_respository
++   * @param \Drupal\entityqueue\EntityQueueRepositoryInterface $entityqueue_respository
+    *   The Entityqueue repository service.
+    */
+   public function __construct(EntityQueueRepositoryInterface $entityqueue_respository) {
+@@ -50,7 +50,6 @@ class EntityQueueUIController extends ControllerBase {
+     );
+   }
+ 
+-
+   /**
+    * Provides a list of all the subqueues of an entity queue.
+    *
+@@ -231,7 +230,7 @@ class EntityQueueUIController extends ControllerBase {
+         $content['errors'] = [
+           '#theme' => 'status_messages',
+           '#message_list' => [
+-            'error' => [$this->t('The operation could not be performed for the following reasons:')]
++            'error' => [$this->t('The operation could not be performed for the following reasons:')],
+           ],
+           '#status_headings' => [
+             'error' => $this->t('Error message'),
+@@ -273,4 +272,5 @@ class EntityQueueUIController extends ControllerBase {
+ 
+     return AccessResult::forbidden();
+   }
++
+ }
+diff --git a/src/EntitySubqueueAccessControlHandler.php b/src/EntitySubqueueAccessControlHandler.php
+index 3fde53b..70e8540 100644
+--- a/src/EntitySubqueueAccessControlHandler.php
++++ b/src/EntitySubqueueAccessControlHandler.php
+@@ -23,10 +23,12 @@ class EntitySubqueueAccessControlHandler extends EntityAccessControlHandler {
+     switch ($operation) {
+       case 'view':
+         return AccessResult::allowedIfHasPermission($account, 'access content');
++
+       break;
+ 
+       case 'update':
+         return AccessResult::allowedIfHasPermissions($account, ["update {$entity->bundle()} entityqueue", 'manipulate all entityqueues', 'administer entityqueue'], 'OR');
++
+       break;
+ 
+       case 'delete':
+@@ -37,6 +39,7 @@ class EntitySubqueueAccessControlHandler extends EntityAccessControlHandler {
+           ->addCacheableDependency($entity->getQueue());
+ 
+         return $access_result;
++
+       break;
+ 
+       default:
+diff --git a/src/Plugin/Field/FieldWidget/EntityqueueDragtableWidget.php b/src/Plugin/Field/FieldWidget/EntityqueueDragtableWidget.php
+index 912ed39..96bd5f0 100644
+--- a/src/Plugin/Field/FieldWidget/EntityqueueDragtableWidget.php
++++ b/src/Plugin/Field/FieldWidget/EntityqueueDragtableWidget.php
+@@ -10,7 +10,6 @@ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Field\FieldStorageDefinitionInterface;
+ use Drupal\Core\Field\Plugin\Field\FieldWidget\EntityReferenceAutocompleteWidget;
+ use Drupal\Core\Form\FormStateInterface;
+-use Drupal\Core\Render\Element;
+ 
+ /**
+  * Plugin implementation of the 'entityqueue_dragtable' widget.

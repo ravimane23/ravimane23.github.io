@@ -1,0 +1,190 @@
+diff --git a/css/deploy.toolbar.css b/css/deploy.toolbar.css
+index 5fa0da1..7f67617 100644
+--- a/css/deploy.toolbar.css
++++ b/css/deploy.toolbar.css
+@@ -14,4 +14,3 @@
+ .toolbar .deployments {
+   float: right;
+ }
+-
+diff --git a/src/Controller/ReplicationFailInfoController.php b/src/Controller/ReplicationFailInfoController.php
+index e1aa578..b254158 100644
+--- a/src/Controller/ReplicationFailInfoController.php
++++ b/src/Controller/ReplicationFailInfoController.php
+@@ -5,6 +5,9 @@ namespace Drupal\deploy\Controller;
+ use Drupal\Core\Controller\ControllerBase;
+ use Drupal\Core\Datetime\DrupalDateTime;
+ 
++/**
++ *
++ */
+ class ReplicationFailInfoController extends ControllerBase {
+ 
+   /**
+@@ -13,7 +16,8 @@ class ReplicationFailInfoController extends ControllerBase {
+    * @param int $replication_id
+    *
+    * @return string Array of page elements to render.
+-   *    Array of page elements to render.
++   *   Array of page elements to render.
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    */
+@@ -56,7 +60,7 @@ class ReplicationFailInfoController extends ControllerBase {
+    * @param int $replication_id
+    *
+    * @return string Array of page elements to render.
+-   *    Array of page elements to render.
++   *   Array of page elements to render.
+    */
+   public function viewTitle($replication_id) {
+     $entity = $this->entityTypeManager()->getStorage('replication')->load($replication_id);
+diff --git a/src/Controller/ReplicationRequeueInfoController.php b/src/Controller/ReplicationRequeueInfoController.php
+index e682cdf..bb1f9b0 100644
+--- a/src/Controller/ReplicationRequeueInfoController.php
++++ b/src/Controller/ReplicationRequeueInfoController.php
+@@ -3,11 +3,10 @@
+ namespace Drupal\deploy\Controller;
+ 
+ use Drupal\Core\Controller\ControllerBase;
+-use Drupal\Core\Datetime\DateFormatterInterface;
+-use Drupal\Core\Datetime\DrupalDateTime;
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
++/**
++ *
++ */
+ class ReplicationRequeueInfoController extends ControllerBase {
+ 
+   /**
+@@ -16,7 +15,8 @@ class ReplicationRequeueInfoController extends ControllerBase {
+    * @param int $replication_id
+    *
+    * @return string Array of page elements to render.
+-   *    Array of page elements to render.
++   *   Array of page elements to render.
++   *
+    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    */
+@@ -53,7 +53,7 @@ class ReplicationRequeueInfoController extends ControllerBase {
+    * @param int $replication_id
+    *
+    * @return string Array of page elements to render.
+-   *    Array of page elements to render.
++   *   Array of page elements to render.
+    */
+   public function viewTitle($replication_id) {
+     $entity = $this->entityTypeManager()->getStorage('replication')->load($replication_id);
+diff --git a/src/Entity/Form/ReplicationForm.php b/src/Entity/Form/ReplicationForm.php
+index 570901f..18a2fdc 100644
+--- a/src/Entity/Form/ReplicationForm.php
++++ b/src/Entity/Form/ReplicationForm.php
+@@ -181,7 +181,7 @@ class ReplicationForm extends ContentEntityForm {
+       $response = \Drupal::service('workspace.replicator_manager')->replicate(
+         $this->entity->get('source')->entity,
+         $this->entity->get('target')->entity,
+-        null,
++        NULL,
+         $this->entity
+       );
+ 
+diff --git a/src/Form/ReplicationActionForm.php b/src/Form/ReplicationActionForm.php
+index b1a6c4f..57febfd 100644
+--- a/src/Form/ReplicationActionForm.php
++++ b/src/Form/ReplicationActionForm.php
+@@ -131,8 +131,6 @@ class ReplicationActionForm extends FormBase {
+       $form['message'] = $this->generateMessageRenderArray('status', 'There are no conflicts.');
+     }
+ 
+-
+-
+     if ($source_workspace && !$source_workspace->isPublished() && $target_workspace && !$target_workspace->isPublished()) {
+       $message = $this->t('This deployment cannot be re-deployed because both source workspace (%source) and target workspace (%target) have been archived.',
+         [
+@@ -210,7 +208,7 @@ class ReplicationActionForm extends FormBase {
+    * @return \Drupal\workspace\Entity\Replication
+    *   The expected parent class for $entity.
+    *
+-   * @throws EntityMalformedException
++   * @throws \Drupal\Core\Entity\EntityMalformedException
+    */
+   protected function getEntity(FormStateInterface $form_state) {
+     $args = $form_state->getBuildInfo()['args'];
+diff --git a/src/ReplicationAccessControlHandler.php b/src/ReplicationAccessControlHandler.php
+index e472040..ef0236b 100644
+--- a/src/ReplicationAccessControlHandler.php
++++ b/src/ReplicationAccessControlHandler.php
+@@ -9,7 +9,6 @@ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+-use Drupal\Core\Link;
+ use Drupal\Core\Messenger\MessengerTrait;
+ use Drupal\Core\Session\AccountInterface;
+ use Drupal\multiversion\Entity\Workspace;
+diff --git a/src/ReplicationListBuilder.php b/src/ReplicationListBuilder.php
+index 6929dc5..c0d3bf1 100644
+--- a/src/ReplicationListBuilder.php
++++ b/src/ReplicationListBuilder.php
+@@ -114,6 +114,9 @@ class ReplicationListBuilder extends EntityListBuilder {
+     return $query->execute();
+   }
+ 
++  /**
++   *
++   */
+   protected function getReplicationStatusIcon($status, $id) {
+     $status = (int) $status;
+     $icons = [
+@@ -123,29 +126,31 @@ class ReplicationListBuilder extends EntityListBuilder {
+     ];
+     if ($status === Replication::FAILED) {
+       $link_url = Url::fromUserInput('/admin/structure/deployment/' . $id . '/fail-info');
+-      $link_url->setOptions(array(
+-          'attributes' => array(
+-            'class' => array('use-ajax'),
+-            'data-dialog-type' => 'modal',
+-            'data-dialog-options' => Json::encode(array(
+-              'width' => 700,
+-            )),
+-          ))
++      $link_url->setOptions([
++        'attributes' => [
++          'class' => ['use-ajax'],
++          'data-dialog-type' => 'modal',
++          'data-dialog-options' => Json::encode([
++            'width' => 700,
++          ]),
++        ],
++      ]
+       );
+       $icons[Replication::FAILED] = Link::fromTextAndUrl($this->t('&#10006; Failed'), $link_url);
+     }
+-    /** @var Replication $entity */
++    /** @var \Drupal\workspace\Entity\Replication $entity */
+     $entity = $this->getStorage()->load($id);
+     if ($status === Replication::QUEUED && !empty($entity->getReplicationFailInfo())) {
+       $link_url = Url::fromUserInput('/admin/structure/deployment/' . $id . '/requeue-info');
+-      $link_url->setOptions(array(
+-          'attributes' => array(
+-            'class' => array('use-ajax'),
+-            'data-dialog-type' => 'modal',
+-            'data-dialog-options' => Json::encode(array(
+-              'width' => 700,
+-            )),
+-          ))
++      $link_url->setOptions([
++        'attributes' => [
++          'class' => ['use-ajax'],
++          'data-dialog-type' => 'modal',
++          'data-dialog-options' => Json::encode([
++            'width' => 700,
++          ]),
++        ],
++      ]
+       );
+       $icons[Replication::QUEUED] = Link::fromTextAndUrl($this->t('&#x231A Queued'), $link_url);
+     }

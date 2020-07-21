@@ -1,0 +1,10 @@
+diff --git a/src/ParanoiaDefanger.php b/src/ParanoiaDefanger.php
+index d9a91f9..5e9660d 100644
+--- a/src/ParanoiaDefanger.php
++++ b/src/ParanoiaDefanger.php
+@@ -55,4 +55,5 @@ class ParanoiaDefanger {
+       $this->logger->notice('Removed the admin role property from the %title role.', ['%title' => $role->label()]);
+     }
+   }
++
+ }

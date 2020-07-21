@@ -1,0 +1,102 @@
+diff --git a/src/Annotation/EncryptionMethod.php b/src/Annotation/EncryptionMethod.php
+index ac16ddc..c4fa663 100644
+--- a/src/Annotation/EncryptionMethod.php
++++ b/src/Annotation/EncryptionMethod.php
+@@ -1,6 +1,6 @@
+ <?php
+ 
+-namespace  Drupal\encrypt\Annotation;
++namespace Drupal\encrypt\Annotation;
+ 
+ use Drupal\Component\Annotation\Plugin;
+ 
+diff --git a/src/Controller/EncryptionProfileListBuilder.php b/src/Controller/EncryptionProfileListBuilder.php
+index 0d2b8a8..3d0e1a0 100644
+--- a/src/Controller/EncryptionProfileListBuilder.php
++++ b/src/Controller/EncryptionProfileListBuilder.php
+@@ -29,7 +29,7 @@ class EncryptionProfileListBuilder extends ConfigEntityListBuilder {
+    *   The entity type definition.
+    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+    *   The entity storage class.
+-   * @param ConfigFactoryInterface $config_factory
++   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+    *   The configuration factory.
+    */
+   public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, ConfigFactoryInterface $config_factory) {
+diff --git a/src/EncryptService.php b/src/EncryptService.php
+index 6fe1bfb..3b197c2 100644
+--- a/src/EncryptService.php
++++ b/src/EncryptService.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\encrypt;
+ 
+ use Drupal\encrypt\Exception\EncryptionMethodCanNotDecryptException;
+-use Drupal\key\KeyRepository;
+ use Drupal\encrypt\Exception\EncryptException;
+ use Drupal\key\KeyRepositoryInterface;
+ 
+diff --git a/src/EncryptionMethodInterface.php b/src/EncryptionMethodInterface.php
+index fc42441..3765cb5 100644
+--- a/src/EncryptionMethodInterface.php
++++ b/src/EncryptionMethodInterface.php
+@@ -2,9 +2,7 @@
+ 
+ namespace Drupal\encrypt;
+ 
+-use Drupal\Component\Plugin\ConfigurablePluginInterface;
+ use Drupal\Component\Plugin\PluginInspectionInterface;
+-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ 
+ /**
+  * Provides an interface for EncryptionMethod plugins.
+diff --git a/src/Entity/EncryptionProfile.php b/src/Entity/EncryptionProfile.php
+index 24cda25..1166ad5 100644
+--- a/src/Entity/EncryptionProfile.php
++++ b/src/Entity/EncryptionProfile.php
+@@ -101,7 +101,7 @@ class EncryptionProfile extends ConfigEntityBase implements EncryptionProfileInt
+   /**
+    * Stores a reference to the Key entity for this profile.
+    *
+-   * @var \Drupal\key\Entity\Key.
++   * @var \Drupal\key\Entity\Key
+    */
+   protected $encryption_key_entity;
+ 
+diff --git a/src/Form/EncryptionProfileDeleteForm.php b/src/Form/EncryptionProfileDeleteForm.php
+index 4a1d183..691c649 100644
+--- a/src/Form/EncryptionProfileDeleteForm.php
++++ b/src/Form/EncryptionProfileDeleteForm.php
+@@ -10,6 +10,7 @@ use Drupal\Core\Url;
+  * Builds the form to delete profile entities.
+  */
+ class EncryptionProfileDeleteForm extends EntityConfirmFormBase {
++
+   /**
+    * {@inheritdoc}
+    */
+diff --git a/src/Form/EncryptionProfileForm.php b/src/Form/EncryptionProfileForm.php
+index b4c9547..90f4139 100644
+--- a/src/Form/EncryptionProfileForm.php
++++ b/src/Form/EncryptionProfileForm.php
+@@ -41,7 +41,7 @@ class EncryptionProfileForm extends EntityForm {
+   /**
+    * The original encryption profile.
+    *
+-   * @var \Drupal\encrypt\Entity\EncryptionProfile|NULL
++   * @var \Drupal\encrypt\Entity\EncryptionProfile|null
+    *   The original EncryptionProfile entity or NULL if this is a new one.
+    */
+   protected $originalProfile = NULL;
+@@ -222,10 +222,10 @@ class EncryptionProfileForm extends EntityForm {
+   /**
+    * Creates a FormStateInterface object for a plugin.
+    *
+-   * @param FormStateInterface $form_state
++   * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The form state to copy values from.
+    *
+-   * @return FormStateInterface
++   * @return \Drupal\Core\Form\FormStateInterface
+    *   A clone of the form state object with values from the plugin.
+    */
+   protected function createPluginFormState(FormStateInterface $form_state) {

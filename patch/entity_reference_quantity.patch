@@ -1,0 +1,282 @@
+diff --git a/src/Plugin/Field/FieldFormatter/EntityReferenceQuantityLabelFormatter.php b/src/Plugin/Field/FieldFormatter/EntityReferenceQuantityLabelFormatter.php
+index ca46eb3..9b22a6a 100644
+--- a/src/Plugin/Field/FieldFormatter/EntityReferenceQuantityLabelFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/EntityReferenceQuantityLabelFormatter.php
+@@ -24,10 +24,10 @@ class EntityReferenceQuantityLabelFormatter extends EntityReferenceLabelFormatte
+    * {@inheritdoc}
+    */
+   public static function defaultSettings() {
+-    return array(
+-        'location' => 'suffix',
+-        'template' => ' ({{ quantity }})',
+-      ) + parent::defaultSettings();
++    return [
++      'location' => 'suffix',
++      'template' => ' ({{ quantity }})',
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+@@ -35,7 +35,7 @@ class EntityReferenceQuantityLabelFormatter extends EntityReferenceLabelFormatte
+    */
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+     $elements = parent::settingsForm($form, $form_state);
+-    $elements['location'] = array(
++    $elements['location'] = [
+       '#type' => 'radios',
+       '#options' => [
+         'pre-title' => t('Before the title'),
+@@ -46,14 +46,14 @@ class EntityReferenceQuantityLabelFormatter extends EntityReferenceLabelFormatte
+       '#title' => t('Output location'),
+       '#default_value' => $this->getSetting('location'),
+       '#required' => TRUE,
+-    );
+-    $elements['template'] = array(
++    ];
++    $elements['template'] = [
+       '#type' => 'textfield',
+       '#title' => t('Output template'),
+       '#default_value' => $this->getSetting('template'),
+       '#description' => t('A simple Twig snippet that outputs the "quantity" variable.'),
+       '#required' => TRUE,
+-    );
++    ];
+ 
+     return $elements;
+   }
+@@ -68,25 +68,32 @@ class EntityReferenceQuantityLabelFormatter extends EntityReferenceLabelFormatte
+       case 'pre-title':
+         $location = t('before the title');
+         break;
++
+       case 'post-title':
+         $location = t('after the title');
+         break;
++
+       case 'suffix':
+         $location = t('as part of the suffix');
+         break;
++
+       case 'attribute':
+         $location = t('in a data-* attribute');
+         break;
++
+       default:
+         $location = t('as part of the suffix');
+         break;
+     }
+-    $summary[] = t('Display @action', array('@action' => $location));
+-    $summary[] = t('Display as: @template', array('@template' => $this->getSetting('template')));
++    $summary[] = t('Display @action', ['@action' => $location]);
++    $summary[] = t('Display as: @template', ['@template' => $this->getSetting('template')]);
+ 
+     return $summary;
+   }
+ 
++  /**
++   *
++   */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+     $elements = parent::viewElements($items, $langcode);
+     $values = $items->getValue();
+@@ -102,12 +109,15 @@ class EntityReferenceQuantityLabelFormatter extends EntityReferenceLabelFormatte
+           case 'attribute':
+             $elements[$delta]['#attributes']['data-quantity'] = $output;
+             break;
++
+           case 'pre-title':
+             $elements[$delta]['#title'] .= $output;
+             break;
++
+           case 'post-title':
+             $elements[$delta]['#title'] = $output . $elements[$delta]['#title'];
+             break;
++
+           case 'suffix':
+             if (!isset($elements[$delta]['#suffix'])) {
+               $elements[$delta]['#suffix'] = '';
+@@ -120,4 +130,5 @@ class EntityReferenceQuantityLabelFormatter extends EntityReferenceLabelFormatte
+ 
+     return $elements;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldType/EntityReferenceQuantity.php b/src/Plugin/Field/FieldType/EntityReferenceQuantity.php
+index e1de7b1..fb9aa8a 100644
+--- a/src/Plugin/Field/FieldType/EntityReferenceQuantity.php
++++ b/src/Plugin/Field/FieldType/EntityReferenceQuantity.php
+@@ -37,9 +37,9 @@ class EntityReferenceQuantity extends EntityReferenceItem {
+    */
+   public static function schema(FieldStorageDefinitionInterface $field_definition) {
+     $schema = parent::schema($field_definition);
+-    $schema['columns']['quantity'] = array(
++    $schema['columns']['quantity'] = [
+       'type' => 'int',
+-    );
++    ];
+ 
+     return $schema;
+   }
+@@ -48,11 +48,11 @@ class EntityReferenceQuantity extends EntityReferenceItem {
+    * {@inheritdoc}
+    */
+   public static function defaultFieldSettings() {
+-    return array(
++    return [
+       'qty_label' => t('Quantity'),
+       'qty_min' => 0,
+       'qty_max' => 999,
+-    ) + parent::defaultFieldSettings();
++    ] + parent::defaultFieldSettings();
+   }
+ 
+   /**
+@@ -75,7 +75,7 @@ class EntityReferenceQuantity extends EntityReferenceItem {
+       '#type' => 'textfield',
+       '#title' => t('Quantity Label'),
+       '#default_value' => $this->getSetting('qty_label'),
+-      '#description' => t('Also used as a placeholder in multi-value instances.')
++      '#description' => t('Also used as a placeholder in multi-value instances.'),
+     ];
+ 
+     return $elements;
+@@ -89,6 +89,7 @@ class EntityReferenceQuantity extends EntityReferenceItem {
+     // list of field-types with options for each destination entity type.
+     // Too much work, we'll just make people fill that out later.
+     // Also, keeps the field type dropdown from getting too cluttered.
+-    return array();
++    return [];
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldWidget/EntityReferenceQuantityAutocomplete.php b/src/Plugin/Field/FieldWidget/EntityReferenceQuantityAutocomplete.php
+index 190f627..b921ae9 100644
+--- a/src/Plugin/Field/FieldWidget/EntityReferenceQuantityAutocomplete.php
++++ b/src/Plugin/Field/FieldWidget/EntityReferenceQuantityAutocomplete.php
+@@ -18,18 +18,21 @@ use Drupal\Core\Field\Plugin\Field\FieldWidget\EntityReferenceAutocompleteWidget
+  */
+ class EntityReferenceQuantityAutocomplete extends EntityReferenceAutocompleteWidget {
+ 
++  /**
++   *
++   */
+   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+-    $widget = array(
++    $widget = [
+       '#attributes' => ['class' => ['form--inline', 'clearfix']],
+       '#theme_wrappers' => ['container'],
+-    );
++    ];
+     $widget['target_id'] = parent::formElement($items, $delta, $element, $form, $form_state);
+-    $widget['quantity'] = array(
++    $widget['quantity'] = [
+       '#type' => 'number',
+       '#size' => '4',
+       '#default_value' => isset($items[$delta]) ? $items[$delta]->quantity : 1,
+       '#weight' => 10,
+-    );
++    ];
+ 
+     if ($this->fieldDefinition->getFieldStorageDefinition()->isMultiple()) {
+       $widget['quantity']['#placeholder'] = $this->fieldDefinition->getSetting('qty_label');
+@@ -53,4 +56,5 @@ class EntityReferenceQuantityAutocomplete extends EntityReferenceAutocompleteWid
+     }
+     return $values;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldWidget/EntityReferenceQuantitySelect.php b/src/Plugin/Field/FieldWidget/EntityReferenceQuantitySelect.php
+index 251ad9d..37036b4 100644
+--- a/src/Plugin/Field/FieldWidget/EntityReferenceQuantitySelect.php
++++ b/src/Plugin/Field/FieldWidget/EntityReferenceQuantitySelect.php
+@@ -17,33 +17,31 @@ use Drupal\Core\Field\Plugin\Field\FieldWidget\OptionsWidgetBase;
+  *   }
+  * )
+  */
+-class EntityReferenceQuantitySelect extends OptionsWidgetBase
+-{
++class EntityReferenceQuantitySelect extends OptionsWidgetBase {
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state)
+-  {
++  public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+     $element = parent::formElement($items, $delta, $element, $form, $form_state);
+-    $element += array(
++    $element += [
+       '#type' => 'select',
+       '#options' => $this->getOptions($items->getEntity()),
+       '#default_value' => isset($items[$delta]->target_id) ? $items[$delta]->target_id : '',
+-    );
++    ];
+ 
+-    $widget = array(
++    $widget = [
+       '#attributes' => ['class' => ['form--inline', 'clearfix']],
+       '#theme_wrappers' => ['container'],
+-    );
++    ];
+ 
+     $widget['target_id'] = $element;
+-    $widget['quantity'] = array(
++    $widget['quantity'] = [
+       '#type' => 'number',
+       '#size' => '4',
+       '#default_value' => isset($items[$delta]) ? $items[$delta]->quantity : 1,
+       '#weight' => 10,
+-    );
++    ];
+ 
+     if ($this->fieldDefinition->getFieldStorageDefinition()->isMultiple()) {
+       $widget['quantity']['#placeholder'] = $this->fieldDefinition->getSetting('qty_label');
+@@ -58,8 +56,7 @@ class EntityReferenceQuantitySelect extends OptionsWidgetBase
+   /**
+    * {@inheritdoc}
+    */
+-  protected function sanitizeLabel(&$label)
+-  {
++  protected function sanitizeLabel(&$label) {
+     // Select form inputs allow unencoded HTML entities, but no HTML tags.
+     $label = Html::decodeEntities(strip_tags($label));
+   }
+@@ -67,16 +64,14 @@ class EntityReferenceQuantitySelect extends OptionsWidgetBase
+   /**
+    * {@inheritdoc}
+    */
+-  protected function supportsGroups()
+-  {
++  protected function supportsGroups() {
+     return TRUE;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  protected function getEmptyLabel()
+-  {
++  protected function getEmptyLabel() {
+     // Single select: add a 'none' option for non-required fields,
+     // and a 'select a value' option for required fields that do not come
+     // with a value selected.
+@@ -91,11 +86,10 @@ class EntityReferenceQuantitySelect extends OptionsWidgetBase
+   /**
+    * {@inheritdoc}
+    */
+-  public static function validateElement(array $element, FormStateInterface $form_state)
+-  {
++  public static function validateElement(array $element, FormStateInterface $form_state) {
+     if ($element['#value'] == '_none') {
+       if ($element['#required'] && $element['#value'] == '_none') {
+-        $form_state->setError($element, t('@name field is required.', array('@name' => $element['#title'])));
++        $form_state->setError($element, t('@name field is required.', ['@name' => $element['#title']]));
+       }
+       else {
+         $form_state->setValueForElement($element, NULL);
+@@ -120,4 +114,5 @@ class EntityReferenceQuantitySelect extends OptionsWidgetBase
+     }
+     return $values;
+   }
++
+ }

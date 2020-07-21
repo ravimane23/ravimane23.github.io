@@ -1,0 +1,230 @@
+diff --git a/css/view-mode-selector.css b/css/view-mode-selector.css
+index 9fe8435..fcb0605 100644
+--- a/css/view-mode-selector.css
++++ b/css/view-mode-selector.css
+@@ -65,4 +65,4 @@
+ .field-widget-view-mode-selector-icons .form-radios input[type="radio"]:checked + label img,
+ .field-widget-view-mode-selector-icons .form-radios input[type="radio"]:checked + label .entity {
+   background: rgba(150, 188, 68, 0.9);
+-}
+\ No newline at end of file
++}
+diff --git a/src/Plugin/Field/FieldType/ViewModeSelectorItem.php b/src/Plugin/Field/FieldType/ViewModeSelectorItem.php
+index e117ad7..da54cb3 100644
+--- a/src/Plugin/Field/FieldType/ViewModeSelectorItem.php
++++ b/src/Plugin/Field/FieldType/ViewModeSelectorItem.php
+@@ -94,36 +94,37 @@ class ViewModeSelectorItem extends FieldItemBase {
+       ];
+ 
+       // Allow uploading an icon and hide the title for view modes when radio widget is used.
+-//      if ($instance['widget']['type'] == 'view_mode_selector_radios') {
+-        $element['view_modes'][$view_mode_id]['prefix']['#markup'] = '<div class="settings">';
+-
+-        $element['view_modes'][$view_mode_id]['hide_title'] = [
+-          '#type' => 'checkbox',
+-          '#title' => t('Hide title'),
+-          '#default_value' => isset($settings['view_modes'][$view_mode_id]) && $settings['view_modes'][$view_mode_id]['hide_title'] ?: FALSE,
+-          '#states' => [
+-            'visible' => [
+-              'input[name="field[settings][view_modes][' . $view_mode_id . '][enable]"]' => ['checked' => TRUE],
+-            ],
+-          ]
+-        ];
++      //      if ($instance['widget']['type'] == 'view_mode_selector_radios') {.
++      $element['view_modes'][$view_mode_id]['prefix']['#markup'] = '<div class="settings">';
+ 
+-        $element['view_modes'][$view_mode_id]['icon'] = [
+-          '#type' => 'managed_file',
+-          '#title' => t('Icon'),
+-          '#description' => t('An icon which can be used for a view mode preview.'),
+-          '#upload_location' => 'public://view-mode-selector/' . $entity_type,
+-          '#default_value' => isset($settings['view_modes'][$view_mode_id]) && $settings['view_modes'][$view_mode_id]['icon'] ?: 0,
+-          '#hide' => TRUE,
+-          '#states' => [
+-            'visible' => [
+-              'input[name="field[settings][view_modes][' . $view_mode_id . '][enable]"]' => ['checked' => TRUE],
+-            ],
++      $element['view_modes'][$view_mode_id]['hide_title'] = [
++        '#type' => 'checkbox',
++        '#title' => t('Hide title'),
++        '#default_value' => isset($settings['view_modes'][$view_mode_id]) && $settings['view_modes'][$view_mode_id]['hide_title'] ?: FALSE,
++        '#states' => [
++          'visible' => [
++            'input[name="field[settings][view_modes][' . $view_mode_id . '][enable]"]' => ['checked' => TRUE],
+           ],
+-        ];
+-        $element['view_modes'][$view_mode_id]['suffix']['#markup'] = '</div>';
+-//      }
++        ],
++      ];
++
++      $element['view_modes'][$view_mode_id]['icon'] = [
++        '#type' => 'managed_file',
++        '#title' => t('Icon'),
++        '#description' => t('An icon which can be used for a view mode preview.'),
++        '#upload_location' => 'public://view-mode-selector/' . $entity_type,
++        '#default_value' => isset($settings['view_modes'][$view_mode_id]) && $settings['view_modes'][$view_mode_id]['icon'] ?: 0,
++        '#hide' => TRUE,
++        '#states' => [
++          'visible' => [
++            'input[name="field[settings][view_modes][' . $view_mode_id . '][enable]"]' => ['checked' => TRUE],
++          ],
++        ],
++      ];
++      $element['view_modes'][$view_mode_id]['suffix']['#markup'] = '</div>';
++      // }
+     }
+     return $element;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldWidget/ViewModeSelectorIcons.php b/src/Plugin/Field/FieldWidget/ViewModeSelectorIcons.php
+index 72bc85d..72dad24 100644
+--- a/src/Plugin/Field/FieldWidget/ViewModeSelectorIcons.php
++++ b/src/Plugin/Field/FieldWidget/ViewModeSelectorIcons.php
+@@ -8,7 +8,6 @@ use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Render\RendererInterface;
+-use Drupal\file\FileInterface;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+@@ -21,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ class ViewModeSelectorIcons extends ViewModeSelectorRadios {
+ 
+   /**
+-   * @var \Drupal\Core\Render\RendererInterface $renderer
++   * @var \Drupal\Core\Render\RendererInterface
+    */
+   protected $renderer;
+ 
+@@ -79,7 +78,7 @@ class ViewModeSelectorIcons extends ViewModeSelectorRadios {
+       $output = [];
+ 
+       if (!empty($settings['view_modes'][$view_mode]['icon'][0])) {
+-        /** @var FileInterface $icon */
++        /** @var \Drupal\file\FileInterface $icon */
+         $icon = $this->entityTypeManager->getStorage('file')->load($settings['view_modes'][$view_mode]['icon'][0]);
+ 
+         if (!$icon) {
+@@ -97,41 +96,41 @@ class ViewModeSelectorIcons extends ViewModeSelectorRadios {
+       }
+       /*
+       elseif (\Drupal::moduleHandler()->moduleExists('ds') && isset($ds_view_modes[$view_mode])) {
+-        $field = $items->getFieldDefinition();
+-        $entity_type = $field->getTargetEntityTypeId();
+-        $bundle = $field->getTargetBundle();
+-
+-        // When Display Suite is installed we can show a nice preview.
+-        // @todo integrate with DS regions
+-        $layout = $ds_view_modes[$view_mode]['layout'];
+-
+-        // Create a new empty entity for the preview.
+-        $entity_properties = ['type' => $entity_bundle, 'id' => FALSE];
+-        $entity = entity_create($entity_type, $entity_properties);
+-        $entity_view = entity_view($entity_type, [$entity], $view_mode);
+-
+-        // Render one field containing a placeholder <div> in every region.
+-        foreach ($layout['settings']['regions'] as $region_settings) {
+-          foreach ($region_settings as $field) {
+-            $entity_view[$entity_type][0][$field] = [
+-              '#type' => 'html_tag',
+-              '#tag' => 'div',
+-              '#value' => '',
+-              '#attributes' => ['class' => 'placeholder'],
+-              '#field_name' => $field,
+-            ];
+-
+-            continue;
+-          }
+-        }
++      $field = $items->getFieldDefinition();
++      $entity_type = $field->getTargetEntityTypeId();
++      $bundle = $field->getTargetBundle();
++
++      // When Display Suite is installed we can show a nice preview.
++      // @todo integrate with DS regions
++      $layout = $ds_view_modes[$view_mode]['layout'];
++
++      // Create a new empty entity for the preview.
++      $entity_properties = ['type' => $entity_bundle, 'id' => FALSE];
++      $entity = entity_create($entity_type, $entity_properties);
++      $entity_view = entity_view($entity_type, [$entity], $view_mode);
++
++      // Render one field containing a placeholder <div> in every region.
++      foreach ($layout['settings']['regions'] as $region_settings) {
++      foreach ($region_settings as $field) {
++      $entity_view[$entity_type][0][$field] = [
++      '#type' => 'html_tag',
++      '#tag' => 'div',
++      '#value' => '',
++      '#attributes' => ['class' => 'placeholder'],
++      '#field_name' => $field,
++      ];
++
++      continue;
++      }
++      }
+ 
+-        // Disable contextual links.
+-        $entity_view[$entity_type][0]['#contextual_links'] = FALSE;
++      // Disable contextual links.
++      $entity_view[$entity_type][0]['#contextual_links'] = FALSE;
+ 
+-        // Render the preview.
+-        $output[] = drupal_render($entity_view);
++      // Render the preview.
++      $output[] = drupal_render($entity_view);
+       }
+-      */
++       */
+       else {
+         $element['value'][$view_mode]['#attributes']['class'][] = 'no-preview';
+       }
+diff --git a/src/Plugin/Field/FieldWidget/ViewModeSelectorSelect.php b/src/Plugin/Field/FieldWidget/ViewModeSelectorSelect.php
+index 75f6b3d..c9d9296 100644
+--- a/src/Plugin/Field/FieldWidget/ViewModeSelectorSelect.php
++++ b/src/Plugin/Field/FieldWidget/ViewModeSelectorSelect.php
+@@ -13,6 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
+  * )
+  */
+ class ViewModeSelectorSelect extends ViewModeSelectorWidgetBase {
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -25,4 +26,5 @@ class ViewModeSelectorSelect extends ViewModeSelectorWidgetBase {
+     ];
+     return $element;
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldWidget/ViewModeSelectorWidgetBase.php b/src/Plugin/Field/FieldWidget/ViewModeSelectorWidgetBase.php
+index 036eee6..31f6da2 100644
+--- a/src/Plugin/Field/FieldWidget/ViewModeSelectorWidgetBase.php
++++ b/src/Plugin/Field/FieldWidget/ViewModeSelectorWidgetBase.php
+@@ -16,7 +16,7 @@ abstract class ViewModeSelectorWidgetBase extends WidgetBase implements Containe
+   /**
+    * List of available view modes.
+    *
+-   * @var array $viewModes
++   * @var array
+    */
+   protected $viewModes = [];
+ 
+@@ -46,7 +46,7 @@ abstract class ViewModeSelectorWidgetBase extends WidgetBase implements Containe
+     // Get all view modes for the current bundle.
+     $view_modes = $this->entityDisplayRepository->getViewModeOptionsByBundle($entity_type, $bundle);
+ 
+-    // Reduce options by enabled view modes
++    // Reduce options by enabled view modes.
+     foreach (array_keys($view_modes) as $view_mode) {
+       if (isset($field_settings['view_modes'][$view_mode]['enable']) && $field_settings['view_modes'][$view_mode]['enable']) {
+         continue;
+@@ -68,4 +68,5 @@ abstract class ViewModeSelectorWidgetBase extends WidgetBase implements Containe
+   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+     return new static($plugin_id, $plugin_definition, $configuration['field_definition'], $configuration['settings'], $configuration['third_party_settings'], $container->get('entity_display.repository'));
+   }
++
+ }

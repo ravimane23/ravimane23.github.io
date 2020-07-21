@@ -1,0 +1,39 @@
+diff --git a/src/EventSubscriber/M4032404EventSubscriber.php b/src/EventSubscriber/M4032404EventSubscriber.php
+index 34648a1..11b0dac 100644
+--- a/src/EventSubscriber/M4032404EventSubscriber.php
++++ b/src/EventSubscriber/M4032404EventSubscriber.php
+@@ -77,7 +77,7 @@ class M4032404EventSubscriber implements EventSubscriberInterface {
+    *   An array of event listener definitions.
+    */
+   public static function getSubscribedEvents() {
+-    $events[KernelEvents::EXCEPTION][] = array('onAccessDeniedException', 50);
++    $events[KernelEvents::EXCEPTION][] = ['onAccessDeniedException', 50];
+     return $events;
+   }
+ 
+diff --git a/src/Form/M4032404Form.php b/src/Form/M4032404Form.php
+index 52462df..1cafe25 100644
+--- a/src/Form/M4032404Form.php
++++ b/src/Form/M4032404Form.php
+@@ -25,17 +25,17 @@ class M4032404Form extends ConfigFormBase {
+   public function buildForm(array $form, FormStateInterface $form_state) {
+     $m4032404_admin_only = $this->config('m4032404.settings')->get('admin_only');
+ 
+-    $form['m4032404_admin_only'] = array(
++    $form['m4032404_admin_only'] = [
+       '#type' => 'checkbox',
+       '#title' => $this->t('Enforce on Admin Only'),
+       '#description' => $this->t('Check the box to enforce the 404 behavior only on admin paths'),
+       '#default_value' => $m4032404_admin_only,
+-    );
++    ];
+ 
+-    $form['submit'] = array(
++    $form['submit'] = [
+       '#type' => 'submit',
+       '#value' => $this->t('Save configuration'),
+-    );
++    ];
+ 
+     return $form;
+   }

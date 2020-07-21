@@ -1,0 +1,290 @@
+diff --git a/src/Check.php b/src/Check.php
+index f5c5b65..4ace266 100644
+--- a/src/Check.php
++++ b/src/Check.php
+@@ -18,7 +18,7 @@ abstract class Check {
+   /**
+    * The configuration storage for this check.
+    *
+-   * @var \Drupal\Core\Config\Config $config
++   * @var \Drupal\Core\Config\Config
+    */
+   protected $config;
+ 
+@@ -32,7 +32,7 @@ abstract class Check {
+   /**
+    * Settings handler for this check.
+    *
+-   * @var \Drupal\security_review\CheckSettingsInterface $settings
++   * @var \Drupal\security_review\CheckSettingsInterface
+    */
+   protected $settings;
+ 
+@@ -98,7 +98,7 @@ abstract class Check {
+    * @return string
+    *   Human-readable namespace of the check.
+    */
+-  public abstract function getNamespace();
++  abstract public function getNamespace();
+ 
+   /**
+    * Returns the machine name of the check.
+@@ -125,7 +125,7 @@ abstract class Check {
+    * @return string
+    *   Title of check.
+    */
+-  public abstract function getTitle();
++  abstract public function getTitle();
+ 
+   /**
+    * Returns the identifier constructed using the namespace and title values.
+@@ -133,7 +133,7 @@ abstract class Check {
+    * @return string
+    *   Unique identifier of the check.
+    */
+-  public final function id() {
++  final public function id() {
+     return $this->getMachineNamespace() . '-' . $this->getMachineTitle();
+   }
+ 
+@@ -169,7 +169,7 @@ abstract class Check {
+    * @return \Drupal\security_review\CheckResult
+    *   The result of running the check.
+    */
+-  public abstract function run();
++  abstract public function run();
+ 
+   /**
+    * Same as run(), but used in CLI context such as Drush.
+@@ -187,7 +187,7 @@ abstract class Check {
+    * @return array
+    *   The render array of the check's help page.
+    */
+-  public abstract function help();
++  abstract public function help();
+ 
+   /**
+    * Returns the evaluation page of a result.
+@@ -226,7 +226,7 @@ abstract class Check {
+    * @return string
+    *   The human-readable result message.
+    */
+-  public abstract function getMessage($result_const);
++  abstract public function getMessage($result_const);
+ 
+   /**
+    * Returns the last stored result of the check.
+diff --git a/src/CheckResult.php b/src/CheckResult.php
+index 8307a8b..e8fb7d5 100644
+--- a/src/CheckResult.php
++++ b/src/CheckResult.php
+@@ -15,35 +15,35 @@ class CheckResult {
+   /**
+    * Stores the parent Check.
+    *
+-   * @var \Drupal\security_review\Check $check
++   * @var \Drupal\security_review\Check
+    */
+   private $check;
+ 
+   /**
+    * Stores the outcome of the check.
+    *
+-   * @var int $result
++   * @var int
+    */
+   private $result;
+ 
+   /**
+    * Stores findings.
+    *
+-   * @var array $findings
++   * @var array
+    */
+   private $findings;
+ 
+   /**
+    * Stores the timestamp of the check run.
+    *
+-   * @var int $time
++   * @var int
+    */
+   private $time;
+ 
+   /**
+    * Whether the result should be shown on the UI.
+    *
+-   * @var bool $visible
++   * @var bool
+    */
+   private $visible;
+ 
+diff --git a/src/CheckSettings.php b/src/CheckSettings.php
+index 5e9fce9..106bc2e 100644
+--- a/src/CheckSettings.php
++++ b/src/CheckSettings.php
+@@ -19,7 +19,7 @@ class CheckSettings implements CheckSettingsInterface {
+   /**
+    * The configuration storage of the parent Check.
+    *
+-   * @var \Drupal\Core\Config\Config $config
++   * @var \Drupal\Core\Config\Config
+    */
+   protected $config;
+ 
+diff --git a/src/Checks/AdminPermissions.php b/src/Checks/AdminPermissions.php
+index 5551f32..b2745d1 100644
+--- a/src/Checks/AdminPermissions.php
++++ b/src/Checks/AdminPermissions.php
+@@ -83,7 +83,7 @@ class AdminPermissions extends Check {
+ 
+     foreach ($result->findings() as $rid => $permissions) {
+       $role = Role::load($rid);
+-      /** @var Role $role */
++      /** @var \Drupal\user\Entity\Role $role */
+       $paragraphs = [];
+       $paragraphs[] = $this->t(
+         "@role has the following restricted permissions:",
+@@ -114,7 +114,7 @@ class AdminPermissions extends Check {
+ 
+     foreach ($result->findings() as $rid => $permissions) {
+       $role = Role::load($rid);
+-      /** @var Role $role */
++      /** @var \Drupal\user\Entity\Role $role */
+ 
+       $output .= $this->t(
+         '@role has @permissions',
+diff --git a/src/Checks/UploadExtensions.php b/src/Checks/UploadExtensions.php
+index 8cfe5ad..a65ed49 100644
+--- a/src/Checks/UploadExtensions.php
++++ b/src/Checks/UploadExtensions.php
+@@ -49,7 +49,7 @@ class UploadExtensions extends Check {
+ 
+     // Check field configuration entities.
+     foreach (FieldConfig::loadMultiple() as $entity) {
+-      /** @var FieldConfig $entity */
++      /** @var \Drupal\field\Entity\FieldConfig $entity */
+       $extensions = $entity->getSetting('file_extensions');
+       if ($extensions != NULL) {
+         $extensions = explode(' ', $extensions);
+@@ -100,7 +100,7 @@ class UploadExtensions extends Check {
+     $items = [];
+     foreach ($findings as $entity_id => $unsafe_extensions) {
+       $entity = FieldConfig::load($entity_id);
+-      /** @var FieldConfig $entity */
++      /** @var \Drupal\field\Entity\FieldConfig $entity */
+ 
+       foreach ($unsafe_extensions as $extension) {
+         $item = $this->t(
+@@ -149,7 +149,7 @@ class UploadExtensions extends Check {
+     $output = '';
+     foreach ($findings as $entity_id => $unsafe_extensions) {
+       $entity = FieldConfig::load($entity_id);
+-      /** @var FieldConfig $entity */
++      /** @var \Drupal\field\Entity\FieldConfig $entity */
+ 
+       $output .= $this->t(
+         '@bundle: field @field',
+diff --git a/src/Checks/ViewsAccess.php b/src/Checks/ViewsAccess.php
+index 5a28b19..570891e 100644
+--- a/src/Checks/ViewsAccess.php
++++ b/src/Checks/ViewsAccess.php
+@@ -39,7 +39,7 @@ class ViewsAccess extends Check {
+     $findings = [];
+ 
+     $views = View::loadMultiple();
+-    /** @var View[] $views */
++    /** @var \Drupal\views\Entity\View[] $views */
+ 
+     // Iterate through views and their displays.
+     foreach ($views as $view) {
+@@ -90,7 +90,7 @@ class ViewsAccess extends Check {
+     $items = [];
+     foreach ($findings as $view_id => $displays) {
+       $view = View::load($view_id);
+-      /** @var View $view */
++      /** @var \Drupal\views\Entity\View $view */
+ 
+       foreach ($displays as $display) {
+         $items[] = Link::createFromRoute(
+diff --git a/src/Controller/ChecklistController.php b/src/Controller/ChecklistController.php
+index 8652451..8d340bb 100644
+--- a/src/Controller/ChecklistController.php
++++ b/src/Controller/ChecklistController.php
+@@ -19,7 +19,7 @@ class ChecklistController extends ControllerBase {
+   /**
+    * The CSRF Token generator.
+    *
+-   * @var \Drupal\Core\Access\CsrfTokenGenerator $csrfToken
++   * @var \Drupal\Core\Access\CsrfTokenGenerator
+    */
+   protected $csrfToken;
+ 
+diff --git a/src/Controller/HelpController.php b/src/Controller/HelpController.php
+index 2b44097..73a23b4 100644
+--- a/src/Controller/HelpController.php
++++ b/src/Controller/HelpController.php
+@@ -68,7 +68,7 @@ class HelpController extends ControllerBase {
+   /**
+    * Serves as an entry point for the help pages.
+    *
+-   * @param string|NULL $namespace
++   * @param string|null $namespace
+    *   The namespace of the check (null if general page).
+    * @param string $title
+    *   The name of the check.
+diff --git a/src/Controller/ToggleController.php b/src/Controller/ToggleController.php
+index cf27fef..3b1ba62 100644
+--- a/src/Controller/ToggleController.php
++++ b/src/Controller/ToggleController.php
+@@ -26,14 +26,14 @@ class ToggleController extends ControllerBase {
+   /**
+    * The CSRF Token generator.
+    *
+-   * @var \Drupal\Core\Access\CsrfTokenGenerator $csrfToken
++   * @var \Drupal\Core\Access\CsrfTokenGenerator
+    */
+   protected $csrfToken;
+ 
+   /**
+    * The request stack.
+    *
+-   * @var \Symfony\Component\HttpFoundation\Request $request
++   * @var \Symfony\Component\HttpFoundation\Request
+    */
+   protected $request;
+ 
+diff --git a/src/Form/SettingsForm.php b/src/Form/SettingsForm.php
+index 5ba0757..f0d4f74 100644
+--- a/src/Form/SettingsForm.php
++++ b/src/Form/SettingsForm.php
+@@ -169,7 +169,7 @@ class SettingsForm extends ConfigFormBase {
+ 
+       // If not empty, add it to the form.
+       if (!empty($check_form)) {
+-        // If this is the first non-empty setting page initialize the 'details'
++        // If this is the first non-empty setting page initialize the 'details'.
+         if (!isset($form['advanced']['check_specific'])) {
+           $form['advanced']['check_specific'] = [
+             '#type' => 'details',
+diff --git a/src/Security.php b/src/Security.php
+index ace50e7..fc9e426 100644
+--- a/src/Security.php
++++ b/src/Security.php
+@@ -132,7 +132,7 @@ class Security {
+     // Fill up the administrative roles' permissions too.
+     foreach ($role_ids as $role_id) {
+       $role = Role::load($role_id);
+-      /** @var Role $role */
++      /** @var \Drupal\user\Entity\Role $role */
+       if ($role->isAdmin()) {
+         $permissions_grouped[$role_id] = $this->permissions();
+       }
+@@ -207,7 +207,6 @@ class Security {
+     return $this->rolePermissions($this->trustedRoles(), $group_by_role_id);
+   }
+ 
+-
+   /**
+    * Gets all the permissions.
+    *

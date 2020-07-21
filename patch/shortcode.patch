@@ -1,0 +1,33 @@
+diff --git a/src/ShortcodeService.php b/src/ShortcodeService.php
+index ee5da62..70bf17f 100644
+--- a/src/ShortcodeService.php
++++ b/src/ShortcodeService.php
+@@ -4,7 +4,6 @@ namespace Drupal\shortcode;
+ 
+ use Drupal\filter\Plugin\FilterInterface;
+ use Drupal\Core\Language\Language;
+-use Drupal\shortcode\ShortcodePluginManager;
+ 
+ /**
+  * Provide the ShortCode service.
+@@ -268,7 +267,7 @@ class ShortcodeService {
+         }
+         // This is a valid shortcode tag, and self-closing.
+         elseif (substr($c, -1, 1) == '/') {
+-          // Processes a self closing tag, - it has "/" at the end-
++          // Processes a self closing tag, - it has "/" at the end-.
+           /*
+            * The exploded array elements meaning:
+            * 0 - the full tag text?
+diff --git a/src/Tests/ShortcodeTest.php b/src/Tests/ShortcodeTest.php
+index 70937b9..35b4296 100644
+--- a/src/Tests/ShortcodeTest.php
++++ b/src/Tests/ShortcodeTest.php
+@@ -4,7 +4,6 @@ namespace Drupal\shortcode\Tests;
+ 
+ use Drupal\Core\Url;
+ use Drupal\simpletest\WebTestBase;
+-use Drupal\shortcode\Shortcode\ShortcodeService;
+ 
+ /**
+  * Tests the Drupal 8 shortcode module functionality.

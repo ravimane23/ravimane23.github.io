@@ -1,0 +1,573 @@
+diff --git a/conflict.api.php b/conflict.api.php
+index 73d7eca..7921294 100644
+--- a/conflict.api.php
++++ b/conflict.api.php
+@@ -25,11 +25,12 @@
+  *   The conflict paths, keyed by the conflict path and having as value the
+  *   entity metadata consisting of
+  *   -entity_type
+- *   -entity_id
++ *   -entity_id.
+  * @param \Drupal\Core\Form\FormStateInterface $form_state
+  *   The main form state.
+  */
+-function hook_conflict_paths_alter(array &$conflict_paths, \Drupal\Core\Form\FormStateInterface $form_state) {}
++function hook_conflict_paths_alter(array &$conflict_paths, \Drupal\Core\Form\FormStateInterface $form_state) {
++}
+ 
+ /**
+  * @} End of "addtogroup hooks".
+diff --git a/css/conflict_resolution.css b/css/conflict_resolution.css
+index 62a55ef..8dba098 100644
+--- a/css/conflict_resolution.css
++++ b/css/conflict_resolution.css
+@@ -1,14 +1,14 @@
+ #conflict-overview-form {
+-    display: none;
++  display: none;
+ }
+ 
+ .conflict-overview-form-description {
+-    font-size: 1.1em;
+-    margin-bottom: 1em;
++  font-size: 1.1em;
++  margin-bottom: 1em;
+ }
+ 
+ #conflict-overview-form details {
+-    border:none;
+-    margin-top: 0;
+-    margin-bottom: 0;
++  border: none;
++  margin-top: 0;
++  margin-bottom: 0;
+ }
+diff --git a/js/conflict_resolution.js b/js/conflict_resolution.js
+index cb52c4a..ad69618 100644
+--- a/js/conflict_resolution.js
++++ b/js/conflict_resolution.js
+@@ -22,7 +22,7 @@
+   Drupal.behaviors.conflict = {
+     attach: function (context, settings) {
+       // Inline based conflict resolution.
+-      if (!Drupal.conflict.inlineDialogMessageShown && (typeof drupalSettings.conflict  !== 'undefined') && (typeof drupalSettings.conflict.inlineResolutionMessage  !== 'undefined')) {
++      if (!Drupal.conflict.inlineDialogMessageShown && (typeof drupalSettings.conflict !== 'undefined') && (typeof drupalSettings.conflict.inlineResolutionMessage !== 'undefined')) {
+         var inlineDialogMessageOptions = {
+           open: function () {
+             $(this).siblings('.ui-dialog-titlebar').remove();
+diff --git a/src/Annotation/FieldComparator.php b/src/Annotation/FieldComparator.php
+index 54905c4..e404a5c 100644
+--- a/src/Annotation/FieldComparator.php
++++ b/src/Annotation/FieldComparator.php
+@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
+ /**
+  * Defines a FieldComparator annotation object.
+  *
+- * Plugin Namespace: Plugin\Conflict\FieldComparator
++ * Plugin Namespace: Plugin\Conflict\FieldComparator.
+  *
+  * @Annotation
+  */
+diff --git a/src/ConflictDiscovery/ConflictDiscoveryBase.php b/src/ConflictDiscovery/ConflictDiscoveryBase.php
+index 22022fe..f629d2f 100644
+--- a/src/ConflictDiscovery/ConflictDiscoveryBase.php
++++ b/src/ConflictDiscovery/ConflictDiscoveryBase.php
+@@ -6,6 +6,9 @@ use Drupal\conflict\Event\EntityConflictDiscoveryEvent;
+ use Drupal\conflict\Event\EntityConflictEvents;
+ use Drupal\Core\Entity\ContentEntityInterface;
+ 
++/**
++ *
++ */
+ abstract class ConflictDiscoveryBase implements ConflictDiscoveryInterface {
+ 
+   /**
+diff --git a/src/ConflictDiscovery/ConflictDiscoveryInterface.php b/src/ConflictDiscovery/ConflictDiscoveryInterface.php
+index 017e63a..50e4a07 100644
+--- a/src/ConflictDiscovery/ConflictDiscoveryInterface.php
++++ b/src/ConflictDiscovery/ConflictDiscoveryInterface.php
+@@ -5,6 +5,9 @@ namespace Drupal\conflict\ConflictDiscovery;
+ use Drupal\conflict\Event\EntityConflictDiscoveryEvent;
+ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+ 
++/**
++ *
++ */
+ interface ConflictDiscoveryInterface extends EventSubscriberInterface {
+ 
+   /**
+diff --git a/src/ConflictDiscovery/DefaultConflictDiscovery.php b/src/ConflictDiscovery/DefaultConflictDiscovery.php
+index 526be5f..ebb3c2b 100644
+--- a/src/ConflictDiscovery/DefaultConflictDiscovery.php
++++ b/src/ConflictDiscovery/DefaultConflictDiscovery.php
+@@ -5,6 +5,9 @@ namespace Drupal\conflict\ConflictDiscovery;
+ use Drupal\conflict\ConflictTypes;
+ use Drupal\conflict\Event\EntityConflictDiscoveryEvent;
+ 
++/**
++ *
++ */
+ class DefaultConflictDiscovery extends ConflictDiscoveryBase {
+ 
+   /**
+diff --git a/src/ConflictResolution/MergeRemoteOnlyChanges.php b/src/ConflictResolution/MergeRemoteOnlyChanges.php
+index ca4eccc..2cf6644 100644
+--- a/src/ConflictResolution/MergeRemoteOnlyChanges.php
++++ b/src/ConflictResolution/MergeRemoteOnlyChanges.php
+@@ -5,6 +5,9 @@ namespace Drupal\conflict\ConflictResolution;
+ use Drupal\conflict\ConflictTypes;
+ use Drupal\conflict\Event\EntityConflictResolutionEvent;
+ 
++/**
++ *
++ */
+ class MergeRemoteOnlyChanges extends MergeStrategyBase {
+ 
+   /**
+diff --git a/src/ConflictResolution/MergeStrategyBase.php b/src/ConflictResolution/MergeStrategyBase.php
+index 0d4ad78..ac90a95 100644
+--- a/src/ConflictResolution/MergeStrategyBase.php
++++ b/src/ConflictResolution/MergeStrategyBase.php
+@@ -6,6 +6,9 @@ use Drupal\conflict\Event\EntityConflictEvents;
+ use Drupal\conflict\Event\EntityConflictResolutionEvent;
+ use Drupal\Core\Entity\ContentEntityInterface;
+ 
++/**
++ *
++ */
+ abstract class MergeStrategyBase implements MergeStrategyInterface {
+ 
+   /**
+diff --git a/src/ConflictResolution/MergeStrategyInterface.php b/src/ConflictResolution/MergeStrategyInterface.php
+index a617919..39e373a 100644
+--- a/src/ConflictResolution/MergeStrategyInterface.php
++++ b/src/ConflictResolution/MergeStrategyInterface.php
+@@ -5,6 +5,9 @@ namespace Drupal\conflict\ConflictResolution;
+ use Drupal\conflict\Event\EntityConflictResolutionEvent;
+ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+ 
++/**
++ *
++ */
+ interface MergeStrategyInterface extends EventSubscriberInterface {
+ 
+   /**
+@@ -38,4 +41,3 @@ interface MergeStrategyInterface extends EventSubscriberInterface {
+   public function isEnabled(EntityConflictResolutionEvent $event) : bool;
+ 
+ }
+-
+diff --git a/src/ConflictResolver/ConflictResolverManagerInterface.php b/src/ConflictResolver/ConflictResolverManagerInterface.php
+index 8e5bc7d..dbb9ece 100644
+--- a/src/ConflictResolver/ConflictResolverManagerInterface.php
++++ b/src/ConflictResolver/ConflictResolverManagerInterface.php
+@@ -43,7 +43,8 @@ interface ConflictResolverManagerInterface {
+ 
+   /**
+    * Returns the conflicts between two entities based on their common parent.
+-   *    *
++   *    *.
++   *
+    * @param \Drupal\Core\Entity\EntityInterface $local
+    *   The local part of the comparision - for example the entity built of the
+    *   user input on an entity form submission. This is basically the active
+diff --git a/src/ConflictTypes.php b/src/ConflictTypes.php
+index 106dcf4..88e5f61 100644
+--- a/src/ConflictTypes.php
++++ b/src/ConflictTypes.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\conflict;
+ 
++/**
++ *
++ */
+ final class ConflictTypes {
+ 
+   /**
+diff --git a/src/Entity/ConflictUIResolverHandlerInterface.php b/src/Entity/ConflictUIResolverHandlerInterface.php
+index 8504b75..4581393 100644
+--- a/src/Entity/ConflictUIResolverHandlerInterface.php
++++ b/src/Entity/ConflictUIResolverHandlerInterface.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Ajax\AjaxResponse;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ interface ConflictUIResolverHandlerInterface {
+ 
+   /**
+diff --git a/src/Entity/ContentEntityConflictHandler.php b/src/Entity/ContentEntityConflictHandler.php
+index 3072639..8a1d622 100644
+--- a/src/Entity/ContentEntityConflictHandler.php
++++ b/src/Entity/ContentEntityConflictHandler.php
+@@ -21,6 +21,9 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\HttpFoundation\ParameterBag;
+ 
++/**
++ *
++ */
+ class ContentEntityConflictHandler implements EntityConflictHandlerInterface, EntityHandlerInterface {
+ 
+   use StringTranslationTrait;
+@@ -536,7 +539,6 @@ class ContentEntityConflictHandler implements EntityConflictHandlerInterface, En
+    *   The unchanged entity loaded from the storage.
+    *
+    * @return bool
+-   *
+    */
+   protected function hasConflicts(ContentEntityInterface $entity_local_edited, ContentEntityInterface $entity_local_original, ContentEntityInterface $entity_server) {
+     $entity_type_id = $this->entityType->id();
+@@ -574,7 +576,7 @@ class ContentEntityConflictHandler implements EntityConflictHandlerInterface, En
+         // version. If the server version has changed compared to the locally
+         // used original version then there is a conflict either
+         //   - value changed only on the server
+-        //   - value changed both on the server and locally
++        //   - value changed both on the server and locally.
+         if ($this->fieldComparatorManager->hasChanged($field_items_list_server, $field_items_list_local_original, $langcode, $entity_type_id, $entity_bundle, $field_type, $field_name)) {
+           return TRUE;
+         }
+@@ -699,7 +701,7 @@ class ContentEntityConflictHandler implements EntityConflictHandlerInterface, En
+   }
+ 
+   /**
+-   *{ @inheritdoc}
++   * { @inheritdoc}.
+    */
+   public function __sleep() {
+     $vars = $this->traitSleep();
+diff --git a/src/Entity/EntityConflictHandlerInterface.php b/src/Entity/EntityConflictHandlerInterface.php
+index da01b3b..0f18fc6 100644
+--- a/src/Entity/EntityConflictHandlerInterface.php
++++ b/src/Entity/EntityConflictHandlerInterface.php
+@@ -5,6 +5,9 @@ namespace Drupal\conflict\Entity;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ interface EntityConflictHandlerInterface {
+ 
+   /**
+@@ -81,7 +84,7 @@ interface EntityConflictHandlerInterface {
+    * @param array $path_parents
+    *   The parents to the entity.
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+-   *  The current state of the form.
++   *   The current state of the form.
+    */
+   public function finishConflictResolution(EntityInterface $entity, $path_parents, FormStateInterface $form_state);
+ 
+diff --git a/src/Entity/EntityConflictUIResolverHandlerBase.php b/src/Entity/EntityConflictUIResolverHandlerBase.php
+index 65cad50..c75cd68 100644
+--- a/src/Entity/EntityConflictUIResolverHandlerBase.php
++++ b/src/Entity/EntityConflictUIResolverHandlerBase.php
+@@ -2,4 +2,7 @@
+ 
+ namespace Drupal\conflict\Entity;
+ 
++/**
++ *
++ */
+ abstract class EntityConflictUIResolverHandlerBase implements ConflictUIResolverHandlerInterface {}
+diff --git a/src/Event/EntityConflictDiscoveryEvent.php b/src/Event/EntityConflictDiscoveryEvent.php
+index cc9a179..409e713 100644
+--- a/src/Event/EntityConflictDiscoveryEvent.php
++++ b/src/Event/EntityConflictDiscoveryEvent.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Entity\EntityInterface;
+ use Symfony\Component\EventDispatcher\Event;
+ use Symfony\Component\HttpFoundation\ParameterBag;
+ 
++/**
++ *
++ */
+ class EntityConflictDiscoveryEvent extends Event {
+ 
+   /**
+@@ -125,7 +128,7 @@ class EntityConflictDiscoveryEvent extends Event {
+    * @param $parameter
+    *   The parameter key.
+    * @param mixed $default
+-   *   The default value if the parameter key does not exist
++   *   The default value if the parameter key does not exist.
+    *
+    * @return mixed|null
+    */
+diff --git a/src/Event/EntityConflictResolutionEvent.php b/src/Event/EntityConflictResolutionEvent.php
+index 82b1d7c..ef639b3 100644
+--- a/src/Event/EntityConflictResolutionEvent.php
++++ b/src/Event/EntityConflictResolutionEvent.php
+@@ -5,6 +5,9 @@ namespace Drupal\conflict\Event;
+ use Drupal\Core\Entity\EntityInterface;
+ use Symfony\Component\HttpFoundation\ParameterBag;
+ 
++/**
++ *
++ */
+ class EntityConflictResolutionEvent extends EntityConflictDiscoveryEvent {
+ 
+   /**
+diff --git a/src/FieldComparatorInterface.php b/src/FieldComparatorInterface.php
+index a507a5d..49266ab 100644
+--- a/src/FieldComparatorInterface.php
++++ b/src/FieldComparatorInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\conflict;
+ 
+ use Drupal\Core\Field\FieldItemListInterface;
+ 
++/**
++ *
++ */
+ interface FieldComparatorInterface {
+ 
+   /**
+@@ -23,7 +26,7 @@ interface FieldComparatorInterface {
+    *   Another field item list.
+    * @param string $langcode
+    *   (optional) The language code of the entity translation being checked.
+-   * @param  string $entity_type_id
++   * @param string $entity_type_id
+    *   (optional) The entity type ID.
+    * @param string $bundle
+    *   (optional) The entity bundle.
+diff --git a/src/FieldComparatorManager.php b/src/FieldComparatorManager.php
+index 47cbea8..26d7d45 100644
+--- a/src/FieldComparatorManager.php
++++ b/src/FieldComparatorManager.php
+@@ -9,6 +9,9 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Plugin\DefaultPluginManager;
+ 
++/**
++ *
++ */
+ class FieldComparatorManager extends DefaultPluginManager implements FieldComparatorManagerInterface {
+ 
+   /**
+@@ -63,49 +66,49 @@ class FieldComparatorManager extends DefaultPluginManager implements FieldCompar
+     // Entity type - specific
+     // bundle      - specific
+     // field type  - specific
+-    // field name  - specific
++    // field name  - specific.
+     if (isset($this->fieldComparators[$entity_type_id_s][$bundle_s][$field_type_s][$field_name_s]['comparators'])) {
+       $comparators = &$this->fieldComparators[$entity_type_id_s][$bundle_s][$field_type_s][$field_name_s]['comparators'];
+     }
+     // Entity type - specific
+     // bundle      - specific
+     // field type  - specific
+-    // field name  - all
++    // field name  - all.
+     elseif (isset($this->fieldComparators[$entity_type_id_s][$bundle_s][$field_type_s][$field_name_g]['comparators'])) {
+       $comparators = &$this->fieldComparators[$entity_type_id_s][$bundle_s][$field_type_s][$field_name_g]['comparators'];
+     }
+     // Entity type - specific
+     // bundle      - all
+     // field type  - specific
+-    // field name  - all
++    // field name  - all.
+     elseif (isset($this->fieldComparators[$entity_type_id_s][$bundle_g][$field_type_s][$field_name_g]['comparators'])) {
+       $comparators = &$this->fieldComparators[$entity_type_id_s][$bundle_g][$field_type_s][$field_name_g]['comparators'];
+     }
+     // Entity type - specific
+     // bundle      - all
+     // field type  - specific
+-    // field name  - specific
++    // field name  - specific.
+     elseif (isset($this->fieldComparators[$entity_type_id_s][$bundle_g][$field_type_s][$field_name_s]['comparators'])) {
+       $comparators = &$this->fieldComparators[$entity_type_id_s][$bundle_g][$field_type_s][$field_name_s]['comparators'];
+     }
+     // Entity type - specific
+     // bundle      - all
+     // field type  - all
+-    // field name  - all
++    // field name  - all.
+     elseif (isset($this->fieldComparators[$entity_type_id_s][$bundle_g][$field_type_g][$field_name_g]['comparators'])) {
+       $comparators = &$this->fieldComparators[$entity_type_id_s][$bundle_g][$field_type_g][$field_name_g]['comparators'];
+     }
+     // Entity type - all
+     // bundle      - all
+     // field type  - specific
+-    // field name  - all
++    // field name  - all.
+     elseif (isset($this->fieldComparators[$entity_type_id_g][$bundle_g][$field_type_s][$field_name_g]['comparators'])) {
+       $comparators = &$this->fieldComparators[$entity_type_id_g][$bundle_g][$field_type_s][$field_name_g]['comparators'];
+     }
+     // Entity type - all
+     // bundle      - all
+     // field type  - all
+-    // field name  - all
++    // field name  - all.
+     elseif (isset($this->fieldComparators[$entity_type_id_g][$bundle_g][$field_type_g][$field_name_g]['comparators'])) {
+       $comparators = &$this->fieldComparators[$entity_type_id_g][$bundle_g][$field_type_g][$field_name_g]['comparators'];
+     }
+diff --git a/src/FieldComparatorManagerInterface.php b/src/FieldComparatorManagerInterface.php
+index 5f4501f..47c8a05 100644
+--- a/src/FieldComparatorManagerInterface.php
++++ b/src/FieldComparatorManagerInterface.php
+@@ -5,6 +5,9 @@ namespace Drupal\conflict;
+ use Drupal\Component\Plugin\PluginManagerInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+ 
++/**
++ *
++ */
+ interface FieldComparatorManagerInterface extends PluginManagerInterface {
+ 
+   /**
+diff --git a/src/Form/ConflictResolutionDialogFormBuilder.php b/src/Form/ConflictResolutionDialogFormBuilder.php
+index 3211612..fcfc5e2 100644
+--- a/src/Form/ConflictResolutionDialogFormBuilder.php
++++ b/src/Form/ConflictResolutionDialogFormBuilder.php
+@@ -13,6 +13,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ class ConflictResolutionDialogFormBuilder {
+ 
+   use DependencySerializationTrait;
+@@ -53,11 +56,11 @@ class ConflictResolutionDialogFormBuilder {
+       $form['conflict_overview_form']['description'] = [
+         '#type' => 'container',
+         '#markup' => t('The content has either been modified by another user, or you have already submitted modifications. In order to save your changes a manual conflict resolution should be performed by clicking on "Resolve conflicts".'),
+-        '#attributes' => ['class' => ['conflict-overview-form-description']]
++        '#attributes' => ['class' => ['conflict-overview-form-description']],
+       ];
+ 
+       $header = [
+-        ['data' => t('Conflicts')]
++        ['data' => t('Conflicts')],
+       ];
+       $rows = [];
+       $conflict_paths = $form_state->get('conflict.paths');
+@@ -193,7 +196,7 @@ class ConflictResolutionDialogFormBuilder {
+         '#name' => 'conflict_resolution_resolve_conflicts',
+         '#value' => empty($form_state->get('conflict.paths')) ? t('Finish conflict resolution') : t('Go to the next conflict'),
+         '#weight' => 1000,
+-        '#attributes' => ['class' => ['conflict-resolve-conflicts']]
++        '#attributes' => ['class' => ['conflict-resolve-conflicts']],
+       ];
+ 
+       $this->getEntityConflictUIResolver($path_entity->getEntityTypeId())
+@@ -204,7 +207,7 @@ class ConflictResolutionDialogFormBuilder {
+         'closeOnEscape' => FALSE,
+         'resizable' => TRUE,
+         'draggable' => TRUE,
+-        'width' => 'auto'
++        'width' => 'auto',
+       ];
+       $cmd = new OpenModalDialogCommand($conflict_ui_title, $build, $options);
+       $response->addCommand($cmd);
+@@ -215,7 +218,6 @@ class ConflictResolutionDialogFormBuilder {
+     }
+ 
+     // @todo exchange the original entity's hash through a command
+-
+     return $response;
+   }
+ 
+@@ -282,7 +284,6 @@ class ConflictResolutionDialogFormBuilder {
+       '#titles' => $titles,
+     ];
+ 
+-
+     return $title;
+   }
+ 
+@@ -295,7 +296,7 @@ class ConflictResolutionDialogFormBuilder {
+    *   (optional) Whether this is a root call. As this is a recursive function
+    *   it requires a way to differ between the first and subsequent calls.
+    *   Defaults to TRUE.
+-   * @param string|NULL $root_title
++   * @param string|null $root_title
+    *   (optional) The title to use for the most upper (root) list. Defaults to
+    *   NULL.
+    *
+@@ -314,8 +315,8 @@ class ConflictResolutionDialogFormBuilder {
+               '#title' => $root_title,
+               '#items' => [
+                 [
+-                  ['#markup' => $title,],
+-                  ['titles' => static::buildNestedItemList($titles, FALSE),],
++                  ['#markup' => $title],
++                  ['titles' => static::buildNestedItemList($titles, FALSE)],
+                 ],
+               ],
+             ],
+@@ -328,7 +329,7 @@ class ConflictResolutionDialogFormBuilder {
+               '#list_type' => 'ul',
+               '#title' => $root_title,
+               '#items' => [
+-                ['#markup' => $title]
++                ['#markup' => $title],
+               ],
+             ],
+           ];
+@@ -336,12 +337,12 @@ class ConflictResolutionDialogFormBuilder {
+       }
+       elseif ($titles) {
+         $render = [
+-          ['#markup' => $title,],
++          ['#markup' => $title],
+           [
+             '#theme' => 'item_list',
+             '#list_type' => 'ul',
+             '#items' => [
+-              'titles' => static::buildNestedItemList($titles, FALSE)
++              'titles' => static::buildNestedItemList($titles, FALSE),
+             ],
+           ],
+         ];
+diff --git a/src/Form/ConflictResolutionInlineFormBuilder.php b/src/Form/ConflictResolutionInlineFormBuilder.php
+index 11d0e9f..5d068dc 100644
+--- a/src/Form/ConflictResolutionInlineFormBuilder.php
++++ b/src/Form/ConflictResolutionInlineFormBuilder.php
+@@ -11,6 +11,9 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\Core\StringTranslation\TranslationInterface;
+ 
++/**
++ *
++ */
+ class ConflictResolutionInlineFormBuilder {
+ 
+   use DependencySerializationTrait;
+@@ -72,7 +75,8 @@ class ConflictResolutionInlineFormBuilder {
+             ['data' => $entity->get($field_name)->view()],
+             ['data' => $entity_local_original->get($field_name)->view()],
+             ['data' => $entity_server->get($field_name)->view()],
+-        ]],
++        ],
++        ],
+       ];
+       $form[$field_name]['conflict_resolution']['confirm'] = [
+         '#type' => 'checkbox',
+@@ -84,7 +88,6 @@ class ConflictResolutionInlineFormBuilder {
+     $this->entityTypeManager->getHandler($entity->getEntityTypeId(), 'conflict.resolution_handler')
+       ->finishConflictResolution($entity, [], $form_state);
+ 
+-
+     // Ensure the form will not be flagged for rebuild.
+     // @see \Drupal\conflict\Entity\ContentEntityConflictHandler::entityMainFormValidateLast().
+     $form_state->set('conflict.paths', []);
+diff --git a/src/Form/EntityConflictFormHandlerInterface.php b/src/Form/EntityConflictFormHandlerInterface.php
+index b4cd492..9df900f 100644
+--- a/src/Form/EntityConflictFormHandlerInterface.php
++++ b/src/Form/EntityConflictFormHandlerInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\conflict\Form;
+ 
+ use Drupal\Core\Entity\EntityInterface;
+ 
++/**
++ *
++ */
+ interface EntityConflictFormHandlerInterface {
+ 
+   /**

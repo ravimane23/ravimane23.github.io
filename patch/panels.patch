@@ -1,0 +1,721 @@
+diff --git a/panels.api.php b/panels.api.php
+index edd67aa..ec4428f 100644
+--- a/panels.api.php
++++ b/panels.api.php
+@@ -5,7 +5,7 @@
+  * Hooks provided by Panels.
+  */
+ 
+-use \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant;
++use Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant;
+ 
+ /**
+  * Allow modules to alter the built Panels output.
+diff --git a/panels_ipe/js/models/LayoutModel.js b/panels_ipe/js/models/LayoutModel.js
+index c23b64f..c563852 100644
+--- a/panels_ipe/js/models/LayoutModel.js
++++ b/panels_ipe/js/models/LayoutModel.js
+@@ -70,7 +70,6 @@
+        */
+       deletedBlocks: []
+ 
+-
+     },
+ 
+     /**
+diff --git a/panels_ipe/panels_ipe.api.php b/panels_ipe/panels_ipe.api.php
+index c75a9d2..da72b3b 100644
+--- a/panels_ipe/panels_ipe.api.php
++++ b/panels_ipe/panels_ipe.api.php
+@@ -5,7 +5,7 @@
+  * Hooks specific to the Panels IPE module.
+  */
+ 
+-use \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant;
++use Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant;
+ 
+ /**
+  * @addtogroup hooks
+diff --git a/panels_ipe/src/Controller/PanelsIPEPageController.php b/panels_ipe/src/Controller/PanelsIPEPageController.php
+index 48788fc..8f5fa52 100644
+--- a/panels_ipe/src/Controller/PanelsIPEPageController.php
++++ b/panels_ipe/src/Controller/PanelsIPEPageController.php
+@@ -8,7 +8,6 @@ use Drupal\Core\Block\BlockManagerInterface;
+ use Drupal\Core\Controller\ControllerBase;
+ use Drupal\Core\Layout\LayoutPluginManagerInterface;
+ use Drupal\Core\Plugin\Context\ContextHandlerInterface;
+-use Drupal\Core\Render\Element;
+ use Drupal\Core\Render\RendererInterface;
+ use Drupal\panels\Storage\PanelsStorageManagerInterface;
+ use Drupal\panels_ipe\Helpers\RemoveBlockRequestHandler;
+@@ -16,7 +15,6 @@ use Drupal\panels_ipe\Helpers\UpdateLayoutRequestHandler;
+ use Drupal\panels_ipe\PanelsIPEBlockRendererTrait;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\HttpFoundation\Request;
+-use Symfony\Component\HttpFoundation\Response;
+ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+ use Symfony\Component\HttpFoundation\JsonResponse;
+@@ -112,7 +110,7 @@ class PanelsIPEPageController extends ControllerBase {
+    * @param string $panels_storage_id
+    *   The id within the Panels storage plugin for this Panels display.
+    *
+-   * @return \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant|NULL
++   * @return \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant|null
+    */
+   protected function loadPanelsDisplay($panels_storage_type, $panels_storage_id) {
+     /** @var \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant $panels_display */
+@@ -378,7 +376,7 @@ class PanelsIPEPageController extends ControllerBase {
+    * @param string $block_uuid
+    *   The Block UUID, if this is an existing Block.
+    *
+-   * @return Response
++   * @return \Symfony\Component\HttpFoundation\Response
+    */
+   public function getBlockPluginForm($panels_storage_type, $panels_storage_id, $plugin_id, $block_uuid = NULL) {
+     $panels_display = $this->loadPanelsDisplay($panels_storage_type, $panels_storage_id);
+diff --git a/panels_ipe/src/Form/PanelsIPEBlockContentForm.php b/panels_ipe/src/Form/PanelsIPEBlockContentForm.php
+index 322c0bf..f5cbc8b 100644
+--- a/panels_ipe/src/Form/PanelsIPEBlockContentForm.php
++++ b/panels_ipe/src/Form/PanelsIPEBlockContentForm.php
+@@ -5,6 +5,9 @@ namespace Drupal\panels_ipe\Form;
+ use Drupal\block_content\BlockContentForm;
+ use Drupal\Core\Form\FormStateInterface;
+ 
++/**
++ *
++ */
+ class PanelsIPEBlockContentForm extends BlockContentForm {
+ 
+   /**
+diff --git a/panels_ipe/src/Form/PanelsIPEBlockPluginForm.php b/panels_ipe/src/Form/PanelsIPEBlockPluginForm.php
+index 418d2c6..a13ba9a 100644
+--- a/panels_ipe/src/Form/PanelsIPEBlockPluginForm.php
++++ b/panels_ipe/src/Form/PanelsIPEBlockPluginForm.php
+@@ -10,7 +10,6 @@ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Plugin\Context\ContextHandlerInterface;
+ use Drupal\Core\Plugin\ContextAwarePluginAssignmentTrait;
+ use Drupal\Core\Plugin\ContextAwarePluginInterface;
+-use Drupal\Core\Render\Element;
+ use Drupal\Core\Render\RendererInterface;
+ use Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant;
+ use Drupal\panels_ipe\PanelsIPEBlockRendererTrait;
+@@ -30,12 +29,12 @@ class PanelsIPEBlockPluginForm extends FormBase {
+   use PanelsIPEBlockRendererTrait;
+ 
+   /**
+-   * @var \Drupal\Component\Plugin\PluginManagerInterface $blockManager
++   * @var \Drupal\Component\Plugin\PluginManagerInterface
+    */
+   protected $blockManager;
+ 
+   /**
+-   * @var \Drupal\Core\Render\RendererInterface $renderer
++   * @var \Drupal\Core\Render\RendererInterface
+    */
+   protected $renderer;
+ 
+@@ -276,7 +275,7 @@ class PanelsIPEBlockPluginForm extends FormBase {
+ 
+     // Set the block region appropriately.
+     $block_config = $block_instance->getConfiguration();
+-    $block_config['region'] = $form_state->getValue(array('settings', 'region'));
++    $block_config['region'] = $form_state->getValue(['settings', 'region']);
+ 
+     // Determine if we need to update or add this block.
+     if ($uuid = $form_state->getValue('uuid')) {
+@@ -327,7 +326,7 @@ class PanelsIPEBlockPluginForm extends FormBase {
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The current state of the form.
+    *
+-   * @return array $form
++   * @return array
+    *   The form structure.
+    */
+   public function submitPreview(array &$form, FormStateInterface $form_state) {
+diff --git a/panels_ipe/src/Form/PanelsIPELayoutForm.php b/panels_ipe/src/Form/PanelsIPELayoutForm.php
+index cbec105..c5638ca 100644
+--- a/panels_ipe/src/Form/PanelsIPELayoutForm.php
++++ b/panels_ipe/src/Form/PanelsIPELayoutForm.php
+@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+ class PanelsIPELayoutForm extends FormBase {
+ 
+   /**
+-   * @var \Drupal\Core\Render\RendererInterface $renderer
++   * @var \Drupal\Core\Render\RendererInterface
+    */
+   protected $renderer;
+ 
+diff --git a/panels_ipe/src/Helpers/RemoveBlockRequestHandler.php b/panels_ipe/src/Helpers/RemoveBlockRequestHandler.php
+index 708f673..9a24f95 100644
+--- a/panels_ipe/src/Helpers/RemoveBlockRequestHandler.php
++++ b/panels_ipe/src/Helpers/RemoveBlockRequestHandler.php
+@@ -4,6 +4,9 @@ namespace Drupal\panels_ipe\Helpers;
+ 
+ use Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant;
+ 
++/**
++ *
++ */
+ class RemoveBlockRequestHandler extends RequestHandlerBase {
+ 
+   /**
+diff --git a/panels_ipe/src/Helpers/RequestHandlerBase.php b/panels_ipe/src/Helpers/RequestHandlerBase.php
+index 18e0431..6d74441 100644
+--- a/panels_ipe/src/Helpers/RequestHandlerBase.php
++++ b/panels_ipe/src/Helpers/RequestHandlerBase.php
+@@ -11,28 +11,34 @@ use Drupal\Core\TempStore\SharedTempStore;
+ use Symfony\Component\HttpFoundation\JsonResponse;
+ use Symfony\Component\HttpFoundation\Request;
+ 
++/**
++ *
++ */
+ abstract class RequestHandlerBase implements RequestHandlerInterface {
+ 
+   /**
+-   * @var int */
++   * @var int*/
+   private $responseStatusCode = 200;
+ 
+   /**
+-   * @var array */
++   * @var array*/
+   private $response = [];
+ 
+   /**
+-   * @var \Drupal\Core\TempStore\SharedTempStoreFactory */
++   * @var \Drupal\Core\TempStore\SharedTempStoreFactory*/
+   private $tempStore;
+ 
+   /**
+-   * @var \Drupal\panels\Storage\PanelsStorageManagerInterface */
++   * @var \Drupal\panels\Storage\PanelsStorageManagerInterface*/
+   private $panelsStore;
+ 
+   /**
+-   * @var \Drupal\Core\Extension\ModuleHandlerInterface */
++   * @var \Drupal\Core\Extension\ModuleHandlerInterface*/
+   private $moduleHandler;
+ 
++  /**
++   *
++   */
+   public function __construct(ModuleHandlerInterface $module_handler, PanelsStorageManagerInterface $panels_store, SharedTempStore $temp_store) {
+     $this->moduleHandler = $module_handler;
+     $this->panelsStore = $panels_store;
+@@ -62,7 +68,7 @@ abstract class RequestHandlerBase implements RequestHandlerInterface {
+    *
+    * @throws \Drupal\panels_ipe\Exception\EmptyRequestContentException
+    */
+-  protected abstract function handle(PanelsDisplayVariant $panels_display, $decoded_request, $save_to_temp_store = FALSE);
++  abstract protected function handle(PanelsDisplayVariant $panels_display, $decoded_request, $save_to_temp_store = FALSE);
+ 
+   /**
+    * Attempts to decode the incoming request's content as JSON.
+diff --git a/panels_ipe/src/Helpers/RequestHandlerInterface.php b/panels_ipe/src/Helpers/RequestHandlerInterface.php
+index da0474d..7f7dceb 100644
+--- a/panels_ipe/src/Helpers/RequestHandlerInterface.php
++++ b/panels_ipe/src/Helpers/RequestHandlerInterface.php
+@@ -5,6 +5,9 @@ namespace Drupal\panels_ipe\Helpers;
+ use Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant;
+ use Symfony\Component\HttpFoundation\Request;
+ 
++/**
++ *
++ */
+ interface RequestHandlerInterface {
+ 
+   /**
+diff --git a/panels_ipe/src/Helpers/UpdateLayoutRequestHandler.php b/panels_ipe/src/Helpers/UpdateLayoutRequestHandler.php
+index 313790f..afb1e46 100644
+--- a/panels_ipe/src/Helpers/UpdateLayoutRequestHandler.php
++++ b/panels_ipe/src/Helpers/UpdateLayoutRequestHandler.php
+@@ -4,6 +4,9 @@ namespace Drupal\panels_ipe\Helpers;
+ 
+ use Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant;
+ 
++/**
++ *
++ */
+ class UpdateLayoutRequestHandler extends RequestHandlerBase {
+ 
+   /**
+diff --git a/panels_ipe/src/PanelsIPEBlockRendererTrait.php b/panels_ipe/src/PanelsIPEBlockRendererTrait.php
+index 6d5d36c..4fb3422 100644
+--- a/panels_ipe/src/PanelsIPEBlockRendererTrait.php
++++ b/panels_ipe/src/PanelsIPEBlockRendererTrait.php
+@@ -11,7 +11,7 @@ use Drupal\Core\Render\Element;
+ trait PanelsIPEBlockRendererTrait {
+ 
+   /**
+-   * @var \Drupal\Core\Plugin\Context\ContextHandlerInterface $contextHandler
++   * @var \Drupal\Core\Plugin\Context\ContextHandlerInterface
+    */
+   protected $contextHandler;
+ 
+@@ -23,7 +23,7 @@ trait PanelsIPEBlockRendererTrait {
+    * @param \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant $panels_display
+    *   The Panels Display that contains the Block instance.
+    *
+-   * @return array $build
++   * @return array
+    *   The Block render array.
+    */
+   protected function buildBlockInstance($block_instance, $panels_display) {
+diff --git a/panels_ipe/src/Plugin/DisplayBuilder/InPlaceEditorDisplayBuilder.php b/panels_ipe/src/Plugin/DisplayBuilder/InPlaceEditorDisplayBuilder.php
+index c937ef4..bb15a97 100644
+--- a/panels_ipe/src/Plugin/DisplayBuilder/InPlaceEditorDisplayBuilder.php
++++ b/panels_ipe/src/Plugin/DisplayBuilder/InPlaceEditorDisplayBuilder.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\panels_ipe\Plugin\DisplayBuilder;
+ 
+ use Drupal\Component\Utility\Html;
+-use Drupal\Component\Utility\NestedArray;
+ use Drupal\Core\Layout\LayoutInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Plugin\Context\ContextHandlerInterface;
+@@ -98,7 +97,7 @@ class InPlaceEditorDisplayBuilder extends StandardDisplayBuilder {
+ 
+     // Add current block IDs to settings sorted by region.
+     foreach ($regions as $region => $blocks) {
+-      $settings['regions'][$region]  = [
++      $settings['regions'][$region] = [
+         'name' => $region,
+         'label' => '',
+         'blocks' => [],
+diff --git a/panels_ipe/src/Plugin/IPEAccessBase.php b/panels_ipe/src/Plugin/IPEAccessBase.php
+index 7893927..b67a4f9 100644
+--- a/panels_ipe/src/Plugin/IPEAccessBase.php
++++ b/panels_ipe/src/Plugin/IPEAccessBase.php
+@@ -2,7 +2,9 @@
+ 
+ namespace Drupal\panels_ipe\Plugin;
+ 
+-
+ use Drupal\Core\Plugin\PluginBase;
+ 
++/**
++ *
++ */
+ abstract class IPEAccessBase extends PluginBase implements IPEAccessInterface {}
+diff --git a/panels_ipe/src/Plugin/IPEAccessInterface.php b/panels_ipe/src/Plugin/IPEAccessInterface.php
+index d2a8f11..5dd5833 100644
+--- a/panels_ipe/src/Plugin/IPEAccessInterface.php
++++ b/panels_ipe/src/Plugin/IPEAccessInterface.php
+@@ -15,7 +15,7 @@ interface IPEAccessInterface extends PluginInspectionInterface {
+    *
+    * @param \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant $display
+    *
+-   * @return boolean
++   * @return bool
+    */
+   public function applies(PanelsDisplayVariant $display);
+ 
+diff --git a/panels_ipe/src/Plugin/IPEAccessManagerInterface.php b/panels_ipe/src/Plugin/IPEAccessManagerInterface.php
+index 9f385b1..18f0d1f 100644
+--- a/panels_ipe/src/Plugin/IPEAccessManagerInterface.php
++++ b/panels_ipe/src/Plugin/IPEAccessManagerInterface.php
+@@ -8,6 +8,7 @@ use Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant;
+  * Provides the IPE Access plugin manager.
+  */
+ interface IPEAccessManagerInterface {
++
+   /**
+    * @param \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant $display
+    *
+diff --git a/panels_ipe/tests/src/Unit/RemoveBlockRequestHandlerTest.php b/panels_ipe/tests/src/Unit/RemoveBlockRequestHandlerTest.php
+index 8d8e966..7d74146 100644
+--- a/panels_ipe/tests/src/Unit/RemoveBlockRequestHandlerTest.php
++++ b/panels_ipe/tests/src/Unit/RemoveBlockRequestHandlerTest.php
+@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
+  */
+ class RemoveBlockRequestHandlerTest extends RequestHandlerTestBase {
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+     $this->sut = new RemoveBlockRequestHandler($this->moduleHandler, $this->panelsStore, $this->tempStore);
+diff --git a/panels_ipe/tests/src/Unit/RequestHandlerTestBase.php b/panels_ipe/tests/src/Unit/RequestHandlerTestBase.php
+index 547eb3c..8052cde 100644
+--- a/panels_ipe/tests/src/Unit/RequestHandlerTestBase.php
++++ b/panels_ipe/tests/src/Unit/RequestHandlerTestBase.php
+@@ -7,7 +7,6 @@ use Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant;
+ use Drupal\panels\Storage\PanelsStorageManagerInterface;
+ use Drupal\Core\TempStore\SharedTempStore;
+ use PHPUnit\Framework\TestCase;
+-use PHPUnit_Framework_MockObject_MockObject;
+ use Symfony\Component\HttpFoundation\JsonResponse;
+ use Symfony\Component\HttpFoundation\Request;
+ 
+@@ -17,23 +16,23 @@ use Symfony\Component\HttpFoundation\Request;
+ abstract class RequestHandlerTestBase extends TestCase {
+ 
+   /**
+-   * @var  \Drupal\panels_ipe\Helpers\RequestHandlerInterface */
++   * @var  \Drupal\panels_ipe\Helpers\RequestHandlerInterface*/
+   protected $sut;
+ 
+   /**
+-   * @var PHPUnit_Framework_MockObject_MockObject */
++   * @var \PHPUnit_Framework_MockObject_MockObject*/
+   protected $moduleHandler;
+ 
+   /**
+-   * @var PHPUnit_Framework_MockObject_MockObject */
++   * @var \PHPUnit_Framework_MockObject_MockObject*/
+   protected $panelsStore;
+ 
+   /**
+-   * @var PHPUnit_Framework_MockObject_MockObject */
++   * @var \PHPUnit_Framework_MockObject_MockObject*/
+   protected $tempStore;
+ 
+   /**
+-   * @var PHPUnit_Framework_MockObject_MockObject */
++   * @var \PHPUnit_Framework_MockObject_MockObject*/
+   protected $panelsDisplay;
+ 
+   /**
+@@ -52,6 +51,9 @@ abstract class RequestHandlerTestBase extends TestCase {
+       ->getMock();
+   }
+ 
++  /**
++   *
++   */
+   protected function createRequest($content = NULL) {
+     return new Request([], [], [], [], [], [], $content);
+   }
+diff --git a/panels_ipe/tests/src/Unit/UpdateLayoutRequestHandlerTest.php b/panels_ipe/tests/src/Unit/UpdateLayoutRequestHandlerTest.php
+index 499a75d..9582c2a 100644
+--- a/panels_ipe/tests/src/Unit/UpdateLayoutRequestHandlerTest.php
++++ b/panels_ipe/tests/src/Unit/UpdateLayoutRequestHandlerTest.php
+@@ -14,11 +14,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
+  */
+ class UpdateLayoutRequestHandlerTest extends RequestHandlerTestBase {
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     parent::setUp();
+     $this->sut = new UpdateLayoutRequestHandler($this->moduleHandler, $this->panelsStore, $this->tempStore);
+   }
+ 
++  /**
++   *
++   */
+   private function getLayoutModel() {
+     return [
+       'regionCollection' => [
+@@ -33,6 +39,9 @@ class UpdateLayoutRequestHandlerTest extends RequestHandlerTestBase {
+     ];
+   }
+ 
++  /**
++   *
++   */
+   private function setPanelsDisplayExpectations() {
+     $block = $this->getMockBuilder(BlockBase::class)
+       ->disableOriginalConstructor()
+diff --git a/src/Form/LayoutChangeRegions.php b/src/Form/LayoutChangeRegions.php
+index 043641a..1899ee8 100644
+--- a/src/Form/LayoutChangeRegions.php
++++ b/src/Form/LayoutChangeRegions.php
+@@ -90,7 +90,6 @@ class LayoutChangeRegions extends FormBase {
+ 
+     if ($block_assignments = $variant_plugin->getRegionAssignments()) {
+       // Build a table of all blocks used by this variant.
+-
+       $form['blocks'] = [
+         '#type' => 'table',
+         '#header' => [
+@@ -99,9 +98,9 @@ class LayoutChangeRegions extends FormBase {
+           $this->t('Region'),
+           $this->t('Weight'),
+         ],
+-        '#attributes' => array(
++        '#attributes' => [
+           'id' => 'blocks',
+-        ),
++        ],
+         '#empty' => $this->t('There are no regions for blocks.'),
+       ];
+ 
+@@ -116,7 +115,7 @@ class LayoutChangeRegions extends FormBase {
+         }
+         $label = $region_definition['label'];
+         // Prevent region names clashing with new regions.
+-        $region_id = 'old_'.$region;
++        $region_id = 'old_' . $region;
+         $new_region = isset($new_regions[$region]) ? $region : '__unassigned__';
+         $row['label']['#markup'] = $label;
+         $row['id']['#markup'] = $region;
+diff --git a/src/Form/LayoutChangeSettings.php b/src/Form/LayoutChangeSettings.php
+index ed57e03..6c35b61 100644
+--- a/src/Form/LayoutChangeSettings.php
++++ b/src/Form/LayoutChangeSettings.php
+@@ -174,8 +174,8 @@ class LayoutChangeSettings extends FormBase {
+    *   Returns the new cached values.
+    */
+   protected function setCachedValues($next_step, PanelsDisplayVariant $plugin, LayoutInterface $layout, $cached_values, $configuration) {
+-    // The step is modified by various wizards but will end in "regions"
+-    if (substr($next_step, 0 -7) == 'regions') {
++    // The step is modified by various wizards but will end in "regions".
++    if (substr($next_step, 0 - 7) == 'regions') {
+       $cached_values['layout_change']['layout_settings'] = $configuration;
+     }
+     else {
+diff --git a/src/Form/LayoutPluginSelector.php b/src/Form/LayoutPluginSelector.php
+index fa4b223..b74b574 100644
+--- a/src/Form/LayoutPluginSelector.php
++++ b/src/Form/LayoutPluginSelector.php
+@@ -129,7 +129,7 @@ class LayoutPluginSelector extends FormBase {
+     /* @var $variant_plugin \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant */
+     $variant_plugin = $cached_values['plugin'];
+ 
+-    if ((string)$form_state->getValue('op') == $this->t('Change Layout') && $variant_plugin->getConfiguration()['layout'] == $form_state->getValue('layout')) {
++    if ((string) $form_state->getValue('op') == $this->t('Change Layout') && $variant_plugin->getConfiguration()['layout'] == $form_state->getValue('layout')) {
+       $form_state->setErrorByName('layout', $this->t('You must select a different layout if you wish to change layouts.'));
+     }
+     if ($form['update_layout']['#access'] && $variant_plugin->getConfiguration()['layout'] != $form_state->getValue('layout') && $form_state->getValue('op') != $form['update_layout']['#value']) {
+diff --git a/src/Form/PanelsContentForm.php b/src/Form/PanelsContentForm.php
+index 6799cd0..4585829 100644
+--- a/src/Form/PanelsContentForm.php
++++ b/src/Form/PanelsContentForm.php
+@@ -19,7 +19,7 @@ class PanelsContentForm extends FormBase {
+   /**
+    * Tempstore factory.
+    *
+-   * @var \Drupal\Core\TempStore\SharedTempStoreFactory $tempstore
++   * @var \Drupal\Core\TempStore\SharedTempStoreFactory
+    */
+   protected $tempstore;
+ 
+diff --git a/src/Form/PanelsDeleteBlockForm.php b/src/Form/PanelsDeleteBlockForm.php
+index f45adf4..7cada2f 100644
+--- a/src/Form/PanelsDeleteBlockForm.php
++++ b/src/Form/PanelsDeleteBlockForm.php
+@@ -18,7 +18,7 @@ class PanelsDeleteBlockForm extends ConfirmFormBase {
+   /**
+    * The tempstore factory.
+    *
+-   * @var \Drupal\Core\TempStore\SharedTempStoreFactory $tempstore
++   * @var \Drupal\Core\TempStore\SharedTempStoreFactory
+    */
+   protected $tempstore;
+ 
+diff --git a/src/PanelsDisplayManager.php b/src/PanelsDisplayManager.php
+index 0fd1899..c024350 100644
+--- a/src/PanelsDisplayManager.php
++++ b/src/PanelsDisplayManager.php
+@@ -62,7 +62,7 @@ class PanelsDisplayManager implements PanelsDisplayManagerInterface {
+     $definition = $this->typedConfigManager->getDefinition($this->configName);
+     $data_definition = $this->typedConfigManager->buildDataDefinition($definition, $config);
+     $this->schema = $this->typedConfigManager->create($data_definition, $config);
+-    $errors = array();
++    $errors = [];
+     foreach ($config as $key => $value) {
+       $errors = array_merge($errors, $this->checkValue($key, $value));
+     }
+diff --git a/src/PanelsDisplayManagerInterface.php b/src/PanelsDisplayManagerInterface.php
+index ac5951e..f3fbe94 100644
+--- a/src/PanelsDisplayManagerInterface.php
++++ b/src/PanelsDisplayManagerInterface.php
+@@ -12,10 +12,10 @@ interface PanelsDisplayManagerInterface {
+   /**
+    * Create a new panels display.
+    *
+-   * @param string|\Drupal\Core\Layout\LayoutInterface|NULL $layout
++   * @param string|\Drupal\Core\Layout\LayoutInterface|null $layout
+    *   The layout plugin object or plugin id. If omitted, the default Panels
+    *   layout will be used.
+-   * @param string|\Drupal\panels\Plugin\DisplayBuilder\DisplayBuilderInterface|NULL $builder
++   * @param string|\Drupal\panels\Plugin\DisplayBuilder\DisplayBuilderInterface|null $builder
+    *   The builder object or plugin id. If omitted, the default Panels builder
+    *   will be used.
+    *
+diff --git a/src/Plugin/DisplayBuilder/DisplayBuilderManager.php b/src/Plugin/DisplayBuilder/DisplayBuilderManager.php
+index 38ec2c3..8eec327 100644
+--- a/src/Plugin/DisplayBuilder/DisplayBuilderManager.php
++++ b/src/Plugin/DisplayBuilder/DisplayBuilderManager.php
+@@ -30,7 +30,10 @@ class DisplayBuilderManager extends DefaultPluginManager implements DisplayBuild
+     $this->alterInfo('display_builder');
+   }
+ 
+-  public function createInstance($plugin_id, array $configuration = array()) {
++  /**
++   *
++   */
++  public function createInstance($plugin_id, array $configuration = []) {
+     // Redirect the deprecated editor builder to use the standard builder.
+     if ($plugin_id == 'editor') {
+       return parent::createInstance('standard', $configuration);
+diff --git a/src/Plugin/DisplayBuilder/StandardDisplayBuilder.php b/src/Plugin/DisplayBuilder/StandardDisplayBuilder.php
+index 20fbb61..c18533f 100644
+--- a/src/Plugin/DisplayBuilder/StandardDisplayBuilder.php
++++ b/src/Plugin/DisplayBuilder/StandardDisplayBuilder.php
+@@ -10,11 +10,7 @@ use Drupal\Core\Plugin\Context\ContextHandlerInterface;
+ use Drupal\Core\Plugin\ContextAwarePluginInterface;
+ use Drupal\Core\Render\Element;
+ use Drupal\Core\Session\AccountInterface;
+-use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\ctools\Plugin\PluginWizardInterface;
+-use Drupal\panels\Form\LayoutChangeRegions;
+-use Drupal\panels\Form\LayoutChangeSettings;
+-use Drupal\panels\Form\LayoutPluginSelector;
+ use Drupal\panels\Form\PanelsContentForm;
+ use Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+@@ -44,11 +40,11 @@ class StandardDisplayBuilder extends DisplayBuilderBase implements PluginWizardI
+   protected $account;
+ 
+   /**
+-    * The module handler.
+-    *
+-    * @var \Drupal\Core\Extension\ModuleHandlerInterface
+-    */
+-   protected $moduleHandler;
++   * The module handler.
++   *
++   * @var \Drupal\Core\Extension\ModuleHandlerInterface
++   */
++  protected $moduleHandler;
+ 
+   /**
+    * Constructs a new PanelsDisplayVariant.
+diff --git a/src/Plugin/DisplayVariant/PanelsDisplayVariant.php b/src/Plugin/DisplayVariant/PanelsDisplayVariant.php
+index 08b5ffb..6e3e7dc 100644
+--- a/src/Plugin/DisplayVariant/PanelsDisplayVariant.php
++++ b/src/Plugin/DisplayVariant/PanelsDisplayVariant.php
+@@ -278,7 +278,7 @@ class PanelsDisplayVariant extends BlockDisplayVariant implements PluginWizardIn
+   /**
+    * Gets the id of the storage plugin which can save this.
+    *
+-   * @return string|NULL
++   * @return string|null
+    */
+   public function getStorageType() {
+     return $this->configuration['storage_type'] ?: NULL;
+@@ -287,7 +287,7 @@ class PanelsDisplayVariant extends BlockDisplayVariant implements PluginWizardIn
+   /**
+    * Gets id within the storage plugin for this Panels display.
+    *
+-   * @return string|NULL
++   * @return string|null
+    */
+   public function getStorageId() {
+     return $this->configuration['storage_id'] ?: NULL;
+@@ -344,7 +344,7 @@ class PanelsDisplayVariant extends BlockDisplayVariant implements PluginWizardIn
+     // label on the page variant entity.
+     // $form = parent::buildConfigurationForm($form, $form_state);.
+     $plugins = $this->builderManager->getDefinitions();
+-    $options = array();
++    $options = [];
+     foreach ($plugins as $id => $plugin) {
+       $options[$id] = $plugin['label'];
+     }
+@@ -497,7 +497,7 @@ class PanelsDisplayVariant extends BlockDisplayVariant implements PluginWizardIn
+    *   An array with token data values keyed by token type.
+    */
+   protected function getContextAsTokenData() {
+-    $data = array();
++    $data = [];
+     foreach ($this->getContexts() as $context) {
+       // @todo Simplify this when token and typed data types are unified in
+       //   https://drupal.org/node/2163027.
+diff --git a/src/Storage/PanelsStorageBase.php b/src/Storage/PanelsStorageBase.php
+index bd43cdb..87f6ee9 100644
+--- a/src/Storage/PanelsStorageBase.php
++++ b/src/Storage/PanelsStorageBase.php
+@@ -4,5 +4,8 @@ namespace Drupal\panels\Storage;
+ 
+ use Drupal\Component\Plugin\PluginBase;
+ 
++/**
++ *
++ */
+ abstract class PanelsStorageBase extends PluginBase implements PanelsStorageInterface {
+ }
+diff --git a/src/Storage/PanelsStorageInterface.php b/src/Storage/PanelsStorageInterface.php
+index 04c9be8..385add5 100644
+--- a/src/Storage/PanelsStorageInterface.php
++++ b/src/Storage/PanelsStorageInterface.php
+@@ -16,7 +16,7 @@ interface PanelsStorageInterface {
+    * @param string $id
+    *   The id for the Panels display within this storage plugin.
+    *
+-   * @return \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant|NULL
++   * @return \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant|null
+    *   The Panels display if one exists with this id; NULL otherwise.
+    */
+   public function load($id);
+diff --git a/src/Storage/PanelsStorageManagerInterface.php b/src/Storage/PanelsStorageManagerInterface.php
+index 5a65b7c..20627c3 100644
+--- a/src/Storage/PanelsStorageManagerInterface.php
++++ b/src/Storage/PanelsStorageManagerInterface.php
+@@ -30,7 +30,7 @@ interface PanelsStorageManagerInterface {
+    * @param string $id
+    *   The id within the storage plugin for the requested Panels display.
+    *
+-   * @return \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant|NULL
++   * @return \Drupal\panels\Plugin\DisplayVariant\PanelsDisplayVariant|null
+    *   The Panels display if one exists with this id; NULL otherwise.
+    */
+   public function load($storage_type, $id);
+@@ -59,7 +59,7 @@ interface PanelsStorageManagerInterface {
+    *   The id within the storage plugin for the requested Panels display.
+    * @param string $op
+    *   The operation to perform (ie. create, read, update, delete).
+-   * @param \Drupal\Core\Session\AccountInterface|NULL $account
++   * @param \Drupal\Core\Session\AccountInterface|null $account
+    *   The user to check access for. If omitted, it'll check the curerntly
+    *   logged in user.
+    *
+diff --git a/tests/src/Unit/PanelsDisplayVariantTest.php b/tests/src/Unit/PanelsDisplayVariantTest.php
+index d41ab27..3eb688b 100644
+--- a/tests/src/Unit/PanelsDisplayVariantTest.php
++++ b/tests/src/Unit/PanelsDisplayVariantTest.php
+@@ -79,6 +79,9 @@ class PanelsDisplayVariantTest extends UnitTestCase {
+    */
+   protected $variant;
+ 
++  /**
++   *
++   */
+   public function setUp() {
+     $this->account = $this->prophesize(AccountInterface::class);
+     $this->contextHandler = $this->prophesize(ContextHandlerInterface::class);
+diff --git a/tests/src/Unit/StandardDisplayBuilderTest.php b/tests/src/Unit/StandardDisplayBuilderTest.php
+index 4f703f1..1efd9fc 100644
+--- a/tests/src/Unit/StandardDisplayBuilderTest.php
++++ b/tests/src/Unit/StandardDisplayBuilderTest.php
+@@ -32,14 +32,14 @@ class StandardDisplayBuilderTest extends UnitTestCase {
+       ->reveal();
+     $module_handler = $this->prophesize(ModuleHandlerInterface::class)
+       ->reveal();
+-    $this->builder = new StandardDisplayBuilder(array(), 'standard', array(), $context_handler, $account, $module_handler);
++    $this->builder = new StandardDisplayBuilder([], 'standard', [], $context_handler, $account, $module_handler);
+   }
+ 
+   /**
+    * @covers ::build
+    */
+   public function testBuild() {
+-    $regions = array();
++    $regions = [];
+ 
+     $block = $this->prophesize(BlockPluginInterface::class);
+     $block->access(Argument::type(AccountInterface::class))
+@@ -66,7 +66,7 @@ class StandardDisplayBuilderTest extends UnitTestCase {
+       ->willReturn(FALSE);
+     $regions['sidebar']['baz'] = $block->reveal();
+ 
+-    $regions['footer'] = array();
++    $regions['footer'] = [];
+ 
+     $panels_display = $this->prophesize(PanelsDisplayVariant::class);
+     $panels_display->getRegionAssignments()->willReturn($regions);

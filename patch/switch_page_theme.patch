@@ -1,0 +1,30 @@
+diff --git a/src/Form/SwitchPageThemeSettingForm.php b/src/Form/SwitchPageThemeSettingForm.php
+index 25995dc..c741340 100755
+--- a/src/Form/SwitchPageThemeSettingForm.php
++++ b/src/Form/SwitchPageThemeSettingForm.php
+@@ -184,7 +184,9 @@ class SwitchPageThemeSettingForm extends ConfigFormBase {
+       unset($spt_table['removed']);
+     }
+     // Don't allow to add multiple elements after all rows are removed.
+-    if (count($spt_table) > 1) { $required = TRUE; }
++    if (count($spt_table) > 1) {
++      $required = TRUE;
++    }
+ 
+     // Create row for table.
+     foreach ($spt_table as $i => $value) {
+diff --git a/src/Theme/PageThemeNegotiator.php b/src/Theme/PageThemeNegotiator.php
+index 1086afd..66e5433 100644
+--- a/src/Theme/PageThemeNegotiator.php
++++ b/src/Theme/PageThemeNegotiator.php
+@@ -129,8 +129,8 @@ class PageThemeNegotiator implements ThemeNegotiatorInterface {
+       if ($value['status'] == 1) {
+         // Check condition for basic rules.
+         $condition = (
+-          $this->request->getCurrentRequest()->attributes->get("_route") != "system.403" && 
+-          ($this->pathMatcher->matchPath($this->currentPath->getPath(), $value["pages"]) || $this->pathMatcher->matchPath($this->pathAlias->getAliasByPath($this->currentPath->getPath()), $value["pages"])) && 
++          $this->request->getCurrentRequest()->attributes->get("_route") != "system.403" &&
++          ($this->pathMatcher->matchPath($this->currentPath->getPath(), $value["pages"]) || $this->pathMatcher->matchPath($this->pathAlias->getAliasByPath($this->currentPath->getPath()), $value["pages"])) &&
+           (empty($value["theme_key"]) || $this->request->getCurrentRequest()->get('theme_key') == $value["theme_key"]) &&
+           (!array_filter($value["roles"]) || !empty(array_intersect($value["roles"], $this->account->getRoles())))
+         );

@@ -1,0 +1,13 @@
+diff --git a/src/Plugin/Validation/Constraint/NodeTitleConstraintValidator.php b/src/Plugin/Validation/Constraint/NodeTitleConstraintValidator.php
+index fd8f7c7..8c61be0 100644
+--- a/src/Plugin/Validation/Constraint/NodeTitleConstraintValidator.php
++++ b/src/Plugin/Validation/Constraint/NodeTitleConstraintValidator.php
+@@ -178,7 +178,7 @@ class NodeTitleConstraintValidator extends ConstraintValidator implements Contai
+             $properties['type'] = $node_type;
+           }
+           $nodes = $nodeStorage->loadByProperties($properties);
+-          // Remove current node form list
++          // Remove current node form list.
+           if (isset($nodes[$node->id()])) {
+             unset($nodes[$node->id()]);
+           }

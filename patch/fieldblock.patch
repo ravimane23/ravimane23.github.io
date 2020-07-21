@@ -1,0 +1,22 @@
+diff --git a/src/Plugin/Block/FieldBlock.php b/src/Plugin/Block/FieldBlock.php
+index 2dc06d0..9ec58b0 100644
+--- a/src/Plugin/Block/FieldBlock.php
++++ b/src/Plugin/Block/FieldBlock.php
+@@ -62,7 +62,7 @@ class FieldBlock extends BlockBase implements ContainerFactoryPluginInterface {
+   protected $routeMatch;
+ 
+   /**
+-   * The language manager
++   * The language manager.
+    *
+    * @var \Drupal\Core\Language\LanguageManagerInterface
+    */
+@@ -395,7 +395,7 @@ class FieldBlock extends BlockBase implements ContainerFactoryPluginInterface {
+   }
+ 
+   /**
+-   * Ensure that the field gets correctly translated into the current language
++   * Ensure that the field gets correctly translated into the current language.
+    *
+    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+    *

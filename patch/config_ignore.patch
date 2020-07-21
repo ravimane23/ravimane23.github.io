@@ -1,0 +1,13 @@
+diff --git a/tests/src/Functional/ConfigIgnoreHookTest.php b/tests/src/Functional/ConfigIgnoreHookTest.php
+index a17ac28..577d58e 100644
+--- a/tests/src/Functional/ConfigIgnoreHookTest.php
++++ b/tests/src/Functional/ConfigIgnoreHookTest.php
+@@ -22,7 +22,7 @@ class ConfigIgnoreHookTest extends ConfigIgnoreBrowserTestBase {
+     'config_ignore',
+     'config',
+     'config_filter',
+-    'config_ignore_hook_test'
++    'config_ignore_hook_test',
+   ];
+ 
+   /**

@@ -1,0 +1,280 @@
+diff --git a/js/maxlength.js b/js/maxlength.js
+index 190b8c8..de4bd83 100644
+--- a/js/maxlength.js
++++ b/js/maxlength.js
+@@ -1,11 +1,11 @@
+-(function($) {
++(function ($) {
+ 
+   // Make evrything local
+   var ml = ml || {};
+   ml.options = ml.options || {};
+ 
+   Drupal.behaviors.maxlength = {
+-    attach: function(context) {
++    attach: function (context) {
+       var $context = $(context);
+ 
+       if (Drupal.ckeditor != undefined) {
+@@ -25,7 +25,7 @@
+         $this.charCount(options);
+       });
+     },
+-    detach: function(context, settings) {
++    detach: function (context, settings) {
+       var $context = $(context);
+       $context.find('.maxlength').removeOnce('maxlength').each(function () {
+         $(this).charCount({
+@@ -50,7 +50,7 @@
+    *    In case obj.val() wouldn't return the text to count, this should
+    *    be passed with the number of characters.
+    */
+-  ml.calculate = function(obj, options, count, wysiwyg, getter, setter) {
++  ml.calculate = function (obj, options, count, wysiwyg, getter, setter) {
+     var counter = $('#' + obj.attr('id') + '-' + options.css);
+     var limit = parseInt(obj.attr('maxlength'));
+ 
+@@ -115,11 +115,11 @@
+    *
+    * @see http://www.sitepoint.com/blogs/2004/02/16/line-endings-in-javascript/
+    */
+-  ml.twochar_lineending = function(str) {
++  ml.twochar_lineending = function (str) {
+     return str.replace(/(\r\n|\r|\n)/g, "\r");
+   };
+ 
+-  ml.strip_tags = function(input, allowed) {
++  ml.strip_tags = function (input, allowed) {
+     // Remove all newlines, spaces and tabs from the beginning and end of html.
+     input = $.trim(input);
+     // making the lineendings with two chars
+@@ -134,7 +134,7 @@
+         .join(''); // making sure the allowed arg is a string containing only tags in lowercase (<a><b><c>)
+     var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi,
+         commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
+-    return input.replace(commentsAndPhpTags, '').replace(tags, function($0, $1){
++    return input.replace(commentsAndPhpTags, '').replace(tags, function ($0, $1) {
+       return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
+     });
+   };
+@@ -142,7 +142,7 @@
+   /**
+    * Cuts a html text up to limit characters. Still experimental.
+    */
+-  ml.truncate_html = function(text, limit) {
++  ml.truncate_html = function (text, limit) {
+     // The html result after cut.
+     var result_html = '';
+     // The text result, that will actually used when counting characters.
+@@ -214,10 +214,11 @@
+             var expected_tag_name = tags_open.pop();
+             if (expected_tag_name != tag_name) {
+               //Should throw an exception, but for the moment just alert.
+-              alert('Expected end tag: ' + expected_tag_name + '; Found end tag: '+tag_name);
++              alert('Expected end tag: ' + expected_tag_name + '; Found end tag: ' + tag_name);
+             }
+           }
+           break;
++
+         }
+         default: {
+           // In this case, we have a character that should also count for the
+@@ -240,7 +241,7 @@
+     return result_html;
+   }
+ 
+-  $.fn.charCount = function(options) {
++  $.fn.charCount = function (options) {
+     // default configuration properties
+     var defaults = {
+       warning: 10,
+@@ -279,10 +280,10 @@
+     }
+ 
+     ml.calculate($(this), options);
+-    $(this).keyup(function() {
++    $(this).keyup(function () {
+       ml.calculate($(this), options);
+     });
+-    $(this).change(function() {
++    $(this).change(function () {
+       ml.calculate($(this), options);
+     });
+ 
+@@ -294,12 +295,12 @@
+    * Integrate with ckEditor
+    * Detect changes on editors and invoke ml.calculate()
+    */
+-  ml.ckeditor = function() {
++  ml.ckeditor = function () {
+     // Since Drupal.attachBehaviors() can be called more than once, and
+     // ml.ckeditor() is being called in maxlength behavior, only run this once.
+     if (!ml.ckeditorOnce) {
+       ml.ckeditorOnce = true;
+-      CKEDITOR.on('instanceReady', function(e) {
++      CKEDITOR.on('instanceReady', function (e) {
+         var editor = $('#' + e.editor.name + '.maxlength');
+         if (editor.length == 1) {
+           if (editor.hasClass('maxlength_js_enforce')) {
+@@ -314,21 +315,21 @@
+             ml.options[e.editor.element.getId()].truncateHtml = false;
+           }
+           // Add the events on the editor.
+-          e.editor.on('key', function(e) {
+-            setTimeout(function(){ml.ckeditorChange(e)}, 100);
++          e.editor.on('key', function (e) {
++            setTimeout(function () {ml.ckeditorChange(e)}, 100);
+           });
+-          e.editor.on('paste', function(e) {
+-            setTimeout(function(){ml.ckeditorChange(e)}, 500);
++          e.editor.on('paste', function (e) {
++            setTimeout(function () {ml.ckeditorChange(e)}, 500);
+           });
+-          e.editor.on('elementsPathUpdate', function(e) {
+-            setTimeout(function(){ml.ckeditorChange(e)}, 100);
++          e.editor.on('elementsPathUpdate', function (e) {
++            setTimeout(function () {ml.ckeditorChange(e)}, 100);
+           });
+         }
+       });
+     }
+   }
+   // Invoke ml.calculate() for editor
+-  ml.ckeditorChange = function(e) {
++  ml.ckeditorChange = function (e) {
+     // Clone to avoid changing defaults
+     var options = $.extend({}, ml.options[e.editor.element.getId()]);
+     if (options.truncateHtml){
+@@ -340,16 +341,16 @@
+   };
+ 
+   // Gets the data from the ckeditor.
+-  ml.ckeditorGetData = function(e) {
++  ml.ckeditorGetData = function (e) {
+     return e.editor.getData();
+   }
+ 
+   // Sets the data into a ckeditor.
+-  ml.ckeditorSetData = function(e, data) {
++  ml.ckeditorSetData = function (e, data) {
+     // Calling setData() will place the cursor at the beginning, so we need to
+     // implement a callback to place it at the end, which is where the text is
+     // being truncated.
+-    e.editor.setData(data, {callback: function() {
++    e.editor.setData(data, {callback: function () {
+       e.editor.focus();
+       var range = e.editor.createRange();
+       range.moveToElementEditablePosition(e.editor.editable(), true);
+diff --git a/src/MaxLengthCallbacks.php b/src/MaxLengthCallbacks.php
+index 02ee7bd..9baa3cd 100644
+--- a/src/MaxLengthCallbacks.php
++++ b/src/MaxLengthCallbacks.php
+@@ -10,6 +10,9 @@ use Drupal\Core\Security\TrustedCallbackInterface;
+  */
+ class MaxLengthCallbacks implements TrustedCallbackInterface {
+ 
++  /**
++   *
++   */
+   public static function trustedCallbacks() {
+     return ['maxlengthPreRender', 'processElement'];
+   }
+@@ -58,5 +61,4 @@ class MaxLengthCallbacks implements TrustedCallbackInterface {
+     return $element;
+   }
+ 
+-
+ }
+diff --git a/src/WidgetSettings.php b/src/WidgetSettings.php
+index f366f52..9b57045 100644
+--- a/src/WidgetSettings.php
++++ b/src/WidgetSettings.php
+@@ -11,48 +11,48 @@ class WidgetSettings implements WidgetSettingsInterface {
+    * {@inheritdoc}
+    */
+   public function getAllowedSettingsForAll() {
+-    $settings = array(
+-      'string_textfield' => array(
++    $settings = [
++      'string_textfield' => [
+         'maxlength_setting' => TRUE,
+         'summary_maxlength_setting' => FALSE,
+         'truncate_setting' => FALSE,
+-      ),
+-      'string_textarea' => array(
++      ],
++      'string_textarea' => [
+         'maxlength_setting' => TRUE,
+         'summary_maxlength_setting' => FALSE,
+         'truncate_setting' => TRUE,
+-      ),
+-      'text_textfield' => array(
++      ],
++      'text_textfield' => [
+         'maxlength_setting' => TRUE,
+         'summary_maxlength_setting' => FALSE,
+         'truncate_setting' => FALSE,
+-      ),
+-      'text_textarea' => array(
++      ],
++      'text_textarea' => [
+         'maxlength_setting' => TRUE,
+         'summary_maxlength_setting' => FALSE,
+         'truncate_setting' => TRUE,
+-      ),
+-      'text_textarea_with_summary' => array(
++      ],
++      'text_textarea_with_summary' => [
+         'maxlength_setting' => TRUE,
+         'summary_maxlength_setting' => TRUE,
+         'truncate_setting' => TRUE,
+-      ),
+-      'key_value_textarea' => array(
++      ],
++      'key_value_textarea' => [
+         'maxlength_setting' => TRUE,
+         'summary_maxlength_setting' => TRUE,
+         'truncate_setting' => TRUE,
+-      ),
+-      'link_default' => array(
++      ],
++      'link_default' => [
+         'maxlength_setting' => TRUE,
+         'summary_maxlength_setting' => FALSE,
+         'truncate_setting' => FALSE,
+-      ),
+-      'linkit' => array(
++      ],
++      'linkit' => [
+         'maxlength_setting' => TRUE,
+         'summary_maxlength_setting' => FALSE,
+         'truncate_setting' => FALSE,
+-      ),
+-    );
++      ],
++    ];
+ 
+     $additional_widget_settings = \Drupal::moduleHandler()->invokeAll('maxlength_widget_settings') ?: [];
+ 
+@@ -69,7 +69,7 @@ class WidgetSettings implements WidgetSettingsInterface {
+     if (!empty($all_settings[$widget_plugin_id])) {
+       return $all_settings[$widget_plugin_id];
+     }
+-    return array();
++    return [];
+   }
+ 
+ }
+diff --git a/src/WidgetSettingsInterface.php b/src/WidgetSettingsInterface.php
+index 05020ca..f8f5f35 100644
+--- a/src/WidgetSettingsInterface.php
++++ b/src/WidgetSettingsInterface.php
+@@ -13,7 +13,7 @@ interface WidgetSettingsInterface {
+    * @param string $widget_plugin_id
+    *   The plugin id of a widget.
+    *
+-   * @return array()
++   * @return array
+    *   An array with all the settings which are allowed for a plugin id.
+    */
+   public function getAllowedSettings($widget_plugin_id);

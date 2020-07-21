@@ -1,0 +1,226 @@
+diff --git a/src/Form/SettingsForm.php b/src/Form/SettingsForm.php
+index 7346d35..bb40e35 100644
+--- a/src/Form/SettingsForm.php
++++ b/src/Form/SettingsForm.php
+@@ -6,8 +6,6 @@ use Drupal\Core\Form\ConfigFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Link;
+ use Drupal\Core\Url;
+-use Drupal\key\Entity\Key;
+-use Drupal\key\KeyInterface;
+ 
+ /**
+  * Swift Mailer settings form.
+@@ -306,7 +304,7 @@ class SettingsForm extends ConfigFormBase {
+           $config->set('smtp_encryption', $form_state->getValue(['transport', 'configuration', SWIFTMAILER_TRANSPORT_SMTP, 'encryption']));
+           $config->set('smtp_credential_provider', $form_state->getValue(['transport', 'configuration', SWIFTMAILER_TRANSPORT_SMTP, 'credential_provider']));
+           $config->set('smtp_credentials', [
+-            $config->get('smtp_credential_provider') => $form_state->getValue(['transport', 'configuration', SWIFTMAILER_TRANSPORT_SMTP, 'credentials', $config->get('smtp_credential_provider')])
++            $config->get('smtp_credential_provider') => $form_state->getValue(['transport', 'configuration', SWIFTMAILER_TRANSPORT_SMTP, 'credentials', $config->get('smtp_credential_provider')]),
+           ]);
+           $config->save();
+           $messenger->addStatus($this->t('Drupal has been configured to send all e-mails using the SMTP transport type.'));
+diff --git a/src/Plugin/Mail/SwiftMailer.php b/src/Plugin/Mail/SwiftMailer.php
+index adbbfba..aa86d5c 100644
+--- a/src/Plugin/Mail/SwiftMailer.php
++++ b/src/Plugin/Mail/SwiftMailer.php
+@@ -523,7 +523,7 @@ class SwiftMailer implements MailInterface, ContainerFactoryPluginInterface {
+    *
+    * @param array $message
+    *   The message.
+-   * @param boolean $is_html
++   * @param bool $is_html
+    *   True if generating HTML output, false for plain text.
+    *
+    * @internal
+diff --git a/tests/modules/swiftmailer_test/src/SwiftMailerDrupalStateLogger.php b/tests/modules/swiftmailer_test/src/SwiftMailerDrupalStateLogger.php
+index 2792648..d8c6b75 100644
+--- a/tests/modules/swiftmailer_test/src/SwiftMailerDrupalStateLogger.php
++++ b/tests/modules/swiftmailer_test/src/SwiftMailerDrupalStateLogger.php
+@@ -5,34 +5,52 @@ namespace Drupal\swiftmailer_test;
+ use Swift_Events_SendEvent;
+ use Swift_Events_SendListener;
+ 
++/**
++ *
++ */
+ class SwiftMailerDrupalStateLogger implements Swift_Events_SendListener {
+ 
++  /**
++   *
++   */
+   public function beforeSendPerformed(Swift_Events_SendEvent $evt) {
+     $this->add([
+       'method' => 'beforeSendPerformed',
+       'body' => $evt->getMessage()->getBody(),
+-      'subject' => $evt->getMessage()->getSubject()
++      'subject' => $evt->getMessage()->getSubject(),
+     ]);
+   }
+ 
++  /**
++   *
++   */
+   public function sendPerformed(Swift_Events_SendEvent $evt) {
+     $this->add([
+       'method' => 'sendPerformed',
+       'body' => $evt->getMessage()->getBody(),
+-      'subject' => $evt->getMessage()->getSubject()
++      'subject' => $evt->getMessage()->getSubject(),
+     ]);
+   }
+ 
++  /**
++   *
++   */
+   public function add($entry) {
+     $captured_emails = \Drupal::state()->get('swiftmailer.mail_collector') ?: [];
+     $captured_emails[] = $entry;
+     \Drupal::state()->set('swiftmailer.mail_collector', $captured_emails);
+   }
+ 
++  /**
++   *
++   */
+   public function clear() {
+     \Drupal::state()->delete('swiftmailer.mail_collector');
+   }
+ 
++  /**
++   *
++   */
+   public function dump() {
+     return \Drupal::state()->get('swiftmailer.mail_collector', []);
+   }
+diff --git a/tests/src/Functional/RealMailTest.php b/tests/src/Functional/RealMailTest.php
+index 41ca102..3d382e2 100644
+--- a/tests/src/Functional/RealMailTest.php
++++ b/tests/src/Functional/RealMailTest.php
+@@ -31,13 +31,11 @@ class RealMailTest extends SwiftMailerTestBase {
+     // @todo Should be $this->assertSubject('You forgot <again>');
+     $this->assertBodyContains('#Your password for Rise &amp;amp; shine is a&amp;&lt;b&lt;#');
+     // @todo Should be $this->assertBodyContains('#Your password for Rise &amp; shine is a&amp;&lt;b&lt;#');
+-
+     // Plain text.
+     $this->enablePlain();
+     $this->drupalPostForm('user/password', ['name' => $account->getEmail()], 'Submit');
+     $this->assertBodyContains('#Your password for Rise &amp; shine is a&<b<#');
+     // @todo Should be $this->assertBodyContains('#Your password for Rise & shine is a&<b<#');
+-
+     // Account notification message.
+     $this->config('user.settings')->set('notify.status_activated', TRUE)->save();
+     $this->config('user.mail')->set('status_activated.body', '#ACTIVATED#')->save();
+@@ -71,13 +69,11 @@ class RealMailTest extends SwiftMailerTestBase {
+     $this->assertSubject('[Help & Support] Hello & greetings');
+     $this->assertBodyContains('#I am so happy <grin>#');
+     // @todo Should be $this->assertBodyContains('#I am so happy &lt;grin&gt;#');
+-
+     // Plain text.
+     $this->enablePlain();
+     $this->drupalPostForm('contact/contact', $edit, 'Send message');
+     $this->assertBodyContains('#I am so happy #');
+     // @todo Should be $this->assertBodyContains('#I am so happy <grin>#');
+-
+   }
+ 
+ }
+diff --git a/tests/src/Functional/SwiftMailerAlterTest.php b/tests/src/Functional/SwiftMailerAlterTest.php
+index 6439909..506a037 100644
+--- a/tests/src/Functional/SwiftMailerAlterTest.php
++++ b/tests/src/Functional/SwiftMailerAlterTest.php
+@@ -11,6 +11,9 @@ use Drupal\swiftmailer_test\SwiftMailerDrupalStateLogger;
+  */
+ class SwiftMailerAlterTest extends SwiftMailerTestBase {
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->config('mailsystem.settings')
+@@ -25,12 +28,18 @@ class SwiftMailerAlterTest extends SwiftMailerTestBase {
+     $this->logger = new SwiftMailerDrupalStateLogger();
+   }
+ 
++  /**
++   *
++   */
+   public function testAlter() {
+     \Drupal::state()->set('swiftmailer_test_swiftmailer_alter_1', TRUE);
+     \Drupal::service('plugin.manager.mail')->mail('swiftmailer_test', 'test_1', 'test@example.com', \Drupal::languageManager()->getDefaultLanguage()->getId());
+     $this->assertEquals('Replace text in swiftmailer_test_swiftmailer_alter', $this->logger->dump()[0]['body']);
+   }
+ 
++  /**
++   *
++   */
+   public function testTemplatePreprocess() {
+     \Drupal::configFactory()
+       ->getEditable('system.theme')
+@@ -70,8 +79,8 @@ class SwiftMailerAlterTest extends SwiftMailerTestBase {
+       ],
+       'subject' => 'Subject',
+       'body' => [
+-        Markup::create('<strong>Hello World</strong>')
+-      ]
++        Markup::create('<strong>Hello World</strong>'),
++      ],
+     ];
+ 
+     $message = $plugin->format($message);
+@@ -97,8 +106,8 @@ class SwiftMailerAlterTest extends SwiftMailerTestBase {
+       'subject' => 'Subject',
+       'plain' => 'Original Plain Text Version',
+       'body' => [
+-        Markup::create('<strong>Hello World</strong>')
+-      ]
++        Markup::create('<strong>Hello World</strong>'),
++      ],
+     ];
+ 
+     $message = $plugin->format($message);
+@@ -106,6 +115,9 @@ class SwiftMailerAlterTest extends SwiftMailerTestBase {
+     $this->assertEquals('Original Plain Text Version', $message['plain']);
+   }
+ 
++  /**
++   *
++   */
+   public function testPlainTextConfigurationSetting() {
+     $this->config('swiftmailer.message')
+       ->set('content_type', SWIFTMAILER_FORMAT_HTML)
+@@ -120,8 +132,8 @@ class SwiftMailerAlterTest extends SwiftMailerTestBase {
+       'key' => 'swiftmailer_test_1',
+       'subject' => 'Subject',
+       'body' => [
+-        Markup::create('<strong>Hello World</strong>')
+-      ]
++        Markup::create('<strong>Hello World</strong>'),
++      ],
+     ];
+ 
+     $message = $plugin->format($message);
+@@ -135,8 +147,8 @@ class SwiftMailerAlterTest extends SwiftMailerTestBase {
+       'subject' => 'Subject',
+       'plain' => 'Original Plain Text Version',
+       'body' => [
+-        Markup::create('<strong>Hello World</strong>')
+-      ]
++        Markup::create('<strong>Hello World</strong>'),
++      ],
+     ];
+ 
+     $message = $plugin->format($message);
+diff --git a/tests/src/FunctionalJavascript/SwiftMailerSettingsTest.php b/tests/src/FunctionalJavascript/SwiftMailerSettingsTest.php
+index c117b3a..35c9629 100644
+--- a/tests/src/FunctionalJavascript/SwiftMailerSettingsTest.php
++++ b/tests/src/FunctionalJavascript/SwiftMailerSettingsTest.php
+@@ -30,7 +30,7 @@ class SwiftMailerSettingsTest extends WebDriverTestBase {
+   /**
+    * The user object.
+    *
+-   * @var \Drupal\user\UserInterface.
++   * @var \Drupal\user\UserInterface
+    */
+   protected $adminUser;
+ 

@@ -1,0 +1,24 @@
+diff --git a/src/NodeAccessGrantsCollection.php b/src/NodeAccessGrantsCollection.php
+index 0efeb30..a903fce 100644
+--- a/src/NodeAccessGrantsCollection.php
++++ b/src/NodeAccessGrantsCollection.php
+@@ -45,4 +45,5 @@ class NodeAccessGrantsCollection implements NodeAccessGrantsInterface {
+     }
+     return $grants;
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/src/NodeAccessGrantsInterface.php b/src/NodeAccessGrantsInterface.php
+index 94d5c4b..abc08d2 100644
+--- a/src/NodeAccessGrantsInterface.php
++++ b/src/NodeAccessGrantsInterface.php
+@@ -28,4 +28,5 @@ interface NodeAccessGrantsInterface {
+    * @return array
+    */
+   public function grants(AccountInterface $account, $op);
+-}
+\ No newline at end of file
++
++}

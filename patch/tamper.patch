@@ -1,0 +1,20 @@
+diff --git a/tests/src/Unit/Plugin/Tamper/EncodeTest.php b/tests/src/Unit/Plugin/Tamper/EncodeTest.php
+index d586a55..84576ba 100644
+--- a/tests/src/Unit/Plugin/Tamper/EncodeTest.php
++++ b/tests/src/Unit/Plugin/Tamper/EncodeTest.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\Tests\tamper\Unit\Plugin\Tamper;
+ 
+-use Drupal\tamper\Exception\TamperException;
+ use Drupal\tamper\Plugin\Tamper\Encode;
+ 
+ /**
+@@ -43,7 +42,6 @@ class EncodeTest extends TamperPluginTestBase {
+     $this->assertEquals([], $plugin->tamper('a:0:{}'));
+   }
+ 
+-
+   /**
+    * Test serialize on complex string.
+    */

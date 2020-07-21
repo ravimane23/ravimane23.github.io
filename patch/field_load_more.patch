@@ -1,0 +1,37 @@
+diff --git a/css/loader.css b/css/loader.css
+index 32f1ccc..e8bb944 100644
+--- a/css/loader.css
++++ b/css/loader.css
+@@ -1,3 +1,3 @@
+ .element-invisible {
+-    display: none;
+-}
+\ No newline at end of file
++  display: none;
++}
+diff --git a/js/loader.js b/js/loader.js
+index be54093..de356eb 100644
+--- a/js/loader.js
++++ b/js/loader.js
+@@ -1,12 +1,12 @@
+ (function ($, Drupal, drupalSettings) {
+     Drupal.behaviors.fieldLoadMoreLoader = {
+         attach: function (context) {
+-            $('.load-more-btn', context).bind('click', function(e) {
++            $('.load-more-btn', context).bind('click', function (e) {
+                 var $parentFieldWrapper = $(this).parents('.field-load-more');
+                 var parentWrapperClass = $(this).attr('data-field-class');
+                 var itemLimit = drupalSettings.field_load_more[parentWrapperClass].limit;
+                 var count = 0;
+-                $('.field--item.element-invisible', $parentFieldWrapper).each(function() {
++                $('.field--item.element-invisible', $parentFieldWrapper).each(function () {
+                     if (count < itemLimit) {
+                         $(this).removeClass('element-invisible');
+                     }
+@@ -23,4 +23,4 @@
+             });
+         }
+     }
+-}(jQuery, Drupal, drupalSettings));
+\ No newline at end of file
++}(jQuery, Drupal, drupalSettings));

@@ -1,0 +1,29 @@
+diff --git a/src/Controller/SiteVerifyController.php b/src/Controller/SiteVerifyController.php
+index be365a3..5a849c1 100644
+--- a/src/Controller/SiteVerifyController.php
++++ b/src/Controller/SiteVerifyController.php
+@@ -2,11 +2,7 @@
+ 
+ namespace Drupal\site_verify\Controller;
+ 
+-use Drupal\Component\Utility\Html;
+-use Drupal\Component\Utility\SafeMarkup;
+-use Drupal\Component\Utility\Unicode;
+ use Drupal\Core\Controller\ControllerBase;
+-use Drupal\Core\Render\Element\HtmlTag;
+ use Drupal\Core\Url;
+ use Symfony\Component\HttpFoundation\Response;
+ 
+diff --git a/src/Service/SiteVerifyService.php b/src/Service/SiteVerifyService.php
+index b87c6c9..63641ba 100644
+--- a/src/Service/SiteVerifyService.php
++++ b/src/Service/SiteVerifyService.php
+@@ -2,7 +2,7 @@
+ 
+ namespace Drupal\site_verify\Service;
+ 
+-use \Drupal\Component\Utility\Unicode;
++use Drupal\Component\Utility\Unicode;
+ 
+ /**
+  * Class SiteVerifyService.

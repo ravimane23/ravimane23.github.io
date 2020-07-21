@@ -1,0 +1,32 @@
+diff --git a/src/TwigExtension.php b/src/TwigExtension.php
+index 0c04dbe..037c910 100644
+--- a/src/TwigExtension.php
++++ b/src/TwigExtension.php
+@@ -66,8 +66,7 @@ class TwigExtension extends AbstractExtension {
+       // @code
+       //   drush ev "print_r(array_keys(\Drupal::service('plugin.manager.block')->getDefinitions()));"
+       // @endcode
+-      //
+-      // @code
++            // @code
+       //   {# Print block using default configuration. #}
+       //   {{ drupal_block('system_branding_block') }}
+       //
+@@ -77,8 +76,7 @@ class TwigExtension extends AbstractExtension {
+       //   {# Bypass block.html.twig theming. #}
+       //   {{ drupal_block('system_branding_block', wrapper=false) }}
+       // @endcode
+-      //
+-      // @see https://www.drupal.org/node/2964457#block-plugin
++            // @see https://www.drupal.org/node/2964457#block-plugin
+       new TwigFunction('drupal_block', [$this, 'drupalBlock']),
+ 
+       // - Drupal Region -
+@@ -403,7 +401,6 @@ class TwigExtension extends AbstractExtension {
+       // @code
+       //   $settings['twig_tweak_enable_php_filter'] = TRUE;
+       // @endcode
+-      //
+       // @code
+       //   {{ 'return date('Y');'|php }}
+       // @endcode

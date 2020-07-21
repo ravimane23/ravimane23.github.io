@@ -1,0 +1,57 @@
+diff --git a/src/Plugin/views/field/EntityFormField.php b/src/Plugin/views/field/EntityFormField.php
+index 7f42b69..41cdefa 100644
+--- a/src/Plugin/views/field/EntityFormField.php
++++ b/src/Plugin/views/field/EntityFormField.php
+@@ -10,7 +10,6 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityManagerInterface;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+-use Drupal\Core\Field\FieldTypePluginManagerInterface;
+ use Drupal\Core\Field\WidgetPluginManager;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Language\LanguageManagerInterface;
+@@ -57,7 +56,7 @@ class EntityFormField extends FieldPluginBase implements CacheableDependencyInte
+   /**
+    * The field type manager.
+    *
+-   * @var FieldTypePluginManagerInterface
++   * @var \Drupal\Core\Field\FieldTypePluginManagerInterface
+    */
+   protected $fieldTypeManager;
+ 
+@@ -210,7 +209,7 @@ class EntityFormField extends FieldPluginBase implements CacheableDependencyInte
+   protected function getPluginDefaultOption($field_type) {
+     $definition = $this->getFieldTypeManager()->getDefinition($field_type, FALSE);
+     return ($definition && isset($definition['default_widget'])) ? $definition['default_widget'] : NULL;
+-    }
++  }
+ 
+   /**
+    * Gets a bundle-specific field widget instance.
+@@ -521,7 +520,7 @@ class EntityFormField extends FieldPluginBase implements CacheableDependencyInte
+    * @param \Drupal\Core\Form\FormStateInterface $form_state
+    *   The current state of the form.
+    *
+-   * @return array $element
++   * @return array
+    *   The processed form element.
+    */
+   public function viewsFormProcess(array $element, FormStateInterface $form_state) {
+@@ -566,7 +565,7 @@ class EntityFormField extends FieldPluginBase implements CacheableDependencyInte
+         // Get current entity field values.
+         $items = $entity->get($field_name)->filterEmptyItems();
+ 
+-        // Extract values
++        // Extract values.
+         $this->getPluginInstance($entity->bundle())->extractFormValues($items, $form[$this->options['id']][$row_index], $form_state);
+ 
+         // Validate entity and add violations to field widget.
+@@ -589,7 +588,7 @@ class EntityFormField extends FieldPluginBase implements CacheableDependencyInte
+    *   The current state of the form.
+    */
+   public function saveEntities(array &$form, FormStateInterface $form_state) {
+-    // We only want to save the entity once per relationship
++    // We only want to save the entity once per relationship.
+     if (is_null($form_state->getTemporaryValue(['saved_relationships', $this->relationship]))) {
+       $storage = $this->getEntityManager()->getStorage($this->getEntityTypeId());
+ 

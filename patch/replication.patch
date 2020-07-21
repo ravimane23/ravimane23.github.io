@@ -1,0 +1,1798 @@
+diff --git a/replication.drush.inc b/replication.drush.inc
+index e551383..715318b 100644
+--- a/replication.drush.inc
++++ b/replication.drush.inc
+@@ -126,7 +126,7 @@ function drush_replication_uninstall() {
+   $required = drush_drupal_required_modules($extension_info);
+   if (in_array($extension, $required)) {
+     $info = $extension_info[$extension]->info;
+-    $explanation = !empty($info['explanation']) ? ' ' . dt('Reason: !explanation.', ['!explanation' => strip_tags($info['explanation'])])  : '';
++    $explanation = !empty($info['explanation']) ? ' ' . dt('Reason: !explanation.', ['!explanation' => strip_tags($info['explanation'])]) : '';
+     drush_log(dt('!extension is a required extension and can\'t be uninstalled.', ['!extension' => $extension]) . $explanation, LogLevel::INFO);
+     $uninstall = FALSE;
+   }
+@@ -149,7 +149,7 @@ function drush_replication_uninstall() {
+ 
+   if ($uninstall) {
+     drush_print(dt('Replication will be uninstalled.'));
+-    if(!drush_confirm(dt('Do you really want to continue?'))) {
++    if (!drush_confirm(dt('Do you really want to continue?'))) {
+       return drush_user_abort();
+     }
+ 
+@@ -294,7 +294,7 @@ function replication_command_validate($params) {
+ function replication_client_factory($url) {
+   return CouchDBClient::create([
+     'url' => (string) $url,
+-    'timeout' => 10
++    'timeout' => 10,
+   ]);
+ }
+ 
+diff --git a/src/AllDocs/AllDocs.php b/src/AllDocs/AllDocs.php
+index 08f4a39..724b9ec 100644
+--- a/src/AllDocs/AllDocs.php
++++ b/src/AllDocs/AllDocs.php
+@@ -9,6 +9,9 @@ use Drupal\multiversion\MultiversionManagerInterface;
+ use Symfony\Component\Serializer\SerializerInterface;
+ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+ 
++/**
++ *
++ */
+ class AllDocs implements AllDocsInterface {
+   use DependencySerializationTrait;
+ 
+@@ -38,7 +41,7 @@ class AllDocs implements AllDocsInterface {
+   protected $serializer;
+ 
+   /**
+-   * @var boolean
++   * @var bool
+    */
+   protected $includeDocs = FALSE;
+ 
+@@ -53,7 +56,7 @@ class AllDocs implements AllDocsInterface {
+   protected $skip = 0;
+ 
+   /**
+-   * @var boolean
++   * @var bool
+    */
+   protected $descending = FALSE;
+ 
+@@ -68,7 +71,7 @@ class AllDocs implements AllDocsInterface {
+   protected $endKey;
+ 
+   /**
+-   * @var boolean
++   * @var bool
+    */
+   protected $inclusiveEnd = TRUE;
+ 
+diff --git a/src/AllDocs/AllDocsInterface.php b/src/AllDocs/AllDocsInterface.php
+index 5377129..a9738ea 100644
+--- a/src/AllDocs/AllDocsInterface.php
++++ b/src/AllDocs/AllDocsInterface.php
+@@ -2,10 +2,13 @@
+ 
+ namespace Drupal\replication\AllDocs;
+ 
++/**
++ *
++ */
+ interface AllDocsInterface {
+ 
+   /**
+-   * @param boolean $include_docs
++   * @param bool $include_docs
+    * @return \Drupal\replication\AllDocs\AllDocsInterface
+    */
+   public function includeDocs($include_docs);
+@@ -23,7 +26,7 @@ interface AllDocsInterface {
+   public function skip($skip);
+ 
+   /**
+-   * @param boolean $descending
++   * @param bool $descending
+    * @return \Drupal\replication\AllDocs\AllDocsInterface
+    */
+   public function descending($descending);
+@@ -41,7 +44,7 @@ interface AllDocsInterface {
+   public function endKey($key);
+ 
+   /**
+-   * @param boolean $inclusive_end
++   * @param bool $inclusive_end
+    * @return \Drupal\replication\AllDocs\AllDocsInterface
+    */
+   public function inclusiveEnd($inclusive_end);
+diff --git a/src/AllDocsFactory.php b/src/AllDocsFactory.php
+index 11774b9..e63f34c 100644
+--- a/src/AllDocsFactory.php
++++ b/src/AllDocsFactory.php
+@@ -9,6 +9,9 @@ use Drupal\multiversion\MultiversionManagerInterface;
+ use Drupal\replication\AllDocs\AllDocs;
+ use Symfony\Component\Serializer\SerializerInterface;
+ 
++/**
++ *
++ */
+ class AllDocsFactory implements BulkDocsFactoryInterface {
+ 
+   /**
+diff --git a/src/AllDocsFactoryInterface.php b/src/AllDocsFactoryInterface.php
+index c880035..e47246b 100644
+--- a/src/AllDocsFactoryInterface.php
++++ b/src/AllDocsFactoryInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\replication;
+ 
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ interface AllDocsFactoryInterface {
+ 
+   /**
+diff --git a/src/Annotation/ReplicationFilter.php b/src/Annotation/ReplicationFilter.php
+index 047dc67..0af42c5 100644
+--- a/src/Annotation/ReplicationFilter.php
++++ b/src/Annotation/ReplicationFilter.php
+@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
+ /**
+  * Defines a ReplicationFilter annotation object.
+  *
+- * Plugin Namespace: Plugin\ReplicationFilter
++ * Plugin Namespace: Plugin\ReplicationFilter.
+  *
+  * For a working example, see
+  * \Drupal\replication\Plugin\ReplicationFilter\PublishedFilter
+diff --git a/src/BulkDocs/BulkDocs.php b/src/BulkDocs/BulkDocs.php
+index 5b66214..89722c0 100644
+--- a/src/BulkDocs/BulkDocs.php
++++ b/src/BulkDocs/BulkDocs.php
+@@ -14,6 +14,9 @@ use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Drupal\multiversion\Workspace\WorkspaceManagerInterface;
+ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+ 
++/**
++ *
++ */
+ class BulkDocs implements BulkDocsInterface {
+ 
+   use DependencySerializationTrait;
+diff --git a/src/BulkDocs/BulkDocsInterface.php b/src/BulkDocs/BulkDocsInterface.php
+index 7b248a0..c95451f 100644
+--- a/src/BulkDocs/BulkDocsInterface.php
++++ b/src/BulkDocs/BulkDocsInterface.php
+@@ -2,10 +2,13 @@
+ 
+ namespace Drupal\replication\BulkDocs;
+ 
++/**
++ *
++ */
+ interface BulkDocsInterface {
+ 
+   /**
+-   * @param boolean $new_edits
++   * @param bool $new_edits
+    * @return \Drupal\replication\BulkDocs\BulkDocsInterface
+    */
+   public function newEdits($new_edits);
+diff --git a/src/BulkDocsFactory.php b/src/BulkDocsFactory.php
+index cc64376..fe0b46b 100644
+--- a/src/BulkDocsFactory.php
++++ b/src/BulkDocsFactory.php
+@@ -13,6 +13,9 @@ use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Drupal\multiversion\Workspace\WorkspaceManagerInterface;
+ use Drupal\replication\BulkDocs\BulkDocs;
+ 
++/**
++ *
++ */
+ class BulkDocsFactory implements BulkDocsFactoryInterface {
+ 
+   /**
+diff --git a/src/BulkDocsFactoryInterface.php b/src/BulkDocsFactoryInterface.php
+index 7cdf79a..5041241 100644
+--- a/src/BulkDocsFactoryInterface.php
++++ b/src/BulkDocsFactoryInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\replication;
+ 
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ interface BulkDocsFactoryInterface {
+ 
+   /**
+diff --git a/src/Changes/Changes.php b/src/Changes/Changes.php
+index f204588..853183e 100644
+--- a/src/Changes/Changes.php
++++ b/src/Changes/Changes.php
+@@ -17,7 +17,7 @@ class Changes implements ChangesInterface {
+ 
+   /**
+    * The sequence index.
+-   * 
++   *
+    * @var \Drupal\multiversion\Entity\Index\SequenceIndexInterface
+    */
+   protected $sequenceIndex;
+@@ -60,7 +60,7 @@ class Changes implements ChangesInterface {
+   /**
+    * Whether to include entities in the changeset.
+    *
+-   * @var boolean
++   * @var bool
+    */
+   protected $includeDocs = FALSE;
+ 
+@@ -81,7 +81,7 @@ class Changes implements ChangesInterface {
+   /**
+    * Number of items to return.
+    *
+-   * @var int|NULL
++   * @var int|null
+    *   The limit of items.
+    */
+   protected $limit = NULL;
+@@ -238,7 +238,7 @@ class Changes implements ChangesInterface {
+     // Now when we have rebuilt the result array we need to ensure that the
+     // results array is still sorted on the sequence key, as in the index.
+     $return = array_values($changes);
+-    usort($return, function($a, $b) {
++    usort($return, function ($a, $b) {
+       return $a['seq'] - $b['seq'];
+     });
+ 
+diff --git a/src/ChangesFactory.php b/src/ChangesFactory.php
+index 1ab0229..68e6430 100644
+--- a/src/ChangesFactory.php
++++ b/src/ChangesFactory.php
+@@ -9,6 +9,9 @@ use Drupal\replication\Changes\Changes;
+ use Drupal\replication\Plugin\ReplicationFilterManagerInterface;
+ use Symfony\Component\Serializer\SerializerInterface;
+ 
++/**
++ *
++ */
+ class ChangesFactory implements ChangesFactoryInterface {
+ 
+   /**
+diff --git a/src/ChangesFactoryInterface.php b/src/ChangesFactoryInterface.php
+index 1e60d64..8c12f7c 100644
+--- a/src/ChangesFactoryInterface.php
++++ b/src/ChangesFactoryInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\replication;
+ 
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ interface ChangesFactoryInterface {
+ 
+   /**
+diff --git a/src/Encoder/StreamEncoder.php b/src/Encoder/StreamEncoder.php
+index 9bb2fd7..f3f3d89 100644
+--- a/src/Encoder/StreamEncoder.php
++++ b/src/Encoder/StreamEncoder.php
+@@ -6,6 +6,9 @@ use Drupal\Component\Utility\Random;
+ use Symfony\Component\Serializer\Encoder\DecoderInterface;
+ use Symfony\Component\Serializer\Encoder\EncoderInterface;
+ 
++/**
++ *
++ */
+ class StreamEncoder implements EncoderInterface, DecoderInterface {
+ 
+   /**
+@@ -18,6 +21,9 @@ class StreamEncoder implements EncoderInterface, DecoderInterface {
+    */
+   protected $random;
+ 
++  /**
++   *
++   */
+   public function __construct(Random $random = NULL) {
+     $this->random = $random ?: new Random();
+   }
+@@ -63,4 +69,5 @@ class StreamEncoder implements EncoderInterface, DecoderInterface {
+   public function supportsDecoding($format) {
+     return in_array($format, $this->formats);
+   }
++
+ }
+diff --git a/src/Entity/ReplicationLog.php b/src/Entity/ReplicationLog.php
+index 88531a8..96fc227 100644
+--- a/src/Entity/ReplicationLog.php
++++ b/src/Entity/ReplicationLog.php
+@@ -75,7 +75,7 @@ class ReplicationLog extends ContentEntityBase implements ReplicationLogInterfac
+   }
+ 
+   /**
+-   * @param $id string
++   * @param string $id
+    * @return \Drupal\replication\Entity\ReplicationLogInterface
+    */
+   public static function loadOrCreate($id) {
+@@ -139,4 +139,5 @@ class ReplicationLog extends ContentEntityBase implements ReplicationLogInterfac
+ 
+     return $fields;
+   }
++
+ }
+diff --git a/src/Entity/ReplicationLogInterface.php b/src/Entity/ReplicationLogInterface.php
+index ec3f850..8bcb19e 100644
+--- a/src/Entity/ReplicationLogInterface.php
++++ b/src/Entity/ReplicationLogInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\replication\Entity;
+ 
+ use Drupal\Core\Entity\ContentEntityInterface;
+ 
++/**
++ *
++ */
+ interface ReplicationLogInterface extends ContentEntityInterface {
+ 
+   /**
+diff --git a/src/Entity/ReplicationSettings.php b/src/Entity/ReplicationSettings.php
+index 4d4ff0f..8bc380c 100644
+--- a/src/Entity/ReplicationSettings.php
++++ b/src/Entity/ReplicationSettings.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\replication\Entity;
+ 
+ use Drupal\Core\Config\Entity\ConfigEntityBase;
+-use Drupal\replication\Entity\ReplicationSettingsInterface;
+ 
+ /**
+  * Defines the replication settings entity.
+@@ -64,4 +63,5 @@ class ReplicationSettings extends ConfigEntityBase implements ReplicationSetting
+   public function getParameters() {
+     return $this->parameters;
+   }
++
+ }
+diff --git a/src/Event/ReplicationContentDataAlterEvent.php b/src/Event/ReplicationContentDataAlterEvent.php
+index 97b9b7e..8c5c12a 100644
+--- a/src/Event/ReplicationContentDataAlterEvent.php
++++ b/src/Event/ReplicationContentDataAlterEvent.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\replication\Event;
+ 
+-
+ use Drupal\Core\Entity\ContentEntityInterface;
+ use Symfony\Component\EventDispatcher\Event;
+ 
+@@ -38,7 +37,7 @@ class ReplicationContentDataAlterEvent extends Event {
+   /**
+    * ReplicationContentDataAlterEvent constructor.
+    *
+-   * @param ContentEntityInterface $entity
++   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+    * @param array $data
+    * @param $format
+    * @param array $context
+@@ -71,7 +70,6 @@ class ReplicationContentDataAlterEvent extends Event {
+     return $this->context;
+   }
+ 
+-
+   /**
+    * @return array
+    */
+diff --git a/src/Form/SettingsForm.php b/src/Form/SettingsForm.php
+index 5ff9700..5c2f9f7 100644
+--- a/src/Form/SettingsForm.php
++++ b/src/Form/SettingsForm.php
+@@ -40,10 +40,10 @@ class SettingsForm extends ConfigFormBase {
+       'uid_1' => $this->t('Map to UID 1'),
+     ];
+ 
+-    $form['config'] = array(
++    $form['config'] = [
+       '#type' => 'fieldset',
+       '#title' => $this->t('Replication configuration'),
+-    );
++    ];
+ 
+     $form['config']['mapping_type'] = [
+       '#type' => 'select',
+@@ -164,12 +164,15 @@ class SettingsForm extends ConfigFormBase {
+       case 'uid':
+         $uid = $form_state->getValue('uid');
+         break;
++
+       case 'anonymous':
+         $uid = 0;
+         break;
++
+       case 'uid_1':
+         $uid = 1;
+         break;
++
+       default:
+         $uid = NULL;
+     }
+diff --git a/src/Normalizer/AllDocsNormalizer.php b/src/Normalizer/AllDocsNormalizer.php
+index ca728cc..0a4e3ec 100644
+--- a/src/Normalizer/AllDocsNormalizer.php
++++ b/src/Normalizer/AllDocsNormalizer.php
+@@ -4,6 +4,9 @@ namespace Drupal\replication\Normalizer;
+ 
+ use Drupal\serialization\Normalizer\NormalizerBase;
+ 
++/**
++ *
++ */
+ class AllDocsNormalizer extends NormalizerBase {
+ 
+   protected $supportedInterfaceOrClass = ['Drupal\replication\AllDocs\AllDocsInterface'];
+@@ -27,11 +30,12 @@ class AllDocsNormalizer extends NormalizerBase {
+       $data['rows'][] = [
+         'id' => $key,
+         'key' => $key,
+-        'value' => $value
++        'value' => $value,
+       ];
+     }
+ 
+     $data['total_rows'] = count($rows);
+     return $data;
+   }
++
+ }
+diff --git a/src/Normalizer/AttachmentNormalizer.php b/src/Normalizer/AttachmentNormalizer.php
+index 9b1cbe3..a14cb28 100644
+--- a/src/Normalizer/AttachmentNormalizer.php
++++ b/src/Normalizer/AttachmentNormalizer.php
+@@ -2,10 +2,11 @@
+ 
+ namespace Drupal\replication\Normalizer;
+ 
+-use Drupal\file\FileInterface;
+-use Drupal\multiversion\Entity\Index\UuidIndexInterface;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class AttachmentNormalizer extends ContentEntityNormalizer implements DenormalizerInterface {
+ 
+   /**
+@@ -54,11 +55,11 @@ class AttachmentNormalizer extends ContentEntityNormalizer implements Denormaliz
+     }
+     if (isset($context['uuid'])) {
+       $workspace = isset($context['workspace']) ? $context['workspace'] : NULL;
+-      /** @var UuidIndexInterface $uuid_index */
++      /** @var \Drupal\multiversion\Entity\Index\UuidIndexInterface $uuid_index */
+       $uuid_index = $this->indexFactory->get('multiversion.entity_index.uuid', $workspace);
+       $entity_info = $uuid_index->get($context['uuid']);
+       if (!empty($entity_info)) {
+-        /** @var FileInterface $file */
++        /** @var \Drupal\file\FileInterface $file */
+         $file = $this->entityManager->getStorage($entity_info['entity_type_id'])
+           ->load($entity_info['entity_id']);
+         if (!empty($file)) {
+diff --git a/src/Normalizer/BulkDocsNormalizer.php b/src/Normalizer/BulkDocsNormalizer.php
+index ad1636e..aa0aa92 100644
+--- a/src/Normalizer/BulkDocsNormalizer.php
++++ b/src/Normalizer/BulkDocsNormalizer.php
+@@ -7,6 +7,9 @@ use Drupal\serialization\Normalizer\NormalizerBase;
+ use Symfony\Component\Serializer\Exception\LogicException;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class BulkDocsNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   protected $supportedInterfaceOrClass = ['Drupal\replication\BulkDocs\BulkDocsInterface'];
+diff --git a/src/Normalizer/ChangesNormalizer.php b/src/Normalizer/ChangesNormalizer.php
+index e3b3c24..6e405e1 100644
+--- a/src/Normalizer/ChangesNormalizer.php
++++ b/src/Normalizer/ChangesNormalizer.php
+@@ -6,6 +6,9 @@ use Drupal\serialization\Normalizer\NormalizerBase;
+ use Symfony\Component\Serializer\Exception\LogicException;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class ChangesNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   protected $supportedInterfaceOrClass = ['Drupal\replication\Changes\ChangesInterface'];
+diff --git a/src/Normalizer/CommentItemNormalizer.php b/src/Normalizer/CommentItemNormalizer.php
+index 632b1de..c4b637e 100644
+--- a/src/Normalizer/CommentItemNormalizer.php
++++ b/src/Normalizer/CommentItemNormalizer.php
+@@ -2,9 +2,12 @@
+ 
+ namespace Drupal\replication\Normalizer;
+ 
+-use \Drupal\serialization\Normalizer\FieldItemNormalizer;
++use Drupal\serialization\Normalizer\FieldItemNormalizer;
+ 
+-class CommentItemNormalizer extends FieldItemNormalizer  {
++/**
++ *
++ */
++class CommentItemNormalizer extends FieldItemNormalizer {
+ 
+   /**
+    * The interface or class that this Normalizer supports.
+diff --git a/src/Normalizer/ContentEntityNormalizer.php b/src/Normalizer/ContentEntityNormalizer.php
+index 4e9141d..84e1c82 100644
+--- a/src/Normalizer/ContentEntityNormalizer.php
++++ b/src/Normalizer/ContentEntityNormalizer.php
+@@ -26,6 +26,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   use FieldableEntityNormalizerTrait;
+@@ -93,7 +96,7 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+    * {@inheritdoc}
+    */
+   public function normalize($entity, $format = NULL, array $context = []) {
+-    $workspace = isset($entity->workspace->entity) ? $entity->workspace->entity : null;
++    $workspace = isset($entity->workspace->entity) ? $entity->workspace->entity : NULL;
+     $rev_tree_index = $this->indexFactory->get('multiversion.entity_index.rev.tree', $workspace);
+ 
+     $entity_type_id = $context['entity_type'] = $entity->getEntityTypeId();
+@@ -122,16 +125,16 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+       $data['_rev'] = $entity->_rev->value;
+     }
+ 
+-    // Loop through each language of the entity
++    // Loop through each language of the entity.
+     $field_definitions = $entity->getFieldDefinitions();
+     foreach ($entity_languages as $entity_language) {
+       $translation = $entity->getTranslation($entity_language->getId());
+-      // Add the default language
++      // Add the default language.
+       $data[$entity_language->getId()] =
+         [
+           '@context' => [
+             '@language' => $entity_language->getId(),
+-          ]
++          ],
+         ];
+       foreach ($translation as $name => $field) {
+         // Add data for each field (through the field's normalizer.
+@@ -184,14 +187,14 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+    * {@inheritdoc}
+    */
+   public function denormalize($data, $class, $format = NULL, array $context = []) {
+-    // Make sure these values start as NULL
++    // Make sure these values start as NULL.
+     $entity_type_id = NULL;
+     $entity_uuid = NULL;
+     $entity_id = NULL;
+ 
+-    // Get the default language of the entity
++    // Get the default language of the entity.
+     $default_langcode = $data['@context']['@language'];
+-    // Get all of the configured languages of the site
++    // Get all of the configured languages of the site.
+     $site_languages = $this->languageManager->getLanguages();
+ 
+     // Resolve the UUID.
+@@ -230,7 +233,7 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+     }
+ 
+     // Add the _rev field to the $data array.
+-    $rev = null;
++    $rev = NULL;
+     if (isset($data['_rev'])) {
+       $rev = $data['_rev'];
+     }
+@@ -268,7 +271,6 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+     }
+ 
+     // @todo {@link https://www.drupal.org/node/2599926 Use the passed $class to instantiate the entity.}
+-
+     $entity = NULL;
+     if ($entity_id && $entity_type_id != 'file' && !empty($translations[$default_langcode])) {
+       $entity = $this->createEntityInstance($translations[$default_langcode], $entity_type, $format, $context);
+@@ -318,7 +320,7 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+    * @param array $revisions
+    * @return mixed
+    */
+-  private function denormalizeTranslation($translation, $entity_id, $entity_uuid, $entity_type_id, $bundle_key, $entity_type, $id_key, $context, $rev = null, array $revisions = []) {
++  private function denormalizeTranslation($translation, $entity_id, $entity_uuid, $entity_type_id, $bundle_key, $entity_type, $id_key, $context, $rev = NULL, array $revisions = []) {
+     // Add the _rev field to the $translation array.
+     if (isset($rev)) {
+       $translation['_rev'] = [['value' => $rev]];
+@@ -399,7 +401,7 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+             $bundles = $this->entityManager->getBundleInfo($target_entity_type_id);
+             $target_bundle_id = key($bundles);
+           }
+-          $target_entity = null;
++          $target_entity = NULL;
+           $uuid_index = (isset($context['workspace']) && ($context['workspace'] instanceof WorkspaceInterface)) ? $this->indexFactory->get('multiversion.entity_index.uuid', $context['workspace']) : $this->indexFactory->get('multiversion.entity_index.uuid');
+           if ($target_entity_info = $uuid_index->get($target_entity_uuid)) {
+             $target_entity = $this->entityManager
+@@ -536,7 +538,7 @@ class ContentEntityNormalizer extends NormalizerBase implements DenormalizerInte
+    * This makes sure denormalization runs on field items.
+    *
+    * @param array $data
+-   * @param EntityTypeInterface $entity_type
++   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+    * @param $format
+    * @param array $context
+    *
+diff --git a/src/Normalizer/CropNormalizer.php b/src/Normalizer/CropNormalizer.php
+index 0d136e9..41d6d0f 100644
+--- a/src/Normalizer/CropNormalizer.php
++++ b/src/Normalizer/CropNormalizer.php
+@@ -4,6 +4,9 @@ namespace Drupal\replication\Normalizer;
+ 
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ class CropNormalizer extends ContentEntityNormalizer {
+ 
+   /**
+@@ -74,7 +77,7 @@ class CropNormalizer extends ContentEntityNormalizer {
+   public function supportsDenormalization($data, $type, $format = NULL) {
+     if (in_array($type, [
+       'Drupal\Core\Entity\ContentEntityInterface',
+-      'Drupal\crop\Entity\Crop'
++      'Drupal\crop\Entity\Crop',
+     ], TRUE)) {
+       if (!empty($data['@type']) && $data['@type'] == 'crop') {
+         return TRUE;
+diff --git a/src/Normalizer/DeletedFlagItemListNormalizer.php b/src/Normalizer/DeletedFlagItemListNormalizer.php
+index 824d6ab..9478bc0 100644
+--- a/src/Normalizer/DeletedFlagItemListNormalizer.php
++++ b/src/Normalizer/DeletedFlagItemListNormalizer.php
+@@ -5,6 +5,9 @@ namespace Drupal\replication\Normalizer;
+ use Drupal\serialization\Normalizer\NormalizerBase;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class DeletedFlagItemListNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   /**
+@@ -25,4 +28,5 @@ class DeletedFlagItemListNormalizer extends NormalizerBase implements Denormaliz
+   public function denormalize($data, $class, $format = NULL, array $context = []) {
+     return [['value' => $data]];
+   }
++
+ }
+diff --git a/src/Normalizer/EntityReferenceItemNormalizer.php b/src/Normalizer/EntityReferenceItemNormalizer.php
+index 2543dfc..3d3f4da 100644
+--- a/src/Normalizer/EntityReferenceItemNormalizer.php
++++ b/src/Normalizer/EntityReferenceItemNormalizer.php
+@@ -7,6 +7,9 @@ use Drupal\Core\Entity\FieldableEntityStorageInterface;
+ use Drupal\file\FileInterface;
+ use Drupal\serialization\Normalizer\FieldItemNormalizer;
+ 
++/**
++ *
++ */
+ class EntityReferenceItemNormalizer extends FieldItemNormalizer {
+ 
+   /**
+diff --git a/src/Normalizer/FileEntityNormalizer.php b/src/Normalizer/FileEntityNormalizer.php
+index 439eff7..b1a3097 100644
+--- a/src/Normalizer/FileEntityNormalizer.php
++++ b/src/Normalizer/FileEntityNormalizer.php
+@@ -6,13 +6,15 @@ use Drupal\Core\Entity\EntityManagerInterface;
+ use Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Language\LanguageManagerInterface;
+-use Drupal\file\FileInterface;
+ use Drupal\multiversion\Entity\Index\MultiversionIndexFactory;
+ use Drupal\replication\ProcessFileAttachment;
+ use Drupal\replication\UsersMapping;
+ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class FileEntityNormalizer extends ContentEntityNormalizer implements DenormalizerInterface {
+ 
+   /**
+@@ -85,7 +87,7 @@ class FileEntityNormalizer extends ContentEntityNormalizer implements Denormaliz
+     $file = NULL;
+     if (!empty($data['@attachment']['uuid'])) {
+       $workspace = isset($context['workspace']) ? $context['workspace'] : NULL;
+-      /** @var FileInterface $file */
++      /** @var \Drupal\file\FileInterface $file */
+       if ($file = $this->processFileAttachment->process($data['@attachment'], 'base64_stream', $workspace)) {
+         // Update the data, because file name could change.
+         $language_code = $file->language()->getId();
+@@ -97,6 +99,9 @@ class FileEntityNormalizer extends ContentEntityNormalizer implements Denormaliz
+     return parent::denormalize($data, $class, $format, $context);
+   }
+ 
++  /**
++   *
++   */
+   public function supportsDenormalization($data, $type, $format = NULL) {
+     // We need to accept both FileInterface and ContentEntityInterface classes.
+     // File entities are treated as standard content entities.
+diff --git a/src/Normalizer/LinkItemNormalizer.php b/src/Normalizer/LinkItemNormalizer.php
+index 61993ad..b6a7745 100644
+--- a/src/Normalizer/LinkItemNormalizer.php
++++ b/src/Normalizer/LinkItemNormalizer.php
+@@ -12,6 +12,9 @@ use Drupal\Core\Url;
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Drupal\serialization\Normalizer\FieldItemNormalizer;
+ 
++/**
++ *
++ */
+ class LinkItemNormalizer extends FieldItemNormalizer {
+ 
+   /**
+diff --git a/src/Normalizer/LocalSequenceItemListNormalizer.php b/src/Normalizer/LocalSequenceItemListNormalizer.php
+index f832b6e..758333c 100644
+--- a/src/Normalizer/LocalSequenceItemListNormalizer.php
++++ b/src/Normalizer/LocalSequenceItemListNormalizer.php
+@@ -5,6 +5,9 @@ namespace Drupal\replication\Normalizer;
+ use Drupal\serialization\Normalizer\NormalizerBase;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class LocalSequenceItemListNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   /**
+@@ -30,4 +33,5 @@ class LocalSequenceItemListNormalizer extends NormalizerBase implements Denormal
+   public function denormalize($data, $class, $format = NULL, array $context = []) {
+     return [['id' => $data]];
+   }
++
+ }
+diff --git a/src/Normalizer/MenuLinkContentNormalizer.php b/src/Normalizer/MenuLinkContentNormalizer.php
+index 5c592d5..2dcd568 100644
+--- a/src/Normalizer/MenuLinkContentNormalizer.php
++++ b/src/Normalizer/MenuLinkContentNormalizer.php
+@@ -5,6 +5,9 @@ namespace Drupal\replication\Normalizer;
+ use Drupal\menu_link_content\MenuLinkContentInterface;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class MenuLinkContentNormalizer extends ContentEntityNormalizer implements DenormalizerInterface {
+ 
+   /**
+@@ -69,8 +72,11 @@ class MenuLinkContentNormalizer extends ContentEntityNormalizer implements Denor
+     return $denormalized;
+   }
+ 
++  /**
++   *
++   */
+   public function supportsDenormalization($data, $type, $format = NULL) {
+-    if (in_array($type, ['Drupal\menu_link_content\MenuLinkContentInterface', 'Drupal\Core\Entity\ContentEntityInterface'], true)) {
++    if (in_array($type, ['Drupal\menu_link_content\MenuLinkContentInterface', 'Drupal\Core\Entity\ContentEntityInterface'], TRUE)) {
+       if (isset($data['@type']) && $data['@type'] == 'menu_link_content') {
+         return TRUE;
+       }
+diff --git a/src/Normalizer/MetatagFieldItemNormalizer.php b/src/Normalizer/MetatagFieldItemNormalizer.php
+index 9f5e25f..22cfbd6 100644
+--- a/src/Normalizer/MetatagFieldItemNormalizer.php
++++ b/src/Normalizer/MetatagFieldItemNormalizer.php
+@@ -4,7 +4,6 @@ namespace Drupal\replication\Normalizer;
+ 
+ use Drupal\serialization\Normalizer\FieldItemNormalizer;
+ 
+-
+ /**
+  * Converts the Metatag field item object structure to METATAG array structure.
+  */
+@@ -16,7 +15,7 @@ class MetatagFieldItemNormalizer extends FieldItemNormalizer {
+   protected $supportedInterfaceOrClass = 'Drupal\metatag\Plugin\Field\FieldType\MetatagFieldItem';
+ 
+   /**
+-   * {inheritDoc}
++   * {inheritDoc}.
+    */
+   public function normalize($object, $format = NULL, array $context = []) {
+     return parent::normalize($object, $format, $context);
+diff --git a/src/Normalizer/ParagraphNormalizer.php b/src/Normalizer/ParagraphNormalizer.php
+index 7390295..57bea36 100644
+--- a/src/Normalizer/ParagraphNormalizer.php
++++ b/src/Normalizer/ParagraphNormalizer.php
+@@ -5,6 +5,9 @@ namespace Drupal\replication\Normalizer;
+ use Drupal\Core\Entity\ContentEntityInterface;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class ParagraphNormalizer extends ContentEntityNormalizer implements DenormalizerInterface {
+ 
+   /**
+@@ -78,6 +81,9 @@ class ParagraphNormalizer extends ContentEntityNormalizer implements Denormalize
+     return parent::denormalize($data, $class, $format, $context);
+   }
+ 
++  /**
++   *
++   */
+   public function supportsDenormalization($data, $type, $format = NULL) {
+     if (in_array($type, ['Drupal\paragraphs\Entity\Paragraph', 'Drupal\Core\Entity\ContentEntityInterface'])) {
+       if (isset($data['@type']) && $data['@type'] == 'paragraph') {
+diff --git a/src/Normalizer/RedirectSourceItemNormalizer.php b/src/Normalizer/RedirectSourceItemNormalizer.php
+index 14e51bc..5e6a1bd 100644
+--- a/src/Normalizer/RedirectSourceItemNormalizer.php
++++ b/src/Normalizer/RedirectSourceItemNormalizer.php
+@@ -12,6 +12,9 @@ use Drupal\Core\Url;
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Drupal\serialization\Normalizer\FieldItemNormalizer;
+ 
++/**
++ *
++ */
+ class RedirectSourceItemNormalizer extends FieldItemNormalizer {
+ 
+   /**
+diff --git a/src/Normalizer/ReplicationLogNormalizer.php b/src/Normalizer/ReplicationLogNormalizer.php
+index c812dbe..5a72c4e 100644
+--- a/src/Normalizer/ReplicationLogNormalizer.php
++++ b/src/Normalizer/ReplicationLogNormalizer.php
+@@ -9,6 +9,9 @@ use Drupal\replication\Entity\ReplicationLogInterface;
+ use Drupal\serialization\Normalizer\NormalizerBase;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class ReplicationLogNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   /**
+@@ -47,7 +50,7 @@ class ReplicationLogNormalizer extends NormalizerBase implements DenormalizerInt
+         '_id' => '@id',
+       ],
+       '@type' => 'replication_log',
+-      '_id' => '_local/'. $entity->uuid(),
++      '_id' => '_local/' . $entity->uuid(),
+       '_rev' => $entity->_rev->value,
+       'history' => $this->serializer->normalize($entity->get('history'), $format, $context),
+       'session_id' => $entity->getSessionId(),
+@@ -56,6 +59,7 @@ class ReplicationLogNormalizer extends NormalizerBase implements DenormalizerInt
+ 
+     return $data;
+   }
++
+   /**
+    * @inheritDoc
+    */
+@@ -78,21 +82,25 @@ class ReplicationLogNormalizer extends NormalizerBase implements DenormalizerInt
+       $entity = ReplicationLog::create($data);
+       return $entity;
+     }
+-    catch(\Exception $e) {
++    catch (\Exception $e) {
+       watchdog_exception('Replication', $e);
+     }
+   }
+ 
++  /**
++   *
++   */
+   public function supportsDenormalization($data, $type, $format = NULL) {
+     // We need to accept both ReplicationLog and ContentEntityInterface classes.
+     // LocalDocResource entities are treated as standard documents (content entities)
+-    if (in_array($type, ['Drupal\Core\Entity\ContentEntityInterface', 'Drupal\replication\Entity\ReplicationLog'], true)) {
++    if (in_array($type, ['Drupal\Core\Entity\ContentEntityInterface', 'Drupal\replication\Entity\ReplicationLog'], TRUE)) {
+       // If a document doesn't have a type set, we assume it's a replication log.
+       // We also support documents specifically specified as replication logs.
+       if (!isset($data['@type']) || $data['@type'] === 'replication_log') {
+-        return true;
++        return TRUE;
+       }
+     }
+-    return false;
++    return FALSE;
+   }
++
+ }
+diff --git a/src/Normalizer/RevisionInfoItemListNormalizer.php b/src/Normalizer/RevisionInfoItemListNormalizer.php
+index 56e678d..2506e5f 100644
+--- a/src/Normalizer/RevisionInfoItemListNormalizer.php
++++ b/src/Normalizer/RevisionInfoItemListNormalizer.php
+@@ -4,6 +4,9 @@ namespace Drupal\replication\Normalizer;
+ 
+ use Drupal\serialization\Normalizer\ListNormalizer;
+ 
++/**
++ *
++ */
+ class RevisionInfoItemListNormalizer extends ListNormalizer {
+ 
+   /**
+@@ -25,4 +28,5 @@ class RevisionInfoItemListNormalizer extends ListNormalizer {
+     }
+     return [];
+   }
++
+ }
+diff --git a/src/Normalizer/RevsDiffNormalizer.php b/src/Normalizer/RevsDiffNormalizer.php
+index 767d310..2d5ebd1 100644
+--- a/src/Normalizer/RevsDiffNormalizer.php
++++ b/src/Normalizer/RevsDiffNormalizer.php
+@@ -7,6 +7,9 @@ use Drupal\serialization\Normalizer\NormalizerBase;
+ use Symfony\Component\Serializer\Exception\LogicException;
+ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+ 
++/**
++ *
++ */
+ class RevsDiffNormalizer extends NormalizerBase implements DenormalizerInterface {
+ 
+   /**
+@@ -19,9 +22,13 @@ class RevsDiffNormalizer extends NormalizerBase implements DenormalizerInterface
+    */
+   protected $format = ['json'];
+ 
+-  /** @var  \Drupal\replication\RevisionDiffFactoryInterface */
++  /**
++   * @var  \Drupal\replication\RevisionDiffFactoryInterface*/
+   protected $revisionDiffFactory;
+ 
++  /**
++   *
++   */
+   public function __construct(RevisionDiffFactoryInterface $revisiondiff_factory) {
+     $this->revisionDiffFactory = $revisiondiff_factory;
+   }
+diff --git a/src/Normalizer/TaxonomyTermNormalizer.php b/src/Normalizer/TaxonomyTermNormalizer.php
+index 4bdeeb5..5a69f30 100644
+--- a/src/Normalizer/TaxonomyTermNormalizer.php
++++ b/src/Normalizer/TaxonomyTermNormalizer.php
+@@ -4,6 +4,9 @@ namespace Drupal\replication\Normalizer;
+ 
+ use Drupal\taxonomy\TermInterface;
+ 
++/**
++ *
++ */
+ class TaxonomyTermNormalizer extends ContentEntityNormalizer {
+ 
+   /**
+diff --git a/src/Normalizer/WorkspaceNormalizer.php b/src/Normalizer/WorkspaceNormalizer.php
+index c46b935..8ddec03 100644
+--- a/src/Normalizer/WorkspaceNormalizer.php
++++ b/src/Normalizer/WorkspaceNormalizer.php
+@@ -66,4 +66,5 @@ class WorkspaceNormalizer extends EntityNormalizer {
+     $data['type'] = $workspace_type->id();
+     return \Drupal::entityTypeManager()->getStorage('workspace')->create($data);
+   }
++
+ }
+diff --git a/src/Plugin/Field/FieldType/ReplicationHistoryItemList.php b/src/Plugin/Field/FieldType/ReplicationHistoryItemList.php
+index f14ffeb..2bf73fe 100644
+--- a/src/Plugin/Field/FieldType/ReplicationHistoryItemList.php
++++ b/src/Plugin/Field/FieldType/ReplicationHistoryItemList.php
+@@ -4,4 +4,7 @@ namespace Drupal\replication\Plugin\Field\FieldType;
+ 
+ use Drupal\Core\Field\FieldItemList;
+ 
++/**
++ *
++ */
+ class ReplicationHistoryItemList extends FieldItemList {}
+diff --git a/src/Plugin/ReplicationFilter/EntityTypeFilter.php b/src/Plugin/ReplicationFilter/EntityTypeFilter.php
+index ea105a4..f5062f2 100644
+--- a/src/Plugin/ReplicationFilter/EntityTypeFilter.php
++++ b/src/Plugin/ReplicationFilter/EntityTypeFilter.php
+@@ -3,7 +3,6 @@
+ namespace Drupal\replication\Plugin\ReplicationFilter;
+ 
+ use Drupal\Core\Entity\EntityInterface;
+-use Drupal\replication\Plugin\ReplicationFilter\ReplicationFilterBase;
+ 
+ /**
+  * Provides a filter based on entity type.
+diff --git a/src/Plugin/ReplicationFilter/PublishedFilter.php b/src/Plugin/ReplicationFilter/PublishedFilter.php
+index a049fb1..a2cfdaa 100644
+--- a/src/Plugin/ReplicationFilter/PublishedFilter.php
++++ b/src/Plugin/ReplicationFilter/PublishedFilter.php
+@@ -5,7 +5,6 @@ namespace Drupal\replication\Plugin\ReplicationFilter;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+-use Drupal\replication\Plugin\ReplicationFilter\ReplicationFilterBase;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+diff --git a/src/Plugin/ReplicationFilterInterface.php b/src/Plugin/ReplicationFilterInterface.php
+index c041c30..62b10fb 100644
+--- a/src/Plugin/ReplicationFilterInterface.php
++++ b/src/Plugin/ReplicationFilterInterface.php
+@@ -31,7 +31,7 @@ interface ReplicationFilterInterface extends PluginInspectionInterface, Configur
+   /**
+    * Filter the given entity.
+    *
+-   * @param EntityInterface $entity
++   * @param \Drupal\Core\Entity\EntityInterface $entity
+    *   The entity to filter.
+    *
+    * @return bool
+diff --git a/src/Plugin/ReplicationFilterManager.php b/src/Plugin/ReplicationFilterManager.php
+index 9fd4abc..343825e 100644
+--- a/src/Plugin/ReplicationFilterManager.php
++++ b/src/Plugin/ReplicationFilterManager.php
+@@ -5,7 +5,6 @@ namespace Drupal\replication\Plugin;
+ use Drupal\Core\Cache\CacheBackendInterface;
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Plugin\DefaultPluginManager;
+-use Drupal\replication\Plugin\ReplicationFilterManagerInterface;
+ 
+ /**
+  * {@inheritdoc}
+diff --git a/src/ProcessFileAttachment.php b/src/ProcessFileAttachment.php
+index 550fefc..52d1061 100644
+--- a/src/ProcessFileAttachment.php
++++ b/src/ProcessFileAttachment.php
+@@ -4,22 +4,30 @@ namespace Drupal\replication;
+ 
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Session\AccountProxyInterface;
+-use Drupal\file\FileInterface;
+ use Drupal\multiversion\Entity\Index\MultiversionIndexFactory;
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ class ProcessFileAttachment {
+ 
+-  /** @var \Drupal\Core\Session\AccountProxyInterface  */
++  /**
++   * @var \Drupal\Core\Session\AccountProxyInterface*/
+   protected $current_user;
+ 
+-  /** @var  \Drupal\Core\Entity\EntityTypeManagerInterface */
++  /**
++   * @var  \Drupal\Core\Entity\EntityTypeManagerInterface*/
+   protected $entity_type_manager;
+ 
+-  /** @var \Drupal\multiversion\Entity\Index\MultiversionIndexFactory  */
++  /**
++   * @var \Drupal\multiversion\Entity\Index\MultiversionIndexFactory*/
+   protected $index_factory;
+ 
+-  function __construct(AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, MultiversionIndexFactory $index_factory) {
++  /**
++   *
++   */
++  public function __construct(AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, MultiversionIndexFactory $index_factory) {
+     $this->current_user = $current_user;
+     $this->entity_type_manager = $entity_type_manager;
+     $this->index_factory = $index_factory;
+@@ -34,9 +42,9 @@ class ProcessFileAttachment {
+    * @param string $format
+    * @param \Drupal\multiversion\Entity\WorkspaceInterface $workspace
+    *
+-   * @return \Drupal\file\FileInterface|NULL
++   * @return \Drupal\file\FileInterface|null
+    */
+-  public function process($data, $format, WorkspaceInterface $workspace = null) {
++  public function process($data, $format, WorkspaceInterface $workspace = NULL) {
+     $current_user_id = $this->current_user->id();
+     $uri = $data['uri'];
+     $file_uuid = $data['uuid'];
+@@ -45,7 +53,7 @@ class ProcessFileAttachment {
+     $uuid_index = $this->index_factory->get('multiversion.entity_index.uuid', $workspace);
+     $entity_info = $uuid_index->get($file_uuid);
+     if (!empty($entity_info)) {
+-      /** @var FileInterface $file */
++      /** @var \Drupal\file\FileInterface $file */
+       $file = $this->entity_type_manager->getStorage($entity_info['entity_type_id'])
+         ->load($entity_info['entity_id']);
+       if (!$file || !is_file($file->getFileUri())) {
+diff --git a/src/ReplicationTask/ReplicationTaskInterface.php b/src/ReplicationTask/ReplicationTaskInterface.php
+index 083ca36..631f227 100644
+--- a/src/ReplicationTask/ReplicationTaskInterface.php
++++ b/src/ReplicationTask/ReplicationTaskInterface.php
+@@ -35,7 +35,7 @@ interface ReplicationTaskInterface {
+   /**
+    * Set the parameters for the filter plugin.
+    *
+-   * @param array|NULL $parameters
++   * @param array|null $parameters
+    *   An associative array of name-value parameters.
+    *
+    * @return ReplicationTaskInterface
+@@ -167,12 +167,12 @@ interface ReplicationTaskInterface {
+   public function setHeartbeat($heartbeat);
+ 
+   /**
+-   * @return boolean
++   * @return bool
+    */
+   public function getCreateTarget();
+ 
+   /**
+-   * @param boolean $createTarget
++   * @param bool $createTarget
+    */
+   public function setCreateTarget($createTarget);
+ 
+diff --git a/src/RevisionDiff/RevisionDiff.php b/src/RevisionDiff/RevisionDiff.php
+index 00e054b..331caa8 100644
+--- a/src/RevisionDiff/RevisionDiff.php
++++ b/src/RevisionDiff/RevisionDiff.php
+@@ -5,6 +5,9 @@ namespace Drupal\replication\RevisionDiff;
+ use Drupal\multiversion\Entity\Index\RevisionIndexInterface;
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ class RevisionDiff implements RevisionDiffInterface {
+ 
+   /**
+diff --git a/src/RevisionDiff/RevisionDiffInterface.php b/src/RevisionDiff/RevisionDiffInterface.php
+index a1691cd..6146fb8 100644
+--- a/src/RevisionDiff/RevisionDiffInterface.php
++++ b/src/RevisionDiff/RevisionDiffInterface.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\replication\RevisionDiff;
+ 
++/**
++ *
++ */
+ interface RevisionDiffInterface {
+ 
+   /**
+@@ -16,6 +19,7 @@ interface RevisionDiffInterface {
+ 
+   /**
+    * Returns missing revisions ids.
++   *
+    * @return array
+    */
+   public function getMissing();
+diff --git a/src/RevisionDiffFactory.php b/src/RevisionDiffFactory.php
+index 8110a13..2b4c63a 100644
+--- a/src/RevisionDiffFactory.php
++++ b/src/RevisionDiffFactory.php
+@@ -6,6 +6,9 @@ use Drupal\multiversion\Entity\Index\RevisionIndexInterface;
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ use Drupal\replication\RevisionDiff\RevisionDiff;
+ 
++/**
++ *
++ */
+ class RevisionDiffFactory implements RevisionDiffFactoryInterface {
+ 
+   /**
+diff --git a/src/RevisionDiffFactoryInterface.php b/src/RevisionDiffFactoryInterface.php
+index 0952324..93cf139 100644
+--- a/src/RevisionDiffFactoryInterface.php
++++ b/src/RevisionDiffFactoryInterface.php
+@@ -4,6 +4,9 @@ namespace Drupal\replication;
+ 
+ use Drupal\multiversion\Entity\WorkspaceInterface;
+ 
++/**
++ *
++ */
+ interface RevisionDiffFactoryInterface {
+ 
+   /**
+diff --git a/src/UsersMapping.php b/src/UsersMapping.php
+index b566dd6..ea78b8f 100644
+--- a/src/UsersMapping.php
++++ b/src/UsersMapping.php
+@@ -6,6 +6,9 @@ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\user\UserInterface;
+ 
++/**
++ *
++ */
+ class UsersMapping {
+ 
+   /**
+@@ -18,7 +21,10 @@ class UsersMapping {
+    */
+   protected $entityTypeManager;
+ 
+-  function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
++  /**
++   *
++   */
++  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
+     $this->configFactory = $config_factory;
+     $this->entityTypeManager = $entity_type_manager;
+   }
+diff --git a/tests/modules/replication_alter_test/src/Event/ContentEntityTestAlterSubscriber.php b/tests/modules/replication_alter_test/src/Event/ContentEntityTestAlterSubscriber.php
+index ab4751d..7829189 100644
+--- a/tests/modules/replication_alter_test/src/Event/ContentEntityTestAlterSubscriber.php
++++ b/tests/modules/replication_alter_test/src/Event/ContentEntityTestAlterSubscriber.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\replication_alter_test\Event;
+ 
+-
+ use Drupal\replication\Event\ReplicationContentDataAlterEvent;
+ use Drupal\replication\Event\ReplicationDataEvents;
+ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+@@ -24,7 +23,7 @@ class ContentEntityTestAlterSubscriber implements EventSubscriberInterface {
+   /**
+    * Alter content normalization data.
+    *
+-   * @param ReplicationContentDataAlterEvent $event
++   * @param \Drupal\replication\Event\ReplicationContentDataAlterEvent $event
+    */
+   public function onAlterContentData(ReplicationContentDataAlterEvent $event) {
+     // Add some data under a '_test' key.
+diff --git a/tests/src/Functional/ProcessFileAttachmentTest.php b/tests/src/Functional/ProcessFileAttachmentTest.php
+index 29ff5c2..33ed5f5 100644
+--- a/tests/src/Functional/ProcessFileAttachmentTest.php
++++ b/tests/src/Functional/ProcessFileAttachmentTest.php
+@@ -2,7 +2,6 @@
+ 
+ namespace Drupal\Tests\replication\Functional;
+ 
+-use Drupal\file\FileInterface;
+ use Drupal\multiversion\Entity\Workspace;
+ use Drupal\Tests\BrowserTestBase;
+ 
+@@ -31,13 +30,13 @@ class ProcessFileAttachmentTest extends BrowserTestBase {
+       'uri' => 'public://file1.txt',
+       'uuid' => '6f9e1f07-e713-4840-bf95-8326c8317800',
+     ];
+-    /** @var FileInterface $file1 */
++    /** @var \Drupal\file\FileInterface $file1 */
+     $file1 = \Drupal::service('replication.process_file_attachment')->process($data, 'base64_stream');
+     $file1->save();
+     $this->assertEquals('6f9e1f07-e713-4840-bf95-8326c8317800', $file1->uuid(), 'The file has the expected UUID.');
+     $this->assertEquals($live->id(), $file1->get('workspace')->entity->id(), 'Expected workspace');
+ 
+-    /** @var FileInterface $file2 */
++    /** @var \Drupal\file\FileInterface $file2 */
+     $file2 = \Drupal::service('replication.process_file_attachment')->process($data, 'base64_stream');
+     $file2->save();
+     $this->assertEquals('6f9e1f07-e713-4840-bf95-8326c8317800', $file2->uuid(), 'The file has the expected UUID.');
+@@ -49,7 +48,7 @@ class ProcessFileAttachmentTest extends BrowserTestBase {
+     $this->assertFalse(is_file($file2->getFileUri()));
+     $this->assertFalse(is_file($file1->getFileUri()));
+ 
+-    /** @var FileInterface $file3 */
++    /** @var \Drupal\file\FileInterface $file3 */
+     $file3 = \Drupal::service('replication.process_file_attachment')->process($data, 'base64_stream');
+     $file3->save();
+     $this->assertEquals('6f9e1f07-e713-4840-bf95-8326c8317800', $file3->uuid(), 'The file has the expected UUID.');
+@@ -59,7 +58,7 @@ class ProcessFileAttachmentTest extends BrowserTestBase {
+     $this->assertEquals($file2->id(), $file3->id(), 'The two files have the same id.');
+     $this->assertTrue(is_file($file3->getFileUri()));
+ 
+-    /** @var FileInterface $file4 */
++    /** @var \Drupal\file\FileInterface $file4 */
+     $file4 = \Drupal::service('replication.process_file_attachment')->process($data, 'base64_stream', $stage);
+     $file4->save();
+     $this->assertEquals('6f9e1f07-e713-4840-bf95-8326c8317800', $file4->uuid(), 'The file has the expected UUID.');
+@@ -67,4 +66,5 @@ class ProcessFileAttachmentTest extends BrowserTestBase {
+ 
+     $this->assertNotEquals($file1->id(), $file4->id(), 'The files do not have the same id');
+   }
+-}
+\ No newline at end of file
++
++}
+diff --git a/tests/src/Kernel/AllDocsFactoryTest.php b/tests/src/Kernel/AllDocsFactoryTest.php
+index f7d5aba..ff810cf 100644
+--- a/tests/src/Kernel/AllDocsFactoryTest.php
++++ b/tests/src/Kernel/AllDocsFactoryTest.php
+@@ -7,7 +7,7 @@ use Drupal\multiversion\Entity\Workspace;
+ use Drupal\replication\AllDocs\AllDocsInterface;
+ 
+ /**
+- * Tests the AllDocsFactory
++ * Tests the AllDocsFactory.
+  *
+  * @group replication
+  */
+@@ -23,9 +23,13 @@ class AllDocsFactoryTest extends KernelTestBase {
+     'replication',
+   ];
+ 
+-  /** @var  Workspace */
++  /**
++   * @var  \Drupal\multiversion\Entity\Workspace*/
+   protected $workspace;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('user');
+@@ -40,6 +44,9 @@ class AllDocsFactoryTest extends KernelTestBase {
+     $this->workspace->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testAllDocsFactory() {
+     $all_docs = \Drupal::service('replication.alldocs_factory')->get($this->workspace);
+     $this->assertTrue(($all_docs instanceof AllDocsInterface));
+diff --git a/tests/src/Kernel/BulkDocsFactoryTest.php b/tests/src/Kernel/BulkDocsFactoryTest.php
+index 61aa602..dcc69e4 100644
+--- a/tests/src/Kernel/BulkDocsFactoryTest.php
++++ b/tests/src/Kernel/BulkDocsFactoryTest.php
+@@ -7,7 +7,7 @@ use Drupal\multiversion\Entity\Workspace;
+ use Drupal\replication\BulkDocs\BulkDocsInterface;
+ 
+ /**
+- * Tests the AllDocsFactory
++ * Tests the AllDocsFactory.
+  *
+  * @group replication
+  */
+@@ -23,9 +23,13 @@ class BulkDocsFactoryTest extends KernelTestBase {
+     'replication',
+   ];
+ 
+-  /** @var  Workspace */
++  /**
++   * @var  \Drupal\multiversion\Entity\Workspace*/
+   protected $workspace;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('user');
+@@ -40,6 +44,9 @@ class BulkDocsFactoryTest extends KernelTestBase {
+     $this->workspace->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testBulkDocsFactory() {
+     $bulk_docs = \Drupal::service('replication.bulkdocs_factory')->get($this->workspace);
+     $this->assertTrue(($bulk_docs instanceof BulkDocsInterface));
+diff --git a/tests/src/Kernel/ChangesFactoryTest.php b/tests/src/Kernel/ChangesFactoryTest.php
+index 2e64d00..de17ec4 100644
+--- a/tests/src/Kernel/ChangesFactoryTest.php
++++ b/tests/src/Kernel/ChangesFactoryTest.php
+@@ -23,9 +23,13 @@ class ChangesFactoryTest extends KernelTestBase {
+     'replication',
+   ];
+ 
+-  /** @var  Workspace */
++  /**
++   * @var  \Drupal\multiversion\Entity\Workspace*/
+   protected $workspace;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('user');
+@@ -40,6 +44,9 @@ class ChangesFactoryTest extends KernelTestBase {
+     $this->workspace->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testChangesFactory() {
+     $changes = \Drupal::service('replication.changes_factory')->get($this->workspace);
+     $this->assertTrue(($changes instanceof ChangesInterface));
+diff --git a/tests/src/Kernel/Encoder/StreamEncoderTest.php b/tests/src/Kernel/Encoder/StreamEncoderTest.php
+index 2100382..779f5c4 100644
+--- a/tests/src/Kernel/Encoder/StreamEncoderTest.php
++++ b/tests/src/Kernel/Encoder/StreamEncoderTest.php
+@@ -24,11 +24,17 @@ class StreamEncoderTest extends KernelTestBase {
+    */
+   protected $encoder;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->encoder = new StreamEncoder();
+   }
+ 
++  /**
++   *
++   */
+   public function testEncode() {
+     $a_string = 'foo';
+     $a = fopen('php://memory', 'w+b');
+@@ -44,6 +50,9 @@ class StreamEncoderTest extends KernelTestBase {
+     $this->assertEquals(base64_encode($b_string), $this->encoder->encode($b, 'base64_stream'));
+   }
+ 
++  /**
++   *
++   */
+   public function testDencode() {
+     $a_string = 'foo';
+     $a = $this->encoder->decode($a_string, 'stream');
+diff --git a/tests/src/Kernel/LinkStubReplicationTest.php b/tests/src/Kernel/LinkStubReplicationTest.php
+index 859c095..da7d107 100644
+--- a/tests/src/Kernel/LinkStubReplicationTest.php
++++ b/tests/src/Kernel/LinkStubReplicationTest.php
+@@ -119,7 +119,7 @@ class LinkStubReplicationTest extends KernelTestBase {
+           ['@language' => 'en'],
+         'langcode' =>
+           [
+-            ['value' => 'en',],
++            ['value' => 'en'],
+           ],
+         'type' => [
+           ['target_id' => 'article_with_link'],
+diff --git a/tests/src/Kernel/Normalizer/AttachmentNormalizerTest.php b/tests/src/Kernel/Normalizer/AttachmentNormalizerTest.php
+index e565efa..8df390c 100644
+--- a/tests/src/Kernel/Normalizer/AttachmentNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/AttachmentNormalizerTest.php
+@@ -37,6 +37,9 @@ class AttachmentNormalizerTest extends NormalizerTestBase {
+    */
+   protected $fileEntity;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+@@ -49,6 +52,9 @@ class AttachmentNormalizerTest extends NormalizerTestBase {
+     $this->fileEntity = File::create(['uri' => $meta['uri']]);
+   }
+ 
++  /**
++   *
++   */
+   public function testNormalizer() {
+     // Test normalize.
+     $normalized = $this->serializer->normalize($this->fileEntity);
+diff --git a/tests/src/Kernel/Normalizer/BulkDocsNormalizerTest.php b/tests/src/Kernel/Normalizer/BulkDocsNormalizerTest.php
+index c043a56..04eed8e 100644
+--- a/tests/src/Kernel/Normalizer/BulkDocsNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/BulkDocsNormalizerTest.php
+@@ -40,6 +40,9 @@ class BulkDocsNormalizerTest extends NormalizerTestBase {
+    */
+   protected $testValuesNumber = 3;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->testEntities = $this->createTestEntities('entity_test_mulrev', $this->testValuesNumber);
+@@ -54,6 +57,9 @@ class BulkDocsNormalizerTest extends NormalizerTestBase {
+     $this->bulkDocs->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testNormalizer() {
+     // Test normalize.
+     $expected = [];
+@@ -92,7 +98,7 @@ class BulkDocsNormalizerTest extends NormalizerTestBase {
+     $bulk_docs = $this->serializer->denormalize($data, 'Drupal\replication\BulkDocs\BulkDocs', 'json', $context);
+     $this->assertTrue($bulk_docs instanceof BulkDocsInterface, 'Denormalized data is an instance of the correct interface.');
+     foreach ($bulk_docs->getEntities() as $key => $entity) {
+-      $entity_number = $key+1;
++      $entity_number = $key + 1;
+       $this->assertTrue($entity instanceof $this->entityClass, new FormattableMarkup("Denormalized entity number $entity_number is an instance of @class", ['@class' => $this->entityClass]));
+       $this->assertSame($entity->getEntityTypeId(), $this->testEntities[$key]->getEntityTypeId(), "Expected entity type foundfor entity number $entity_number.");
+       $this->assertSame($entity->bundle(), $this->testEntities[$key]->bundle(), "Expected entity bundle found for entity number $entity_number.");
+@@ -102,6 +108,9 @@ class BulkDocsNormalizerTest extends NormalizerTestBase {
+     // @todo {@link https://www.drupal.org/node/2600460 Test context switches.}
+   }
+ 
++  /**
++   *
++   */
+   protected function createTestEntities($entity_type, $number = 3) {
+     $entities = [];
+     $entity_manager = \Drupal::entityManager();
+diff --git a/tests/src/Kernel/Normalizer/ContentEntityNormalizerAlterTest.php b/tests/src/Kernel/Normalizer/ContentEntityNormalizerAlterTest.php
+index c07cb22..1c89c89 100644
+--- a/tests/src/Kernel/Normalizer/ContentEntityNormalizerAlterTest.php
++++ b/tests/src/Kernel/Normalizer/ContentEntityNormalizerAlterTest.php
+@@ -37,6 +37,9 @@ class ContentEntityNormalizerAlterTest extends NormalizerTestBase {
+    */
+   protected $entityClass = EntityTest::class;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+@@ -60,7 +63,7 @@ class ContentEntityNormalizerAlterTest extends NormalizerTestBase {
+   public function testNormalizerAlterEvent() {
+     $normalized = $this->serializer->normalize($this->entity);
+     // The '_test' key should be added in
+-    // \Drupal\replication_alter_test\Event\ContentEntityTestAlterSubscriber::onAlterContentData
++    // \Drupal\replication_alter_test\Event\ContentEntityTestAlterSubscriber::onAlterContentData.
+     $this->assertSame(['foo' => 'bar'], $normalized['_test']);
+   }
+ 
+diff --git a/tests/src/Kernel/Normalizer/ContentEntityNormalizerTest.php b/tests/src/Kernel/Normalizer/ContentEntityNormalizerTest.php
+index 569224f..3b4378f 100644
+--- a/tests/src/Kernel/Normalizer/ContentEntityNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/ContentEntityNormalizerTest.php
+@@ -15,6 +15,9 @@ class ContentEntityNormalizerTest extends NormalizerTestBase {
+ 
+   protected $entityClass = 'Drupal\entity_test\Entity\EntityTest';
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+@@ -54,13 +57,16 @@ class ContentEntityNormalizerTest extends NormalizerTestBase {
+     $this->romanian = $entity->getTranslation('ro');
+   }
+ 
++  /**
++   *
++   */
+   public function testNormalizer() {
+     $revs = EntityTestMulRev::load($this->entity->id())->_rev->revisions;
+     // Test normalize.
+     $expected = [
+       '@context' => [
+         '_id' => '@id',
+-        '@language' => 'en'
++        '@language' => 'en',
+       ],
+       '@type' => 'entity_test_mulrev',
+       'en' => [
+@@ -177,7 +183,6 @@ class ContentEntityNormalizerTest extends NormalizerTestBase {
+     $this->assertEquals(array_diff_key($normalized, $expected), [], 'No unexpected data is added to the normalized array.');
+ 
+     // @todo {@link https://www.drupal.org/node/2600460 Test context switches.}
+-
+     // Test serialize.
+     $normalized = $this->serializer->normalize($this->entity);
+     $expected = json_encode($normalized);
+diff --git a/tests/src/Kernel/Normalizer/EntityReferenceItemNormalizerTest.php b/tests/src/Kernel/Normalizer/EntityReferenceItemNormalizerTest.php
+index 5bb321a..0577a3a 100644
+--- a/tests/src/Kernel/Normalizer/EntityReferenceItemNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/EntityReferenceItemNormalizerTest.php
+@@ -41,7 +41,7 @@ class EntityReferenceItemNormalizerTest extends NormalizerTestBase {
+     $expected = [
+       '@context' => [
+         '_id' => '@id',
+-        '@language' => 'en'
++        '@language' => 'en',
+       ],
+       '@type' => 'entity_test_mulrev',
+       'en' => [
+diff --git a/tests/src/Kernel/Normalizer/FileEntityNormalizerTest.php b/tests/src/Kernel/Normalizer/FileEntityNormalizerTest.php
+index ceff71d..82aa398 100644
+--- a/tests/src/Kernel/Normalizer/FileEntityNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/FileEntityNormalizerTest.php
+@@ -56,7 +56,7 @@ class FileEntityNormalizerTest extends NormalizerTestBase {
+     $expected = [
+       '@context' => [
+         '_id' => '@id',
+-        '@language' => 'en'
++        '@language' => 'en',
+       ],
+       '@type' => 'file',
+       'en' => [
+@@ -103,7 +103,6 @@ class FileEntityNormalizerTest extends NormalizerTestBase {
+       ],
+     ];
+ 
+-
+     $normalized = $this->serializer->normalize($file);
+ 
+     // Get the minor version only from the \Drupal::VERSION string.
+diff --git a/tests/src/Kernel/Normalizer/LinkItemNormalizerTest.php b/tests/src/Kernel/Normalizer/LinkItemNormalizerTest.php
+index 1d77260..7b8e22e 100644
+--- a/tests/src/Kernel/Normalizer/LinkItemNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/LinkItemNormalizerTest.php
+@@ -24,6 +24,9 @@ class LinkItemNormalizerTest extends NormalizerTestBase {
+    */
+   protected $user;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+ 
+@@ -96,7 +99,7 @@ class LinkItemNormalizerTest extends NormalizerTestBase {
+     $expected = [
+       '@context' => [
+         '_id' => '@id',
+-        '@language' => 'en'
++        '@language' => 'en',
+       ],
+       '@type' => 'entity_test_mulrev',
+       'en' => [
+diff --git a/tests/src/Kernel/Normalizer/NormalizerTestBase.php b/tests/src/Kernel/Normalizer/NormalizerTestBase.php
+index 1f50138..192ee47 100644
+--- a/tests/src/Kernel/Normalizer/NormalizerTestBase.php
++++ b/tests/src/Kernel/Normalizer/NormalizerTestBase.php
+@@ -7,6 +7,9 @@ use Drupal\field\Entity\FieldStorageConfig;
+ use Drupal\KernelTests\KernelTestBase;
+ use Drupal\multiversion\Entity\Workspace;
+ 
++/**
++ *
++ */
+ abstract class NormalizerTestBase extends KernelTestBase {
+ 
+   /**
+@@ -36,6 +39,9 @@ abstract class NormalizerTestBase extends KernelTestBase {
+    */
+   protected $serializer;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('entity_test');
+diff --git a/tests/src/Kernel/Normalizer/ReplicationLogNormalizerTest.php b/tests/src/Kernel/Normalizer/ReplicationLogNormalizerTest.php
+index e51cf52..d08fc20 100644
+--- a/tests/src/Kernel/Normalizer/ReplicationLogNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/ReplicationLogNormalizerTest.php
+@@ -13,11 +13,17 @@ class ReplicationLogNormalizerTest extends NormalizerTestBase {
+ 
+   protected $entityClass = 'Drupal\replication\Entity\ReplicationLog';
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->entity = ReplicationLog::create(['source_last_seq' => 99]);
+   }
+ 
++  /**
++   *
++   */
+   public function testNormalizer() {
+     // Test normalize.
+     $expected = [
+diff --git a/tests/src/Kernel/Normalizer/WorkspaceNormalizerTest.php b/tests/src/Kernel/Normalizer/WorkspaceNormalizerTest.php
+index c08e9d0..c1c030d 100644
+--- a/tests/src/Kernel/Normalizer/WorkspaceNormalizerTest.php
++++ b/tests/src/Kernel/Normalizer/WorkspaceNormalizerTest.php
+@@ -14,6 +14,9 @@ class WorkspaceNormalizerTest extends NormalizerTestBase {
+ 
+   protected $entityClass = 'Drupal\multiversion\Entity\Workspace';
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $name = $this->randomMachineName();
+@@ -21,6 +24,9 @@ class WorkspaceNormalizerTest extends NormalizerTestBase {
+     $this->entity->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testNormalizer() {
+     // Test normalize.
+     $expected = [
+diff --git a/tests/src/Kernel/Plugin/ReplicationFilter/PublishedFilterTest.php b/tests/src/Kernel/Plugin/ReplicationFilter/PublishedFilterTest.php
+index e167d49..3d74aea 100644
+--- a/tests/src/Kernel/Plugin/ReplicationFilter/PublishedFilterTest.php
++++ b/tests/src/Kernel/Plugin/ReplicationFilter/PublishedFilterTest.php
+@@ -69,9 +69,9 @@ class PublishedFilterTest extends KernelTestBase {
+     ];
+     $filter = $filter_manager->createInstance('published', $configuration);
+     $entity = $this->container
+-        ->get('entity_type.manager')
+-        ->getStorage($entity_type_id)
+-        ->create($entity_values);
++      ->get('entity_type.manager')
++      ->getStorage($entity_type_id)
++      ->create($entity_values);
+ 
+     $value = $filter->filter($entity);
+ 
+@@ -86,9 +86,9 @@ class PublishedFilterTest extends KernelTestBase {
+     $filter_manager = $this->container->get('plugin.manager.replication_filter');
+     $filter = $filter_manager->createInstance('published');
+     $entity = $this->container
+-        ->get('entity_type.manager')
+-        ->getStorage('block_content')
+-        ->create(['type' => 'test']);
++      ->get('entity_type.manager')
++      ->getStorage('block_content')
++      ->create(['type' => 'test']);
+ 
+     $value = $filter->filter($entity);
+ 
+diff --git a/tests/src/Kernel/ReplicationLogTest.php b/tests/src/Kernel/ReplicationLogTest.php
+index 641575b..24664c4 100644
+--- a/tests/src/Kernel/ReplicationLogTest.php
++++ b/tests/src/Kernel/ReplicationLogTest.php
+@@ -15,6 +15,9 @@ class ReplicationLogTest extends KernelTestBase {
+ 
+   public static $modules = ['user', 'serialization', 'key_value', 'multiversion', 'replication'];
+ 
++  /**
++   *
++   */
+   public function testOperations() {
+     $this->installEntitySchema('replication_log');
+     $entityTypeManager = $this->container->get('entity_type.manager');
+@@ -22,7 +25,7 @@ class ReplicationLogTest extends KernelTestBase {
+     $this->assertTrue($entity instanceof ReplicationLog, 'Replication Log entity was created.');
+ 
+     // Set required fields.
+-    /** @var ReplicationLog $entity */
++    /** @var \Drupal\replication\Entity\ReplicationLog $entity */
+     $entity = $entityTypeManager->getStorage('replication_log')->create();
+     $seq_id = \Drupal::service('multiversion.manager')->newSequenceId();
+     $entity->source_last_seq->value = $seq_id;
+@@ -53,7 +56,7 @@ class ReplicationLogTest extends KernelTestBase {
+       $saved = (bool) $entity->save();
+       $this->assertTrue($saved, 'Entity was saved.');
+     }
+-    catch(EntityStorageException $e) {
++    catch (EntityStorageException $e) {
+       $this->fail('Fail, trying to save entity with incorrect data format or length for history fields.');
+     }
+   }
+diff --git a/tests/src/Kernel/RevisionDiffFactoryTest.php b/tests/src/Kernel/RevisionDiffFactoryTest.php
+index 9b546d3..c29bd64 100644
+--- a/tests/src/Kernel/RevisionDiffFactoryTest.php
++++ b/tests/src/Kernel/RevisionDiffFactoryTest.php
+@@ -23,9 +23,13 @@ class RevisionDiffFactoryTest extends KernelTestBase {
+     'replication',
+   ];
+ 
+-  /** @var  Workspace */
++  /**
++   * @var  \Drupal\multiversion\Entity\Workspace*/
+   protected $workspace;
+ 
++  /**
++   *
++   */
+   protected function setUp() {
+     parent::setUp();
+     $this->installEntitySchema('user');
+@@ -40,6 +44,9 @@ class RevisionDiffFactoryTest extends KernelTestBase {
+     $this->workspace->save();
+   }
+ 
++  /**
++   *
++   */
+   public function testChangesFactory() {
+     $changes = \Drupal::service('replication.revisiondiff_factory')->get($this->workspace);
+     $this->assertTrue(($changes instanceof RevisionDiffInterface));

@@ -1,0 +1,1427 @@
+diff --git a/entity_reference_revisions.views.inc b/entity_reference_revisions.views.inc
+index 6dd8ec6..31d789a 100644
+--- a/entity_reference_revisions.views.inc
++++ b/entity_reference_revisions.views.inc
+@@ -24,21 +24,21 @@ function entity_reference_revisions_field_views_data(FieldStorageConfigInterface
+ 
+     // Provide a relationship for the entity type with the entity reference
+     // revisions field.
+-    $args = array(
++    $args = [
+       '@label' => $target_entity_type->getLabel(),
+       '@field_name' => $field_name,
+-    );
+-    $data[$table_name][$field_name]['relationship'] = array(
++    ];
++    $data[$table_name][$field_name]['relationship'] = [
+       'title' => t('@label referenced from @field_name', $args),
+       'label' => t('@field_name: @label', $args),
+       'group' => $entity_type->getLabel(),
+-      'help' =>  t('Appears in: @bundles.', array('@bundles' => implode(', ', $field_storage->getBundles()))),
++      'help' => t('Appears in: @bundles.', ['@bundles' => implode(', ', $field_storage->getBundles())]),
+       'id' => 'standard',
+       'base' => $target_base_table,
+       'entity type' => $target_entity_type_id,
+       'base field' => $target_entity_type->getKey('revision'),
+       'relationship field' => $field_name . '_target_revision_id',
+-    );
++    ];
+ 
+     // Provide a reverse relationship for the entity type that is referenced by
+     // the field.
+@@ -47,9 +47,9 @@ function entity_reference_revisions_field_views_data(FieldStorageConfigInterface
+     $pseudo_field_name = 'reverse__' . $entity_type_id . '__' . $field_name;
+     /** @var \Drupal\Core\Entity\Sql\DefaultTableMapping $table_mapping */
+     $table_mapping = $entity_manager->getStorage($entity_type_id)->getTableMapping();
+-    $data[$target_base_table][$pseudo_field_name]['relationship'] = array(
++    $data[$target_base_table][$pseudo_field_name]['relationship'] = [
+       'title' => t('@entity using @field_name', $args),
+-      'label' => t('@field_name', array('@field_name' => $field_name)),
++      'label' => t('@field_name', ['@field_name' => $field_name]),
+       'group' => $target_entity_type->getLabel(),
+       'help' => t('Relate each @entity with a @field_name set to the @label.', $args),
+       'id' => 'entity_reverse',
+@@ -59,14 +59,14 @@ function entity_reference_revisions_field_views_data(FieldStorageConfigInterface
+       'field_name' => $field_name,
+       'field table' => $table_mapping->getDedicatedDataTableName($field_storage),
+       'field field' => $field_name . '_target_revision_id',
+-      'join_extra' => array(
+-        array(
++      'join_extra' => [
++        [
+           'field' => 'deleted',
+           'value' => 0,
+           'numeric' => TRUE,
+-        ),
+-      ),
+-    );
++        ],
++      ],
++    ];
+   }
+ 
+   return $data;
+diff --git a/src/EntityNeedsSaveInterface.php b/src/EntityNeedsSaveInterface.php
+index 1513aa3..b26b0b2 100644
+--- a/src/EntityNeedsSaveInterface.php
++++ b/src/EntityNeedsSaveInterface.php
+@@ -14,4 +14,5 @@ interface EntityNeedsSaveInterface {
+    *   TRUE if the entity needs to be saved.
+    */
+   public function needsSave();
++
+ }
+diff --git a/src/EntityNeedsSaveTrait.php b/src/EntityNeedsSaveTrait.php
+index 3304010..781abdd 100644
+--- a/src/EntityNeedsSaveTrait.php
++++ b/src/EntityNeedsSaveTrait.php
+@@ -1,6 +1,7 @@
+ <?php
+ 
+ namespace Drupal\entity_reference_revisions;
++
+ use Drupal\Core\Entity\EntityStorageInterface;
+ 
+ /**
+@@ -36,4 +37,5 @@ trait EntityNeedsSaveTrait {
+     parent::postSave($storage, $update);
+     $this->setNeedsSave(FALSE);
+   }
++
+ }
+diff --git a/src/EntityReferenceRevisionsFieldItemList.php b/src/EntityReferenceRevisionsFieldItemList.php
+index 983e7be..8bd5111 100644
+--- a/src/EntityReferenceRevisionsFieldItemList.php
++++ b/src/EntityReferenceRevisionsFieldItemList.php
+@@ -4,7 +4,6 @@ namespace Drupal\entity_reference_revisions;
+ 
+ use Drupal\Core\Entity\FieldableEntityInterface;
+ use Drupal\Core\Field\FieldItemListInterface;
+-use Drupal\Core\Field\FieldItemListTranslationChangesInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\EntityReferenceFieldItemList;
+@@ -20,12 +19,12 @@ class EntityReferenceRevisionsFieldItemList extends EntityReferenceFieldItemList
+    */
+   public function referencedEntities() {
+     if (empty($this->list)) {
+-      return array();
++      return [];
+     }
+ 
+     // Collect the IDs of existing entities to load, and directly grab the
+     // "autocreate" entities that are already populated in $item->entity.
+-    $target_entities = $ids = array();
++    $target_entities = $ids = [];
+     foreach ($this->list as $delta => $item) {
+       if ($item->hasNewEntity()) {
+         $target_entities[$delta] = $item->entity;
+@@ -59,7 +58,7 @@ class EntityReferenceRevisionsFieldItemList extends EntityReferenceFieldItemList
+ 
+     if ($default_value) {
+       // Convert UUIDs to numeric IDs.
+-      $uuids = array();
++      $uuids = [];
+       foreach ($default_value as $delta => $properties) {
+         if (isset($properties['target_uuid'])) {
+           $uuids[$delta] = $properties['target_uuid'];
+@@ -74,7 +73,7 @@ class EntityReferenceRevisionsFieldItemList extends EntityReferenceFieldItemList
+           ->getStorage($target_type)
+           ->loadMultiple($entity_ids);
+ 
+-        $entity_uuids = array();
++        $entity_uuids = [];
+         foreach ($entities as $id => $entity) {
+           $entity_uuids[$entity->uuid()] = $id;
+         }
+@@ -103,23 +102,23 @@ class EntityReferenceRevisionsFieldItemList extends EntityReferenceFieldItemList
+     $default_value = parent::defaultValuesFormSubmit($element, $form, $form_state);
+ 
+     // Convert numeric IDs to UUIDs to ensure config deployability.
+-    $ids = array();
++    $ids = [];
+     foreach ($default_value as $delta => $properties) {
+       $ids[] = $properties['target_revision_id'];
+     }
+ 
+-    $entities = array();
+-    foreach($ids as $id) {
++    $entities = [];
++    foreach ($ids as $id) {
+       $entities[$id] = \Drupal::entityTypeManager()
+         ->getStorage($this->getSetting('target_type'))
+         ->loadRevision($id);
+     }
+ 
+     foreach ($default_value as $delta => $properties) {
+-      $default_value[$delta] = array(
++      $default_value[$delta] = [
+         'target_uuid' => $entities[$properties['target_revision_id']]->uuid(),
+         'target_revision_id' => $properties['target_revision_id'],
+-      );
++      ];
+     }
+     return $default_value;
+   }
+diff --git a/src/EntityReferenceRevisionsServiceProvider.php b/src/EntityReferenceRevisionsServiceProvider.php
+index 65db785..ff8f815 100644
+--- a/src/EntityReferenceRevisionsServiceProvider.php
++++ b/src/EntityReferenceRevisionsServiceProvider.php
+@@ -20,14 +20,14 @@ class EntityReferenceRevisionsServiceProvider extends ServiceProviderBase {
+     if (isset($modules['hal'])) {
+       // Hal module is enabled, add our new normalizer for entity reference
+       // revision items.
+-      $service_definition = new Definition('Drupal\entity_reference_revisions\Normalizer\EntityReferenceRevisionItemNormalizer', array(
++      $service_definition = new Definition('Drupal\entity_reference_revisions\Normalizer\EntityReferenceRevisionItemNormalizer', [
+         new Reference('hal.link_manager'),
+         new Reference('serializer.entity_resolver'),
+-      ));
++      ]);
+       // The priority must be higher than that of
+       // serializer.normalizer.entity_reference_item.hal in
+       // hal.services.yml.
+-      $service_definition->addTag('normalizer', array('priority' => 20));
++      $service_definition->addTag('normalizer', ['priority' => 20]);
+       $container->setDefinition('serializer.normalizer.entity_reference_revision_item', $service_definition);
+     }
+   }
+diff --git a/src/Normalizer/EntityReferenceRevisionItemNormalizer.php b/src/Normalizer/EntityReferenceRevisionItemNormalizer.php
+index 5c63cf2..eb780b2 100644
+--- a/src/Normalizer/EntityReferenceRevisionItemNormalizer.php
++++ b/src/Normalizer/EntityReferenceRevisionItemNormalizer.php
+@@ -31,7 +31,7 @@ class EntityReferenceRevisionItemNormalizer extends EntityReferenceItemNormalize
+   /**
+    * {@inheritdoc}
+    */
+-  public function normalize($field_item, $format = NULL, array $context = array()) {
++  public function normalize($field_item, $format = NULL, array $context = []) {
+     $data = parent::normalize($field_item, $format, $context);
+     $field_name = $field_item->getParent()->getName();
+     $entity = $field_item->getEntity();
+diff --git a/src/Plugin/DataType/EntityReferenceRevisions.php b/src/Plugin/DataType/EntityReferenceRevisions.php
+index b24b6b1..90d0f1a 100644
+--- a/src/Plugin/DataType/EntityReferenceRevisions.php
++++ b/src/Plugin/DataType/EntityReferenceRevisions.php
+@@ -36,14 +36,14 @@ class EntityReferenceRevisions extends EntityReference {
+   /**
+    * The entity revision ID.
+    *
+-   * @var integer|string
++   * @var int|string
+    */
+   protected $revision_id;
+ 
+   /**
+    * The entity ID.
+    *
+-   * @var integer|string
++   * @var int|string
+    */
+   protected $id;
+ 
+@@ -125,4 +125,5 @@ class EntityReferenceRevisions extends EntityReference {
+       $this->parent->onChange($this->name);
+     }
+   }
++
+ }
+diff --git a/src/Plugin/Derivative/MigrateEntityReferenceRevisions.php b/src/Plugin/Derivative/MigrateEntityReferenceRevisions.php
+index bb7d0c2..0dce5c0 100644
+--- a/src/Plugin/Derivative/MigrateEntityReferenceRevisions.php
++++ b/src/Plugin/Derivative/MigrateEntityReferenceRevisions.php
+@@ -6,9 +6,9 @@ use Drupal\entity_reference_revisions\Plugin\migrate\destination\EntityReference
+ use Drupal\migrate\Plugin\Derivative\MigrateEntityRevision;
+ 
+ /**
+- * Class MigrateEntityReferenceRevisions
++ * Class MigrateEntityReferenceRevisions.
+  */
+-class MigrateEntityReferenceRevisions extends MigrateEntityRevision  {
++class MigrateEntityReferenceRevisions extends MigrateEntityRevision {
+ 
+   /**
+    * {@inheritdoc}
+diff --git a/src/Plugin/Field/FieldFormatter/EntityReferenceRevisionsEntityFormatter.php b/src/Plugin/Field/FieldFormatter/EntityReferenceRevisionsEntityFormatter.php
+index 5d23ec4..ad3523d 100644
+--- a/src/Plugin/Field/FieldFormatter/EntityReferenceRevisionsEntityFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/EntityReferenceRevisionsEntityFormatter.php
+@@ -55,7 +55,7 @@ class EntityReferenceRevisionsEntityFormatter extends EntityReferenceRevisionsFo
+    *   The view mode.
+    * @param array $third_party_settings
+    *   Any third party settings settings.
+-   * @param LoggerChannelFactoryInterface $logger_factory
++   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
+    *   The logger factory.
+    * @param \Drupal\Core\Entity\EntityDisplayRepositoryInterface $entity_display_repository
+    *   The entity display repository.
+@@ -87,23 +87,23 @@ class EntityReferenceRevisionsEntityFormatter extends EntityReferenceRevisionsFo
+    * {@inheritdoc}
+    */
+   public static function defaultSettings() {
+-    return array(
++    return [
+       'view_mode' => 'default',
+       'link' => FALSE,
+-    ) + parent::defaultSettings();
++    ] + parent::defaultSettings();
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function settingsForm(array $form, FormStateInterface $form_state) {
+-    $elements['view_mode'] = array(
++    $elements['view_mode'] = [
+       '#type' => 'select',
+       '#options' => $this->entityDisplayRepository->getViewModeOptions($this->getFieldSetting('target_type')),
+       '#title' => $this->t('View mode'),
+       '#default_value' => $this->getSetting('view_mode'),
+       '#required' => TRUE,
+-    );
++    ];
+ 
+     return $elements;
+   }
+@@ -112,11 +112,11 @@ class EntityReferenceRevisionsEntityFormatter extends EntityReferenceRevisionsFo
+    * {@inheritdoc}
+    */
+   public function settingsSummary() {
+-    $summary = array();
++    $summary = [];
+ 
+     $view_modes = $this->entityDisplayRepository->getViewModeOptions($this->getFieldSetting('target_type'));
+     $view_mode = $this->getSetting('view_mode');
+-    $summary[] = $this->t('Rendered as @mode', array('@mode' => isset($view_modes[$view_mode]) ? $view_modes[$view_mode] : $view_mode));
++    $summary[] = $this->t('Rendered as @mode', ['@mode' => isset($view_modes[$view_mode]) ? $view_modes[$view_mode] : $view_mode]);
+ 
+     return $summary;
+   }
+@@ -126,14 +126,14 @@ class EntityReferenceRevisionsEntityFormatter extends EntityReferenceRevisionsFo
+    */
+   public function viewElements(FieldItemListInterface $items, $langcode) {
+     $view_mode = $this->getSetting('view_mode');
+-    $elements = array();
++    $elements = [];
+ 
+     foreach ($this->getEntitiesToView($items, $langcode) as $delta => $entity) {
+       // Protect ourselves from recursive rendering.
+       static $depth = 0;
+       $depth++;
+       if ($depth > 20) {
+-        $this->loggerFactory->get('entity')->error('Recursive rendering detected when rendering entity @entity_type @entity_id. Aborting rendering.', array('@entity_type' => $entity->getEntityTypeId(), '@entity_id' => $entity->id()));
++        $this->loggerFactory->get('entity')->error('Recursive rendering detected when rendering entity @entity_type @entity_id. Aborting rendering.', ['@entity_type' => $entity->getEntityTypeId(), '@entity_id' => $entity->id()]);
+         return $elements;
+       }
+       $view_builder = \Drupal::entityTypeManager()->getViewBuilder($entity->getEntityTypeId());
+@@ -143,7 +143,7 @@ class EntityReferenceRevisionsEntityFormatter extends EntityReferenceRevisionsFo
+       // entity's url. Since we don't know what the markup of the entity will
+       // be, we shouldn't rely on it for structured data such as RDFa.
+       if (!empty($items[$delta]->_attributes) && !$entity->isNew() && $entity->hasLinkTemplate('canonical')) {
+-        $items[$delta]->_attributes += array('resource' => $entity->toUrl()->toString());
++        $items[$delta]->_attributes += ['resource' => $entity->toUrl()->toString()];
+       }
+       $depth = 0;
+     }
+diff --git a/src/Plugin/Field/FieldType/EntityReferenceRevisionsItem.php b/src/Plugin/Field/FieldType/EntityReferenceRevisionsItem.php
+index 16496db..04cbdda 100644
+--- a/src/Plugin/Field/FieldType/EntityReferenceRevisionsItem.php
++++ b/src/Plugin/Field/FieldType/EntityReferenceRevisionsItem.php
+@@ -46,14 +46,14 @@ class EntityReferenceRevisionsItem extends EntityReferenceItem implements Option
+   public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
+ 
+     $entity_types = \Drupal::entityTypeManager()->getDefinitions();
+-    $options = array();
++    $options = [];
+     foreach ($entity_types as $entity_type) {
+       if ($entity_type->isRevisionable()) {
+         $options[$entity_type->id()] = $entity_type->getLabel();
+       }
+     }
+ 
+-    $element['target_type'] = array(
++    $element['target_type'] = [
+       '#type' => 'select',
+       '#title' => $this->t('Type of item to reference'),
+       '#options' => $options,
+@@ -61,7 +61,7 @@ class EntityReferenceRevisionsItem extends EntityReferenceItem implements Option
+       '#required' => TRUE,
+       '#disabled' => $has_data,
+       '#size' => 1,
+-    );
++    ];
+ 
+     return $element;
+   }
+@@ -70,7 +70,7 @@ class EntityReferenceRevisionsItem extends EntityReferenceItem implements Option
+    * {@inheritdoc}
+    */
+   public static function getPreconfiguredOptions() {
+-    $options = array();
++    $options = [];
+ 
+     // Add all the commonly referenced entity types as distinct pre-configured
+     // options.
+@@ -87,8 +87,8 @@ class EntityReferenceRevisionsItem extends EntityReferenceItem implements Option
+         'field_storage_config' => [
+           'settings' => [
+             'target_type' => $entity_type->id(),
+-          ]
+-        ]
++          ],
++        ],
+       ];
+       $default_reference_settings = $entity_type->get('default_reference_revision_settings');
+       if (is_array($default_reference_settings)) {
+@@ -110,7 +110,7 @@ class EntityReferenceRevisionsItem extends EntityReferenceItem implements Option
+ 
+     if ($target_type_info->getKey('revision')) {
+       $target_revision_id_definition = DataReferenceTargetDefinition::create('integer')
+-        ->setLabel(t('@label revision ID', array('@label' => $target_type_info->getLabel())))
++        ->setLabel(t('@label revision ID', ['@label' => $target_type_info->getLabel()]))
+         ->setSetting('unsigned', TRUE);
+ 
+       $target_revision_id_definition->setRequired(TRUE);
+@@ -138,12 +138,12 @@ class EntityReferenceRevisionsItem extends EntityReferenceItem implements Option
+     $schema = parent::schema($field_definition);
+ 
+     if ($target_type_info->getKey('revision')) {
+-      $schema['columns']['target_revision_id'] = array(
++      $schema['columns']['target_revision_id'] = [
+         'description' => 'The revision ID of the target entity.',
+         'type' => 'int',
+         'unsigned' => TRUE,
+-      );
+-      $schema['indexes']['target_revision_id'] = array('target_revision_id');
++      ];
++      $schema['indexes']['target_revision_id'] = ['target_revision_id'];
+     }
+ 
+     return $schema;
+@@ -216,16 +216,16 @@ class EntityReferenceRevisionsItem extends EntityReferenceItem implements Option
+       $this->writePropertyValue('target_revision_id', $property->getValue()->getRevisionId());
+     }
+     elseif ($property_name == 'target_id' && $this->target_id != NULL && $this->target_revision_id) {
+-      $this->writePropertyValue('entity', array(
++      $this->writePropertyValue('entity', [
+         'target_id' => $this->target_id,
+         'target_revision_id' => $this->target_revision_id,
+-      ));
++      ]);
+     }
+     elseif ($property_name == 'target_revision_id' && $this->target_revision_id && $this->target_id) {
+-      $this->writePropertyValue('entity', array(
++      $this->writePropertyValue('entity', [
+         'target_id' => $this->target_id,
+         'target_revision_id' => $this->target_revision_id,
+-      ));
++      ]);
+     }
+     if ($notify && isset($this->parent)) {
+       $this->parent->onChange($this->name);
+@@ -259,7 +259,6 @@ class EntityReferenceRevisionsItem extends EntityReferenceItem implements Option
+     if (!$has_new) {
+       // Create a new revision if it is a composite entity in a host with a new
+       // revision.
+-
+       $host = $this->getEntity();
+       $needs_save = $this->entity instanceof EntityNeedsSaveInterface && $this->entity->needsSave();
+ 
+@@ -449,7 +448,7 @@ class EntityReferenceRevisionsItem extends EntityReferenceItem implements Option
+                       ->getBundleOf(),
+                     '%field_name' => $field_definition->getName(),
+                     '%entity_type' => $field_definition->getTargetEntityTypeId(),
+-                    '%bundle' => $field_definition->getTargetBundle()
++                    '%bundle' => $field_definition->getTargetBundle(),
+                   ]);
+               }
+             }
+@@ -515,7 +514,7 @@ class EntityReferenceRevisionsItem extends EntityReferenceItem implements Option
+       $field_storage = $instance->getFieldStorageDefinition();
+       $max = $cardinality = $field_storage->getCardinality();
+       if ($cardinality == FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED) {
+-        // Just an arbitrary number for 'unlimited'
++        // Just an arbitrary number for 'unlimited'.
+         $max = rand(1, 5);
+       }
+       $field_name = $field_storage->getName();
+diff --git a/src/Plugin/Field/FieldWidget/EntityReferenceRevisionsAutocompleteWidget.php b/src/Plugin/Field/FieldWidget/EntityReferenceRevisionsAutocompleteWidget.php
+index c1d5ee5..f62296d 100644
+--- a/src/Plugin/Field/FieldWidget/EntityReferenceRevisionsAutocompleteWidget.php
++++ b/src/Plugin/Field/FieldWidget/EntityReferenceRevisionsAutocompleteWidget.php
+@@ -25,7 +25,7 @@ class EntityReferenceRevisionsAutocompleteWidget extends EntityReferenceAutocomp
+   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+     $entity_type = $this->fieldDefinition->getFieldStorageDefinition()->getSetting('target_type');
+     foreach ($values as $key => $value) {
+-      if($value['target_id']) {
++      if ($value['target_id']) {
+         $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($value['target_id']);
+         // Add the current revision ID.
+         $values[$key]['target_revision_id'] = $entity->getRevisionId();
+diff --git a/src/Plugin/diff/Field/EntityReferenceRevisionsFieldDiffBuilder.php b/src/Plugin/diff/Field/EntityReferenceRevisionsFieldDiffBuilder.php
+index 0df0507..7ff845f 100644
+--- a/src/Plugin/diff/Field/EntityReferenceRevisionsFieldDiffBuilder.php
++++ b/src/Plugin/diff/Field/EntityReferenceRevisionsFieldDiffBuilder.php
+@@ -23,7 +23,7 @@ class EntityReferenceRevisionsFieldDiffBuilder extends FieldDiffBuilderBase impl
+    * {@inheritdoc}
+    */
+   public function build(FieldItemListInterface $field_items) {
+-    $result_text = array();
++    $result_text = [];
+     $item_counter = 0;
+     /** @var \Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem $field_item */
+     foreach ($field_items as $field_key => $field_item) {
+diff --git a/src/Plugin/views/display/EntityReferenceRevisions.php b/src/Plugin/views/display/EntityReferenceRevisions.php
+index 65ad121..c207695 100644
+--- a/src/Plugin/views/display/EntityReferenceRevisions.php
++++ b/src/Plugin/views/display/EntityReferenceRevisions.php
+@@ -50,9 +50,9 @@ class EntityReferenceRevisions extends DisplayPluginBase {
+ 
+     // Force the style plugin to 'entity_reference_style' and the row plugin to
+     // 'fields'.
+-    $options['style']['contains']['type'] = array('default' => 'entity_reference_revisions');
++    $options['style']['contains']['type'] = ['default' => 'entity_reference_revisions'];
+     $options['defaults']['default']['style'] = FALSE;
+-    $options['row']['contains']['type'] = array('default' => 'entity_reference_revisions');
++    $options['row']['contains']['type'] = ['default' => 'entity_reference_revisions'];
+     $options['defaults']['default']['row'] = FALSE;
+ 
+     // Make sure the query is not cached.
+@@ -161,17 +161,18 @@ class EntityReferenceRevisions extends DisplayPluginBase {
+     // Verify that search fields are set up.
+     $style = $this->getOption('style');
+     if (!isset($style['options']['search_fields'])) {
+-      $errors[] = $this->t('Display "@display" needs a selected search fields to work properly. See the settings for the Entity Reference Revisions list format.', array('@display' => $this->display['display_title']));
++      $errors[] = $this->t('Display "@display" needs a selected search fields to work properly. See the settings for the Entity Reference Revisions list format.', ['@display' => $this->display['display_title']]);
+     }
+     else {
+       // Verify that the search fields used actually exist.
+       $fields = array_keys($this->handlers['field']);
+       foreach ($style['options']['search_fields'] as $field_alias => $enabled) {
+         if ($enabled && !in_array($field_alias, $fields)) {
+-          $errors[] = $this->t('Display "@display" uses field %field as search field, but the field is no longer present. See the settings for the Entity Reference Revisions list format.', array('@display' => $this->display['display_title'], '%field' => $field_alias));
++          $errors[] = $this->t('Display "@display" uses field %field as search field, but the field is no longer present. See the settings for the Entity Reference Revisions list format.', ['@display' => $this->display['display_title'], '%field' => $field_alias]);
+         }
+       }
+     }
+     return $errors;
+   }
++
+ }
+diff --git a/src/Plugin/views/row/EntityReferenceRevisions.php b/src/Plugin/views/row/EntityReferenceRevisions.php
+index fe25de2..8f9d329 100644
+--- a/src/Plugin/views/row/EntityReferenceRevisions.php
++++ b/src/Plugin/views/row/EntityReferenceRevisions.php
+@@ -26,7 +26,7 @@ class EntityReferenceRevisions extends Fields {
+    */
+   protected function defineOptions() {
+     $options = parent::defineOptions();
+-    $options['separator'] = array('default' => '-');
++    $options['separator'] = ['default' => '-'];
+ 
+     return $options;
+   }
+@@ -38,7 +38,7 @@ class EntityReferenceRevisions extends Fields {
+     parent::buildOptionsForm($form, $form_state);
+ 
+     // Expand the description of the 'Inline field' checkboxes.
+-    $form['inline']['#description'] .= '<br />' . $this->t("<strong>Note:</strong> In 'Entity Reference' displays, all fields will be displayed inline unless an explicit selection of inline fields is made here." );
++    $form['inline']['#description'] .= '<br />' . $this->t("<strong>Note:</strong> In 'Entity Reference' displays, all fields will be displayed inline unless an explicit selection of inline fields is made here.");
+   }
+ 
+   /**
+@@ -54,4 +54,5 @@ class EntityReferenceRevisions extends Fields {
+ 
+     return parent::preRender($row);
+   }
++
+ }
+diff --git a/src/Plugin/views/style/EntityReferenceRevisions.php b/src/Plugin/views/style/EntityReferenceRevisions.php
+index 376491e..f70954c 100644
+--- a/src/Plugin/views/style/EntityReferenceRevisions.php
++++ b/src/Plugin/views/style/EntityReferenceRevisions.php
+@@ -42,7 +42,7 @@ class EntityReferenceRevisions extends StylePluginBase {
+    */
+   protected function defineOptions() {
+     $options = parent::defineOptions();
+-    $options['search_fields'] = array('default' => NULL);
++    $options['search_fields'] = ['default' => NULL];
+ 
+     return $options;
+   }
+@@ -54,7 +54,7 @@ class EntityReferenceRevisions extends StylePluginBase {
+     parent::buildOptionsForm($form, $form_state);
+ 
+     $options = $this->displayHandler->getFieldLabels(TRUE);
+-    $form['search_fields'] = array(
++    $form['search_fields'] = [
+       '#type' => 'checkboxes',
+       '#title' => $this->t('Search fields'),
+       '#options' => $options,
+@@ -62,7 +62,7 @@ class EntityReferenceRevisions extends StylePluginBase {
+       '#default_value' => $this->options['search_fields'],
+       '#description' => $this->t('Select the field(s) that will be searched when using the autocomplete widget.'),
+       '#weight' => -3,
+-    );
++    ];
+   }
+ 
+   /**
+@@ -82,7 +82,7 @@ class EntityReferenceRevisions extends StylePluginBase {
+ 
+     // @todo We don't display grouping info for now. Could be useful for select
+     // widget, though.
+-    $results = array();
++    $results = [];
+     foreach ($sets as $records) {
+       foreach ($records as $values) {
+         // Sanitize HTML, remove line breaks and extra whitespace.
+@@ -100,4 +100,5 @@ class EntityReferenceRevisions extends StylePluginBase {
+   public function evenEmpty() {
+     return TRUE;
+   }
++
+ }
+diff --git a/src/TypedData/EntityRevisionDataDefinition.php b/src/TypedData/EntityRevisionDataDefinition.php
+index 7ffac7d..ca3cc3b 100644
+--- a/src/TypedData/EntityRevisionDataDefinition.php
++++ b/src/TypedData/EntityRevisionDataDefinition.php
+@@ -24,7 +24,7 @@ class EntityRevisionDataDefinition extends EntityDataDefinition implements Entit
+       $definition->setEntityTypeId($parts[1]);
+     }
+     if (isset($parts[2])) {
+-      $definition->setBundles(array($parts[2]));
++      $definition->setBundles([$parts[2]]);
+     }
+     return $definition;
+   }
+@@ -47,4 +47,5 @@ class EntityRevisionDataDefinition extends EntityDataDefinition implements Entit
+     }
+     return $type;
+   }
++
+ }
+diff --git a/tests/src/Functional/EntityReferenceRevisionsAdminTest.php b/tests/src/Functional/EntityReferenceRevisionsAdminTest.php
+index f2618b9..32fe482 100644
+--- a/tests/src/Functional/EntityReferenceRevisionsAdminTest.php
++++ b/tests/src/Functional/EntityReferenceRevisionsAdminTest.php
+@@ -20,13 +20,13 @@ class EntityReferenceRevisionsAdminTest extends BrowserTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array(
++  public static $modules = [
+     'node',
+     'field',
+     'entity_reference_revisions',
+     'field_ui',
+     'block',
+-  );
++  ];
+ 
+   /**
+    * {@inheritdoc}
+@@ -39,11 +39,11 @@ class EntityReferenceRevisionsAdminTest extends BrowserTestBase {
+   protected function setUp() {
+     parent::setUp();
+     // Create paragraphs and article content types.
+-    $this->drupalCreateContentType(array('type' => 'entity_revisions', 'name' => 'Entity revisions'));
+-    $this->drupalCreateContentType(array('type' => 'article', 'name' => 'Article'));
++    $this->drupalCreateContentType(['type' => 'entity_revisions', 'name' => 'Entity revisions']);
++    $this->drupalCreateContentType(['type' => 'article', 'name' => 'Article']);
+     // Place the breadcrumb, tested in fieldUIAddNewField().
+     $this->drupalPlaceBlock('system_breadcrumb_block');
+-    $admin_user = $this->drupalCreateUser(array(
++    $admin_user = $this->drupalCreateUser([
+       'administer site configuration',
+       'administer nodes',
+       'create article content',
+@@ -52,7 +52,7 @@ class EntityReferenceRevisionsAdminTest extends BrowserTestBase {
+       'administer node display',
+       'administer node form display',
+       'edit any article content',
+-    ));
++    ]);
+     $this->drupalLogin($admin_user);
+   }
+ 
+@@ -90,10 +90,10 @@ class EntityReferenceRevisionsAdminTest extends BrowserTestBase {
+ 
+     // Create an article.
+     $title = $this->randomMachineName();
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $title,
+       'body[0][value]' => 'Revision 1',
+-    );
++    ];
+     $this->drupalPostForm('node/add/article', $edit, t('Save'));
+     $this->assertText($title);
+     $this->assertText('Revision 1');
+@@ -115,10 +115,10 @@ class EntityReferenceRevisionsAdminTest extends BrowserTestBase {
+     $this->assertText('Revision 1');
+ 
+     // Create 2nd revision of the article.
+-    $edit = array(
++    $edit = [
+       'body[0][value]' => 'Revision 2',
+       'revision' => TRUE,
+-    );
++    ];
+     $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, t('Save'));
+     $this->assertText($title);
+     $this->assertText('Revision 2');
+@@ -132,11 +132,11 @@ class EntityReferenceRevisionsAdminTest extends BrowserTestBase {
+ 
+     // Make sure the non-revisionable entities are not selectable as referenced
+     // entities.
+-    $edit = array(
++    $edit = [
+       'new_storage_type' => 'entity_reference_revisions',
+       'label' => 'Entity reference revisions field',
+       'field_name' => 'entity_ref_revisions_field',
+-    );
++    ];
+     $this->drupalPostForm('admin/structure/types/manage/entity_revisions/fields/add-field', $edit, t('Save and continue'));
+     $this->assertNoOption('edit-settings-target-type', 'user');
+     $this->assertOption('edit-settings-target-type', 'node');
+@@ -161,7 +161,7 @@ class EntityReferenceRevisionsAdminTest extends BrowserTestBase {
+     for ($i = 0; $i < 2; $i++) {
+       $target_types[$i] = $this->drupalCreateContentType([
+         'type' => strtolower($this->randomMachineName()),
+-        'name' => 'Test type ' . $i
++        'name' => 'Test type ' . $i,
+       ]);
+     }
+ 
+diff --git a/tests/src/Functional/EntityReferenceRevisionsAutocompleteTest.php b/tests/src/Functional/EntityReferenceRevisionsAutocompleteTest.php
+index 95cff09..6ce1783 100644
+--- a/tests/src/Functional/EntityReferenceRevisionsAutocompleteTest.php
++++ b/tests/src/Functional/EntityReferenceRevisionsAutocompleteTest.php
+@@ -22,13 +22,13 @@ class EntityReferenceRevisionsAutocompleteTest extends BrowserTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array(
++  public static $modules = [
+     'block_content',
+     'node',
+     'field',
+     'entity_reference_revisions',
+     'field_ui',
+-  );
++  ];
+ 
+   /**
+    * {@inheritdoc}
+@@ -41,7 +41,7 @@ class EntityReferenceRevisionsAutocompleteTest extends BrowserTestBase {
+   protected function setUp() {
+     parent::setUp();
+     // Create article content type.
+-    $this->drupalCreateContentType(array('type' => 'article', 'name' => 'Article'));
++    $this->drupalCreateContentType(['type' => 'article', 'name' => 'Article']);
+     // Place the breadcrumb, tested in fieldUIAddNewField().
+     $this->drupalPlaceBlock('system_breadcrumb_block');
+   }
+@@ -53,7 +53,7 @@ class EntityReferenceRevisionsAutocompleteTest extends BrowserTestBase {
+    * referenced entity and of the entity the field is attached to are different.
+    */
+   public function testEntityReferenceRevisionsAutocompleteProcessing() {
+-    $admin_user = $this->drupalCreateUser(array(
++    $admin_user = $this->drupalCreateUser([
+       'administer site configuration',
+       'administer nodes',
+       'administer blocks',
+@@ -63,11 +63,11 @@ class EntityReferenceRevisionsAutocompleteTest extends BrowserTestBase {
+       'administer node display',
+       'administer node form display',
+       'edit any article content',
+-    ));
++    ]);
+     $this->drupalLogin($admin_user);
+ 
+     // Create a custom block content bundle.
+-    $this->createBlockContentType(array('type' => 'customblockcontent', 'name' => 'Custom Block Content'));
++    $this->createBlockContentType(['type' => 'customblockcontent', 'name' => 'Custom Block Content']);
+ 
+     // Create entity reference revisions field attached to article.
+     static::fieldUIAddNewField(
+@@ -75,27 +75,27 @@ class EntityReferenceRevisionsAutocompleteTest extends BrowserTestBase {
+       'entity_reference_revisions',
+       'Entity reference revisions',
+       'entity_reference_revisions',
+-      array('settings[target_type]' => 'block_content', 'cardinality' => '-1'),
+-      array('settings[handler_settings][target_bundles][customblockcontent]' => TRUE)
++      ['settings[target_type]' => 'block_content', 'cardinality' => '-1'],
++      ['settings[handler_settings][target_bundles][customblockcontent]' => TRUE]
+     );
+ 
+     // Create custom block.
+     $block_label = $this->randomMachineName();
+     $block_content = $this->randomString();
+-    $edit = array(
++    $edit = [
+       'info[0][value]' => $block_label,
+       'body[0][value]' => $block_content,
+-    );
++    ];
+     $this->drupalPostForm('block/add', $edit, t('Save'));
+     $block = $this->drupalGetBlockByInfo($block_label);
+ 
+     // Create an article.
+     $title = $this->randomMachineName();
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $title,
+       'body[0][value]' => 'Revision 1',
+       'field_entity_reference_revisions[0][target_id]' => $block_label . ' (' . $block->id() . ')',
+-    );
++    ];
+     $this->drupalPostForm('node/add/article', $edit, t('Save'));
+     $this->assertText($title);
+     $this->assertText(Html::escape($block_content));
+@@ -119,11 +119,11 @@ class EntityReferenceRevisionsAutocompleteTest extends BrowserTestBase {
+    * @return \Drupal\block\BlockInterface
+    *   A block entity matching $info.
+    */
+-  function drupalGetBlockByInfo($info, $reset = FALSE) {
++  public function drupalGetBlockByInfo($info, $reset = FALSE) {
+     if ($reset) {
+       \Drupal::entityTypeManager()->getStorage('block_content')->resetCache();
+     }
+-    $blocks = \Drupal::entityTypeManager()->getStorage('block_content')->loadByProperties(array('info' => $info));
++    $blocks = \Drupal::entityTypeManager()->getStorage('block_content')->loadByProperties(['info' => $info]);
+     // Get the first block returned from the database.
+     $returned_block = reset($blocks);
+     return $returned_block;
+@@ -136,14 +136,14 @@ class EntityReferenceRevisionsAutocompleteTest extends BrowserTestBase {
+    *   An assoc array with name (human readable) and type (bundle machine name)
+    *   as keys.
+    */
+-  function createBlockContentType($parameters) {
++  public function createBlockContentType($parameters) {
+     $label = $parameters['name'];
+     $machine_name = $parameters['type'];
+-    $edit = array(
++    $edit = [
+       'label' => $label,
+       'id' => $machine_name,
+       'revision' => TRUE,
+-    );
++    ];
+     $this->drupalPostForm('admin/structure/block/block-content/types/add', $edit, t('Save'));
+     $this->assertText($label);
+   }
+diff --git a/tests/src/Functional/EntityReferenceRevisionsNormalizerTest.php b/tests/src/Functional/EntityReferenceRevisionsNormalizerTest.php
+index 740fe8b..c1dd036 100644
+--- a/tests/src/Functional/EntityReferenceRevisionsNormalizerTest.php
++++ b/tests/src/Functional/EntityReferenceRevisionsNormalizerTest.php
+@@ -20,7 +20,7 @@ class EntityReferenceRevisionsNormalizerTest extends BrowserTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array(
++  public static $modules = [
+     'node',
+     'field',
+     'entity_reference_revisions',
+@@ -29,7 +29,7 @@ class EntityReferenceRevisionsNormalizerTest extends BrowserTestBase {
+     'hal',
+     'serialization',
+     'rest',
+-  );
++  ];
+ 
+   /**
+    * {@inheritdoc}
+@@ -42,8 +42,8 @@ class EntityReferenceRevisionsNormalizerTest extends BrowserTestBase {
+   protected function setUp() {
+     parent::setUp();
+     // Create paragraphs and article content types.
+-    $this->drupalCreateContentType(array('type' => 'entity_revisions', 'name' => 'Entity revisions'));
+-    $this->drupalCreateContentType(array('type' => 'article', 'name' => 'Article'));
++    $this->drupalCreateContentType(['type' => 'entity_revisions', 'name' => 'Entity revisions']);
++    $this->drupalCreateContentType(['type' => 'article', 'name' => 'Article']);
+     // Place the breadcrumb, tested in fieldUIAddNewField().
+     $this->drupalPlaceBlock('system_breadcrumb_block');
+   }
+@@ -52,7 +52,7 @@ class EntityReferenceRevisionsNormalizerTest extends BrowserTestBase {
+    * Tests the entity reference revisions configuration.
+    */
+   public function testEntityReferenceRevisions() {
+-    $admin_user = $this->drupalCreateUser(array(
++    $admin_user = $this->drupalCreateUser([
+       'administer site configuration',
+       'administer nodes',
+       'create article content',
+@@ -61,18 +61,18 @@ class EntityReferenceRevisionsNormalizerTest extends BrowserTestBase {
+       'administer node display',
+       'administer node form display',
+       'edit any article content',
+-    ));
++    ]);
+     $this->drupalLogin($admin_user);
+     // Create entity reference revisions field.
+-    static::fieldUIAddNewField('admin/structure/types/manage/entity_revisions', 'entity_reference_revisions', 'Entity reference revisions', 'entity_reference_revisions', array('settings[target_type]' => 'node', 'cardinality' => '-1'), array('settings[handler_settings][target_bundles][article]' => TRUE));
++    static::fieldUIAddNewField('admin/structure/types/manage/entity_revisions', 'entity_reference_revisions', 'Entity reference revisions', 'entity_reference_revisions', ['settings[target_type]' => 'node', 'cardinality' => '-1'], ['settings[handler_settings][target_bundles][article]' => TRUE]);
+     $this->assertText('Saved Entity reference revisions configuration.');
+ 
+     // Create an article.
+     $title = $this->randomMachineName();
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $title,
+       'body[0][value]' => 'Revision 1',
+-    );
++    ];
+     $this->drupalPostForm('node/add/article', $edit, t('Save'));
+     $this->assertText($title);
+     $this->assertText('Revision 1');
+@@ -80,10 +80,10 @@ class EntityReferenceRevisionsNormalizerTest extends BrowserTestBase {
+ 
+     // Create entity revisions content that includes the above article.
+     $err_title = 'Entity reference revision content';
+-    $edit = array(
++    $edit = [
+       'title[0][value]' => $err_title,
+       'field_entity_reference_revisions[0][target_id]' => $node->label() . ' (' . $node->id() . ')',
+-    );
++    ];
+     $this->drupalPostForm('node/add/entity_revisions', $edit, t('Save'));
+     $this->assertText('Entity revisions Entity reference revision content has been created.');
+     $err_node = $this->drupalGetNodeByTitle($err_title);
+@@ -93,10 +93,10 @@ class EntityReferenceRevisionsNormalizerTest extends BrowserTestBase {
+     $this->assertText('Revision 1');
+ 
+     // Create 2nd revision of the article.
+-    $edit = array(
++    $edit = [
+       'body[0][value]' => 'Revision 2',
+       'revision' => TRUE,
+-    );
++    ];
+     $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, t('Save'));
+     $serializer = $this->container->get('serializer');
+     $normalized = $serializer->normalize($err_node, 'hal_json');
+diff --git a/tests/src/Functional/EntityReferenceRevisionsOrphanRemovalTest.php b/tests/src/Functional/EntityReferenceRevisionsOrphanRemovalTest.php
+index 3fa8798..1e10409 100644
+--- a/tests/src/Functional/EntityReferenceRevisionsOrphanRemovalTest.php
++++ b/tests/src/Functional/EntityReferenceRevisionsOrphanRemovalTest.php
+@@ -32,7 +32,7 @@ class EntityReferenceRevisionsOrphanRemovalTest extends BrowserTestBase {
+     'node',
+     'field',
+     'entity_reference_revisions',
+-    'entity_composite_relationship_test'
++    'entity_composite_relationship_test',
+   ];
+ 
+   /**
+@@ -159,7 +159,7 @@ class EntityReferenceRevisionsOrphanRemovalTest extends BrowserTestBase {
+       'entity_type' => 'node',
+       'type' => 'entity_reference_revisions',
+       'settings' => [
+-        'target_type' => 'entity_test_composite'
++        'target_type' => 'entity_test_composite',
+       ],
+     ]);
+     $field_storage->save();
+@@ -368,4 +368,5 @@ class EntityReferenceRevisionsOrphanRemovalTest extends BrowserTestBase {
+     $node->set('field_composite_entity', $composite_entity_third);
+     $node->save();
+   }
++
+ }
+diff --git a/tests/src/Kernel/EntityReferenceRevisionsCompositeTest.php b/tests/src/Kernel/EntityReferenceRevisionsCompositeTest.php
+index ac226fa..494c170 100644
+--- a/tests/src/Kernel/EntityReferenceRevisionsCompositeTest.php
++++ b/tests/src/Kernel/EntityReferenceRevisionsCompositeTest.php
+@@ -27,13 +27,13 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array(
++  public static $modules = [
+     'node',
+     'field',
+     'entity_reference_revisions',
+     'entity_composite_relationship_test',
+-    'language'
+-  );
++    'language',
++  ];
+ 
+   /**
+    * The current database connection.
+@@ -46,7 +46,6 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+    * The entity type manager.
+    *
+    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+-   *
+    */
+   protected $entityTypeManager;
+ 
+@@ -70,20 +69,20 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+     NodeType::create(['type' => 'article', 'name' => 'Article'])->save();
+ 
+     // Create the reference to the composite entity test.
+-    $field_storage = FieldStorageConfig::create(array(
++    $field_storage = FieldStorageConfig::create([
+       'field_name' => 'composite_reference',
+       'entity_type' => 'node',
+       'type' => 'entity_reference_revisions',
+-      'settings' => array(
+-        'target_type' => 'entity_test_composite'
+-      ),
+-    ));
++      'settings' => [
++        'target_type' => 'entity_test_composite',
++      ],
++    ]);
+     $field_storage->save();
+-    $field = FieldConfig::create(array(
++    $field = FieldConfig::create([
+       'field_storage' => $field_storage,
+       'bundle' => 'article',
+       'translatable' => FALSE,
+-    ));
++    ]);
+     $field->save();
+ 
+     // Inject database connection, entity type manager and cron for the tests.
+@@ -99,10 +98,10 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+    */
+   public function testEntityReferenceRevisionsCompositeRelationship() {
+     // Create the test composite entity.
+-    $composite = EntityTestCompositeRelationship::create(array(
++    $composite = EntityTestCompositeRelationship::create([
+       'uuid' => $this->randomMachineName(),
+       'name' => $this->randomMachineName(),
+-    ));
++    ]);
+     $composite->save();
+ 
+     // Assert that there is only 1 revision of the composite entity.
+@@ -111,10 +110,10 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+ 
+     // Create a node with a reference to the test composite entity.
+     /** @var \Drupal\node\NodeInterface $node */
+-    $node = Node::create(array(
++    $node = Node::create([
+       'title' => $this->randomMachineName(),
+       'type' => 'article',
+-    ));
++    ]);
+     $node->save();
+     $node->set('composite_reference', $composite);
+     $this->assertTrue($node->hasTranslationChanges());
+@@ -145,7 +144,7 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+ 
+     // Make sure that there are only 2 revisions.
+     $node_revisions_count = \Drupal::entityQuery('node')->condition('nid', $node->id())->allRevisions()->count()->execute();
+-    $this->assertEquals(2,$node_revisions_count);
++    $this->assertEquals(2, $node_revisions_count);
+ 
+     // Revert to first revision of the node.
+     $node = $this->entityTypeManager->getStorage('node')->loadRevision($original_node_revision);
+@@ -225,25 +224,24 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+   /**
+    * Tests composite relationship with translations and an untranslatable field.
+    */
+-  function testCompositeRelationshipWithTranslationNonTranslatableField() {
++  public function testCompositeRelationshipWithTranslationNonTranslatableField() {
+ 
+     ConfigurableLanguage::createFromLangcode('de')->save();
+ 
+     // Create the test composite entity with a translation.
+-    $composite = EntityTestCompositeRelationship::create(array(
++    $composite = EntityTestCompositeRelationship::create([
+       'uuid' => $this->randomMachineName(),
+       'name' => $this->randomMachineName(),
+-    ));
++    ]);
+     $composite->addTranslation('de', $composite->toArray());
+     $composite->save();
+ 
+-
+     // Create a node with a reference to the test composite entity.
+-    $node = Node::create(array(
++    $node = Node::create([
+       'title' => $this->randomMachineName(),
+       'type' => 'article',
+       'composite_reference' => $composite,
+-    ));
++    ]);
+     $node->addTranslation('de', $node->toArray());
+     $node->save();
+ 
+@@ -279,7 +277,7 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+   /**
+    * Tests composite relationship with translations and a translatable field.
+    */
+-  function testCompositeRelationshipWithTranslationTranslatableField() {
++  public function testCompositeRelationshipWithTranslationTranslatableField() {
+     $field_config = FieldConfig::loadByName('node', 'article', 'composite_reference');
+     $field_config->setTranslatable(TRUE);
+     $field_config->save();
+@@ -287,19 +285,19 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+     ConfigurableLanguage::createFromLangcode('de')->save();
+ 
+     // Create the test composite entity with a translation.
+-    $composite = EntityTestCompositeRelationship::create(array(
++    $composite = EntityTestCompositeRelationship::create([
+       'uuid' => $this->randomMachineName(),
+       'name' => $this->randomMachineName(),
+-    ));
++    ]);
+     $composite->addTranslation('de', $composite->toArray());
+     $composite->save();
+ 
+     // Create a node with a reference to the test composite entity.
+-    $node = Node::create(array(
++    $node = Node::create([
+       'title' => $this->randomMachineName(),
+       'type' => 'article',
+       'composite_reference' => $composite,
+-    ));
++    ]);
+     $node->addTranslation('de', $node->toArray());
+     $node->save();
+ 
+@@ -327,24 +325,23 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+   /**
+    * Tests composite relationship with revisions.
+    */
+-  function testCompositeRelationshipWithRevisions() {
++  public function testCompositeRelationshipWithRevisions() {
+ 
+     // Create the test composite entity with a translation.
+-    $composite = EntityTestCompositeRelationship::create(array(
++    $composite = EntityTestCompositeRelationship::create([
+       'uuid' => $this->randomMachineName(),
+       'name' => $this->randomMachineName(),
+-    ));
++    ]);
+     $composite->save();
+ 
+     // Create a node with a reference to the test composite entity.
+-    $node = Node::create(array(
++    $node = Node::create([
+       'title' => $this->randomMachineName(),
+       'type' => 'article',
+       'composite_reference' => $composite,
+-    ));
++    ]);
+     $node->save();
+ 
+-
+     // Verify the value of parent type and id after create a node.
+     $composite = EntityTestCompositeRelationship::load($composite->id());
+     $composite_original_revision_id = $composite->getRevisionId();
+@@ -378,7 +375,7 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+   /**
+    * Tests that the composite revision is not deleted if it is the default one.
+    */
+-  function testCompositeRelationshipDefaultRevision() {
++  public function testCompositeRelationshipDefaultRevision() {
+     // Create a node with a reference to a test composite entity.
+     $composite = EntityTestCompositeRelationship::create([
+       'uuid' => $this->randomMachineName(),
+@@ -426,7 +423,7 @@ class EntityReferenceRevisionsCompositeTest extends EntityKernelTestBase {
+   /**
+    * Tests that the composite revision is not deleted if it is still in use.
+    */
+-  function testCompositeRelationshipDuplicatedRevisions() {
++  public function testCompositeRelationshipDuplicatedRevisions() {
+     // Create a node with a reference to a test composite entity.
+     $composite = EntityTestCompositeRelationship::create([
+       'uuid' => $this->randomMachineName(),
+diff --git a/tests/src/Kernel/EntityReferenceRevisionsCompositeTranslatableFieldTest.php b/tests/src/Kernel/EntityReferenceRevisionsCompositeTranslatableFieldTest.php
+index 4e261bf..9f4c45d 100644
+--- a/tests/src/Kernel/EntityReferenceRevisionsCompositeTranslatableFieldTest.php
++++ b/tests/src/Kernel/EntityReferenceRevisionsCompositeTranslatableFieldTest.php
+@@ -27,14 +27,14 @@ class EntityReferenceRevisionsCompositeTranslatableFieldTest extends EntityKerne
+    *
+    * @var array
+    */
+-  public static $modules = array(
++  public static $modules = [
+     'node',
+     'field',
+     'entity_reference_revisions',
+     'entity_composite_relationship_test',
+     'language',
+-    'content_translation'
+-  );
++    'content_translation',
++  ];
+ 
+   /**
+    * The current database connection.
+@@ -47,7 +47,6 @@ class EntityReferenceRevisionsCompositeTranslatableFieldTest extends EntityKerne
+    * The entity type manager.
+    *
+    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+-   *
+    */
+   protected $entityTypeManager;
+ 
+@@ -67,20 +66,20 @@ class EntityReferenceRevisionsCompositeTranslatableFieldTest extends EntityKerne
+     NodeType::create(['type' => 'article', 'name' => 'Article'])->save();
+ 
+     // Create the reference to the composite entity test.
+-    $field_storage = FieldStorageConfig::create(array(
++    $field_storage = FieldStorageConfig::create([
+       'field_name' => 'composite_reference',
+       'entity_type' => 'node',
+       'type' => 'entity_reference_revisions',
+-      'settings' => array(
+-        'target_type' => 'entity_test_composite'
+-      ),
+-    ));
++      'settings' => [
++        'target_type' => 'entity_test_composite',
++      ],
++    ]);
+     $field_storage->save();
+-    $field = FieldConfig::create(array(
++    $field = FieldConfig::create([
+       'field_storage' => $field_storage,
+       'bundle' => 'article',
+       'translatable' => TRUE,
+-    ));
++    ]);
+     $field->save();
+ 
+     // Inject database connection and entity type manager for the tests.
+diff --git a/tests/src/Kernel/EntityReferenceRevisionsCompositeTranslationTest.php b/tests/src/Kernel/EntityReferenceRevisionsCompositeTranslationTest.php
+index 2a40617..b0b2986 100644
+--- a/tests/src/Kernel/EntityReferenceRevisionsCompositeTranslationTest.php
++++ b/tests/src/Kernel/EntityReferenceRevisionsCompositeTranslationTest.php
+@@ -35,7 +35,7 @@ class EntityReferenceRevisionsCompositeTranslationTest extends EntityKernelTestB
+     'entity_reference_revisions',
+     'entity_composite_relationship_test',
+     'language',
+-    'content_translation'
++    'content_translation',
+   ];
+ 
+   /**
+@@ -49,7 +49,6 @@ class EntityReferenceRevisionsCompositeTranslationTest extends EntityKernelTestB
+    * The entity type manager.
+    *
+    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+-   *
+    */
+   protected $entityTypeManager;
+ 
+@@ -75,7 +74,7 @@ class EntityReferenceRevisionsCompositeTranslationTest extends EntityKernelTestB
+       'type' => 'entity_reference_revisions',
+       'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
+       'settings' => [
+-        'target_type' => 'entity_test_composite'
++        'target_type' => 'entity_test_composite',
+       ],
+     ]);
+     $field_storage->save();
+@@ -107,7 +106,7 @@ class EntityReferenceRevisionsCompositeTranslationTest extends EntityKernelTestB
+       'type' => 'entity_reference_revisions',
+       'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
+       'settings' => [
+-        'target_type' => 'entity_test_composite'
++        'target_type' => 'entity_test_composite',
+       ],
+     ]);
+     $field_storage->save();
+diff --git a/tests/src/Kernel/EntityReferenceRevisionsFormatterTest.php b/tests/src/Kernel/EntityReferenceRevisionsFormatterTest.php
+index f65e074..34a880c 100644
+--- a/tests/src/Kernel/EntityReferenceRevisionsFormatterTest.php
++++ b/tests/src/Kernel/EntityReferenceRevisionsFormatterTest.php
+@@ -53,7 +53,7 @@ class EntityReferenceRevisionsFormatterTest extends KernelTestBase {
+       'entity_type' => 'node',
+       'type' => 'entity_reference_revisions',
+       'settings' => [
+-        'target_type' => 'entity_test_composite'
++        'target_type' => 'entity_test_composite',
+       ],
+     ]);
+     $field_storage->save();
+@@ -67,6 +67,9 @@ class EntityReferenceRevisionsFormatterTest extends KernelTestBase {
+     \Drupal::currentUser()->setAccount($user);
+   }
+ 
++  /**
++   *
++   */
+   public function testFormatterWithDeletedReference() {
+     // Create the test composite entity.
+     $text = 'Dummy text';
+@@ -89,7 +92,7 @@ class EntityReferenceRevisionsFormatterTest extends KernelTestBase {
+     ]);
+     $node->save();
+ 
+-    // entity_reference_revisions_entity_view
++    // entity_reference_revisions_entity_view.
+     $result = $node->composite_reference->view(['type' => 'entity_reference_revisions_entity_view']);
+     $this->setRawContent($this->render($result));
+     $this->assertText('Clever text');
+diff --git a/tests/src/Kernel/EntityReferenceRevisionsSaveTest.php b/tests/src/Kernel/EntityReferenceRevisionsSaveTest.php
+index 2b66a63..89737f7 100644
+--- a/tests/src/Kernel/EntityReferenceRevisionsSaveTest.php
++++ b/tests/src/Kernel/EntityReferenceRevisionsSaveTest.php
+@@ -21,14 +21,14 @@ class EntityReferenceRevisionsSaveTest extends KernelTestBase {
+    *
+    * @var array
+    */
+-  public static $modules = array(
++  public static $modules = [
+     'node',
+     'user',
+     'system',
+     'field',
+     'entity_reference_revisions',
+     'entity_composite_relationship_test',
+-  );
++  ];
+ 
+   /**
+    * {@inheritdoc}
+@@ -54,27 +54,27 @@ class EntityReferenceRevisionsSaveTest extends KernelTestBase {
+   public function testNeedsSave() {
+ 
+     // Add the entity_reference_revisions field to article.
+-    $field_storage = FieldStorageConfig::create(array(
++    $field_storage = FieldStorageConfig::create([
+       'field_name' => 'composite_reference',
+       'entity_type' => 'node',
+       'type' => 'entity_reference_revisions',
+-      'settings' => array(
+-        'target_type' => 'entity_test_composite'
+-      ),
+-    ));
++      'settings' => [
++        'target_type' => 'entity_test_composite',
++      ],
++    ]);
+     $field_storage->save();
+-    $field = FieldConfig::create(array(
++    $field = FieldConfig::create([
+       'field_storage' => $field_storage,
+       'bundle' => 'article',
+-    ));
++    ]);
+     $field->save();
+ 
+     $text = 'Dummy text';
+     // Create the test composite entity.
+-    $entity_test = EntityTestCompositeRelationship::create(array(
++    $entity_test = EntityTestCompositeRelationship::create([
+       'uuid' => $text,
+       'name' => $text,
+-    ));
++    ]);
+     $entity_test->save();
+ 
+     $text = 'Clever text';
+@@ -89,7 +89,7 @@ class EntityReferenceRevisionsSaveTest extends KernelTestBase {
+       'composite_reference' => $entity_test,
+     ]);
+     // Check the name is properly set and that getValue() returns the entity
+-    // when it is marked as needs save."
++    // when it is marked as needs save.".
+     $values = $node->composite_reference->getValue();
+     $this->assertTrue(isset($values[0]['entity']));
+     static::assertEquals($values[0]['entity']->name->value, $text);
+@@ -143,27 +143,27 @@ class EntityReferenceRevisionsSaveTest extends KernelTestBase {
+    */
+   public function testSaveNewEntity() {
+     // Add the entity_reference_revisions field to article.
+-    $field_storage = FieldStorageConfig::create(array(
++    $field_storage = FieldStorageConfig::create([
+       'field_name' => 'composite_reference',
+       'entity_type' => 'node',
+       'type' => 'entity_reference_revisions',
+-      'settings' => array(
+-        'target_type' => 'entity_test_composite'
+-      ),
+-    ));
++      'settings' => [
++        'target_type' => 'entity_test_composite',
++      ],
++    ]);
+     $field_storage->save();
+-    $field = FieldConfig::create(array(
++    $field = FieldConfig::create([
+       'field_storage' => $field_storage,
+       'bundle' => 'article',
+-    ));
++    ]);
+     $field->save();
+ 
+     $text = 'Dummy text';
+     // Create the test entity.
+-    $entity_test = EntityTestCompositeRelationship::create(array(
++    $entity_test = EntityTestCompositeRelationship::create([
+       'uuid' => $text,
+       'name' => $text,
+-    ));
++    ]);
+ 
+     // Create a node with a reference to the test entity and save.
+     $node = Node::create([
+@@ -184,10 +184,10 @@ class EntityReferenceRevisionsSaveTest extends KernelTestBase {
+ 
+     // Create a new test entity.
+     $text = 'Smart text';
+-    $second_entity_test = EntityTestCompositeRelationship::create(array(
++    $second_entity_test = EntityTestCompositeRelationship::create([
+       'uuid' => $text,
+       'name' => $text,
+-    ));
++    ]);
+     $second_entity_test->save();
+ 
+     // Set the new test entity to the node field.
+@@ -268,7 +268,7 @@ class EntityReferenceRevisionsSaveTest extends KernelTestBase {
+   }
+ 
+   /**
+-   * Tests FieldType\EntityReferenceRevisionsItem::deleteRevision
++   * Tests FieldType\EntityReferenceRevisionsItem::deleteRevision.
+    */
+   public function testEntityReferenceRevisionsDeleteHandleDeletedChild() {
+     $field_storage = FieldStorageConfig::create([
+@@ -299,7 +299,7 @@ class EntityReferenceRevisionsSaveTest extends KernelTestBase {
+         [
+           'target_id' => $child->id(),
+           'target_revision_id' => $child->getRevisionId(),
+-        ]
++        ],
+       ],
+     ]);
+ 
+diff --git a/tests/src/Kernel/Plugin/Derivative/EntityReferenceRevisionsDeriverTest.php b/tests/src/Kernel/Plugin/Derivative/EntityReferenceRevisionsDeriverTest.php
+index 86c49a1..36a078c 100644
+--- a/tests/src/Kernel/Plugin/Derivative/EntityReferenceRevisionsDeriverTest.php
++++ b/tests/src/Kernel/Plugin/Derivative/EntityReferenceRevisionsDeriverTest.php
+@@ -4,7 +4,6 @@ namespace Drupal\Tests\entity_reference_revisions\Kernel\Plugin\Derivative;
+ 
+ use Drupal\entity_reference_revisions\Plugin\migrate\destination\EntityReferenceRevisions;
+ use Drupal\KernelTests\KernelTestBase;
+-use Drupal\migrate\Plugin\MigrateDestinationPluginManager;
+ 
+ /**
+  * Tests the migration deriver.
+@@ -33,13 +32,11 @@ class EntityReferenceRevisionsDeriverTest extends KernelTestBase {
+    * @covers ::getDerivativeDefinitions
+    */
+   public function testDestinationDeriver() {
+-    /** @var MigrateDestinationPluginManager $migrationDestinationManager */
++    /** @var \Drupal\migrate\Plugin\MigrateDestinationPluginManager $migrationDestinationManager */
+     $migrationDestinationManager = \Drupal::service('plugin.manager.migrate.destination');
+ 
+     $destination = $migrationDestinationManager->getDefinition('entity_reference_revisions:entity_test_composite');
+     $this->assertEquals(EntityReferenceRevisions::class, $destination['class']);
+   }
+ 
+-
+-
+ }

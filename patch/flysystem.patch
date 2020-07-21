@@ -1,0 +1,379 @@
+diff --git a/src/Annotation/Adapter.php b/src/Annotation/Adapter.php
+index d2ea1ac..15f609d 100644
+--- a/src/Annotation/Adapter.php
++++ b/src/Annotation/Adapter.php
+@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
+ /**
+  * Defines a Flysystem adapter plguin.
+  *
+- * Plugin Namespace: Flysystem
++ * Plugin Namespace: Flysystem.
+  *
+  * For a working example, see \Drupal\flysystem\Flysystem\Local.
+  *
+diff --git a/src/FlysystemFactory.php b/src/FlysystemFactory.php
+index 41fb8c8..42018d7 100644
+--- a/src/FlysystemFactory.php
++++ b/src/FlysystemFactory.php
+@@ -4,7 +4,6 @@ namespace Drupal\flysystem;
+ 
+ use Drupal\Component\Plugin\PluginManagerInterface;
+ use Drupal\Core\Cache\CacheBackendInterface;
+-use Drupal\Core\File\FileSystemInterface;
+ use Drupal\Core\Site\Settings;
+ use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
+ use Drupal\flysystem\Event\EnsureEvent;
+diff --git a/src/Plugin/FlysystemPluginInterface.php b/src/Plugin/FlysystemPluginInterface.php
+index bc42f8f..609a8d6 100644
+--- a/src/Plugin/FlysystemPluginInterface.php
++++ b/src/Plugin/FlysystemPluginInterface.php
+@@ -2,6 +2,9 @@
+ 
+ namespace Drupal\flysystem\Plugin;
+ 
++/**
++ *
++ */
+ interface FlysystemPluginInterface {
+ 
+   /**
+diff --git a/src/SerializationStopperTrait.php b/src/SerializationStopperTrait.php
+index ce0fe39..bbd9da9 100644
+--- a/src/SerializationStopperTrait.php
++++ b/src/SerializationStopperTrait.php
+@@ -11,7 +11,7 @@ trait SerializationStopperTrait {
+    * Prevents the class from being serialized.
+    */
+   public function __sleep() {
+-    $message = sprintf('%s can not be serialized. This probably means you are serializing an object that has an indirect reference to the %s object. Adjust your code so that is not necessary.', __CLASS__, __CLASS__);
++    $message = sprintf('%s can not be serialized. This probably means you are serializing an object that has an indirect reference to the %s object. Adjust your code so that is not necessary.', self::class, self::class);
+     throw new \LogicException($message);
+   }
+ 
+diff --git a/tests/src/Unit/Flysystem/Adapter/DrupalCacheAdapterTest.php b/tests/src/Unit/Flysystem/Adapter/DrupalCacheAdapterTest.php
+index e655a5b..a3506db 100644
+--- a/tests/src/Unit/Flysystem/Adapter/DrupalCacheAdapterTest.php
++++ b/tests/src/Unit/Flysystem/Adapter/DrupalCacheAdapterTest.php
+@@ -63,6 +63,9 @@ class DrupalCacheAdapterTest extends UnitTestCase {
+     $this->cacheAdapter = new DrupalCacheAdapter(static::SCHEME, $this->adapter->reveal(), $this->cacheItemBackend);
+   }
+ 
++  /**
++   *
++   */
+   public function testWriteSuccess() {
+     $config = new Config();
+     $this->adapter
+@@ -75,6 +78,9 @@ class DrupalCacheAdapterTest extends UnitTestCase {
+     $this->assertTrue($this->cacheItemBackend->has(static::FILE));
+   }
+ 
++  /**
++   *
++   */
+   public function testWriteStreamSuccess() {
+     $config = new Config();
+     $stream = fopen('data:text/plain,contents', 'rb');
+@@ -89,6 +95,9 @@ class DrupalCacheAdapterTest extends UnitTestCase {
+     $this->assertTrue($this->cacheItemBackend->has(static::FILE));
+   }
+ 
++  /**
++   *
++   */
+   public function testUpdateSuccess() {
+     $config = new Config();
+     $this->adapter
+@@ -100,6 +109,9 @@ class DrupalCacheAdapterTest extends UnitTestCase {
+     $this->assertSame('public', $this->cacheAdapter->getVisibility(static::FILE)['visibility']);
+   }
+ 
++  /**
++   *
++   */
+   public function testUpdateStreamSuccess() {
+     $config = new Config();
+     $stream = fopen('data:text/plain,contents', 'rb');
+@@ -114,6 +126,9 @@ class DrupalCacheAdapterTest extends UnitTestCase {
+     $this->assertTrue($this->cacheItemBackend->has(static::FILE));
+   }
+ 
++  /**
++   *
++   */
+   public function testRenameSuccess() {
+     $config = new Config();
+     $this->adapter
+@@ -134,6 +149,9 @@ class DrupalCacheAdapterTest extends UnitTestCase {
+ 
+   }
+ 
++  /**
++   *
++   */
+   public function testCopySuccess() {
+     $config = new Config();
+     $this->adapter
+@@ -152,6 +170,9 @@ class DrupalCacheAdapterTest extends UnitTestCase {
+     $this->assertTrue($this->cacheItemBackend->has('new.txt'));
+   }
+ 
++  /**
++   *
++   */
+   public function testDeleteSuccess() {
+     $config = new Config();
+     $this->adapter
+@@ -166,6 +187,9 @@ class DrupalCacheAdapterTest extends UnitTestCase {
+     $this->assertFalse($this->cacheItemBackend->has(static::FILE));
+   }
+ 
++  /**
++   *
++   */
+   public function testDeleteDirSuccess() {
+     $config = new Config();
+     // Create a directory with one sub file.
+@@ -187,6 +211,9 @@ class DrupalCacheAdapterTest extends UnitTestCase {
+     $this->assertFalse($this->cacheItemBackend->has('testdir'));
+   }
+ 
++  /**
++   *
++   */
+   public function testSetVisibilitySuccess() {
+     $config = new Config();
+     $this->adapter
+@@ -199,32 +226,50 @@ class DrupalCacheAdapterTest extends UnitTestCase {
+     $this->assertTrue($this->cacheItemBackend->has(static::FILE));
+   }
+ 
++  /**
++   *
++   */
+   public function testHasSuccess() {
+     $cache_item = $this->cacheItemBackend->load(static::FILE);
+     $this->cacheItemBackend->set(static::FILE, $cache_item);
+     $this->assertTrue($this->cacheAdapter->has(static::FILE));
+   }
+ 
++  /**
++   *
++   */
+   public function testHasFail() {
+     $this->adapter->has(static::FILE)->willReturn(TRUE);
+     $this->assertTrue($this->cacheAdapter->has(static::FILE));
+   }
+ 
++  /**
++   *
++   */
+   public function testRead() {
+     $this->adapter->read(static::FILE)->willReturn(TRUE);
+     $this->assertTrue($this->cacheAdapter->read(static::FILE));
+   }
+ 
++  /**
++   *
++   */
+   public function testReadStream() {
+     $this->adapter->readStream(static::FILE)->willReturn(TRUE);
+     $this->assertTrue($this->cacheAdapter->readStream(static::FILE));
+   }
+ 
++  /**
++   *
++   */
+   public function testListContentsSuccess() {
+     $this->adapter->listContents('testdir', TRUE)->willReturn(TRUE);
+     $this->assertTrue($this->cacheAdapter->listContents('testdir', TRUE));
+   }
+ 
++  /**
++   *
++   */
+   public function testGetMetadataSuccess() {
+     $cache_item = $this->cacheItemBackend->load(static::FILE);
+     $cache_item->updateMetadata(['type' => 'dir']);
+@@ -233,12 +278,18 @@ class DrupalCacheAdapterTest extends UnitTestCase {
+     $this->assertSame('dir', $this->cacheAdapter->getMetadata(static::FILE)['type']);
+   }
+ 
++  /**
++   *
++   */
+   public function testGetMetadataFail() {
+     $this->adapter->getMetadata(static::FILE)->willReturn(['type' => 'dir']);
+ 
+     $this->assertSame('dir', $this->cacheAdapter->getMetadata(static::FILE)['type']);
+   }
+ 
++  /**
++   *
++   */
+   public function testGetSizeFail() {
+     $this->adapter->getSize(static::FILE)->willReturn(['size' => 123]);
+ 
+diff --git a/tests/src/Unit/FlysystemFactoryTest.php b/tests/src/Unit/FlysystemFactoryTest.php
+index c9b99c9..c1ae702 100644
+--- a/tests/src/Unit/FlysystemFactoryTest.php
++++ b/tests/src/Unit/FlysystemFactoryTest.php
+@@ -4,7 +4,6 @@ namespace Drupal\Tests\flysystem\Unit;
+ 
+ use Drupal\Component\Plugin\PluginManagerInterface;
+ use Drupal\Core\Cache\NullBackend;
+-use Drupal\Core\File\FileSystemInterface as CoreFileSystemInterface;
+ use Drupal\Core\Site\Settings;
+ use Drupal\Core\StreamWrapper\StreamWrapperManager;
+ use Drupal\Tests\UnitTestCase;
+diff --git a/tests/src/Unit/Form/ConfigFormTest.php b/tests/src/Unit/Form/ConfigFormTest.php
+index 502e74d..f732c6f 100644
+--- a/tests/src/Unit/Form/ConfigFormTest.php
++++ b/tests/src/Unit/Form/ConfigFormTest.php
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use Drupal\Core\Messenger\MessengerInterface;
++
+ namespace Drupal\Tests\flysystem\Unit\Form {
+ 
+   use function Drupal\flysystem\Form\batch_set;
+@@ -46,10 +48,9 @@ namespace Drupal\Tests\flysystem\Unit\Form {
+       $this->factory->getFilesystem('to_empty')->willReturn(new Filesystem(new MemoryAdapter()));
+       $this->factory->getSchemes()->willReturn(['from_empty', 'to_empty']);
+ 
+-
+       $this->form = new ConfigForm($this->factory->reveal());
+       $this->form->setStringTranslation($this->getStringTranslationStub());
+-      $messenger = $this->prophesize(\Drupal\Core\Messenger\MessengerInterface::class);
++      $messenger = $this->prophesize(MessengerInterface::class);
+ 
+       $container = new ContainerBuilder();
+       $container->set('string_translation', $this->getStringTranslationStub());
+@@ -232,7 +233,8 @@ namespace Drupal\Tests\flysystem\Unit\Form {
+       ConfigForm::finishBatch(TRUE, [
+         'errors' => [
+           'first error',
+-          ['second error', ['']]],
++          ['second error', ['']],
++        ],
+       ], []);
+       // TODO: refactor.
+       $this->assertTrue(TRUE);
+@@ -262,9 +264,15 @@ namespace Drupal\Tests\flysystem\Unit\Form {
+ 
+ namespace Drupal\flysystem\Form {
+ 
++  /**
++   *
++   */
+   function drupal_set_message() {
+   }
+ 
++  /**
++   *
++   */
+   function batch_set($batch = NULL) {
+     static $last_batch;
+ 
+@@ -274,12 +282,18 @@ namespace Drupal\flysystem\Form {
+     return $last_batch;
+   }
+ 
++  /**
++   *
++   */
+   function drupal_set_time_limit($limit) {
+     if ($limit !== 0) {
+       throw new \Exception();
+     }
+   }
+ 
++  /**
++   *
++   */
+   function watchdog_exception() {
+   }
+ 
+diff --git a/tests/src/Unit/Routing/FlysystemRoutesTest.php b/tests/src/Unit/Routing/FlysystemRoutesTest.php
+index 1212658..03796f1 100644
+--- a/tests/src/Unit/Routing/FlysystemRoutesTest.php
++++ b/tests/src/Unit/Routing/FlysystemRoutesTest.php
+@@ -95,17 +95,17 @@ class FlysystemRoutesTest extends UnitTestCase {
+    */
+   public function testLocalPathSameAsPublicIsSkipped() {
+     new Settings([
+-    'flysystem' => [
+-      'test' => [
+-        'driver' => 'local',
+-        'public' => TRUE,
+-        'config' => [
++      'flysystem' => [
++        'test' => [
++          'driver' => 'local',
+           'public' => TRUE,
+-          'root' => 'sites/default/files',
++          'config' => [
++            'public' => TRUE,
++            'root' => 'sites/default/files',
++          ],
+         ],
+       ],
+-    ],
+-]);
++    ]);
+ 
+     $this->assertSame([], $this->router->routes());
+   }
+@@ -115,17 +115,17 @@ class FlysystemRoutesTest extends UnitTestCase {
+    */
+   public function testValidRoutesReturned() {
+     new Settings([
+-    'flysystem' => [
+-      'test' => [
+-        'driver' => 'local',
+-        'public' => TRUE,
+-        'config' => [
++      'flysystem' => [
++        'test' => [
++          'driver' => 'local',
+           'public' => TRUE,
+-          'root' => 'sites/default/files/flysystem',
++          'config' => [
++            'public' => TRUE,
++            'root' => 'sites/default/files/flysystem',
++          ],
+         ],
+       ],
+-    ],
+-]);
++    ]);
+ 
+     $routes = $this->router->routes();
+     $this->assertSame(1, count($routes));
+@@ -137,17 +137,17 @@ class FlysystemRoutesTest extends UnitTestCase {
+    */
+   public function testValidRoutesReturnedWithImageModule() {
+     new Settings([
+-    'flysystem' => [
+-      'test' => [
+-        'driver' => 'local',
+-        'public' => TRUE,
+-        'config' => [
++      'flysystem' => [
++        'test' => [
++          'driver' => 'local',
+           'public' => TRUE,
+-          'root' => 'sites/default/files/flysystem',
++          'config' => [
++            'public' => TRUE,
++            'root' => 'sites/default/files/flysystem',
++          ],
+         ],
+       ],
+-    ],
+-]);
++    ]);
+ 
+     $this->moduleHandler->moduleExists('image')->willReturn(TRUE);
+     $routes = $this->router->routes();

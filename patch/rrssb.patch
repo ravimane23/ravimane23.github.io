@@ -1,0 +1,27 @@
+diff --git a/rrssb.init.js b/rrssb.init.js
+index 33f41ce..ef95337 100644
+--- a/rrssb.init.js
++++ b/rrssb.init.js
+@@ -9,7 +9,7 @@
+   Drupal.behaviors.rrssb = {
+     attach: function (context, settings) {
+       for (var buttonSet in settings.rrssb) {
+-        $('.rrssb-bs-' + buttonSet).each(function(){
++        $('.rrssb-bs-' + buttonSet).each(function () {
+           $(this).rrssbConfig(settings.rrssb[buttonSet]);
+         });
+       }
+diff --git a/src/Form/RRSSBSettingsForm.php b/src/Form/RRSSBSettingsForm.php
+index 71f2f2c..68db1d6 100644
+--- a/src/Form/RRSSBSettingsForm.php
++++ b/src/Form/RRSSBSettingsForm.php
+@@ -3,9 +3,7 @@
+ namespace Drupal\rrssb\Form;
+ 
+ use Drupal\Core\Entity\EntityForm;
+-use Drupal\Core\Entity\Query\QueryFactory;
+ use Drupal\Core\Form\FormStateInterface;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+ 
+ /**
+  * Class RRSSBSettingsForm.
